@@ -1,0 +1,448 @@
+<!-- ReadBridge - Perpustakaan & BridgePass -->
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ReadBridge - Perpustakaan Mitra</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed-dim": "#4edea3",
+                      "primary-fixed": "#dbe1ff",
+                      "on-background": "#0b1c30",
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary-fixed-variant": "#783200",
+                      "secondary-fixed": "#6ffbbe",
+                      "on-secondary-fixed-variant": "#005236",
+                      "surface-container": "#e5eeff",
+                      "tertiary": "#8e3c00",
+                      "on-tertiary-container": "#ffece5",
+                      "on-error-container": "#93000a",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "surface-dim": "#cbdbf5",
+                      "error": "#ba1a1a",
+                      "on-error": "#ffffff",
+                      "secondary": "#006c49",
+                      "secondary-container": "#6cf8bb",
+                      "primary": "#004ac6",
+                      "surface": "#f8f9ff",
+                      "on-surface-variant": "#434655",
+                      "on-surface": "#0b1c30",
+                      "tertiary-fixed": "#ffdbca",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "surface-variant": "#d3e4fe",
+                      "inverse-surface": "#213145",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-container": "#eeefff",
+                      "tertiary-container": "#b54e00",
+                      "outline": "#737686",
+                      "error-container": "#ffdad6",
+                      "surface-tint": "#0053db",
+                      "background": "#f8f9ff",
+                      "surface-bright": "#f8f9ff",
+                      "on-primary": "#ffffff",
+                      "surface-container-high": "#dce9ff",
+                      "surface-container-low": "#eff4ff",
+                      "on-secondary-fixed": "#002113",
+                      "on-secondary-container": "#00714d",
+                      "on-secondary": "#ffffff",
+                      "inverse-on-surface": "#eaf1ff",
+                      "inverse-primary": "#b4c5ff",
+                      "primary-container": "#2563eb",
+                      "on-primary-fixed": "#00174b",
+                      "on-tertiary-fixed": "#341100",
+                      "outline-variant": "#c3c6d7",
+                      "surface-container-highest": "#d3e4fe",
+                      "tertiary-fixed-dim": "#ffb690"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "md": "16px",
+                      "lg": "24px",
+                      "margin": "24px",
+                      "gutter": "16px",
+                      "sm": "8px",
+                      "base": "8px",
+                      "xl": "32px",
+                      "xxl": "48px",
+                      "xs": "4px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "title-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "headline-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "display-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-sm": [
+                              "Plus Jakarta Sans"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "title-lg": [
+                              "20px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md font-sans min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-surface shadow-sm docked full-width top-0 z-50">
+<div class="flex justify-between items-center w-full px-margin py-sm max-w-[1280px] mx-auto">
+<div class="flex items-center gap-lg">
+<a class="font-headline-md text-headline-md font-bold text-primary" href="index.html">ReadBridge</a>
+<nav class="hidden md:flex items-center gap-md ml-lg">
+<a class="text-on-surface-variant hover:text-primary-container transition-colors duration-200 font-label-md text-label-md" href="eksplor.html">Eksplor</a>
+<a class="text-on-surface-variant hover:text-primary-container transition-colors duration-200 font-label-md text-label-md" href="komunitas.html">Komunitas</a>
+<a class="text-on-surface-variant hover:text-primary-container transition-colors duration-200 font-label-md text-label-md" href="marketplace.html">Marketplace</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 hover:text-primary-container transition-colors duration-200 font-label-md text-label-md" href="perpustakaan.html">Perpustakaan</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64" placeholder="Cari..." type="text"/>
+</div>
+<button class="p-2 text-on-surface-variant hover:text-primary-container transition-colors duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="w-10 h-10 rounded-full overflow-hidden border-2 border-surface-variant focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all">
+<img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzJATXKhAsalxwZIY8Lx3y5sjHseZyYaIN0h98jDRWvAhlA9_56ciCWjSiLcI0ddfxpNemSWBWjuJYo8e8bd2OxnGGWibwCgZX4wkfZst0umXyXlAeuphsALc_anbgB9n05A463-_QUcVMw6Vff9l2YisZj2YX4FhHbK0NF3RX3jzVECUd5Gj3YulbAJtvejsZZHz1-SN3ST_QZn8T6V-HKGju8VmZuQVLSLaRHHRJbPIRIwmqq2w1HaR9eoqblN7ofQ5EJF7FQWo"/>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-[1280px] mx-auto px-margin py-xl flex flex-col lg:flex-row gap-xl">
+<!-- Left Sidebar: BridgePass -->
+<aside class="w-full lg:w-80 shrink-0 space-y-lg">
+<div class="bg-primary text-on-primary rounded-xl p-lg shadow-lg relative overflow-hidden flex flex-col h-[400px]">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-fixed opacity-10 rounded-bl-full"></div>
+<div class="absolute bottom-0 left-0 w-24 h-24 bg-primary-fixed opacity-10 rounded-tr-full"></div>
+<div class="relative z-10 flex flex-col h-full justify-between">
+<div>
+<h2 class="font-title-lg text-title-lg font-bold">BridgePass</h2>
+<p class="font-label-md text-label-md opacity-90 mt-1">Akses Digital Perpustakaan</p>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-lg self-center mt-auto mb-auto w-48 h-48 flex items-center justify-center shadow-md">
+<!-- QR Code Placeholder -->
+<img alt="BridgePass QR Code" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABlDJkZx5NRDTGk8KbeKlhCz7uSgxOglXCAWhMl20bavNyJfAaQidIDfCWZzMvtANtivin5T9FMtpGOA6gM8Q_W4VM2aPRpg_2gI9TEjN1XzHEB52jpJpf_DWSBf2yRpohYDPAYpf7Xyypm-rD0oDBI_N9I_gEhbiuvTGn6yis4Jc6rayP6gt7i2ooEo7xtH7P9mFTkRQXRA7B3knSlK6O86HFQU-rk7mbww2nPo0RW_n1VQO3mT2UZikhp14Vpedraerd-tAzNZw"/>
+</div>
+<div class="mt-auto">
+<p class="font-body-md text-body-md font-semibold rb-username-fill">Budi Santoso</p>
+<p class="font-label-sm text-label-sm opacity-80">ID: RB-2024-0891</p>
+<div class="mt-2 flex items-center gap-2">
+<span class="inline-flex items-center gap-1 bg-secondary text-on-secondary px-2 py-1 rounded-full font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+                                Aktif
+                            </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Gamification Teaser in Sidebar -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-md shadow-sm">
+<h3 class="font-label-md text-label-md font-bold text-on-surface mb-3">Status Kunjungan</h3>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-surface-container-high rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_library</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-semibold">12 Kunjungan</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Bulan ini</p>
+</div>
+</div>
+<span class="text-secondary font-label-md text-label-md">+50 XP</span>
+</div>
+</div>
+</aside>
+<!-- Right Content: Perpustakaan Mitra -->
+<section class="flex-grow">
+<div class="mb-lg flex justify-between items-end">
+<div>
+<h1 class="font-headline-lg text-headline-lg font-bold text-on-surface">Perpustakaan Mitra</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Temukan ruang baca yang nyaman di sekitarmu.</p>
+</div>
+<div class="flex gap-sm">
+<button class="bg-surface-container-high text-on-surface px-4 py-2 rounded-full font-label-md text-label-md hover:bg-surface-variant transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">tune</span> Filter
+                    </button>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-full font-label-md text-label-md hover:bg-primary-container transition-colors flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">map</span> Peta
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Layout for Libraries -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Library Card 1 -->
+<article class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-variant overflow-hidden flex flex-col hover:shadow-md transition-shadow duration-200">
+<div class="h-48 relative overflow-hidden">
+<img alt="Perpustakaan Nasional" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLyq6u-LeyhHvoLMULYMknHrqN9nU4TABfV_0X_fhxhpMx5SGwG2Ny2W9SIBPfTcW69QE9pAjYMuLfd6LipMYz3K6wOpMkD4ZK5Q8uEGKdQN8cv84iRfRTBYLoA7XdJm4eIoyv9UkhVy31c4Wc2yIh3398L7-hACPnx7GVNoOFlhUG6qS9exIUO5uPfOhKvk5fimXfi0NKO2CtgP_9_4178_byb7A5P099yAMch5HnpV28eQeRMVUWPVI8dH8kE9CQtT8cMwfDdRQ"/>
+<div class="absolute top-3 right-3 bg-surface-container-lowest/90 backdrop-blur-sm px-3 py-1 rounded-full font-label-sm text-label-sm font-bold text-primary shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">star</span> 4.8
+                        </div>
+</div>
+<div class="p-md flex-grow flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-title-lg text-title-lg font-bold text-on-surface">Perpustakaan Nasional RI</h3>
+<span class="font-label-sm text-label-sm bg-secondary-container text-on-secondary-container px-2 py-1 rounded-md">Mitra Premium</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span> Jl. Medan Merdeka Selatan, Jakarta
+                        </p>
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface px-2 py-1 rounded-md font-label-sm text-label-sm border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]">ac_unit</span> AC
+                            </span>
+<span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface px-2 py-1 rounded-md font-label-sm text-label-sm border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]">wifi</span> WiFi Cepat
+                            </span>
+<span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface px-2 py-1 rounded-md font-label-sm text-label-sm border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]">chair</span> Ruang Baca Luas
+                            </span>
+</div>
+<div class="mt-auto pt-4 border-t border-surface-variant flex items-center justify-between">
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container-low hover:bg-primary-container hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">thumb_up</span>
+</button>
+<span class="font-label-md text-label-md text-on-surface font-semibold mx-1">342</span>
+<button class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container-low hover:bg-error-container hover:text-error transition-colors">
+<span class="material-symbols-outlined text-[18px]">thumb_down</span>
+</button>
+</div>
+<button class="text-primary font-label-md text-label-md font-bold hover:underline decoration-primary underline-offset-4">Lihat Detail</button>
+</div>
+</div>
+</article>
+<!-- Library Card 2 -->
+<article class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-variant overflow-hidden flex flex-col hover:shadow-md transition-shadow duration-200">
+<div class="h-48 relative overflow-hidden">
+<img alt="Perpustakaan Daerah" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcgAZj2PD7_BJVPCoTj3f-XqpJTWJUf3NGADowuCZohklQButvXV-abkBGufVtbGzl9lF3R-Fv3oQ0ClMyCUozz-dRo9tfF4ZijNOisDZDhGhMXGZnQ26ET80mmJH5oEJ11ftbaweTscfARpZN-5Jq2REigisP_MxTFJ9MZDtNtKeoLb06xiWZ5BBu2r2Xx9f0bpYq-h_yUInuR0GojXsZOgYahTl3n9U5uIDJKeEATNIbC1PPXtUMFIlaoZVYoPYcR9ufuReyyHM"/>
+<div class="absolute top-3 right-3 bg-surface-container-lowest/90 backdrop-blur-sm px-3 py-1 rounded-full font-label-sm text-label-sm font-bold text-primary shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">star</span> 4.5
+                        </div>
+</div>
+<div class="p-md flex-grow flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-title-lg text-title-lg font-bold text-on-surface">Perpusda Cikini</h3>
+<span class="font-label-sm text-label-sm bg-surface-container-high text-on-surface px-2 py-1 rounded-md">Mitra</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span> Cikini Raya, Menteng
+                        </p>
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface px-2 py-1 rounded-md font-label-sm text-label-sm border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]">ac_unit</span> AC
+                            </span>
+<span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface px-2 py-1 rounded-md font-label-sm text-label-sm border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]">wifi</span> WiFi
+                            </span>
+<span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface px-2 py-1 rounded-md font-label-sm text-label-sm border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]">local_cafe</span> Kantin
+                            </span>
+</div>
+<div class="mt-auto pt-4 border-t border-surface-variant flex items-center justify-between">
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container-low hover:bg-primary-container hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">thumb_up</span>
+</button>
+<span class="font-label-md text-label-md text-on-surface font-semibold mx-1">128</span>
+<button class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container-low hover:bg-error-container hover:text-error transition-colors">
+<span class="material-symbols-outlined text-[18px]">thumb_down</span>
+</button>
+</div>
+<button class="text-primary font-label-md text-label-md font-bold hover:underline decoration-primary underline-offset-4">Lihat Detail</button>
+</div>
+</div>
+</article>
+</div>
+<!-- Load More -->
+<div class="mt-lg flex justify-center">
+<button class="px-6 py-3 border-2 border-surface-variant text-on-surface rounded-full font-label-md text-label-md font-bold hover:bg-surface-container-low transition-colors">Muat Lebih Banyak</button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-highest border-t border-outline-variant w-full mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin py-lg max-w-[1280px] mx-auto gap-md">
+<div class="font-title-lg text-title-lg font-black text-primary">ReadBridge</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">© 2024 ReadBridge Indonesia. Membangun Generasi Literasi.</div>
+<nav class="flex gap-4">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="#">Tentang Kami</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="#">Pusat Bantuan</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="#">Privasi</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="#">Syarat &amp; Ketentuan</a>
+</nav>
+</div>
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const savedName = localStorage.getItem('rb_username');
+    if (savedName) {
+        const els = document.querySelectorAll('.rb-username-fill');
+        for (let i = 0; i < els.length; i++) {
+            els[i].textContent = savedName;
+        }
+    }
+});
+</script>
+
+<script id="dynamic-logo-menu">
+document.addEventListener("DOMContentLoaded", function() {
+    // Inject Logo Menu
+    const headerOrNav = document.querySelector('header, nav');
+    if (headerOrNav && !document.getElementById('logo-menu-container')) {
+        const treeWalker = document.createTreeWalker(headerOrNav, NodeFilter.SHOW_TEXT, {
+            acceptNode: function(node) {
+                return node.nodeValue.trim() === 'ReadBridge' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+            }
+        });
+        const logoTextNode = treeWalker.nextNode();
+        if (logoTextNode) {
+            const logoEl = logoTextNode.parentElement;
+            
+            if (logoEl.id === 'logo-btn' || logoEl.querySelector('#logo-btn')) return;
+
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'relative';
+            wrapper.style.display = 'inline-flex';
+            wrapper.style.alignItems = 'center';
+            wrapper.style.cursor = 'pointer';
+            wrapper.id = 'logo-menu-container';
+            
+            logoEl.parentNode.insertBefore(wrapper, logoEl);
+            wrapper.appendChild(logoEl);
+            
+            logoEl.id = 'logo-btn';
+            logoEl.style.display = 'flex';
+            logoEl.style.alignItems = 'center';
+            logoEl.style.gap = '4px';
+            logoEl.innerHTML = 'ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>';
+            
+            const dropdown = document.createElement('div');
+            dropdown.id = 'logo-dropdown';
+            dropdown.className = 'absolute left-0 top-full mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50';
+            
+            const links = [
+                { href: 'index.html', icon: 'home', text: 'Beranda' },
+                { href: 'eksplor.html', icon: 'library_books', text: 'Eksplor Koleksi' },
+                { href: 'sewa.html', icon: 'menu_book', text: 'Perpustakaan & Sewa' },
+                { href: 'marketplace.html', icon: 'storefront', text: 'Marketplace' },
+                { href: 'komunitas.html', icon: 'forum', text: 'Komunitas' },
+                { href: 'profile.html#leaderboard', icon: 'emoji_events', text: 'Leaderboard & Quests' },
+                { href: 'tentang-kami.html', icon: 'info', text: 'Tentang Kami' }
+            ];
+            
+            links.forEach(l => {
+                const a = document.createElement('a');
+                a.href = l.href;
+                a.className = 'px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-[14px] text-on-surface flex items-center gap-3 font-medium';
+                a.innerHTML = `<span class="material-symbols-outlined text-[20px] text-on-surface-variant">${l.icon}</span> ${l.text}`;
+                dropdown.appendChild(a);
+            });
+            
+            wrapper.appendChild(dropdown);
+            
+            logoEl.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropdown.classList.toggle('hidden');
+                dropdown.classList.toggle('flex');
+            });
+            document.addEventListener('click', (e) => {
+                if (!dropdown.contains(e.target) && !logoEl.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    dropdown.classList.remove('flex');
+                }
+            });
+        }
+    }
+});
+</script>
+</body></html>

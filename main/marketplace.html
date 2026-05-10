@@ -1,0 +1,501 @@
+<!-- ReadBridge - Marketplace -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ReadBridge - Marketplace (Buku Preloved)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "secondary-fixed-dim": "#4edea3","primary-fixed": "#dbe1ff","on-background": "#0b1c30",
+          "surface-container-lowest": "#ffffff","on-tertiary-fixed-variant": "#783200","secondary-fixed": "#6ffbbe",
+          "on-secondary-fixed-variant": "#005236","surface-container": "#e5eeff","tertiary": "#8e3c00",
+          "on-tertiary-container": "#ffece5","on-error-container": "#93000a","primary-fixed-dim": "#b4c5ff",
+          "surface-dim": "#cbdbf5","error": "#ba1a1a","on-error": "#ffffff","secondary": "#006c49",
+          "secondary-container": "#6cf8bb","primary": "#004ac6","surface": "#f8f9ff",
+          "on-surface-variant": "#434655","on-surface": "#0b1c30","tertiary-fixed": "#ffdbca",
+          "on-primary-fixed-variant": "#003ea8","surface-variant": "#d3e4fe","inverse-surface": "#213145",
+          "on-tertiary": "#ffffff","on-primary-container": "#eeefff","tertiary-container": "#b54e00",
+          "outline": "#737686","error-container": "#ffdad6","surface-tint": "#0053db",
+          "background": "#f8f9ff","surface-bright": "#f8f9ff","on-primary": "#ffffff",
+          "surface-container-high": "#dce9ff","surface-container-low": "#eff4ff",
+          "on-secondary-fixed": "#002113","on-secondary-container": "#00714d","on-secondary": "#ffffff",
+          "inverse-on-surface": "#eaf1ff","inverse-primary": "#b4c5ff","primary-container": "#2563eb",
+          "on-primary-fixed": "#00174b","on-tertiary-fixed": "#341100","outline-variant": "#c3c6d7",
+          "surface-container-highest": "#d3e4fe","tertiary-fixed-dim": "#ffb690"
+        },
+        "borderRadius": {"DEFAULT": "0.25rem","lg": "0.5rem","xl": "0.75rem","full": "9999px"},
+        "spacing": {"md": "16px","lg": "24px","margin": "24px","gutter": "16px","sm": "8px","base": "8px","xl": "32px","xxl": "48px","xs": "4px"},
+        "fontSize": {
+          "headline-lg": ["32px",{"lineHeight":"1.3","fontWeight":"700"}],
+          "label-md": ["14px",{"lineHeight":"1.4","fontWeight":"500"}],
+          "body-lg": ["18px",{"lineHeight":"1.6","fontWeight":"400"}],
+          "title-lg": ["20px",{"lineHeight":"1.5","fontWeight":"600"}],
+          "headline-md": ["24px",{"lineHeight":"1.4","fontWeight":"600"}],
+          "display-lg": ["48px",{"lineHeight":"1.2","fontWeight":"700"}],
+          "body-md": ["16px",{"lineHeight":"1.6","fontWeight":"400"}],
+          "label-sm": ["12px",{"lineHeight":"1.2","fontWeight":"600"}]
+        }
+      }
+    }
+  }
+</script>
+<style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+
+<!-- TopNavBar -->
+<header class="bg-surface shadow-sm sticky top-0 z-50">
+  <div class="flex justify-between items-center w-full px-margin py-sm max-w-[1280px] mx-auto">
+    <div class="flex items-center gap-lg">
+      <a href="detail.html" class="font-headline-md text-headline-md font-bold text-primary">ReadBridge</a>
+      <nav class="hidden md:flex gap-lg">
+        <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="eksplor.html">Eksplor</a>
+        <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="komunitas.html">Komunitas</a>
+        <a class="font-label-md text-label-md text-primary font-bold border-b-2 border-primary pb-1" href="marketplace.html">Marketplace</a>
+        <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="perpustakaan.html">Perpustakaan</a>
+      </nav>
+    </div>
+    <div class="flex items-center gap-md">
+      <div class="relative hidden md:block">
+        <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">search</span>
+        <input id="search-input" class="pl-10 pr-sm py-xs rounded-xl bg-surface-container-low border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md w-64 outline-none" placeholder="Cari buku preloved..." type="text"/>
+      </div>
+      <a href="notifikasi.html" class="flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+        <span class="material-symbols-outlined">notifications</span>
+      </a>
+      <div class="relative" id="profile-menu-container">
+        <button id="profile-avatar-btn" class="focus:outline-none flex rounded-full">
+          <img alt="User Profile Avatar" class="w-10 h-10 rounded-full object-cover border border-outline-variant cursor-pointer hover:ring-2 hover:ring-primary transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
+        </button>
+        <!-- Dropdown Menu -->
+        <div id="profile-dropdown" class="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50">
+          <div class="px-4 py-3 border-b border-outline-variant/30">
+            <p class="font-label-sm text-label-sm text-on-surface-variant">Masuk sebagai</p>
+            <p class="font-label-md text-label-md text-on-surface font-bold truncate">Siswa Indonesia</p>
+          </div>
+          <a href="#" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+            <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
+          </a>
+          <a href="profile.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+                                <span class="material-symbols-outlined text-[20px]">person</span> Detail Akun
+          </a>
+          <a href="login.html" class="flex items-center gap-2 px-4 py-3 hover:bg-error/10 transition-colors font-label-md text-label-md text-error border-t border-outline-variant/30 font-bold">
+            <span class="material-symbols-outlined text-[20px]">logout</span> Log Out
+          </a>
+        </div>
+      </div>
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const btn = document.getElementById('profile-avatar-btn');
+          const dropdown = document.getElementById('profile-dropdown');
+          if (btn && dropdown) {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              dropdown.classList.toggle('hidden');
+              dropdown.classList.toggle('flex');
+            });
+            document.addEventListener('click', (e) => {
+              if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                dropdown.classList.add('hidden');
+                dropdown.classList.remove('flex');
+              }
+            });
+          }
+        });
+      </script>
+    </div>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main class="flex-grow max-w-[1280px] w-full mx-auto px-margin py-xl flex flex-col gap-lg">
+  <div class="flex items-center gap-md border-b border-outline-variant mb-sm w-full">
+    <button id="tab-beli" class="font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors">Beli Preloved</button>
+    <button id="tab-sewa" class="font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors">Sewa Buku</button>
+  </div>
+
+  <div id="content-beli" class="flex flex-col md:flex-row gap-lg w-full">
+    <!-- Sidebar Filters -->
+    <aside class="w-full md:w-64 flex-shrink-0">
+      <div class="bg-surface-container-lowest rounded-xl p-md border border-surface-container-highest shadow-sm sticky top-24">
+        <h2 class="font-title-lg text-title-lg text-on-surface mb-md">Filter Pencarian</h2>
+        <div class="mb-lg">
+          <h3 class="font-label-md text-label-md text-on-surface-variant mb-sm">Harga</h3>
+          <div class="flex flex-col gap-xs">
+            <label class="flex items-center gap-sm font-body-md text-body-md text-on-surface"><input id="price-filter-1" class="price-filter rounded text-primary focus:ring-primary border-outline-variant" type="checkbox" value="1"/> Di bawah Rp 50.000</label>
+            <label class="flex items-center gap-sm font-body-md text-body-md text-on-surface"><input id="price-filter-2" class="price-filter rounded text-primary focus:ring-primary border-outline-variant" type="checkbox" value="2"/> Rp 50.000 - Rp 100.000</label>
+            <label class="flex items-center gap-sm font-body-md text-body-md text-on-surface"><input id="price-filter-3" class="price-filter rounded text-primary focus:ring-primary border-outline-variant" type="checkbox" value="3"/> Di atas Rp 100.000</label>
+          </div>
+        </div>
+        <div class="mb-lg">
+          <h3 class="font-label-md text-label-md text-on-surface-variant mb-sm">Kondisi</h3>
+          <div class="flex flex-wrap gap-xs">
+            <button class="condition-filter px-sm py-xs rounded-full border border-outline-variant font-label-sm text-label-sm text-on-surface hover:bg-surface-container-low transition-colors" data-cond="Sempurna">Sempurna</button>
+            <button class="condition-filter px-sm py-xs rounded-full bg-primary-container text-on-primary-container border border-primary-container font-label-sm text-label-sm" data-cond="Bagus">Bagus</button>
+            <button class="condition-filter px-sm py-xs rounded-full border border-outline-variant font-label-sm text-label-sm text-on-surface hover:bg-surface-container-low transition-colors" data-cond="Lecet">Lecet</button>
+          </div>
+        </div>
+        <div>
+          <h3 class="font-label-md text-label-md text-on-surface-variant mb-sm">Lokasi</h3>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline text-sm">location_on</span>
+            <input id="location-input" class="w-full pl-8 pr-sm py-xs rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md outline-none" placeholder="Cari kota..." type="text"/>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Product Grid -->
+    <section class="flex-grow w-full">
+      <div class="flex justify-between items-center mb-md">
+        <h1 class="font-headline-lg text-headline-lg text-on-background">Buku Preloved</h1>
+        <div class="flex items-center gap-sm">
+          <span class="font-label-md text-label-md text-on-surface-variant">Urutkan:</span>
+          <select id="sort-select" class="rounded-lg border-outline-variant bg-surface-container-lowest font-body-md text-body-md focus:border-primary focus:ring-primary py-xs pl-sm pr-lg outline-none">
+            <option>Terbaru</option><option>Harga Termurah</option><option>Harga Termahal</option>
+          </select>
+        </div>
+      </div>
+      <div id="marketplace-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+  </div>
+
+  <div id="content-sewa" class="flex flex-col gap-lg w-full hidden">
+    <!-- Page Header -->
+    <section class="flex flex-col gap-sm">
+      <h1 class="font-display-lg text-display-lg text-primary">Sewa Buku</h1>
+      <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+        Temukan buku bacaan terbaik untuk menemani waktu luangmu. Pilih durasi sewa yang sesuai dengan kebutuhanmu, dari harian hingga bulanan.
+      </p>
+    </section>
+
+    <!-- Filters -->
+    <div class="flex flex-wrap gap-sm mt-sm" id="category-filters">
+      <button class="filter-sewa-btn px-md py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-sm" data-cat="Semua">Semua</button>
+      <button class="filter-sewa-btn px-md py-sm rounded-full bg-surface-container-highest text-on-surface hover:bg-surface-variant font-label-md text-label-md border border-outline-variant transition-colors" data-cat="Fiksi">Fiksi</button>
+      <button class="filter-sewa-btn px-md py-sm rounded-full bg-surface-container-highest text-on-surface hover:bg-surface-variant font-label-md text-label-md border border-outline-variant transition-colors" data-cat="Pengembangan Diri">Pengembangan Diri</button>
+      <button class="filter-sewa-btn px-md py-sm rounded-full bg-surface-container-highest text-on-surface hover:bg-surface-variant font-label-md text-label-md border border-outline-variant transition-colors" data-cat="Sains">Sains</button>
+    </div>
+
+    <!-- Book Grid -->
+    <section id="sewa-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter mt-md">
+      <!-- Rendered by JS -->
+    </section>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-surface-container-highest border-t border-outline-variant w-full mt-auto">
+  <div class="flex flex-col md:flex-row justify-between items-center px-margin py-lg max-w-[1280px] mx-auto gap-md">
+    <span class="font-title-lg text-title-lg font-black text-primary">ReadBridge</span>
+    <nav class="flex flex-wrap gap-md justify-center">
+      <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="tentang-kami.html">Tentang Kami</a>
+      <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="#">Pusat Bantuan</a>
+      <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="#">Privasi</a>
+      <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="#">Syarat &amp; Ketentuan</a>
+    </nav>
+    <p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 ReadBridge Indonesia. Membangun Generasi Literasi.</p>
+  </div>
+</footer>
+
+  <script src="main.js"></script>
+<script>
+
+  let selectedConditions = ['Bagus'];
+  let selectedSewaCat = 'Semua';
+
+  function formatPrice(p) {
+    return 'Rp ' + p.toLocaleString('id-ID');
+  }
+
+  function renderMarketplace() {
+    const grid = document.getElementById('marketplace-grid');
+    if (!grid) return;
+    
+    // Filters
+    const searchVal = (document.getElementById('search-input')?.value || '').toLowerCase();
+    const locVal = (document.getElementById('location-input')?.value || '').toLowerCase();
+    
+    const priceCheck1 = document.getElementById('price-filter-1')?.checked; // < 50k
+    const priceCheck2 = document.getElementById('price-filter-2')?.checked; // 50k - 100k
+    const priceCheck3 = document.getElementById('price-filter-3')?.checked; // > 100k
+    const hasPriceFilter = priceCheck1 || priceCheck2 || priceCheck3;
+    
+    let filtered = marketplaceBooks.filter(b => {
+      if (searchVal && !b.title.toLowerCase().includes(searchVal)) return false;
+      if (locVal && !b.location.toLowerCase().includes(locVal)) return false;
+      
+      if (hasPriceFilter) {
+        let passPrice = false;
+        if (priceCheck1 && b.price < 50000) passPrice = true;
+        if (priceCheck2 && b.price >= 50000 && b.price <= 100000) passPrice = true;
+        if (priceCheck3 && b.price > 100000) passPrice = true;
+        if (!passPrice) return false;
+      }
+      
+      if (selectedConditions.length > 0 && !selectedConditions.includes(b.condition)) return false;
+      
+      return true;
+    });
+    
+    const sortVal = document.getElementById('sort-select')?.value;
+    if (sortVal === 'Harga Termurah') filtered.sort((a,b) => a.price - b.price);
+    else if (sortVal === 'Harga Termahal') filtered.sort((a,b) => b.price - a.price);
+    else filtered.sort((a,b) => new Date(b.date) - new Date(a.date)); // Terbaru
+    
+    grid.innerHTML = filtered.map(b => {
+      let condClass = 'bg-primary text-on-primary';
+      if (b.condition === 'Bagus') condClass = 'bg-secondary text-on-secondary';
+      if (b.condition === 'Lecet') condClass = 'bg-surface-variant text-on-surface';
+      
+      return `<article class="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-container overflow-hidden hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-shadow duration-300 flex flex-col h-full">
+        <a href="detail.html?source=marketplace&id=${b.id}" class="relative aspect-[3/4] bg-surface-container-low group cursor-pointer block">
+          <img alt="Cover ${b.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${b.image}"/>
+          <span class="absolute top-sm right-sm ${condClass} font-label-sm text-label-sm px-2 py-1 rounded-full">${b.condition}</span>
+        </a>
+        <div class="p-md flex flex-col flex-grow">
+          <a href="detail.html?source=marketplace&id=${b.id}" class="group"><h3 class="font-title-lg text-title-lg text-on-surface line-clamp-2 mb-xs group-hover:text-primary transition-colors cursor-pointer">${b.title}</h3></a>
+          <p class="font-label-md text-label-md text-on-surface-variant mb-xs">${b.author || 'Penulis'}</p>
+          <p class="font-headline-md text-headline-md font-bold text-primary mb-sm">${formatPrice(b.price)}</p>
+          <div class="flex items-center gap-xs text-error font-label-sm text-label-sm mb-xs"><span class="material-symbols-outlined text-[16px]">alarm</span><span>Sisa ${b.stock} Buku</span></div>
+          <div class="flex items-center gap-xs text-on-surface-variant mb-md mt-auto"><span class="material-symbols-outlined text-[16px]">location_on</span><span class="font-label-sm text-label-sm">${b.location}</span></div>
+          <div class="flex gap-sm mt-auto">
+            <button class="flex-grow bg-primary text-on-primary font-label-md text-label-md py-sm rounded-full hover:bg-primary-container transition-colors">Beli</button>
+            <button class="w-10 h-10 flex items-center justify-center border border-outline-variant rounded-full text-primary hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined">chat</span></button>
+          </div>
+        </div>
+      </article>`;
+    }).join('');
+    
+    if(filtered.length === 0) {
+      grid.innerHTML = '<p class="col-span-full text-center py-xl text-on-surface-variant font-body-lg">Tidak ada buku yang sesuai dengan filter.</p>';
+    }
+  }
+
+  function renderSewa() {
+    const grid = document.getElementById('sewa-grid');
+    if(!grid) return;
+    
+    let filtered = sewaBooks.filter(b => selectedSewaCat === 'Semua' || b.category === selectedSewaCat);
+    
+    grid.innerHTML = filtered.map((b, i) => {
+      const isAvailable = b.stock > 0;
+      const statusBadge = isAvailable 
+        ? '<div class="absolute top-sm left-sm px-sm py-xs rounded bg-secondary text-on-secondary font-label-sm text-label-sm shadow-sm">Tersedia</div>'
+        : '<div class="absolute top-sm left-sm px-sm py-xs rounded bg-surface-variant text-on-surface-variant border border-outline-variant font-label-sm text-label-sm shadow-sm">Sedang Dipinjam</div>';
+      const stockBadge = isAvailable 
+        ? `<div class="absolute top-sm right-sm px-sm py-xs rounded bg-surface-container-highest/80 text-on-surface-variant font-label-sm text-label-sm shadow-sm border border-outline-variant">Stok: ${b.stock}</div>`
+        : '<div class="absolute top-sm right-sm px-sm py-xs rounded bg-error-container/80 text-on-error-container font-label-sm text-label-sm shadow-sm border border-outline-variant">Stok: 0</div>';
+      
+      const priceOptions = isAvailable 
+        ? `<div class="mt-auto flex flex-col gap-xs bg-surface-container-low p-sm rounded-lg border border-outline-variant">
+            <div class="flex justify-between items-center">
+              <span class="font-body-md text-body-md text-on-surface">Harga Sewa</span>
+              <span class="font-label-md text-label-md text-primary">Rp ${b.priceHarian.toLocaleString('id-ID')} / hari</span>
+            </div>
+          </div>
+          <button onclick="checkoutSewa(${b.id})" class="w-full py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container hover:shadow-md transition-all mt-md">Sewa Sekarang</button>`
+        : `<div class="mt-auto flex flex-col gap-xs bg-surface-container p-sm rounded-lg border border-outline-variant opacity-70">
+            <div class="flex justify-between items-center"><span class="font-body-md text-body-md text-outline">Harga Sewa</span><span class="font-label-md text-label-md text-outline">Rp ${b.priceHarian.toLocaleString('id-ID')} / hari</span></div>
+          </div>
+          <button class="w-full py-sm rounded-full bg-surface-variant text-on-surface-variant font-label-md text-label-md cursor-not-allowed border border-outline-variant mt-md">Tersedia 12 Okt</button>`;
+      
+      const wrapperClass = isAvailable 
+        ? "bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-container overflow-hidden flex flex-col group hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300 h-full" 
+        : "bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-container overflow-hidden flex flex-col opacity-80 grayscale-[20%] h-full";
+      
+      return `<article class="${wrapperClass}">
+        <a href="detail.html?source=sewa&id=${b.id}" class="relative w-full aspect-[3/4] bg-surface-variant overflow-hidden group block cursor-pointer">
+          <img alt="${b.title}" class="w-full h-full object-cover ${isAvailable?'group-hover:scale-105 transition-transform duration-500':''}" src="${b.image}"/>
+          ${statusBadge}
+          ${stockBadge}
+        </a>
+        <div class="p-md flex flex-col flex-grow">
+          <div>
+            <a href="detail.html?source=sewa&id=${b.id}" class="group"><h3 class="font-title-lg text-title-lg text-on-background line-clamp-2 leading-tight group-hover:text-primary transition-colors cursor-pointer">${b.title}</h3></a>
+            <p class="font-label-md text-label-md text-on-surface-variant mt-xs mb-sm">${b.author || 'Penulis'}</p>
+          </div>
+          ${priceOptions}
+        </div>
+      </article>`;
+    }).join('');
+    
+    if(filtered.length === 0) {
+      grid.innerHTML = '<p class="col-span-full text-center py-xl text-on-surface-variant font-body-lg">Tidak ada buku yang sesuai kategori.</p>';
+    }
+  }
+
+  function checkoutSewa(bookId) {
+    window.location.href = `checkout-sewa.html?id=${bookId}`;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Tab Switching Logic
+    const tabBeli = document.getElementById('tab-beli');
+    const tabSewa = document.getElementById('tab-sewa');
+    const contentBeli = document.getElementById('content-beli');
+    const contentSewa = document.getElementById('content-sewa');
+
+    function showBeli() {
+      tabBeli.className = "font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors";
+      tabSewa.className = "font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors";
+      contentBeli.classList.remove('hidden');
+      contentSewa.classList.add('hidden');
+      renderMarketplace();
+    }
+
+    function showSewa() {
+      tabSewa.className = "font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors";
+      tabBeli.className = "font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors";
+      contentSewa.classList.remove('hidden');
+      contentBeli.classList.add('hidden');
+      renderSewa();
+    }
+
+    tabBeli.addEventListener('click', showBeli);
+    tabSewa.addEventListener('click', showSewa);
+
+    // Initial check for hash
+    if (window.location.hash === '#sewa') {
+      showSewa();
+    }
+
+    // Marketplace Listeners
+    document.getElementById('search-input')?.addEventListener('input', renderMarketplace);
+    document.getElementById('location-input')?.addEventListener('input', renderMarketplace);
+    document.getElementById('sort-select')?.addEventListener('change', renderMarketplace);
+    document.querySelectorAll('.price-filter').forEach(cb => cb.addEventListener('change', renderMarketplace));
+    
+    document.querySelectorAll('.condition-filter').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const cond = e.target.dataset.cond;
+        if (selectedConditions.includes(cond)) {
+          selectedConditions = selectedConditions.filter(c => c !== cond);
+          e.target.className = "condition-filter px-sm py-xs rounded-full border border-outline-variant font-label-sm text-label-sm text-on-surface hover:bg-surface-container-low transition-colors";
+        } else {
+          selectedConditions.push(cond);
+          e.target.className = "condition-filter px-sm py-xs rounded-full bg-primary-container text-on-primary-container border border-primary-container font-label-sm text-label-sm";
+        }
+        renderMarketplace();
+      });
+    });
+
+    // Sewa Listeners
+    document.querySelectorAll('.filter-sewa-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        selectedSewaCat = e.target.dataset.cat;
+        
+        // Update styling
+        document.querySelectorAll('.filter-sewa-btn').forEach(b => {
+          b.className = "filter-sewa-btn px-md py-sm rounded-full bg-surface-container-highest text-on-surface hover:bg-surface-variant font-label-md text-label-md border border-outline-variant transition-colors";
+        });
+        e.target.className = "filter-sewa-btn px-md py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-sm";
+        
+        renderSewa();
+      });
+    });
+    
+    renderMarketplace();
+  });
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const savedName = localStorage.getItem('rb_username');
+    if (savedName) {
+        const els = document.querySelectorAll('span.text-on-surface, p.text-on-surface, h1, h2, h3, h4, h5, h6');
+        for (let i = 0; i < els.length; i++) {
+            if (els[i].textContent.trim() === 'Siswa Indonesia') {
+                els[i].textContent = savedName;
+            }
+        }
+    }
+});
+</script>
+
+<script id="dynamic-logo-menu">
+document.addEventListener("DOMContentLoaded", function() {
+    // Inject Logo Menu
+    const headerOrNav = document.querySelector('header, nav');
+    if (headerOrNav && !document.getElementById('logo-menu-container')) {
+        const treeWalker = document.createTreeWalker(headerOrNav, NodeFilter.SHOW_TEXT, {
+            acceptNode: function(node) {
+                return node.nodeValue.trim() === 'ReadBridge' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+            }
+        });
+        const logoTextNode = treeWalker.nextNode();
+        if (logoTextNode) {
+            const logoEl = logoTextNode.parentElement;
+            
+            if (logoEl.id === 'logo-btn' || logoEl.querySelector('#logo-btn')) return;
+
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'relative';
+            wrapper.style.display = 'inline-flex';
+            wrapper.style.alignItems = 'center';
+            wrapper.style.cursor = 'pointer';
+            wrapper.id = 'logo-menu-container';
+            
+            logoEl.parentNode.insertBefore(wrapper, logoEl);
+            wrapper.appendChild(logoEl);
+            
+            logoEl.id = 'logo-btn';
+            logoEl.style.display = 'flex';
+            logoEl.style.alignItems = 'center';
+            logoEl.style.gap = '4px';
+            logoEl.innerHTML = 'ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>';
+            
+            const dropdown = document.createElement('div');
+            dropdown.id = 'logo-dropdown';
+            dropdown.className = 'absolute left-0 top-full mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50';
+            
+            const links = [
+                { href: 'index.html', icon: 'home', text: 'Beranda' },
+                { href: 'eksplor.html', icon: 'library_books', text: 'Eksplor Koleksi' },
+                { href: 'sewa.html', icon: 'menu_book', text: 'Perpustakaan & Sewa' },
+                { href: 'marketplace.html', icon: 'storefront', text: 'Marketplace' },
+                { href: 'komunitas.html', icon: 'forum', text: 'Komunitas' },
+                { href: 'tentang-kami.html', icon: 'info', text: 'Tentang Kami' }
+            ];
+            
+            links.forEach(l => {
+                const a = document.createElement('a');
+                a.href = l.href;
+                a.className = 'px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-[14px] text-on-surface flex items-center gap-3 font-medium';
+                a.innerHTML = `<span class="material-symbols-outlined text-[20px] text-on-surface-variant">${l.icon}</span> ${l.text}`;
+                dropdown.appendChild(a);
+            });
+            
+            wrapper.appendChild(dropdown);
+            
+            logoEl.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropdown.classList.toggle('hidden');
+                dropdown.classList.toggle('flex');
+            });
+            document.addEventListener('click', (e) => {
+                if (!dropdown.contains(e.target) && !logoEl.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    dropdown.classList.remove('flex');
+                }
+            });
+        }
+    }
+});
+</script>
+</body>
+
+</html>

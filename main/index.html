@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Beranda - ReadBridge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-low": "#eff4ff",
+                      "on-error-container": "#93000a",
+                      "background": "#f8f9ff",
+                      "on-secondary-fixed-variant": "#005236",
+                      "secondary-fixed-dim": "#4edea3",
+                      "on-tertiary": "#ffffff",
+                      "on-surface": "#0b1c30",
+                      "tertiary-fixed-dim": "#ffb690",
+                      "outline": "#737686",
+                      "on-secondary-container": "#00714d",
+                      "error": "#ba1a1a",
+                      "surface-container-highest": "#d3e4fe",
+                      "outline-variant": "#c3c6d7",
+                      "inverse-primary": "#b4c5ff",
+                      "surface-variant": "#d3e4fe",
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary-fixed-variant": "#783200",
+                      "primary-container": "#2563eb",
+                      "primary-fixed": "#dbe1ff",
+                      "inverse-surface": "#213145",
+                      "tertiary": "#8e3c00",
+                      "surface-dim": "#cbdbf5",
+                      "secondary-fixed": "#6ffbbe",
+                      "on-secondary-fixed": "#002113",
+                      "on-primary": "#ffffff",
+                      "tertiary-fixed": "#ffdbca",
+                      "on-primary-container": "#eeefff",
+                      "on-surface-variant": "#434655",
+                      "inverse-on-surface": "#eaf1ff",
+                      "surface-container-high": "#dce9ff",
+                      "secondary-container": "#6cf8bb",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "on-error": "#ffffff",
+                      "secondary": "#006c49",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "surface-tint": "#0053db",
+                      "primary": "#004ac6",
+                      "on-tertiary-fixed": "#341100",
+                      "on-secondary": "#ffffff",
+                      "on-primary-fixed": "#00174b",
+                      "surface-container": "#e5eeff",
+                      "surface": "#f8f9ff",
+                      "on-tertiary-container": "#ffece5",
+                      "on-background": "#0b1c30",
+                      "tertiary-container": "#b54e00",
+                      "surface-bright": "#f8f9ff",
+                      "error-container": "#ffdad6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xl": "32px",
+                      "xs": "4px",
+                      "lg": "24px",
+                      "sm": "8px",
+                      "margin": "24px",
+                      "xxl": "48px",
+                      "base": "8px",
+                      "gutter": "16px",
+                      "md": "16px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Plus Jakarta Sans"],
+                      "display-lg": ["Plus Jakarta Sans"],
+                      "body-md": ["Plus Jakarta Sans"],
+                      "title-lg": ["Plus Jakarta Sans"],
+                      "label-sm": ["Plus Jakarta Sans"],
+                      "headline-lg": ["Plus Jakarta Sans"],
+                      "label-md": ["Plus Jakarta Sans"],
+                      "body-lg": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                      "headline-md": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                      "display-lg": ["48px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                      "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                      "title-lg": ["20px", { "lineHeight": "1.5", "fontWeight": "600" }],
+                      "label-sm": ["12px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                      "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                      "label-md": ["14px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                      "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+              }
+            }
+          }
+        }
+    </script>
+    <style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+    <!-- TopAppBar -->
+    <header class="bg-surface-container-lowest shadow-sm sticky top-0 w-full z-50">
+        <div class="sticky top-0 w-full z-50 flex items-center justify-between px-margin py-base max-w-[1280px] mx-auto">
+            <div class="flex items-center gap-4 relative cursor-pointer select-none" id="logo-menu-container">
+    <span id="logo-btn" class="text-[24px] text-primary tracking-tight font-bold flex items-center gap-1">
+        ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>
+    </span>
+    <!-- Logo Dropdown Menu -->
+    <div id="logo-dropdown" class="absolute left-0 top-full mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50">
+        <a href="index.html" class="px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">home</span> Beranda</a>
+        <a href="eksplor.html" class="px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">library_books</span> Eksplor Koleksi</a>
+        <a href="perpustakaan.html" class="px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">menu_book</span>Perpustakaan</a>
+        <a href="marketplace.html" class="px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">storefront</span> Marketplace</a>
+        <a href="komunitas.html" class="px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">forum</span> Komunitas</a>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const logoBtns = document.querySelectorAll('#logo-btn');
+        const logoDropdowns = document.querySelectorAll('#logo-dropdown');
+        if (logoBtns.length > 0 && logoDropdowns.length > 0) {
+            logoBtns.forEach((btn, i) => {
+                const dropdown = logoDropdowns[i];
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('hidden');
+                    dropdown.classList.toggle('flex');
+                });
+                document.addEventListener('click', (e) => {
+                    if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                        dropdown.classList.add('hidden');
+                        dropdown.classList.remove('flex');
+                    }
+                });
+            });
+        }
+    });
+</script>
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center gap-lg">
+                <a class="text-primary font-title-lg border-b-2 border-primary pb-1" href="index.html">Beranda</a>
+                <a class="text-on-surface-variant font-label-md hover:text-primary transition-colors hover:bg-surface-container-low transition-all duration-200 px-sm py-xs rounded" href="#">Koleksi</a>
+                <a class="text-on-surface-variant font-label-md hover:text-primary transition-colors hover:bg-surface-container-low transition-all duration-200 px-sm py-xs rounded" href="komunitas.html">Komunitas</a>
+                <a class="text-on-surface-variant font-label-md hover:text-primary transition-colors hover:bg-surface-container-low transition-all duration-200 px-sm py-xs rounded" href="tentang-kami.html">Tentang Kami</a>
+            </nav>
+            <div class="flex items-center gap-md">
+                <!-- Guest View -->
+                <div id="nav-guest" class="flex items-center gap-md">
+                    <a href="login.html" class="bg-primary text-on-primary font-label-md text-label-md px-lg py-sm rounded-full hover:bg-surface-tint transition-colors">Mulai Baca</a>
+                </div>
+                
+                <!-- Logged In View -->
+                <div id="nav-user" class="hidden items-center gap-4">
+                    <div class="relative" id="profile-menu-container-nav">
+                        <button id="profile-avatar-btn-nav" class="focus:outline-none flex rounded-full">
+                            <img alt="User Profile Avatar" class="w-10 h-10 rounded-full object-cover border border-outline-variant cursor-pointer hover:ring-2 hover:ring-primary transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div id="profile-dropdown-nav" class="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50">
+                            <div class="px-4 py-3 border-b border-outline-variant/30">
+                                <p class="font-label-sm text-label-sm text-on-surface-variant">Masuk sebagai</p>
+                                <p class="font-label-md text-label-md text-on-surface font-bold truncate">Siswa Indonesia</p>
+                            </div>
+                            <a href="#" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+                                <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
+                            </a>
+                            <a href="profile.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+                                <span class="material-symbols-outlined text-[20px]">person</span> Detail Akun
+                            </a>
+                            <a href="login.html" class="flex items-center gap-2 px-4 py-3 hover:bg-error/10 transition-colors font-label-md text-label-md text-error border-t border-outline-variant/30 font-bold" onclick="localStorage.removeItem('rb_is_logged_in')">
+                                <span class="material-symbols-outlined text-[20px]">logout</span> Log Out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const isLoggedIn = localStorage.getItem('rb_is_logged_in');
+                        const navGuest = document.getElementById('nav-guest');
+                        const navUser = document.getElementById('nav-user');
+                        
+                        if (isLoggedIn) {
+                            if (navGuest) navGuest.classList.add('hidden');
+                            if (navUser) navUser.classList.remove('hidden');
+                            if (navUser) navUser.classList.add('flex');
+                        }
+
+                        const btnNav = document.getElementById('profile-avatar-btn-nav');
+                        const dropdownNav = document.getElementById('profile-dropdown-nav');
+                        if (btnNav && dropdownNav) {
+                            btnNav.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                dropdownNav.classList.toggle('hidden');
+                                dropdownNav.classList.toggle('flex');
+                            });
+                            document.addEventListener('click', (e) => {
+                                if (!dropdownNav.contains(e.target) && !btnNav.contains(e.target)) {
+                                    dropdownNav.classList.add('hidden');
+                                    dropdownNav.classList.remove('flex');
+                                }
+                            });
+                        }
+
+                        // Update Popular Books based on interests
+                        const interestsStr = localStorage.getItem('rb_interests');
+                        if (interestsStr) {
+                            const interests = JSON.parse(interestsStr);
+                            const container = document.getElementById('popular-books-container');
+                            if (container && interests.length > 0) {
+                                container.innerHTML = '';
+                                const booksData = {
+                                    'fiksi': [
+                                        { img: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=600&auto=format&fit=crop', tag: 'Sastra', title: 'Laskar Pelangi', author: 'Andrea Hirata' },
+                                        { img: 'https://images.unsplash.com/photo-1495640388908-05fd9211f733?q=80&w=600&auto=format&fit=crop', tag: 'Fiksi', title: 'Bumi Manusia', author: 'Pramoedya Ananta' }
+                                    ],
+                                    'komik': [
+                                        { img: 'https://images.unsplash.com/photo-1608889825103-eb5ed706fc64?q=80&w=600&auto=format&fit=crop', tag: 'Manga', title: 'One Piece Vol. 1', author: 'Eiichiro Oda' },
+                                        { img: 'https://images.unsplash.com/photo-1612480797665-cbce6ea5f5d1?q=80&w=600&auto=format&fit=crop', tag: 'Komik Lokal', title: 'Si Juki', author: 'Faza Meonk' }
+                                    ],
+                                    'jurnal': [
+                                        { img: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=600&auto=format&fit=crop', tag: 'Jurnal', title: 'Metodologi Penelitian', author: 'Prof. Sugiyono' }
+                                    ],
+                                    'pelajaran': [
+                                        { img: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop', tag: 'Akademik', title: 'Modul UTBK 2024', author: 'Tim Akademik' }
+                                    ],
+                                    'self_dev': [
+                                        { img: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=600&auto=format&fit=crop', tag: 'Self-Help', title: 'Atomic Habits', author: 'James Clear' }
+                                    ]
+                                };
+                                
+                                let booksToShow = [];
+                                interests.forEach(interest => {
+                                    if (booksData[interest]) {
+                                        booksToShow = booksToShow.concat(booksData[interest]);
+                                    }
+                                });
+                                
+                                // Ensure exactly 4 items by padding or truncating
+                                booksToShow = booksToShow.slice(0, 4);
+                                if (booksToShow.length < 4) {
+                                    const fallback = [
+                                        { img: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=600&auto=format&fit=crop', tag: 'Sastra', title: 'Laskar Pelangi', author: 'Andrea Hirata' },
+                                        { img: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop', tag: 'Akademik', title: 'Modul UTBK 2024', author: 'Tim Akademik' },
+                                        { img: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=600&auto=format&fit=crop', tag: 'Self-Help', title: 'Atomic Habits', author: 'James Clear' },
+                                        { img: 'https://images.unsplash.com/photo-1495640388908-05fd9211f733?q=80&w=600&auto=format&fit=crop', tag: 'Fiksi', title: 'Bumi Manusia', author: 'Pramoedya Ananta' }
+                                    ];
+                                    booksToShow = booksToShow.concat(fallback.slice(0, 4 - booksToShow.length));
+                                }
+
+                                booksToShow.forEach(b => {
+                                    const html = `
+                                    <div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-outline-variant/30 flex flex-col gap-sm group cursor-pointer hover:shadow-md transition-all">
+                                        <div class="w-full aspect-[3/4] bg-surface-container-high rounded-lg overflow-hidden relative">
+                                            <img src="${b.img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Buku">
+                                            <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-primary">${b.tag}</div>
+                                        </div>
+                                        <div class="mt-1">
+                                            <h4 class="font-label-md text-label-md font-bold text-on-surface line-clamp-1">${b.title}</h4>
+                                            <p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">${b.author}</p>
+                                        </div>
+                                    </div>`;
+                                    container.innerHTML += html;
+                                });
+                            }
+                        }
+                    });
+                </script>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Canvas -->
+    <main class="flex-grow flex flex-col items-center w-full max-w-[1280px] mx-auto px-margin py-xl gap-xxl">
+        <!-- Hero Section -->
+        <section class="w-full relative rounded-xl overflow-hidden shadow-sm flex items-center justify-center min-h-[400px] bg-surface-container" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCF1sxPgTrZKCS61KKuaDjSK8d3QVBpzvJ6orIEDCozKJQnurdp8UaccSHkmorrdlxS52snJWDZiBe0c6XtTWnttSLGwYCYfaDF6MAYpWTOgmT_EuyHF3QlYnNr7uU6Nsx_H0LcKtU9lsRIMmz4UdogZpO8iHq6V3ryByrPOR8rLOvkxJtnHfs5hS46Y2-EhNlt0JzJX_7htxJ7JAkGdGcPB3e04hPPr1X3Qb5TyI2rqzkBmVtxCj7H-pipaxu6Htks5jsBnKhwId4'); background-size: cover; background-position: center;">
+            <div class="absolute inset-0 bg-inverse-surface/60 mix-blend-multiply"></div>
+            <div class="relative z-10 text-center px-margin max-w-3xl">
+                <h1 class="font-display-lg text-display-lg text-on-primary mb-md tracking-tight">Membangun Jembatan Literasi untuk Masa Depan Indonesia</h1>
+                <p class="font-body-lg text-body-lg text-on-primary-container opacity-90">Menyediakan akses tak terbatas ke ilmu pengetahuan untuk setiap pelajar di seluruh pelosok nusantara.</p>
+            </div>
+        </section>
+
+        <!-- Fitur Utama -->
+        <section class="w-full grid grid-cols-1 md:grid-cols-3 gap-gutter">
+            <div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/30 flex flex-col items-center text-center gap-sm hover:shadow-md transition-shadow">
+                <div class="w-16 h-16 rounded-full bg-primary-container flex items-center justify-center text-primary mb-2">
+                    <span class="material-symbols-outlined text-[32px]">library_books</span>
+                </div>
+                <h3 class="font-title-lg text-title-lg text-on-surface">Koleksi Terlengkap</h3>
+                <p class="font-body-md text-body-md text-on-surface-variant">Akses ribuan buku, modul, dan jurnal akademik secara gratis untuk menunjang pembelajaran Anda.</p>
+            </div>
+            <div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/30 flex flex-col items-center text-center gap-sm hover:shadow-md transition-shadow">
+                <div class="w-16 h-16 rounded-full bg-secondary-container flex items-center justify-center text-secondary mb-2">
+                    <span class="material-symbols-outlined text-[32px]">forum</span>
+                </div>
+                <h3 class="font-title-lg text-title-lg text-on-surface">Komunitas Aktif</h3>
+                <p class="font-body-md text-body-md text-on-surface-variant">Bergabung dengan klub belajar, berdiskusi, dan berbagi wawasan dengan sesama pelajar di seluruh Indonesia.</p>
+            </div>
+            <div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/30 flex flex-col items-center text-center gap-sm hover:shadow-md transition-shadow">
+                <div class="w-16 h-16 rounded-full bg-tertiary-container flex items-center justify-center text-tertiary mb-2">
+                    <span class="material-symbols-outlined text-[32px]">workspace_premium</span>
+                </div>
+                <h3 class="font-title-lg text-title-lg text-on-surface">Belajar Terstruktur</h3>
+                <p class="font-body-md text-body-md text-on-surface-variant">Materi disusun secara rapi dan mudah diakses, memfasilitasi perjalanan akademik Anda untuk mencapai target.</p>
+            </div>
+        </section>
+
+        <!-- Koleksi Populer -->
+        <section class="w-full flex flex-col gap-md mt-sm">
+            <div class="flex justify-between items-end mb-xs">
+                <h2 class="font-headline-md text-headline-md text-on-surface">Buku Terpopuler Minggu Ini</h2>
+                <a href="#" class="font-label-md text-label-md text-primary hover:underline flex items-center gap-1">Lihat Semua <span class="material-symbols-outlined text-[16px]">arrow_forward</span></a>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-gutter" id="popular-books-container">
+                <!-- Book 1 -->
+                <div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-outline-variant/30 flex flex-col gap-sm group cursor-pointer hover:shadow-md transition-all">
+                    <div class="w-full aspect-[3/4] bg-surface-container-high rounded-lg overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Buku">
+                        <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-primary">Sastra</div>
+                    </div>
+                    <div class="mt-1">
+                        <h4 class="font-label-md text-label-md font-bold text-on-surface line-clamp-1">Laskar Pelangi</h4>
+                        <p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Andrea Hirata</p>
+                    </div>
+                </div>
+                <!-- Book 2 -->
+                <div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-outline-variant/30 flex flex-col gap-sm group cursor-pointer hover:shadow-md transition-all">
+                    <div class="w-full aspect-[3/4] bg-surface-container-high rounded-lg overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Buku">
+                        <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-primary">Akademik</div>
+                    </div>
+                    <div class="mt-1">
+                        <h4 class="font-label-md text-label-md font-bold text-on-surface line-clamp-1">Modul UTBK 2024</h4>
+                        <p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Tim Akademik</p>
+                    </div>
+                </div>
+                <!-- Book 3 -->
+                <div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-outline-variant/30 flex flex-col gap-sm group cursor-pointer hover:shadow-md transition-all">
+                    <div class="w-full aspect-[3/4] bg-surface-container-high rounded-lg overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Buku">
+                        <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-primary">Self-Help</div>
+                    </div>
+                    <div class="mt-1">
+                        <h4 class="font-label-md text-label-md font-bold text-on-surface line-clamp-1">Atomic Habits</h4>
+                        <p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">James Clear</p>
+                    </div>
+                </div>
+                <!-- Book 4 -->
+                <div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-outline-variant/30 flex flex-col gap-sm group cursor-pointer hover:shadow-md transition-all">
+                    <div class="w-full aspect-[3/4] bg-surface-container-high rounded-lg overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1495640388908-05fd9211f733?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Buku">
+                        <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-primary">Fiksi</div>
+                    </div>
+                    <div class="mt-1">
+                        <h4 class="font-label-md text-label-md font-bold text-on-surface line-clamp-1">Bumi Manusia</h4>
+                        <p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Pramoedya Ananta</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Impact Stats -->
+        <section class="w-full bg-primary-fixed rounded-xl p-xl flex flex-col gap-lg shadow-sm">
+            <div class="text-center mb-md">
+                <h2 class="font-headline-md text-headline-md text-on-primary-fixed">Dampak Kami</h2>
+                <p class="font-body-md text-body-md text-on-primary-fixed-variant mt-sm">Angka yang merepresentasikan perjalanan dedikasi kami.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-gutter text-center">
+                <div class="flex flex-col items-center gap-sm">
+                    <span class="font-display-lg text-display-lg text-primary tracking-tight">500k+</span>
+                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Buku Terdistribusi</span>
+                </div>
+                <div class="flex flex-col items-center gap-sm">
+                    <span class="font-display-lg text-display-lg text-primary tracking-tight">10k+</span>
+                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Jurnal Diakses</span>
+                </div>
+                <div class="flex flex-col items-center gap-sm">
+                    <span class="font-display-lg text-display-lg text-primary tracking-tight">50+</span>
+                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Komunitas Terhubung</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-surface-container border-t border-outline-variant w-full mt-auto">
+        <div class="w-full py-xl px-margin flex flex-col md:flex-row justify-between items-center gap-md max-w-[1280px] mx-auto">
+            <div class="flex flex-col items-center md:items-start gap-sm">
+                <span class="font-headline-md text-headline-md text-primary font-bold">ReadBridge</span>
+                <span class="font-body-md text-body-md text-on-surface-variant">© 2024 ReadBridge Indonesia. Membangun Jembatan Literasi Masa Depan.</span>
+            </div>
+            <nav class="flex flex-wrap justify-center gap-lg">
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="tentang-kami.html">Tentang Kami</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Tim</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Dampak</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Karir</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Pusat Bantuan</a>
+            </nav>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const savedName = localStorage.getItem('rb_username');
+    if (savedName) {
+        const els = document.querySelectorAll('span.text-on-surface, p.text-on-surface, h1, h2, h3, h4, h5, h6');
+        for (let i = 0; i < els.length; i++) {
+            if (els[i].textContent.trim() === 'Siswa Indonesia') {
+                els[i].textContent = savedName;
+            }
+        }
+    }
+});
+</script>
+
+<script id="dynamic-logo-menu">
+document.addEventListener("DOMContentLoaded", function() {
+    // Inject Logo Menu
+    const headerOrNav = document.querySelector('header, nav');
+    if (headerOrNav && !document.getElementById('logo-menu-container')) {
+        const treeWalker = document.createTreeWalker(headerOrNav, NodeFilter.SHOW_TEXT, {
+            acceptNode: function(node) {
+                return node.nodeValue.trim() === 'ReadBridge' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+            }
+        });
+        const logoTextNode = treeWalker.nextNode();
+        if (logoTextNode) {
+            const logoEl = logoTextNode.parentElement;
+            
+            if (logoEl.id === 'logo-btn' || logoEl.querySelector('#logo-btn')) return;
+
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'relative';
+            wrapper.style.display = 'inline-flex';
+            wrapper.style.alignItems = 'center';
+            wrapper.style.cursor = 'pointer';
+            wrapper.id = 'logo-menu-container';
+            
+            logoEl.parentNode.insertBefore(wrapper, logoEl);
+            wrapper.appendChild(logoEl);
+            
+            logoEl.id = 'logo-btn';
+            logoEl.style.display = 'flex';
+            logoEl.style.alignItems = 'center';
+            logoEl.style.gap = '4px';
+            logoEl.innerHTML = 'ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>';
+            
+            const dropdown = document.createElement('div');
+            dropdown.id = 'logo-dropdown';
+            dropdown.className = 'absolute left-0 top-full mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50';
+            
+            const links = [
+                { href: 'index.html', icon: 'home', text: 'Beranda' },
+                { href: 'eksplor.html', icon: 'library_books', text: 'Eksplor Koleksi' },
+                { href: 'sewa.html', icon: 'menu_book', text: 'Perpustakaan & Sewa' },
+                { href: 'marketplace.html', icon: 'storefront', text: 'Marketplace' },
+                { href: 'komunitas.html', icon: 'forum', text: 'Komunitas' },
+                { href: 'tentang-kami.html', icon: 'info', text: 'Tentang Kami' }
+            ];
+            
+            links.forEach(l => {
+                const a = document.createElement('a');
+                a.href = l.href;
+                a.className = 'px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-[14px] text-on-surface flex items-center gap-3 font-medium';
+                a.innerHTML = `<span class="material-symbols-outlined text-[20px] text-on-surface-variant">${l.icon}</span> ${l.text}`;
+                dropdown.appendChild(a);
+            });
+            
+            wrapper.appendChild(dropdown);
+            
+            logoEl.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropdown.classList.toggle('hidden');
+                dropdown.classList.toggle('flex');
+            });
+            document.addEventListener('click', (e) => {
+                if (!dropdown.contains(e.target) && !logoEl.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    dropdown.classList.remove('flex');
+                }
+            });
+        }
+    }
+});
+</script>
+</body>
+
+</html>

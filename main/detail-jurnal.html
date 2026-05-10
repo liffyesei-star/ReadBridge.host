@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Detail Jurnal - ReadBridge</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="style.css"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#2563EB",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#DBEAFE",
+                        "on-primary-container": "#1E3A8A",
+                        "primary-fixed": "#DBEAFE",
+                        "secondary": "#10B981",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#D1FAE5",
+                        "on-secondary-container": "#064E3B",
+                        "secondary-fixed": "#D1FAE5",
+                        "tertiary": "#F97316",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#FFEDD5",
+                        "on-tertiary-container": "#7C2D12",
+                        "tertiary-fixed-dim": "#FED7AA",
+                        "surface": "#F8FAFC",
+                        "surface-variant": "#F1F5F9",
+                        "on-surface": "#0F172A",
+                        "on-surface-variant": "#64748B",
+                        "outline": "#94A3B8",
+                        "outline-variant": "#CBD5E1",
+                        "background": "#F8FAFC",
+                        "on-background": "#0F172A",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#F8FAFC",
+                        "surface-container": "#F1F5F9",
+                        "surface-container-high": "#E2E8F0",
+                        "surface-container-highest": "#CBD5E1",
+                        "error": "#EF4444",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "margin": "24px",
+                        "xxl": "48px"
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "display-lg": ["48px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "title-lg": ["20px", { "lineHeight": "1.5", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "1.4", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen flex flex-col pt-[88px]">
+<!-- TopAppBar -->
+<header class="bg-surface shadow-sm shadow-[0px_4px_12px_rgba(0,0,0,0.04)] flex justify-between items-center px-margin py-sm max-w-[1280px] mx-auto w-full fixed top-0 z-50 left-0 right-0">
+<div class="flex items-center gap-lg">
+<a class="font-headline-md text-headline-md font-bold text-primary" href="eksplor.html">ReadBridge</a>
+<nav class="hidden md:flex items-center gap-md">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="eksplor.html">Eksplor</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="komunitas.html">Komunitas</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="marketplace.html">Marketplace</a>
+<a class="text-primary border-b-2 border-primary pb-1 font-bold hover:text-primary-container transition-colors duration-200" href="perpustakaan.html">Perpustakaan</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<a href="notifikasi.html" class="p-2 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors text-on-surface">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</a>
+<div class="relative" id="profile-menu-container">
+                <button id="profile-avatar-btn" class="focus:outline-none flex rounded-full">
+                    <img alt="User Profile Avatar" class="w-10 h-10 rounded-full object-cover border border-outline-variant cursor-pointer hover:ring-2 hover:ring-primary transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
+                </button>
+                <!-- Dropdown Menu -->
+                <div id="profile-dropdown" class="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50">
+                    <div class="px-4 py-3 border-b border-outline-variant/30">
+                        <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="tentang-kami.html">Tentang Kami</a>
+                        <p class="font-label-md text-label-md text-on-surface font-bold truncate">Siswa Indonesia</p>
+                    </div>
+                    <a href="#" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+                        <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
+                    </a>
+                    <a href="profile.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+                                <span class="material-symbols-outlined text-[20px]">person</span> Detail Akun
+                    </a>
+                    <a href="login.html" class="flex items-center gap-2 px-4 py-3 hover:bg-error/10 transition-colors font-label-md text-label-md text-error border-t border-outline-variant/30 font-bold">
+                        <span class="material-symbols-outlined text-[20px]">logout</span> Log Out
+                    </a>
+                </div>
+            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const btn = document.getElementById('profile-avatar-btn');
+                    const dropdown = document.getElementById('profile-dropdown');
+                    if (btn && dropdown) {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            dropdown.classList.toggle('hidden');
+                            dropdown.classList.toggle('flex');
+                        });
+                        document.addEventListener('click', (e) => {
+                            if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                                dropdown.classList.add('hidden');
+                                dropdown.classList.remove('flex');
+                            }
+                        });
+                    }
+                });
+            </script>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-[1280px] mx-auto px-margin py-xl">
+<!-- Breadcrumb -->
+<nav class="flex items-center gap-2 mb-lg text-label-md font-label-md text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="perpustakaan.html">Perpustakaan</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Jurnal</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-on-surface truncate max-w-[200px] sm:max-w-none">Dampak Literasi Digital...</span>
+</nav>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-xl">
+<!-- Left Column (Main Content) -->
+<div class="lg:col-span-8 flex flex-col gap-lg">
+<!-- Journal Header -->
+<div class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30 flex flex-col gap-md">
+<h1 id="detail-title" class="font-headline-lg text-headline-lg text-on-surface">Dampak Literasi Digital terhadap Keberhasilan Akademik Mahasiswa di Indonesia</h1>
+<div class="flex flex-col sm:flex-row sm:items-center gap-sm sm:gap-lg text-body-md font-body-md text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span id="detail-author">Prof. Eko Purwanto, Siti Rahmawati</span>
+</div>
+<div class="hidden sm:block w-1 h-1 rounded-full bg-outline-variant"></div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">calendar_today</span>
+<span id="detail-year">2023</span>
+</div>
+<div class="hidden sm:block w-1 h-1 rounded-full bg-outline-variant"></div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">menu_book</span>
+<span id="detail-university">Jurnal Pendidikan Nusantara</span>
+</div>
+<div class="hidden sm:block w-1 h-1 rounded-full bg-outline-variant"></div>
+<div class="flex items-center gap-2 text-secondary">
+<span class="material-symbols-outlined text-[20px] icon-fill">star</span>
+<span id="detail-rating" class="font-bold text-on-surface">4.8</span>
+<span id="detail-reviews" class="text-outline text-sm">(34 Review)</span>
+</div>
+</div>
+<div class="flex flex-wrap gap-sm mt-sm">
+<span class="px-3 py-1 bg-surface-container rounded-full text-label-sm font-label-sm text-on-surface cursor-pointer hover:bg-surface-container-high transition-colors">2023</span>
+<span class="px-3 py-1 bg-surface-container rounded-full text-label-sm font-label-sm text-on-surface cursor-pointer hover:bg-surface-container-high transition-colors">Penerbit UNJ</span>
+<span class="px-3 py-1 bg-surface-container rounded-full text-label-sm font-label-sm text-on-surface cursor-pointer hover:bg-surface-container-high transition-colors">Pendidikan</span>
+<span class="px-3 py-1 bg-[#D1FAE5] text-[#064E3B] rounded-full text-label-sm font-label-sm flex items-center gap-1 border border-[#A7F3D0]">
+<span class="material-symbols-outlined text-[14px]">lock_open</span>
+                            Open Access
+                        </span>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-wrap items-center gap-md">
+<button onclick="window.open('https://scholar.google.co.id/', '_blank')" class="bg-primary text-on-primary px-6 py-3 rounded-full font-label-md text-label-md flex items-center gap-2 hover:bg-primary/90 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+<span class="material-symbols-outlined">launch</span>
+                        Lihat Sumber Asli
+                    </button>
+<button id="btn-save" class="bg-surface-container-lowest border border-outline-variant text-on-surface px-6 py-3 rounded-full font-label-md text-label-md flex items-center gap-2 hover:bg-surface-container-low transition-colors shadow-sm">
+<span class="material-symbols-outlined">bookmark_add</span>
+                        Simpan
+                    </button>
+<button id="btn-discuss" class="bg-surface-container-lowest border border-outline-variant text-on-surface px-6 py-3 rounded-full font-label-md text-label-md flex items-center gap-2 hover:bg-surface-container-low transition-colors shadow-sm">
+<span class="material-symbols-outlined">forum</span>
+                        Diskusi
+                    </button>
+<button id="btn-share" class="bg-surface-container-lowest border border-outline-variant text-on-surface px-6 py-3 rounded-full font-label-md text-label-md flex items-center gap-2 hover:bg-surface-container-low transition-colors shadow-sm">
+<span class="material-symbols-outlined">share</span>
+                        Bagikan
+                    </button>
+</div>
+<!-- Abstract -->
+<div class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30">
+<h2 class="font-title-lg text-title-lg text-on-surface mb-md">Abstrak</h2>
+<p id="detail-abstract" class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                        Penelitian ini bertujuan untuk menginvestigasi dampak literasi digital terhadap tingkat keberhasilan akademik mahasiswa di berbagai perguruan tinggi di Indonesia. Dengan menggunakan pendekatan kuantitatif melalui survei yang disebarkan kepada 500 responden, studi ini menemukan korelasi positif yang signifikan antara kemampuan mahasiswa dalam mencari, mengevaluasi, dan memanfaatkan informasi digital dengan Indeks Prestasi Kumulatif (IPK) mereka. Hasil analisis menunjukkan bahwa mahasiswa yang memiliki literasi digital tinggi cenderung lebih mampu beradaptasi dengan sistem pembelajaran daring dan hybrid yang kini menjadi standar di pendidikan tinggi.
+                    </p>
+<button class="mt-md text-primary font-label-md text-label-md flex items-center gap-1 hover:underline">
+                        Lihat Selengkapnya
+                        <span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+<!-- Metadata Grid -->
+<div class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30">
+<h3 class="font-title-lg text-title-lg text-on-surface mb-md">Detail Publikasi</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-y-md gap-x-lg">
+<div class="flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-outline">DOI</span>
+<span class="font-body-md text-body-md text-on-surface">10.1234/jpn.v12i4.2023.456</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-outline">ISSN</span>
+<span class="font-body-md text-body-md text-on-surface">2548-XXXX (Print) / 2549-XXXX (Online)</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-outline">Volume / Issue</span>
+<span class="font-body-md text-body-md text-on-surface">Volume 12, Issue 4</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-outline">Halaman</span>
+<span class="font-body-md text-body-md text-on-surface">45-60</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-outline">Tanggal Terbit</span>
+<span class="font-body-md text-body-md text-on-surface">15 November 2023</span>
+</div>
+</div>
+</div><section id="discussion-section" class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30 flex flex-col gap-lg">
+<div class="flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">forum</span>
+            Diskusi Komunitas
+        </h2>
+<span id="reply-count-badge" class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full font-label-md text-label-md">12 Balasan</span>
+</div>
+<!-- Comment Input -->
+<div class="flex gap-md p-md bg-surface-container-low rounded-xl">
+<img alt="User profile" class="w-10 h-10 rounded-full border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
+<div class="flex-grow flex flex-col gap-sm">
+<textarea id="comment-input" class="w-full p-3 bg-surface border border-outline-variant rounded-lg font-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent resize-none" placeholder="Bagikan pemikiran Anda tentang jurnal ini..." rows="2"></textarea>
+<div class="flex justify-end">
+<button id="btn-submit-comment" class="bg-primary text-on-primary px-6 py-2 rounded-full font-label-md text-label-md hover:bg-primary/90 transition-colors">Kirim</button>
+</div>
+</div>
+</div>
+<!-- Comments List -->
+<div id="comments-list" class="flex flex-col gap-lg">
+<!-- Comment 1 -->
+<div class="flex flex-col gap-md">
+<div class="flex gap-md">
+<img alt="Rizky Pratama" class="w-10 h-10 rounded-full bg-surface-container-high" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHoXm7yD_eR7uB_C1V9vW0k5fS1X5mKqH9J9L6E9J7G5F4D3C2B1A0"/>
+<div class="flex-grow">
+<div class="flex items-center gap-2 mb-1">
+<span id="detail-reviewer" class="font-label-md text-label-md text-on-surface font-bold">Rizky Pratama</span>
+<span class="text-outline text-label-sm">• 2 jam yang lalu</span>
+</div>
+<p id="detail-question" class="font-body-md text-body-md text-on-surface-variant mb-3">
+                        Analisis mengenai korelasi IPK dan literasi digital ini sangat relevan dengan kondisi pembelajaran hybrid saat ini. Apakah ada data spesifik mengenai perbedaan antar fakultas?
+                    </p>
+<div class="flex items-center gap-md text-on-surface-variant font-label-sm">
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-full">
+<button class="material-symbols-outlined text-[18px] hover:text-primary">thumb_up</button>
+<span>18</span>
+<button class="material-symbols-outlined text-[18px] hover:text-error">thumb_down</button>
+</div>
+<button class="flex items-center gap-1 hover:text-primary">
+<span class="material-symbols-outlined text-[18px]">reply</span> Balas
+                        </button>
+<button class="flex items-center gap-1 hover:text-primary">
+<span class="material-symbols-outlined text-[18px]">share</span> Bagikan
+                        </button>
+</div>
+</div>
+</div>
+<!-- Threaded Reply -->
+<div class="ml-12 pl-4 border-l-2 border-outline-variant flex flex-col gap-md">
+<div class="flex gap-md">
+<img alt="Prof. Eko Purwanto" class="w-8 h-8 rounded-full border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcaKjRh43RjONFiYgEm0HomZ05DrVOCgZX8kssDCHf3TbEwiEyCNVvZe16DqSD3QApclULCZFOFkA_nxQe2NEFW7GyBWUXJIQbGHVwGRHTqO1zBUlOnFqPgx1BSCJ8kl0fMg6lsGUwPn2BSqHN9i2w_0ymyb7xBFdS1Y7yiyM6XW2XJm_z45vgiUMNkQPDSrqykc8a7iv9vvs7Y-WqmfcZf0s3YAEIs7-L2XKLepKJgmhU5IgEcvExJYcWsbnbFQU4gQ48CoMj20M"/>
+<div class="flex-grow">
+<div class="flex items-center gap-2 mb-1">
+<span id="detail-author-reply" class="font-label-md text-label-md text-on-surface font-bold">Prof. Eko Purwanto</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded text-[10px] font-bold">PENULIS</span>
+<span class="text-outline text-label-sm">• 1 jam yang lalu</span>
+</div>
+<p id="detail-answer" class="font-body-md text-body-md text-on-surface-variant mb-2">Halo Rizky, terima kasih pertanyaannya. Di lampiran jurnal (Halaman 58), kami mencantumkan breakdown data per rumpun ilmu sosial dan eksakta.</p>
+<div class="flex items-center gap-md text-on-surface-variant font-label-sm">
+<div class="flex items-center gap-1">
+<button class="material-symbols-outlined text-[16px] hover:text-primary">thumb_up</button>
+<span>5</span>
+</div>
+<button class="hover:text-primary">Balas</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Comment 2 -->
+<div class="flex gap-md">
+<img alt="Siti Aminah" class="w-10 h-10 rounded-full bg-surface-container-high" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_v8r9_X1z2y3w4v5u6"/>
+<div class="flex-grow">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-md text-label-md text-on-surface font-bold">Siti Aminah</span>
+<span class="text-outline text-label-sm">• 5 jam yang lalu</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-3">
+                    Sangat bermanfaat untuk referensi skripsi saya. Terima kasih sudah membagikan jurnal ini!
+                </p>
+<div class="flex items-center gap-md text-on-surface-variant font-label-sm">
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-full">
+<button class="material-symbols-outlined text-[18px] hover:text-primary">thumb_up</button>
+<span>12</span>
+<button class="material-symbols-outlined text-[18px] hover:text-error">thumb_down</button>
+</div>
+<button class="flex items-center gap-1 hover:text-primary">
+<span class="material-symbols-outlined text-[18px]">reply</span> Balas
+                    </button>
+</div>
+</div>
+</div>
+</div>
+<button class="w-full py-3 border border-outline-variant rounded-xl text-primary font-label-md text-label-md hover:bg-surface-container-low transition-colors">
+        Muat Lebih Banyak Balasan
+    </button>
+</section>
+</div>
+<!-- Right Column (Sidebar) -->
+<div class="lg:col-span-4 flex flex-col gap-lg">
+<!-- Related Topics -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-sm border border-outline-variant/30">
+<h3 class="font-title-lg text-title-lg text-on-surface mb-md">Topik Terkait</h3>
+<div class="flex flex-wrap gap-sm">
+<a class="px-4 py-2 border border-outline-variant rounded-full text-label-md font-label-md text-on-surface hover:bg-surface-container-low transition-colors" href="#">Literasi</a>
+<a class="px-4 py-2 border border-outline-variant rounded-full text-label-md font-label-md text-on-surface hover:bg-surface-container-low transition-colors" href="#">Digital</a>
+<a class="px-4 py-2 border border-outline-variant rounded-full text-label-md font-label-md text-on-surface hover:bg-surface-container-low transition-colors" href="#">Mahasiswa</a>
+<a class="px-4 py-2 border border-outline-variant rounded-full text-label-md font-label-md text-on-surface hover:bg-surface-container-low transition-colors" href="#">Pendidikan Tinggi</a>
+</div>
+</div>
+<!-- Author Profile -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-sm border border-outline-variant/30 flex items-start gap-md">
+<img alt="Prof. Eko Purwanto Profile" class="w-12 h-12 rounded-full object-cover border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcaKjRh43RjONFiYgEm0HomZ05DrVOCgZX8kssDCHf3TbEwiEyCNVvZe16DqSD3QApclULCZFOFkA_nxQe2NEFW7GyBWUXJIQbGHVwGRHTqO1zBUlOnFqPgx1BSCJ8kl0fMg6lsGUwPn2BSqHN9i2w_0ymyb7xBFdS1Y7yiyM6XW2XJm_z45vgiUMNkQPDSrqykc8a7iv9vvs7Y-WqmfcZf0s3YAEIs7-L2XKLepKJgmhU5IgEcvExJYcWsbnbFQU4gQ48CoMj20M"/>
+<div class="flex flex-col">
+<span class="font-title-lg text-title-lg text-on-surface">Prof. Eko Purwanto</span>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px] text-[#f59e0b]">school</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Scholar Level</span>
+</div>
+<a class="mt-2 text-primary font-label-sm text-label-sm hover:underline" href="#">Lihat Profil Lengkap</a>
+</div>
+</div>
+<!-- Similar Journals -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-sm border border-outline-variant/30">
+<h3 class="font-title-lg text-title-lg text-on-surface mb-md flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-primary">library_books</span>
+                        Jurnal Serupa
+                    </h3>
+<div class="flex flex-col gap-4">
+<a class="group block" href="#">
+<h4 class="font-label-md text-label-md font-semibold text-on-surface group-hover:text-primary transition-colors line-clamp-2">Studi Literasi Media dan Informasi di Era Disrupsi Digital</h4>
+<span class="font-label-sm text-label-sm text-outline mt-1 block">Jurnal Komunikasi Massa • 2022</span>
+</a>
+<div class="h-[1px] bg-outline-variant/50 w-full"></div>
+<a class="group block" href="#">
+<h4 class="font-label-md text-label-md font-semibold text-on-surface group-hover:text-primary transition-colors line-clamp-2">Teknologi Pendidikan: Implementasi E-Learning Pasca Pandemi</h4>
+<span class="font-label-sm text-label-sm text-outline mt-1 block">Jurnal Edutech • 2023</span>
+</a>
+</div>
+</div>
+<!-- Community Discussion Preview -->
+<div class="bg-surface-container-low rounded-xl p-md shadow-sm border border-primary-fixed-dim/50">
+<div class="flex justify-between items-center mb-sm">
+<h3 class="font-title-lg text-title-lg text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-primary">forum</span>
+                            Diskusi Komunitas
+                        </h3>
+<span class="bg-primary-container text-on-primary-container px-2 py-1 rounded-full font-label-sm text-label-sm">3 Balasan</span>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-3 mt-2 border border-outline-variant/30">
+<div class="flex items-center gap-2 mb-2">
+<div class="w-6 h-6 rounded-full bg-tertiary-container text-on-tertiary flex items-center justify-center font-label-sm text-[10px]">DA</div>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Dian A.</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">"Bagaimana cara akses jurnal internasional yang disitasi di paper ini secara gratis untuk mahasiswa?"</p>
+</div>
+<button class="w-full mt-3 bg-surface-container-lowest border border-outline-variant text-on-surface py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container transition-colors">
+                        Gabung Diskusi
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low border-t border-outline-variant mt-auto flex flex-col md:flex-row justify-between items-center px-margin py-xl max-w-[1280px] mx-auto w-full gap-lg">
+<div class="font-title-lg text-title-lg font-bold text-on-surface">
+            © 2024 ReadBridge. Membantu Siswa Indonesia Tumbuh.
+        </div>
+<nav class="flex flex-wrap gap-md justify-center font-label-md text-label-md">
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 active:opacity-80 transition-opacity" href="#">Tentang Kami</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 active:opacity-80 transition-opacity" href="#">Pusat Bantuan</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 active:opacity-80 transition-opacity" href="#">Syarat &amp; Ketentuan</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 active:opacity-80 transition-opacity" href="#">Kebijakan Privasi</a>
+</nav>
+</footer>
+
+<script src="main.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const journalId = parseInt(urlParams.get('id'));
+
+    if (journalId && window.readbridgeData && window.readbridgeData.journals) {
+      const journal = window.readbridgeData.journals.find(j => j.id === journalId);
+      
+      if (journal) {
+        document.getElementById('detail-title').textContent = journal.title;
+        document.getElementById('detail-author').textContent = journal.author;
+        document.getElementById('detail-year').textContent = journal.publishedYear;
+        document.getElementById('detail-university').textContent = journal.university;
+        
+        if(journal.abstract) {
+           document.getElementById('detail-abstract').textContent = journal.abstract;
+        }
+
+        if (document.getElementById('detail-rating')) document.getElementById('detail-rating').textContent = (journal.rating || 4.5).toFixed(1);
+        if (document.getElementById('detail-reviews')) document.getElementById('detail-reviews').textContent = '(' + (journal.reviews || 0) + ' Review)';
+        if (document.getElementById('detail-reviewer')) document.getElementById('detail-reviewer').textContent = journal.reviewer || 'Pembaca Anonim';
+
+        // Update diskusi jika ada
+        if (journal.discussionQuestion && document.getElementById('detail-question')) {
+          document.getElementById('detail-question').textContent = journal.discussionQuestion;
+        }
+        if (journal.discussionAnswer && document.getElementById('detail-answer')) {
+          document.getElementById('detail-answer').textContent = journal.discussionAnswer;
+        }
+        if (document.getElementById('detail-author-reply')) {
+          document.getElementById('detail-author-reply').textContent = journal.author;
+        }
+
+        // Update breadcrumb
+        const breadcrumbs = document.querySelectorAll('nav.text-on-surface-variant > span.text-on-surface');
+        if (breadcrumbs.length > 0) {
+          breadcrumbs[breadcrumbs.length - 1].textContent = journal.title;
+        }
+        // Interactivity - Fitur Simpan
+        const btnSave = document.getElementById('btn-save');
+        const iconSave = btnSave ? btnSave.querySelector('.material-symbols-outlined') : null;
+        if (btnSave && iconSave) {
+          const isSaved = localStorage.getItem('journal_saved_' + journalId) === 'true';
+          if (isSaved) {
+            iconSave.textContent = 'bookmark_added';
+            btnSave.classList.add('bg-surface-container-low');
+          }
+          btnSave.addEventListener('click', () => {
+            const currentSaved = localStorage.getItem('journal_saved_' + journalId) === 'true';
+            if (currentSaved) {
+              localStorage.setItem('journal_saved_' + journalId, 'false');
+              iconSave.textContent = 'bookmark_add';
+              btnSave.classList.remove('bg-surface-container-low');
+              alert('Dihapus dari Koleksi Anda!');
+            } else {
+              localStorage.setItem('journal_saved_' + journalId, 'true');
+              iconSave.textContent = 'bookmark_added';
+              btnSave.classList.add('bg-surface-container-low');
+              alert('Tersimpan ke Koleksi Anda!');
+            }
+          });
+        }
+
+        // Interactivity - Fitur Bagikan
+        const btnShare = document.getElementById('btn-share');
+        if (btnShare) {
+          btnShare.addEventListener('click', () => {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+              alert('Tautan berhasil disalin!');
+            }).catch(() => {
+              alert('Gagal menyalin tautan.');
+            });
+          });
+        }
+
+        // Interactivity - Fitur Diskusi
+        const btnDiscuss = document.getElementById('btn-discuss');
+        if (btnDiscuss) {
+          btnDiscuss.addEventListener('click', () => {
+            const sec = document.getElementById('discussion-section');
+            if(sec) sec.scrollIntoView({ behavior: 'smooth' });
+          });
+        }
+
+        // === SISTEM KOMENTAR INTERAKTIF ===
+        const CKEY = 'jcv2_' + journalId;
+        const UA = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4';
+        const ME = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+        const GC = () => { try { return JSON.parse(localStorage.getItem(CKEY) || '[]'); } catch(e) { return []; } };
+        const SC = (arr) => localStorage.setItem(CKEY, JSON.stringify(arr));
+
+        function updateBadge() {
+          const badge = document.getElementById('reply-count-badge');
+          if (!badge) return;
+          const cs = GC();
+          let n = 12 + cs.length;
+          cs.forEach(c => { n += (c.replies || []).length; });
+          badge.textContent = n + ' Balasan';
+        }
+
+        function repliesHTML(replies, parentId) {
+          if (!replies || !replies.length) return '';
+          const inner = replies.map(r => {
+            const ls = localStorage.getItem('lk_' + r.id) || 'none';
+            return `<div class="flex gap-sm" id="r-${r.id}">
+              <img class="w-8 h-8 rounded-full border border-outline-variant flex-shrink-0" src="${UA}"/>
+              <div class="flex-grow min-w-0">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-1 flex-wrap">
+                    <span class="font-bold text-[13px] text-on-surface">${r.own ? ME : (r.name||'Pengguna')}</span>
+                    ${r.own ? '<span class="bg-primary-container text-on-primary-container px-1.5 py-px rounded text-[9px] font-bold">SAYA</span>' : ''}
+                    <span class="text-outline text-[11px]">• ${r.date}</span>
+                  </div>
+                  ${r.own ? `<div class="relative" data-menu-wrap><button class="three-dot-btn p-1 rounded-full hover:bg-surface-container text-on-surface-variant" data-id="${r.id}" data-type="reply" data-parent="${parentId}"><span class="material-symbols-outlined text-[18px]">more_vert</span></button><div class="cmenu hidden absolute right-0 top-7 bg-white rounded-xl shadow-lg border border-outline-variant/30 z-30 w-36" data-menu-for="${r.id}"><button class="edit-btn w-full text-left flex items-center gap-2 px-4 py-2.5 hover:bg-surface-container text-[13px] text-on-surface" data-id="${r.id}" data-type="reply" data-parent="${parentId}"><span class="material-symbols-outlined text-[16px]">edit</span>Edit</button><button class="del-btn w-full text-left flex items-center gap-2 px-4 py-2.5 hover:bg-red-50 text-[13px] text-error border-t border-outline-variant/20" data-id="${r.id}" data-type="reply" data-parent="${parentId}"><span class="material-symbols-outlined text-[16px]">delete</span>Hapus</button></div></div>` : ''}
+                </div>
+                <p class="comment-text text-[14px] text-on-surface-variant my-1" data-id="${r.id}">${r.text}</p>
+                <div class="flex items-center gap-3 text-on-surface-variant text-[12px]">
+                  <div class="flex items-center gap-1 bg-surface-container-low px-2 py-0.5 rounded-full">
+                    <button class="like-btn material-symbols-outlined text-[15px] hover:text-primary ${ls==='liked'?'!text-primary':'' }" style="${ls==='liked'?"font-variation-settings:'FILL' 1":''}" data-id="${r.id}">thumb_up</button>
+                    <span class="lk-c" data-id="${r.id}">${r.likes||0}</span>
+                    <button class="dis-btn material-symbols-outlined text-[15px] hover:text-error ${ls==='disliked'?'!text-error':''}" style="${ls==='disliked'?"font-variation-settings:'FILL' 1":''}" data-id="${r.id}">thumb_down</button>
+                  </div>
+                  <button class="share-btn flex items-center gap-1 hover:text-primary" data-id="${r.id}"><span class="material-symbols-outlined text-[15px]">share</span>Bagikan</button>
+                </div>
+              </div>
+            </div>`;
+          }).join('');
+          return `<div class="ml-12 pl-4 border-l-2 border-outline-variant flex flex-col gap-md mt-sm">${inner}</div>`;
+        }
+
+        function makeCommentEl(c) {
+          const ls = localStorage.getItem('lk_' + c.id) || 'none';
+          const el = document.createElement('div');
+          el.id = 'c-' + c.id;
+          el.className = 'flex flex-col gap-sm border-t border-outline-variant/30 pt-md first:border-t-0';
+          el.innerHTML = `
+            <div class="flex gap-md">
+              <img class="w-10 h-10 rounded-full border border-outline-variant flex-shrink-0" src="${UA}"/>
+              <div class="flex-grow min-w-0">
+                <div class="flex items-center justify-between mb-1">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="font-bold text-[14px] text-on-surface">${c.own ? ME : (c.name||'Pengguna')}</span>
+                    ${c.own ? '<span class="bg-primary-container text-on-primary-container px-2 py-px rounded text-[10px] font-bold">SAYA</span>' : ''}
+                    <span class="text-outline text-label-sm">• ${c.date}</span>
+                  </div>
+                  ${c.own ? `<div class="relative flex-shrink-0" data-menu-wrap>
+                    <button class="three-dot-btn p-1 rounded-full hover:bg-surface-container text-on-surface-variant" data-id="${c.id}"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+                    <div class="cmenu hidden absolute right-0 top-8 bg-white rounded-xl shadow-lg border border-outline-variant/30 z-30 w-40" data-menu-for="${c.id}">
+                      <button class="edit-btn w-full text-left flex items-center gap-2 px-4 py-2.5 hover:bg-surface-container font-label-md text-on-surface" data-id="${c.id}" data-type="comment"><span class="material-symbols-outlined text-[18px]">edit</span>Edit</button>
+                      <button class="del-btn w-full text-left flex items-center gap-2 px-4 py-2.5 hover:bg-red-50 font-label-md text-error border-t border-outline-variant/20" data-id="${c.id}" data-type="comment"><span class="material-symbols-outlined text-[18px]">delete</span>Hapus</button>
+                    </div>
+                  </div>` : ''}
+                </div>
+                <p class="comment-text font-body-md text-body-md text-on-surface-variant mb-2" data-id="${c.id}">${c.text}</p>
+                <div class="flex items-center gap-md text-on-surface-variant font-label-sm flex-wrap">
+                  <div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-full">
+                    <button class="like-btn material-symbols-outlined text-[18px] hover:text-primary transition-colors ${ls==='liked'?'!text-primary':''}" style="${ls==='liked'?"font-variation-settings:'FILL' 1":''}" data-id="${c.id}">thumb_up</button>
+                    <span class="lk-c" data-id="${c.id}">${c.likes||0}</span>
+                    <button class="dis-btn material-symbols-outlined text-[18px] hover:text-error transition-colors ${ls==='disliked'?'!text-error':''}" style="${ls==='disliked'?"font-variation-settings:'FILL' 1":''}" data-id="${c.id}">thumb_down</button>
+                    <span class="dis-c" data-id="${c.id}">${c.dislikes||0}</span>
+                  </div>
+                  <button class="reply-btn flex items-center gap-1 hover:text-primary" data-id="${c.id}"><span class="material-symbols-outlined text-[18px]">reply</span>Balas</button>
+                  <button class="share-btn flex items-center gap-1 hover:text-primary" data-id="${c.id}"><span class="material-symbols-outlined text-[18px]">share</span>Bagikan</button>
+                </div>
+                <div class="reply-form hidden mt-3" data-parent="${c.id}">
+                  <div class="flex gap-sm items-start">
+                    <img class="w-8 h-8 rounded-full border border-outline-variant flex-shrink-0" src="${UA}"/>
+                    <div class="flex-grow flex flex-col gap-sm">
+                      <textarea class="reply-input w-full p-2 text-sm bg-surface border border-outline-variant rounded-lg text-on-surface focus:ring-2 focus:ring-primary resize-none" placeholder="Tulis balasan..." rows="2"></textarea>
+                      <div class="flex justify-end gap-2">
+                        <button class="cancel-reply px-3 py-1 text-sm rounded-full border border-outline-variant text-on-surface-variant hover:bg-surface-container" data-parent="${c.id}">Batal</button>
+                        <button class="submit-reply bg-primary text-on-primary text-sm px-4 py-1 rounded-full hover:bg-primary/90" data-parent="${c.id}">Kirim Balasan</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            ${repliesHTML(c.replies, c.id)}
+          `;
+          attachListeners(el, c.id);
+          return el;
+        }
+
+        function attachListeners(el, cid) {
+          // Three-dot
+          const tdBtn = el.querySelector('.three-dot-btn');
+          const menu = el.querySelector('.cmenu');
+          if (tdBtn && menu) {
+            tdBtn.addEventListener('click', e => {
+              e.stopPropagation();
+              document.querySelectorAll('.cmenu').forEach(m => { if (m !== menu) m.classList.add('hidden'); });
+              menu.classList.toggle('hidden');
+            });
+          }
+
+          // Edit comment
+          el.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const id = parseInt(btn.dataset.id);
+              const type = btn.dataset.type;
+              const parentId = btn.dataset.parent ? parseInt(btn.dataset.parent) : null;
+              if (menu) menu.classList.add('hidden');
+              const textEl = el.querySelector(`.comment-text[data-id="${id}"]`);
+              if (!textEl) return;
+              const orig = textEl.textContent;
+              const ta = document.createElement('textarea');
+              ta.value = orig;
+              ta.className = 'w-full p-2 text-sm bg-surface border border-outline-variant rounded-lg text-on-surface focus:ring-2 focus:ring-primary resize-none mb-1';
+              ta.rows = 3;
+              const row = document.createElement('div');
+              row.className = 'flex justify-end gap-2 mb-2';
+              row.innerHTML = '<button class="px-3 py-1 text-sm rounded-full border border-outline-variant text-on-surface-variant hover:bg-surface-container">Batal</button><button class="bg-primary text-on-primary text-sm px-4 py-1 rounded-full hover:bg-primary/90">Simpan</button>';
+              textEl.replaceWith(ta); ta.after(row); ta.focus();
+              row.querySelector('button:last-child').onclick = () => {
+                const nv = ta.value.trim(); if (!nv) return;
+                const cs = GC();
+                if (type === 'comment') { const i = cs.findIndex(c => c.id === id); if (i>-1) cs[i].text = nv; }
+                else { cs.forEach(c => { if (c.id === parentId) { const ri = (c.replies||[]).findIndex(r=>r.id===id); if(ri>-1) c.replies[ri].text=nv; } }); }
+                SC(cs);
+                const np = document.createElement('p'); np.className = 'comment-text font-body-md text-body-md text-on-surface-variant mb-2'; np.dataset.id = id; np.textContent = nv;
+                row.remove(); ta.replaceWith(np);
+              };
+              row.querySelector('button:first-child').onclick = () => {
+                const np = document.createElement('p'); np.className = 'comment-text font-body-md text-body-md text-on-surface-variant mb-2'; np.dataset.id = id; np.textContent = orig;
+                row.remove(); ta.replaceWith(np);
+              };
+            });
+          });
+
+          // Delete
+          el.querySelectorAll('.del-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const id = parseInt(btn.dataset.id);
+              const type = btn.dataset.type;
+              const parentId = btn.dataset.parent ? parseInt(btn.dataset.parent) : null;
+              if (!confirm('Hapus komentar ini?')) return;
+              let cs = GC();
+              if (type === 'comment') { cs = cs.filter(c => c.id !== id); el.remove(); }
+              else {
+                cs.forEach(c => { if (c.id === parentId) c.replies = (c.replies||[]).filter(r=>r.id!==id); });
+                const rEl = document.getElementById('r-' + id); if(rEl) rEl.remove();
+              }
+              SC(cs); updateBadge();
+            });
+          });
+
+          // Like
+          el.querySelectorAll('.like-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const id = parseInt(btn.dataset.id);
+              const ls = localStorage.getItem('lk_'+id)||'none';
+              const cs = GC();
+              let obj = null;
+              cs.forEach(c => { if(c.id===id) obj=c; else (c.replies||[]).forEach(r => { if(r.id===id) obj=r; }); });
+              if(!obj) return;
+              const disBtn = el.querySelector(`.dis-btn[data-id="${id}"]`);
+              if (ls==='liked') { obj.likes=Math.max(0,(obj.likes||0)-1); localStorage.removeItem('lk_'+id); btn.style=''; btn.classList.remove('!text-primary'); }
+              else {
+                if(ls==='disliked'&&disBtn) { obj.dislikes=Math.max(0,(obj.dislikes||0)-1); disBtn.style=''; disBtn.classList.remove('!text-error'); }
+                obj.likes=(obj.likes||0)+1; localStorage.setItem('lk_'+id,'liked');
+                btn.style="font-variation-settings:'FILL' 1"; btn.classList.add('!text-primary');
+              }
+              SC(cs);
+              el.querySelectorAll(`.lk-c[data-id="${id}"]`).forEach(s=>s.textContent=obj.likes||0);
+              el.querySelectorAll(`.dis-c[data-id="${id}"]`).forEach(s=>s.textContent=obj.dislikes||0);
+            });
+          });
+
+          // Dislike
+          el.querySelectorAll('.dis-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const id = parseInt(btn.dataset.id);
+              const ls = localStorage.getItem('lk_'+id)||'none';
+              const cs = GC();
+              let obj = null;
+              cs.forEach(c => { if(c.id===id) obj=c; else (c.replies||[]).forEach(r => { if(r.id===id) obj=r; }); });
+              if(!obj) return;
+              const lkBtn = el.querySelector(`.like-btn[data-id="${id}"]`);
+              if (ls==='disliked') { obj.dislikes=Math.max(0,(obj.dislikes||0)-1); localStorage.removeItem('lk_'+id); btn.style=''; btn.classList.remove('!text-error'); }
+              else {
+                if(ls==='liked'&&lkBtn) { obj.likes=Math.max(0,(obj.likes||0)-1); lkBtn.style=''; lkBtn.classList.remove('!text-primary'); }
+                obj.dislikes=(obj.dislikes||0)+1; localStorage.setItem('lk_'+id,'disliked');
+                btn.style="font-variation-settings:'FILL' 1"; btn.classList.add('!text-error');
+              }
+              SC(cs);
+              el.querySelectorAll(`.lk-c[data-id="${id}"]`).forEach(s=>s.textContent=obj.likes||0);
+              el.querySelectorAll(`.dis-c[data-id="${id}"]`).forEach(s=>s.textContent=obj.dislikes||0);
+            });
+          });
+
+          // Reply toggle
+          const replyBtn = el.querySelector('.reply-btn');
+          const replyForm = el.querySelector('.reply-form');
+          if (replyBtn && replyForm) {
+            replyBtn.addEventListener('click', () => {
+              replyForm.classList.toggle('hidden');
+              if (!replyForm.classList.contains('hidden')) replyForm.querySelector('.reply-input').focus();
+            });
+            const cancelR = replyForm.querySelector('.cancel-reply');
+            const submitR = replyForm.querySelector('.submit-reply');
+            const replyInput = replyForm.querySelector('.reply-input');
+            if (cancelR) cancelR.addEventListener('click', () => replyForm.classList.add('hidden'));
+            if (submitR && replyInput) {
+              submitR.addEventListener('click', () => {
+                const txt = replyInput.value.trim(); if (!txt) return;
+                const parentId = parseInt(replyForm.dataset.parent);
+                const cs = GC();
+                const pi = cs.findIndex(c => c.id === parentId); if (pi===-1) return;
+                const reply = { id: Date.now(), text: txt, date: 'Baru saja', own: true, parentId, likes: 0, dislikes: 0 };
+                if (!cs[pi].replies) cs[pi].replies = [];
+                cs[pi].replies.push(reply); SC(cs);
+                replyInput.value = ''; replyForm.classList.add('hidden');
+                let replyContainer = el.querySelector('.ml-12');
+                if (!replyContainer) {
+                  replyContainer = document.createElement('div');
+                  replyContainer.className = 'ml-12 pl-4 border-l-2 border-outline-variant flex flex-col gap-md mt-sm';
+                  el.appendChild(replyContainer);
+                }
+                replyContainer.insertAdjacentHTML('beforeend', repliesHTML([reply], parentId));
+                const newREl = replyContainer.lastElementChild;
+                // Attach share on new reply
+                if (newREl) {
+                  newREl.querySelectorAll('.share-btn').forEach(sb => sb.addEventListener('click', () => { navigator.clipboard.writeText(window.location.href); alert('Tautan disalin!'); }));
+                  attachListeners(el, cid); // reattach to get new like/del buttons
+                }
+                updateBadge();
+              });
+            }
+          }
+
+          // Share
+          el.querySelectorAll('.share-btn').forEach(btn => {
+            btn.addEventListener('click', () => { navigator.clipboard.writeText(window.location.href).then(() => alert('Tautan diskusi disalin!')).catch(()=>{}); });
+          });
+        }
+
+        // Close menus on outside click
+        document.addEventListener('click', () => document.querySelectorAll('.cmenu').forEach(m => m.classList.add('hidden')));
+
+        function renderAll() {
+          if (!commentsList) return;
+          const cs = GC();
+          // Find pinned comment position (first element of existing static comments = pinned)
+          const firstStatic = commentsList.querySelector('.flex.flex-col.gap-md');
+          cs.forEach(c => {
+            const el = makeCommentEl(c);
+            // Insert after pinned (firstStatic) but before others, or at top if no pinned
+            if (firstStatic && firstStatic.nextSibling) {
+              commentsList.insertBefore(el, firstStatic.nextSibling);
+            } else {
+              commentsList.prepend(el);
+            }
+          });
+          updateBadge();
+        }
+
+        const btnSubmitComment = document.getElementById('btn-submit-comment');
+        const commentInput = document.getElementById('comment-input');
+        const commentsList = document.getElementById('comments-list');
+
+        if (btnSubmitComment && commentInput && commentsList) {
+          renderAll();
+          btnSubmitComment.addEventListener('click', () => {
+            const txt = commentInput.value.trim(); if (!txt) return;
+            const c = { id: Date.now(), text: txt, date: 'Baru saja', own: true, likes: 0, dislikes: 0, replies: [] };
+            const cs = GC(); cs.unshift(c); SC(cs);
+            commentInput.value = '';
+            const el = makeCommentEl(c);
+            // Insert at top (after pinned static comment if exists)
+            const firstStatic = commentsList.querySelector('.flex.flex-col.gap-md');
+            if (firstStatic && firstStatic.nextSibling) {
+              commentsList.insertBefore(el, firstStatic.nextSibling);
+            } else {
+              commentsList.prepend(el);
+            }
+            updateBadge();
+          });
+        }
+      }
+    }
+  });
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const savedName = localStorage.getItem('rb_username');
+    if (savedName) {
+        const els = document.querySelectorAll('span.text-on-surface, p.text-on-surface, h1, h2, h3, h4, h5, h6');
+        for (let i = 0; i < els.length; i++) {
+            if (els[i].textContent.trim() === 'Siswa Indonesia') {
+                els[i].textContent = savedName;
+            }
+        }
+    }
+});
+</script>
+
+<script id="dynamic-logo-menu">
+document.addEventListener("DOMContentLoaded", function() {
+    // Inject Logo Menu
+    const headerOrNav = document.querySelector('header, nav');
+    if (headerOrNav && !document.getElementById('logo-menu-container')) {
+        const treeWalker = document.createTreeWalker(headerOrNav, NodeFilter.SHOW_TEXT, {
+            acceptNode: function(node) {
+                return node.nodeValue.trim() === 'ReadBridge' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+            }
+        });
+        const logoTextNode = treeWalker.nextNode();
+        if (logoTextNode) {
+            const logoEl = logoTextNode.parentElement;
+            
+            if (logoEl.id === 'logo-btn' || logoEl.querySelector('#logo-btn')) return;
+
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'relative';
+            wrapper.style.display = 'inline-flex';
+            wrapper.style.alignItems = 'center';
+            wrapper.style.cursor = 'pointer';
+            wrapper.id = 'logo-menu-container';
+            
+            logoEl.parentNode.insertBefore(wrapper, logoEl);
+            wrapper.appendChild(logoEl);
+            
+            logoEl.id = 'logo-btn';
+            logoEl.style.display = 'flex';
+            logoEl.style.alignItems = 'center';
+            logoEl.style.gap = '4px';
+            logoEl.innerHTML = 'ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>';
+            
+            const dropdown = document.createElement('div');
+            dropdown.id = 'logo-dropdown';
+            dropdown.className = 'absolute left-0 top-full mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50';
+            
+            const links = [
+                { href: 'index.html', icon: 'home', text: 'Beranda' },
+                { href: 'eksplor.html', icon: 'library_books', text: 'Eksplor Koleksi' },
+                { href: 'sewa.html', icon: 'menu_book', text: 'Perpustakaan & Sewa' },
+                { href: 'marketplace.html', icon: 'storefront', text: 'Marketplace' },
+                { href: 'komunitas.html', icon: 'forum', text: 'Komunitas' },
+                { href: 'tentang-kami.html', icon: 'info', text: 'Tentang Kami' }
+            ];
+            
+            links.forEach(l => {
+                const a = document.createElement('a');
+                a.href = l.href;
+                a.className = 'px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-[14px] text-on-surface flex items-center gap-3 font-medium';
+                a.innerHTML = `<span class="material-symbols-outlined text-[20px] text-on-surface-variant">${l.icon}</span> ${l.text}`;
+                dropdown.appendChild(a);
+            });
+            
+            wrapper.appendChild(dropdown);
+            
+            logoEl.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropdown.classList.toggle('hidden');
+                dropdown.classList.toggle('flex');
+            });
+            document.addEventListener('click', (e) => {
+                if (!dropdown.contains(e.target) && !logoEl.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    dropdown.classList.remove('flex');
+                }
+            });
+        }
+    }
+});
+</script>
+</body>
+</html>

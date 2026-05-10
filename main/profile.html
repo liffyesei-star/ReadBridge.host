@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ReadBridge - Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed-dim": "#4edea3",
+                      "primary-fixed": "#dbe1ff",
+                      "on-background": "#0b1c30",
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary-fixed-variant": "#783200",
+                      "secondary-fixed": "#6ffbbe",
+                      "on-secondary-fixed-variant": "#005236",
+                      "surface-container": "#e5eeff",
+                      "tertiary": "#8e3c00",
+                      "on-tertiary-container": "#ffece5",
+                      "on-error-container": "#93000a",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "surface-dim": "#cbdbf5",
+                      "error": "#ba1a1a",
+                      "on-error": "#ffffff",
+                      "secondary": "#006c49",
+                      "secondary-container": "#6cf8bb",
+                      "primary": "#004ac6",
+                      "surface": "#f8f9ff",
+                      "on-surface-variant": "#434655",
+                      "on-surface": "#0b1c30",
+                      "tertiary-fixed": "#ffdbca",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "surface-variant": "#d3e4fe",
+                      "inverse-surface": "#213145",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-container": "#eeefff",
+                      "tertiary-container": "#b54e00",
+                      "outline": "#737686",
+                      "error-container": "#ffdad6",
+                      "surface-tint": "#0053db",
+                      "background": "#f8f9ff",
+                      "surface-bright": "#f8f9ff",
+                      "on-primary": "#ffffff",
+                      "surface-container-high": "#dce9ff",
+                      "surface-container-low": "#eff4ff",
+                      "on-secondary-fixed": "#002113",
+                      "on-secondary-container": "#00714d",
+                      "on-secondary": "#ffffff",
+                      "inverse-on-surface": "#eaf1ff",
+                      "inverse-primary": "#b4c5ff",
+                      "primary-container": "#2563eb",
+                      "on-primary-fixed": "#00174b",
+                      "on-tertiary-fixed": "#341100",
+                      "outline-variant": "#c3c6d7",
+                      "surface-container-highest": "#d3e4fe",
+                      "tertiary-fixed-dim": "#ffb690"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "md": "16px",
+                      "lg": "24px",
+                      "margin": "24px",
+                      "gutter": "16px",
+                      "sm": "8px",
+                      "base": "8px",
+                      "xl": "32px",
+                      "xxl": "48px",
+                      "xs": "4px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "title-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "headline-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "display-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-sm": [
+                              "Plus Jakarta Sans"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "title-lg": [
+                              "20px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body { background-color: #f8f9ff; color: #0b1c30; }
+    </style>
+</head>
+<body class="font-body-md text-body-md antialiased min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="bg-surface dark:bg-on-background shadow-sm docked full-width top-0 z-50">
+<div class="flex justify-between items-center w-full px-margin py-sm max-w-[1280px] mx-auto">
+<!-- Brand -->
+<div class="flex items-center gap-sm">
+<a href="index.html" class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">ReadBridge</a>
+</div>
+<!-- Search (Right aligned as per JSON) -->
+<div class="hidden md:flex flex-1 justify-end max-w-md mx-md">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-high border-none rounded-lg focus:ring-2 focus:ring-primary outline-none font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant" placeholder="Search..." type="text"/>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="hidden md:flex items-center gap-lg font-body-md text-body-md font-label-md text-label-md">
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:text-primary-container dark:hover:text-primary-fixed transition-colors duration-200" href="eksplor.html">Eksplor</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:text-primary-container dark:hover:text-primary-fixed transition-colors duration-200" href="komunitas.html">Komunitas</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:text-primary-container dark:hover:text-primary-fixed transition-colors duration-200" href="marketplace.html">Marketplace</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:text-primary-container dark:hover:text-primary-fixed transition-colors duration-200" href="perpustakaan.html">Perpustakaan</a>
+</div>
+<!-- Trailing Actions & Profile -->
+<div class="flex items-center gap-md ml-auto md:ml-lg">
+<a href="notifikasi.html" class="text-on-surface-variant hover:text-primary transition-colors duration-200 flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-high">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</a>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary cursor-pointer relative" id="profile-menu-container">
+<button id="profile-avatar-btn" class="focus:outline-none flex rounded-full w-full h-full">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="A close up portrait of a young Indonesian male student with short dark hair, smiling warmly. The lighting is bright and even, typical of a modern profile picture. He is wearing a simple casual shirt. The background is a soft, out of focus light blue, matching the ReadBridge brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDC5YLmwNf1dasO2-UL4o46ixf8OgOY49-YK8C_eLptYhj3KpeJjv8RfjTfqWyJa2Sjqjddg36-btpPYsV6KJ0wQbDC8EbrIVyOn9lwED7DvsixS0W1nhEd_hI-RaMo-wLdnMoj-MwO9uQ9neKM-hlix4EOukMxOI7QyrvcK1SvpRCrviXqhmkCZYmuEsk6DGdWS-LPXaOAplMeDfdtPa0-Xw5Un-Zc0Rj-k3lJfEZhVFbiLTIE6yr-9slvHJuBfsOLKL9q1OSpZgU"/>
+</button>
+
+<div id="profile-dropdown" class="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50">
+  <div class="px-4 py-3 border-b border-outline-variant/30">
+    <p class="font-label-sm text-label-sm text-on-surface-variant">Masuk sebagai</p>
+    <p class="font-label-md text-label-md text-on-surface font-bold truncate rb-username-fill">Budi Santoso</p>
+  </div>
+  <a href="#" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+    <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
+  </a>
+  <a href="profile.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+                                <span class="material-symbols-outlined text-[20px]">person</span> Detail Akun
+  </a>
+  <a href="login.html" class="flex items-center gap-2 px-4 py-3 hover:bg-error/10 transition-colors font-label-md text-label-md text-error border-t border-outline-variant/30 font-bold">
+    <span class="material-symbols-outlined text-[20px]">logout</span> Log Out
+  </a>
+</div>
+
+</div>
+</div>
+</div>
+</nav>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('profile-avatar-btn');
+  const dropdown = document.getElementById('profile-dropdown');
+  if (btn && dropdown) {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle('hidden');
+      dropdown.classList.toggle('flex');
+    });
+    document.addEventListener('click', (e) => {
+      if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+        dropdown.classList.add('hidden');
+        dropdown.classList.remove('flex');
+      }
+    });
+  }
+});
+</script>
+
+<div class="flex flex-1 max-w-[1280px] mx-auto w-full">
+<!-- SideNavBar -->
+<aside class="hidden md:flex h-full w-64 fixed left-0 top-0 pt-20 bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant dark:border-outline flat no shadows flex-col gap-md p-md">
+<!-- Header/Profile Info -->
+<div class="flex flex-col items-center mb-xl mt-lg">
+<div class="w-20 h-20 rounded-full overflow-hidden mb-sm border-2 border-primary-container">
+<img alt="Student avatar" class="w-full h-full object-cover" data-alt="A close up portrait of a young Indonesian male student with short dark hair, smiling warmly. The lighting is bright and even, typical of a modern profile picture. He is wearing a simple casual shirt. The background is a soft, out of focus light blue, matching the ReadBridge brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_2FnLH_TESw42jyqZB0mUWKJaVt6zf5hiTg5ZWZhOcpmx5vutVVryymEBO-k14XWW75SSIOhQKCVA4j5RUGLH3XP0n_xcGzsahVC7Cpesz9HGc8Xxzk213uZoK5Vip0_BdZD5t81icbb40l4tmnHiU7i-MDFgtNDOvohGFcpgCKhipvWWBewINKUp6NaF0_QpU6TTs_Ffl2kVjyC_K00Um4voOP8Kh58dhxm3vagolsgIEalbLwisE0jHwLktSLwIiuWEZMEUsf8"/>
+</div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary text-center rb-username-fill">Budi Santoso</h2>
+<span class="font-label-md text-label-md text-on-surface-variant mt-1 px-3 py-1 bg-surface-variant rounded-full text-primary-fixed-dim">Scholar Level</span>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex flex-col gap-sm flex-1">
+<a class="flex items-center gap-md px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all Active: translate-x-1 transition-transform" href="#leaderboard" onclick="document.getElementById('tab-leaderboard').click()">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="leaderboard">leaderboard</span>
+                    XP Progress & Leaderboard
+                </a>
+<a class="flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined text-secondary dark:text-secondary-fixed-dim" data-icon="local_fire_department" data-weight="fill" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+                    Reading Streak
+                </a>
+<a class="flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined text-tertiary-container" data-icon="military_tech">military_tech</span>
+                    Current Level
+                </a>
+<a class="flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined text-primary" data-icon="workspace_premium">workspace_premium</span>
+                    Achievements
+                </a>
+</nav>
+<!-- CTA -->
+<div class="mt-auto">
+<button class="w-full py-3 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-surface-tint transition-colors shadow-sm">View BridgePass</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 pt-20 p-margin pb-xxl flex flex-col gap-lg">
+  <!-- Tabs -->
+  <div class="flex items-center gap-md border-b border-outline-variant w-full">
+    <button id="tab-detail" class="font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors">Detail Akun</button>
+    <button id="tab-leaderboard" class="font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors">Leaderboard & Quests</button>
+  </div>
+
+  <div id="content-detail" class="grid grid-cols-1 lg:grid-cols-3 gap-lg w-full">
+<!-- Left Column: Gamification Profile Bento Grid -->
+<div class="lg:col-span-1 flex flex-col gap-lg">
+<!-- Level Card -->
+<div class="bg-surface-container-lowest rounded-xl p-lg shadow-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-6xl text-primary">school</span>
+</div>
+<h3 class="font-title-lg text-title-lg text-on-surface mb-xs relative z-10">Level Scholar</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md relative z-10">Keep reading to reach 'Master'</p>
+<div class="w-full bg-surface-variant rounded-full h-3 mb-2">
+<div class="bg-primary h-3 rounded-full" style="width: 75%"></div>
+</div>
+<div class="flex justify-between font-label-sm text-label-sm text-outline">
+<span>1500 XP</span>
+<span>2000 XP</span>
+</div>
+</div>
+<!-- Streak Card -->
+<div class="bg-gradient-to-br from-tertiary-fixed to-surface-container-lowest rounded-xl p-lg shadow-sm flex items-center justify-between border border-tertiary-fixed-dim">
+<div>
+<h3 class="font-title-lg text-title-lg text-on-tertiary-fixed-variant mb-xs">Reading Streak</h3>
+<p class="font-body-md text-body-md text-tertiary-container">Don't break the chain!</p>
+</div>
+<div class="flex flex-col items-center justify-center bg-surface-container-lowest rounded-full w-20 h-20 shadow-sm border border-tertiary-fixed">
+<span class="material-symbols-outlined text-tertiary text-3xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-title-lg text-title-lg font-bold text-tertiary-container leading-none mt-1">12</span>
+</div>
+</div>
+<!-- Badges Grid -->
+<div class="bg-surface-container-lowest rounded-xl p-lg shadow-sm">
+<h3 class="font-title-lg text-title-lg text-on-surface mb-md">Achievements</h3>
+<div class="grid grid-cols-3 gap-sm">
+<div class="flex flex-col items-center text-center">
+<div class="w-14 h-14 bg-secondary-container rounded-full flex items-center justify-center mb-2 shadow-sm border border-secondary-fixed-dim">
+<span class="material-symbols-outlined text-on-secondary-container">brightness_5</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Early Bird</span>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-14 h-14 bg-primary-fixed rounded-full flex items-center justify-center mb-2 shadow-sm border border-primary-fixed-dim">
+<span class="material-symbols-outlined text-on-primary-fixed">menu_book</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Bookworm</span>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-14 h-14 bg-surface-variant rounded-full flex items-center justify-center mb-2 border border-outline-variant opacity-50">
+<span class="material-symbols-outlined text-outline">lock</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Locked</span>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-14 h-14 bg-surface-variant rounded-full flex items-center justify-center mb-2 border border-outline-variant opacity-50">
+<span class="material-symbols-outlined text-outline">lock</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Locked</span>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-14 h-14 bg-surface-variant rounded-full flex items-center justify-center mb-2 border border-outline-variant opacity-50">
+<span class="material-symbols-outlined text-outline">lock</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Locked</span>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-14 h-14 bg-surface-variant rounded-full flex items-center justify-center mb-2 border border-outline-variant opacity-50">
+<span class="material-symbols-outlined text-outline">lock</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Locked</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Sections -->
+<div class="lg:col-span-2 flex flex-col gap-lg">
+<!-- Aktivitas User Section -->
+<section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+<div class="px-lg py-md border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+<h2 class="font-headline-md text-headline-md text-on-surface">Aktivitas User</h2>
+<button class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-xs">
+                                Semua Aktivitas
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="p-0">
+<!-- Activity Item 1 -->
+<div class="flex gap-md p-lg border-b border-outline-variant hover:bg-surface-bright transition-colors">
+<div class="w-12 h-12 bg-surface-variant rounded-lg flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">chat</span>
+</div>
+<div>
+<div class="flex items-center gap-xs mb-1">
+<span class="font-label-md text-label-md font-bold text-on-surface rb-username-fill">Budi Santoso</span>
+<span class="font-body-md text-body-md text-on-surface-variant">berkomentar di diskusi</span>
+<span class="font-label-md text-label-md font-bold text-primary">"Sastra Modern Indonesia"</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-2">Menurut saya, perkembangan karakter di bab 3 sangat mengejutkan, tapi masuk akal jika kita melihat latar belakangnya.</p>
+<span class="font-label-sm text-label-sm text-outline">2 jam yang lalu</span>
+</div>
+</div>
+<!-- Activity Item 2 -->
+<div class="flex gap-md p-lg border-b border-outline-variant hover:bg-surface-bright transition-colors">
+<div class="w-12 h-12 bg-secondary-container rounded-lg flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">star</span>
+</div>
+<div>
+<div class="flex items-center gap-xs mb-1">
+<span class="font-label-md text-label-md font-bold text-on-surface rb-username-fill">Budi Santoso</span>
+<span class="font-body-md text-body-md text-on-surface-variant">mereview buku</span>
+<span class="font-label-md text-label-md font-bold text-secondary">"Bumi Manusia"</span>
+</div>
+<div class="flex gap-1 text-secondary mb-2">
+<span class="material-symbols-outlined text-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star_half</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-2">Karya klasik yang wajib dibaca oleh setiap pelajar. Membuka wawasan tentang sejarah.</p>
+<span class="font-label-sm text-label-sm text-outline">Kemarin</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Riwayat Transaksi Section -->
+<section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+<div class="px-lg py-md border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+<h2 class="font-headline-md text-headline-md text-on-surface">Riwayat Transaksi</h2>
+<a href="transaksi.html" class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-xs">
+                                Lihat Semua
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<div class="p-lg grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Transaction Card 1 -->
+<div class="border border-outline-variant rounded-lg p-md flex gap-md hover:border-primary transition-colors bg-surface-bright">
+<div class="w-16 h-24 bg-surface-variant rounded flex-shrink-0 overflow-hidden">
+<img alt="Book cover" class="w-full h-full object-cover" data-alt="A generic book cover showing a minimalist illustration of an open door leading to a bright landscape. The colors are muted pastels, mostly blue and beige. It represents an educational or literary book on a modern reading platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUbmpgftk1jeHE6zOnE8qckNOVjeK8HZW_sBebWLYbGFGQ0Bn_fkMTCp2Z2I3vSs1LCbkjkYH5AZ3c4-SoF9Mv25t113IPa1G_WF2sgTYY-uomp4KfSFeV9Vxk6VNzJ9uzY-6umKGw4dTWDbJXwDhXN6R0y6e0Y3fKL_CJjHdurzA_7Bx74PeZUpg0K_7o9LJxxFAcQz_81y2U55J6BNrAMpHYWwXHaRXCasEih6N-fSoc9z4kCOuQKa9uVDTEzZ2SVEqwrmOE_rw"/>
+</div>
+<div class="flex flex-col justify-between flex-1">
+<div>
+<div class="flex justify-between items-start mb-1">
+<span class="font-label-sm text-label-sm px-2 py-1 bg-surface-container rounded text-primary-fixed-dim">Sewa</span>
+<span class="font-label-sm text-label-sm text-outline">24 Okt 2023</span>
+</div>
+<h4 class="font-title-lg text-title-lg text-on-surface leading-tight line-clamp-1">Filsafat Pendidikan</h4>
+</div>
+<div class="flex justify-between items-end mt-2">
+<span class="font-label-md text-label-md font-bold text-on-surface">Rp 15.000</span>
+<span class="font-label-sm text-label-sm text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">check_circle</span> Selesai
+                                        </span>
+</div>
+</div>
+</div>
+<!-- Transaction Card 2 -->
+<div class="border border-outline-variant rounded-lg p-md flex gap-md hover:border-primary transition-colors bg-surface-bright">
+<div class="w-16 h-24 bg-surface-variant rounded flex-shrink-0 overflow-hidden">
+<img alt="Book cover" class="w-full h-full object-cover" data-alt="A generic book cover displaying abstract geometric shapes in bold primary colors like red, blue, and yellow. It looks like a textbook cover for a design or mathematics course. The aesthetic is clean and academic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6iDYuii6_ZrY2rVwGrwzCkdKWe8L6Z95f9KdHPIy9Lk_ox0qVn1zvnEUpoYisVVIq1WeU5juko2ckXKtUOmeUudYaNPjFpvXepGY8gIrdFQKTi8ch02E9MGkjDU4rprNfHDT7sokF6gLpkH4GsTXmn4hVp2yyfytv2NJphgdruli5gJCvt2D6XF4udyz9TG2XNlKnJUAzxjGOerrkjEyxCBHfrH0G09XpvAbfE55vnuObCKW4YQxy2YI6oeSxQ6fYzX0wE_oDdrU"/>
+</div>
+<div class="flex flex-col justify-between flex-1">
+<div>
+<div class="flex justify-between items-start mb-1">
+<span class="font-label-sm text-label-sm px-2 py-1 bg-tertiary-fixed rounded text-on-tertiary-fixed-variant">Beli</span>
+<span class="font-label-sm text-label-sm text-outline">15 Okt 2023</span>
+</div>
+<h4 class="font-title-lg text-title-lg text-on-surface leading-tight line-clamp-1">Kalkulus Dasar Lanjut</h4>
+</div>
+<div class="flex justify-between items-end mt-2">
+<span class="font-label-md text-label-md font-bold text-on-surface">Rp 85.000</span>
+<span class="font-label-sm text-label-sm text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">check_circle</span> Selesai
+                                        </span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+  </div>
+
+  <div id="content-leaderboard" class="hidden flex-col gap-lg w-full">
+    <div>
+        <h1 class="font-display-lg text-display-lg text-on-surface mb-sm">Leaderboard & Progress</h1>
+        <p class="font-body-lg text-body-lg text-on-surface-variant">Track your reading journey, complete daily quests, and climb the ranks.</p>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+        <!-- Left Column: Daily Quests & Level -->
+        <div class="lg:col-span-1 flex flex-col gap-lg">
+            <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg flex flex-col">
+                <div class="flex justify-between items-center mb-md">
+                    <h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-sm">
+                        <span class="material-symbols-outlined text-tertiary-container">task_alt</span>
+                        Daily Quests
+                    </h2>
+                    <span class="bg-primary-container text-on-primary-container font-label-sm text-label-sm px-2 py-1 rounded-full">3 / 4 Done</span>
+                </div>
+                <p class="font-body-sm text-body-sm text-on-surface-variant mb-lg">Complete tasks to earn daily XP bonuses.</p>
+                <div class="space-y-sm">
+                    <!-- Quest 1: Done -->
+                    <div class="bg-surface-variant rounded-lg p-md border border-outline-variant flex gap-sm opacity-60">
+                        <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        <div>
+                            <h4 class="font-label-md text-label-md text-on-surface line-through">Baca 30 menit</h4>
+                            <p class="font-label-sm text-label-sm text-primary">+50 XP</p>
+                        </div>
+                    </div>
+                    <!-- Quest 2: Done -->
+                    <div class="bg-surface-variant rounded-lg p-md border border-outline-variant flex gap-sm opacity-60">
+                        <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        <div>
+                            <h4 class="font-label-md text-label-md text-on-surface line-through">Login selama 3 hari beruntun</h4>
+                            <p class="font-label-sm text-label-sm text-primary">+20 XP</p>
+                        </div>
+                    </div>
+                    <!-- Quest 3: Done -->
+                    <div class="bg-surface-variant rounded-lg p-md border border-outline-variant flex gap-sm opacity-60">
+                        <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        <div>
+                            <h4 class="font-label-md text-label-md text-on-surface line-through">Balas Diskusi Komunitas</h4>
+                            <p class="font-label-sm text-label-sm text-primary">+30 XP</p>
+                        </div>
+                    </div>
+                    <!-- Quest 4: Active -->
+                    <div class="bg-surface-bright rounded-lg p-md border-2 border-primary shadow-sm flex gap-sm relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+                        <span class="material-symbols-outlined text-outline">radio_button_unchecked</span>
+                        <div class="w-full">
+                            <h4 class="font-label-md text-label-md text-on-surface font-bold">Tulis Review Buku</h4>
+                            <p class="font-label-sm text-label-sm text-primary font-bold">+100 XP</p>
+                            <div class="w-full bg-surface-variant rounded-full h-1.5 mt-2 mb-2">
+                                <div class="bg-primary h-1.5 rounded-full" style="width: 0%"></div>
+                            </div>
+                            <button class="mt-xs text-xs font-label-sm text-primary hover:underline">Start Task</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Level Progression Visualization Moved to Left Column for balance -->
+            <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg">
+                <h2 class="font-title-lg text-title-lg text-on-surface mb-lg flex items-center gap-sm">
+                    <span class="material-symbols-outlined text-secondary">route</span>
+                    Level System
+                </h2>
+                <div class="relative flex items-center justify-between w-full mt-md mb-xl px-sm">
+                    <!-- Connecting Line -->
+                    <div class="absolute top-1/2 left-0 w-full h-1 bg-surface-variant -z-10 -translate-y-1/2"></div>
+                    <div class="absolute top-1/2 left-0 w-3/4 h-1 bg-secondary -z-10 -translate-y-1/2"></div>
+                    <!-- Level: Explorer -->
+                    <div class="flex flex-col items-center gap-sm z-10">
+                        <div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm">
+                            <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">explore</span>
+                        </div>
+                    </div>
+                    <!-- Level: Reader -->
+                    <div class="flex flex-col items-center gap-sm z-10">
+                        <div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm">
+                            <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+                        </div>
+                    </div>
+                    <!-- Level: Thinker -->
+                    <div class="flex flex-col items-center gap-sm z-10">
+                        <div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm ring-4 ring-secondary-container">
+                            <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+                        </div>
+                    </div>
+                    <!-- Level: Scholar -->
+                    <div class="flex flex-col items-center gap-sm z-10">
+                        <div class="w-10 h-10 rounded-full bg-surface-variant text-outline flex items-center justify-center shadow-sm">
+                            <span class="material-symbols-outlined text-sm">school</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="font-body-md text-body-md text-on-surface-variant text-center mt-md">You are currently a <strong class="text-on-surface">Thinker</strong>. Earn 750 more XP to become a Scholar!</p>
+            </div>
+        </div>
+
+        <!-- Right Column: Top Readers -->
+        <div class="lg:col-span-2 flex flex-col gap-lg">
+            <!-- Top Readers Bento Card -->
+            <section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+                <div class="px-lg py-md border-b border-outline-variant flex justify-between items-center bg-surface-container-low relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-primary-fixed-dim rounded-full blur-3xl opacity-20 -mr-10 -mt-10 pointer-events-none"></div>
+                    <h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-sm relative z-10">
+                        <span class="material-symbols-outlined text-tertiary-container text-3xl" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+                        Top Readers This Week
+                    </h2>
+                    <button class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-xs relative z-10">
+                        Lihat Semua
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </button>
+                </div>
+                <div class="p-0">
+                    <!-- Rank 1 -->
+                    <div class="flex items-center justify-between p-lg border-b border-outline-variant bg-surface-bright hover:bg-surface-container-low transition-colors">
+                        <div class="flex items-center gap-md">
+                            <div class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-tertiary-container font-bold">1</div>
+                            <img alt="Rank 1 Avatar" class="w-12 h-12 rounded-full border-2 border-tertiary-container object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYSATplkSy0hzVu5GLHcXic-9UEdLZlD-r97dqSDHJLry8Fy_xJsqGoqfybvAE1KqAdWqhrNfMbpeqjRdQgaXtP_25qeVBakpNpLuCpEyd-yD6ZjCm72eFUlypkk-FW2VcuslBvHXGKxFgoxeTr0HINf47TZfw7Zu9FK56xaWDAUCIO5g1v_oyz4-YQLK1_QCczsUNRqY8-o_41OZz9QhPSv05vt6YbhMinHTMVKMKDZy15DKrjHSe7A5dbmEaoZGoqISuD6i4NGQ"/>
+                            <div>
+                                <p class="font-title-lg text-title-lg text-on-surface line-clamp-1">Siti Rahma</p>
+                                <div class="flex items-center gap-xs mt-1">
+                                    <span class="material-symbols-outlined text-primary text-[14px]">military_tech</span>
+                                    <span class="font-label-sm text-label-sm text-on-surface-variant">Scholar</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-headline-sm text-headline-sm text-primary font-bold">12,450 XP</p>
+                            <p class="font-label-sm text-label-sm text-on-surface-variant flex items-center justify-end gap-xs mt-1">
+                                <span class="material-symbols-outlined text-[12px] text-secondary">trending_up</span> +850 this week
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Rank 2 -->
+                    <div class="flex items-center justify-between p-lg border-b border-outline-variant hover:bg-surface-bright transition-colors">
+                        <div class="flex items-center gap-md">
+                            <div class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-outline font-bold">2</div>
+                            <img alt="Rank 2 Avatar" class="w-12 h-12 rounded-full border-2 border-outline object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkVFk8yIgRYWYK08SuvbzAgjCKLtzO-ZPr6HLql2ewhDUGDUhSK8bt8MdaBF0yQ7_ppDc4PAA8vooK7vCzJRCHRwJzHVVO0fqC_codm5GE6uARvyhH7IwtuZa4rg8F9yreEYNRY47pa6vpYu5lgcMa0TXLggHLA3LkyM0prFhRF77jLwOzD5ZUaqDOFc8Z5QBYmn4qWpF_jCs8_UOrIllMVJeNj5hXADYqjqDlnXTK2zUfT4B17lEcElJnmkyIdRSmk1MlfCkuCj4"/>
+                            <div>
+                                <p class="font-title-lg text-title-lg text-on-surface line-clamp-1">Ahmad Fauzi</p>
+                                <div class="flex items-center gap-xs mt-1">
+                                    <span class="material-symbols-outlined text-primary text-[14px]">military_tech</span>
+                                    <span class="font-label-sm text-label-sm text-on-surface-variant">Scholar</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-headline-sm text-headline-sm text-on-surface font-bold">11,200 XP</p>
+                        </div>
+                    </div>
+                    <!-- Rank 3 -->
+                    <div class="flex items-center justify-between p-lg border-b border-outline-variant hover:bg-surface-bright transition-colors">
+                        <div class="flex items-center gap-md">
+                            <div class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-tertiary font-bold">3</div>
+                            <img alt="Rank 3 Avatar" class="w-12 h-12 rounded-full border-2 border-tertiary object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3rQv1FHOh2C6RzOMY9vSgKVpD8rGlRlceJmf0O0Al8iIOypa7yZWjTfrChWMPu1yIcpW9xFo8GpvVUpSUdUDDbq5OaJ1lgp2BpaRBw-eqSuy_uGW95DswfA1yG4T1c5UabeOS1526tqHDE2Ib2VbgEWDaD12ddDouvGp5eFiH-f-zZib5fd1SH5V16p_YSB6eK3TZNOmBpkbxdmIG2C505nK31aHZRI4sI0R_kv2DqPRYAq460llG9vxXjL-WqMhGXeNlFjfIdW4"/>
+                            <div>
+                                <p class="font-title-lg text-title-lg text-on-surface line-clamp-1">Diana Kusuma</p>
+                                <div class="flex items-center gap-xs mt-1">
+                                    <span class="material-symbols-outlined text-primary text-[14px]">lightbulb</span>
+                                    <span class="font-label-sm text-label-sm text-on-surface-variant">Thinker</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-headline-sm text-headline-sm text-on-surface font-bold">10,850 XP</p>
+                        </div>
+                    </div>
+                    <!-- Current User Rank (Sticky at bottom concept) -->
+                    <div class="flex items-center justify-between p-lg bg-surface-container border-t-2 border-primary-fixed-dim">
+                        <div class="flex items-center gap-md">
+                            <div class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-on-surface font-bold">42</div>
+                            <img alt="Current User Avatar" class="w-12 h-12 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-meYl2VWt3-_u1ggB_IrZVLYQuAg1Q-fae64ph70Jpk2jKiGRrelTD4umbXdf2EITw3HJwElnkkV5KdUUCrxQ8wb9ZG3PIXClkqTIOG-o2_dwpuWOaJ2cvL_Q0edsFgkdM0mWAZ9c9ztu1KE9laErFuMthggnZKUhyU0RAuZuwH0DOLrwBbw9F8UIrNFA0ty7zqlrD5dG3bOU4KkoRlygKbI5rSOtFcwgLUlkBkw6mqxSkGlSquYNS4WxyXa5VEDclgHadDIb1Dg"/>
+                            <div>
+                                <p class="font-title-lg text-title-lg text-on-surface font-bold"><span class="rb-username-fill">Budi Santoso</span> (You)</p>
+                                <p class="font-label-sm text-label-sm text-primary mt-1">Scholar Level</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-headline-sm text-headline-sm text-primary font-bold">4,250 XP</p>
+                            <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">1,200 to rank 41</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+  </div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-highest dark:bg-inverse-surface border-t border-outline-variant w-full mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin py-lg max-w-[1280px] mx-auto gap-md">
+<span class="font-title-lg text-title-lg font-black text-primary dark:text-primary-fixed">ReadBridge</span>
+<div class="flex gap-md font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant">
+<a class="hover:underline decoration-primary underline-offset-4" href="#">Tentang Kami</a>
+<a class="hover:underline decoration-primary underline-offset-4" href="#">Pusat Bantuan</a>
+<a class="hover:underline decoration-primary underline-offset-4" href="#">Privasi</a>
+<a class="hover:underline decoration-primary underline-offset-4" href="#">Syarat &amp; Ketentuan</a>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant">© 2024 ReadBridge Indonesia. Membangun Generasi Literasi.</p>
+</div>
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const savedName = localStorage.getItem('rb_username');
+    if (savedName) {
+        const els = document.querySelectorAll('.rb-username-fill');
+        for (let i = 0; i < els.length; i++) {
+            els[i].textContent = savedName;
+        }
+    }
+
+    // Tabs logic
+    const tabDetail = document.getElementById('tab-detail');
+    const tabLeaderboard = document.getElementById('tab-leaderboard');
+    const contentDetail = document.getElementById('content-detail');
+    const contentLeaderboard = document.getElementById('content-leaderboard');
+
+    function showDetail() {
+      tabDetail.className = "font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors";
+      tabLeaderboard.className = "font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors";
+      contentDetail.classList.remove('hidden');
+      contentDetail.classList.add('grid');
+      contentLeaderboard.classList.add('hidden');
+      contentLeaderboard.classList.remove('flex');
+    }
+
+    function showLeaderboard() {
+      tabLeaderboard.className = "font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors";
+      tabDetail.className = "font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors";
+      contentLeaderboard.classList.remove('hidden');
+      contentLeaderboard.classList.add('flex');
+      contentDetail.classList.add('hidden');
+      contentDetail.classList.remove('grid');
+    }
+
+    if(tabDetail && tabLeaderboard) {
+      tabDetail.addEventListener('click', showDetail);
+      tabLeaderboard.addEventListener('click', showLeaderboard);
+    }
+    
+    if (window.location.hash === '#leaderboard') {
+      showLeaderboard();
+    }
+});
+</script>
+
+<script id="dynamic-logo-menu">
+document.addEventListener("DOMContentLoaded", function() {
+    // Inject Logo Menu
+    const headerOrNav = document.querySelector('header, nav');
+    if (headerOrNav && !document.getElementById('logo-menu-container')) {
+        const treeWalker = document.createTreeWalker(headerOrNav, NodeFilter.SHOW_TEXT, {
+            acceptNode: function(node) {
+                return node.nodeValue.trim() === 'ReadBridge' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+            }
+        });
+        const logoTextNode = treeWalker.nextNode();
+        if (logoTextNode) {
+            const logoEl = logoTextNode.parentElement;
+            
+            if (logoEl.id === 'logo-btn' || logoEl.querySelector('#logo-btn')) return;
+
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'relative';
+            wrapper.style.display = 'inline-flex';
+            wrapper.style.alignItems = 'center';
+            wrapper.style.cursor = 'pointer';
+            wrapper.id = 'logo-menu-container';
+            
+            logoEl.parentNode.insertBefore(wrapper, logoEl);
+            wrapper.appendChild(logoEl);
+            
+            logoEl.id = 'logo-btn';
+            logoEl.style.display = 'flex';
+            logoEl.style.alignItems = 'center';
+            logoEl.style.gap = '4px';
+            logoEl.innerHTML = 'ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>';
+            
+            const dropdown = document.createElement('div');
+            dropdown.id = 'logo-dropdown';
+            dropdown.className = 'absolute left-0 top-full mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50';
+            
+            const links = [
+                { href: 'index.html', icon: 'home', text: 'Beranda' },
+                { href: 'eksplor.html', icon: 'library_books', text: 'Eksplor Koleksi' },
+                { href: 'marketplace.html#sewa', icon: 'menu_book', text: 'Perpustakaan & Sewa' },
+                { href: 'marketplace.html', icon: 'storefront', text: 'Marketplace' },
+                { href: 'komunitas.html', icon: 'forum', text: 'Komunitas' },
+                { href: 'tentang-kami.html', icon: 'info', text: 'Tentang Kami' }
+            ];
+            
+            links.forEach(l => {
+                const a = document.createElement('a');
+                a.href = l.href;
+                a.className = 'px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-[14px] text-on-surface flex items-center gap-3 font-medium';
+                a.innerHTML = `<span class="material-symbols-outlined text-[20px] text-on-surface-variant">${l.icon}</span> ${l.text}`;
+                dropdown.appendChild(a);
+            });
+            
+            wrapper.appendChild(dropdown);
+            
+            logoEl.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropdown.classList.toggle('hidden');
+                dropdown.classList.toggle('flex');
+            });
+            document.addEventListener('click', (e) => {
+                if (!dropdown.contains(e.target) && !logoEl.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    dropdown.classList.remove('flex');
+                }
+            });
+        }
+    }
+});
+</script>
+</body></html>

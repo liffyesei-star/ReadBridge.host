@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Invoice - ReadBridge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "background": "#f8f9ff",
+                      "on-surface": "#0b1c30",
+                      "outline": "#737686",
+                      "outline-variant": "#c3c6d7",
+                      "primary": "#004ac6",
+                      "surface-container-lowest": "#ffffff",
+                      "on-surface-variant": "#434655",
+                      "surface-container": "#e5eeff"
+              },
+              "fontFamily": {
+                      "sans": ["Plus Jakarta Sans"]
+              }
+            }
+          }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: theme('colors.background'); color: theme('colors.on-surface'); }
+        @media print {
+            body { background-color: white; }
+            .no-print { display: none !important; }
+            .print-border { border: 1px solid #c3c6d7 !important; }
+            main { padding: 0 !important; max-width: 100% !important; margin: 0 !important; box-shadow: none !important; }
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen p-6">
+    <div class="max-w-3xl mx-auto flex justify-end mb-4 no-print">
+        <button onclick="downloadPDF()" class="bg-primary hover:bg-primary/90 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+            <span class="material-symbols-outlined text-[18px]">download</span> Download PDF
+        </button>
+    </div>
+
+    <main class="max-w-3xl mx-auto bg-surface-container-lowest p-8 rounded-xl shadow-sm print-border border border-outline-variant/30 flex flex-col gap-8">
+        <!-- Header Invoice -->
+        <div class="flex justify-between items-start border-b border-outline-variant/30 pb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-primary tracking-tight">ReadBridge</h1>
+                <p class="text-sm text-on-surface-variant mt-1">Platform Literasi Nusantara</p>
+                <p class="text-xs text-outline mt-2">Jl. Sudirman No.1, Jakarta Pusat, Indonesia</p>
+            </div>
+            <div class="text-right">
+                <h2 class="text-2xl font-bold text-on-surface tracking-widest uppercase">INVOICE</h2>
+                <p class="text-sm font-medium mt-1">ID: <span id="inv-id" class="text-primary font-bold"></span></p>
+                <p class="text-xs text-outline mt-1">Tanggal: <span id="inv-date"></span></p>
+            </div>
+        </div>
+
+        <!-- Detail Pembeli & Pengiriman -->
+        <div class="grid grid-cols-2 gap-8">
+            <div class="flex flex-col gap-1">
+                <span class="text-xs font-bold text-outline uppercase tracking-wider">Diterbitkan Untuk:</span>
+                <p class="font-bold text-on-surface text-sm" id="inv-account-name"></p>
+                <p class="text-sm text-on-surface-variant mt-2 font-medium">Alamat Pengiriman:</p>
+                <p class="text-sm text-on-surface-variant font-bold" id="inv-address-name"></p>
+                <p class="text-sm text-on-surface-variant" id="inv-address-phone"></p>
+                <p class="text-sm text-on-surface-variant max-w-xs" id="inv-address-text"></p>
+            </div>
+            <div class="flex flex-col gap-1 text-right">
+                <span class="text-xs font-bold text-outline uppercase tracking-wider">Metode Pembayaran:</span>
+                <p class="font-bold text-on-surface text-sm" id="inv-payment"></p>
+                <span class="text-xs font-bold text-outline uppercase tracking-wider mt-4">Penjual:</span>
+                <p class="font-bold text-on-surface text-sm">ReadBridge Official Store</p>
+            </div>
+        </div>
+
+        <!-- Tabel Item -->
+        <div class="mt-4">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b-2 border-outline-variant/50 text-sm">
+                        <th class="py-2 font-bold text-on-surface">Produk</th>
+                        <th class="py-2 font-bold text-on-surface text-center">Qty</th>
+                        <th class="py-2 font-bold text-on-surface text-right">Harga Satuan</th>
+                        <th class="py-2 font-bold text-on-surface text-right">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-outline-variant/30 text-sm">
+                        <td class="py-4 text-on-surface-variant">
+                            <p class="font-bold text-on-surface" id="inv-item-title"></p>
+                            <p class="text-xs text-outline" id="inv-item-author"></p>
+                            <span class="inline-block mt-1 bg-surface-container px-2 py-0.5 rounded text-[10px] font-bold text-on-surface-variant" id="inv-item-cond"></span>
+                        </td>
+                        <td class="py-4 text-center text-on-surface-variant">1</td>
+                        <td class="py-4 text-right text-on-surface-variant" id="inv-item-price"></td>
+                        <td class="py-4 text-right font-medium text-on-surface" id="inv-item-total"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Ringkasan Harga -->
+        <div class="flex justify-end mt-4">
+            <div class="w-1/2 flex flex-col gap-2 text-sm">
+                <div class="flex justify-between text-on-surface-variant">
+                    <span>Subtotal Produk</span>
+                    <span id="inv-subtotal"></span>
+                </div>
+                <div class="flex justify-between text-on-surface-variant">
+                    <span>Ongkos Kirim</span>
+                    <span id="inv-shipping"></span>
+                </div>
+                <div class="flex justify-between text-on-surface-variant" id="inv-ins-row">
+                    <span>Asuransi Pengiriman</span>
+                    <span id="inv-ins"></span>
+                </div>
+                <div class="flex justify-between text-secondary" id="inv-disc-row">
+                    <span>Diskon</span>
+                    <span id="inv-disc"></span>
+                </div>
+                <div class="flex justify-between font-bold text-lg text-primary border-t-2 border-outline-variant/50 pt-3 mt-2">
+                    <span>Total Keseluruhan</span>
+                    <span id="inv-total"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Invoice -->
+        <div class="border-t border-outline-variant/30 pt-6 mt-8 text-center text-xs text-outline">
+            <p>Invoice ini sah dan diproses secara komputerisasi oleh sistem ReadBridge.</p>
+            <p>Silakan simpan invoice ini sebagai bukti pembelian yang sah.</p>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const txId = params.get('id');
+            if (!txId) {
+                alert('ID Transaksi tidak valid.');
+                return;
+            }
+
+            const history = JSON.parse(localStorage.getItem('rb_transactions') || '[]');
+            const tx = history.find(t => t.id === txId);
+
+            if (!tx) {
+                alert('Transaksi tidak ditemukan.');
+                return;
+            }
+
+            const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+
+            document.getElementById('inv-id').textContent = tx.id;
+            document.getElementById('inv-date').textContent = new Date(tx.date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+            
+            document.getElementById('inv-account-name').textContent = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+            
+            if (tx.address) {
+                let nameStr = tx.address.name;
+                if (tx.address.alias) {
+                    nameStr += ` (Pengirim: ${tx.address.alias})`;
+                }
+                document.getElementById('inv-address-name').textContent = nameStr;
+                document.getElementById('inv-address-phone').textContent = tx.address.phone;
+                document.getElementById('inv-address-text').textContent = tx.address.text;
+            }
+            
+            document.getElementById('inv-payment').textContent = tx.payment;
+            
+            if (tx.item) {
+                document.getElementById('inv-item-title').textContent = tx.item.title;
+                document.getElementById('inv-item-author').textContent = tx.item.author;
+                
+                let condStr = tx.item.condition || 'Baru';
+                if (tx.type === 'sewa' && tx.rentDetails) {
+                    condStr = `Sewa • ${tx.rentDetails.durationMultiplier} Hari`;
+                }
+                document.getElementById('inv-item-cond').textContent = condStr;
+            }
+
+            const subtotalStr = formatter.format(tx.subtotal);
+            document.getElementById('inv-item-price').textContent = subtotalStr;
+            document.getElementById('inv-item-total').textContent = subtotalStr;
+            
+            document.getElementById('inv-subtotal').textContent = subtotalStr;
+            document.getElementById('inv-shipping').textContent = formatter.format(tx.shippingFee);
+            
+            if (tx.insuranceFee > 0) {
+                if (tx.type === 'sewa') {
+                    document.getElementById('inv-ins-row').firstElementChild.textContent = 'Uang Jaminan (Refundable)';
+                }
+                document.getElementById('inv-ins').textContent = formatter.format(tx.insuranceFee);
+            } else {
+                document.getElementById('inv-ins-row').style.display = 'none';
+            }
+
+            if (tx.discount > 0) {
+                document.getElementById('inv-disc').textContent = '-' + formatter.format(tx.discount);
+            } else {
+                document.getElementById('inv-disc-row').style.display = 'none';
+            }
+
+            document.getElementById('inv-total').textContent = formatter.format(tx.total);
+        });
+
+        function downloadPDF() {
+            const btn = document.querySelector('.no-print button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span> Mengunduh...`;
+            btn.disabled = true;
+
+            const element = document.querySelector('main');
+            const txId = document.getElementById('inv-id').textContent || 'ReadBridge';
+            const opt = {
+                margin:       0.5,
+                filename:     `Invoice_${txId}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            
+            // Generate PDF
+            html2pdf().set(opt).from(element).save().then(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const savedName = localStorage.getItem('rb_username');
+    if (savedName) {
+        const els = document.querySelectorAll('span.text-on-surface, p.text-on-surface, h1, h2, h3, h4, h5, h6');
+        for (let i = 0; i < els.length; i++) {
+            if (els[i].textContent.trim() === 'Siswa Indonesia') {
+                els[i].textContent = savedName;
+            }
+        }
+    }
+});
+</script>
+
+<script id="dynamic-logo-menu">
+document.addEventListener("DOMContentLoaded", function() {
+    // Inject Logo Menu
+    const headerOrNav = document.querySelector('header, nav');
+    if (headerOrNav && !document.getElementById('logo-menu-container')) {
+        const treeWalker = document.createTreeWalker(headerOrNav, NodeFilter.SHOW_TEXT, {
+            acceptNode: function(node) {
+                return node.nodeValue.trim() === 'ReadBridge' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+            }
+        });
+        const logoTextNode = treeWalker.nextNode();
+        if (logoTextNode) {
+            const logoEl = logoTextNode.parentElement;
+            
+            if (logoEl.id === 'logo-btn' || logoEl.querySelector('#logo-btn')) return;
+
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'relative';
+            wrapper.style.display = 'inline-flex';
+            wrapper.style.alignItems = 'center';
+            wrapper.style.cursor = 'pointer';
+            wrapper.id = 'logo-menu-container';
+            
+            logoEl.parentNode.insertBefore(wrapper, logoEl);
+            wrapper.appendChild(logoEl);
+            
+            logoEl.id = 'logo-btn';
+            logoEl.style.display = 'flex';
+            logoEl.style.alignItems = 'center';
+            logoEl.style.gap = '4px';
+            logoEl.innerHTML = 'ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>';
+            
+            const dropdown = document.createElement('div');
+            dropdown.id = 'logo-dropdown';
+            dropdown.className = 'absolute left-0 top-full mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50';
+            
+            const links = [
+                { href: 'index.html', icon: 'home', text: 'Beranda' },
+                { href: 'eksplor.html', icon: 'library_books', text: 'Eksplor Koleksi' },
+                { href: 'sewa.html', icon: 'menu_book', text: 'Perpustakaan & Sewa' },
+                { href: 'marketplace.html', icon: 'storefront', text: 'Marketplace' },
+                { href: 'komunitas.html', icon: 'forum', text: 'Komunitas' },
+                { href: 'tentang-kami.html', icon: 'info', text: 'Tentang Kami' }
+            ];
+            
+            links.forEach(l => {
+                const a = document.createElement('a');
+                a.href = l.href;
+                a.className = 'px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-[14px] text-on-surface flex items-center gap-3 font-medium';
+                a.innerHTML = `<span class="material-symbols-outlined text-[20px] text-on-surface-variant">${l.icon}</span> ${l.text}`;
+                dropdown.appendChild(a);
+            });
+            
+            wrapper.appendChild(dropdown);
+            
+            logoEl.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropdown.classList.toggle('hidden');
+                dropdown.classList.toggle('flex');
+            });
+            document.addEventListener('click', (e) => {
+                if (!dropdown.contains(e.target) && !logoEl.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    dropdown.classList.remove('flex');
+                }
+            });
+        }
+    }
+});
+</script>
+</body>
+
+</html>

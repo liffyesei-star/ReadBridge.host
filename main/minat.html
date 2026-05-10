@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ReadBridge - Pilih Minat</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-fixed-dim": "#4edea3",
+                        "primary-fixed": "#dbe1ff",
+                        "on-background": "#0b1c30",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#783200",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-secondary-fixed-variant": "#005236",
+                        "surface-container": "#e5eeff",
+                        "tertiary": "#8e3c00",
+                        "on-tertiary-container": "#ffece5",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "surface-dim": "#cbdbf5",
+                        "error": "#ba1a1a",
+                        "on-error": "#ffffff",
+                        "secondary": "#006c49",
+                        "secondary-container": "#6cf8bb",
+                        "primary": "#004ac6",
+                        "surface": "#f8f9ff",
+                        "on-surface-variant": "#434655",
+                        "on-surface": "#0b1c30",
+                        "tertiary-fixed": "#ffdbca",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "surface-variant": "#d3e4fe",
+                        "inverse-surface": "#213145",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-container": "#eeefff",
+                        "tertiary-container": "#b54e00",
+                        "outline": "#737686",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#0053db",
+                        "background": "#f8f9ff",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#dce9ff",
+                        "surface-container-low": "#eff4ff",
+                        "on-secondary-fixed": "#002113",
+                        "on-secondary-container": "#00714d",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "inverse-primary": "#b4c5ff",
+                        "primary-container": "#2563eb",
+                        "on-primary-fixed": "#00174b",
+                        "on-tertiary-fixed": "#341100",
+                        "outline-variant": "#c3c6d7",
+                        "surface-container-highest": "#d3e4fe",
+                        "tertiary-fixed-dim": "#ffb690"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "md": "16px",
+                        "lg": "24px",
+                        "margin": "24px",
+                        "gutter": "16px",
+                        "sm": "8px",
+                        "base": "8px",
+                        "xl": "32px",
+                        "xxl": "48px",
+                        "xs": "4px"
+                    },
+                    fontFamily: {
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "title-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"]
+                    },
+                    fontSize: {
+                        "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "title-lg": ["20px", { "lineHeight": "1.5", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen font-body-md text-on-background flex antialiased">
+<div class="hidden lg:block lg:w-5/12 xl:w-1/3 relative bg-surface-variant overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDAkNHAwe6Xm2rCKyEyje3mLTXY2Y11heCuNiyufNMEMUkVm7RTdXXa9FgwC0Ol9wzCQaobt9Q5S-8OGAB9VUIVPMrACgnJlWY6MaqvlZudy81PaZPikRDWyBUSLrVR5SZv-xYXoBh5ZD63UdB2PLMjj-vNbc7Y7t-PTYqFGIyGp41NPuDeglWEGbG5VfaWtx1sgfob3a0g9tNKZWOojoKwgzUX_8djj4wh32wmPo8XjR6585tz__zpxPHM-JdqeXd9-pJCnez5cUs');">
+</div>
+<div class="absolute inset-0 bg-primary/20 backdrop-blur-[2px]"></div>
+<div class="absolute top-xl left-xl flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-primary text-[32px]" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+<span class="font-headline-md text-headline-md text-on-primary drop-shadow-md tracking-tight">ReadBridge</span>
+</div>
+<div class="absolute bottom-xxl left-xl right-xl">
+<p class="font-headline-lg text-headline-lg text-on-primary drop-shadow-lg mb-sm">Temukan Duniamu.</p>
+<p class="font-body-lg text-body-lg text-on-primary drop-shadow-md opacity-90">Satu buku pada satu waktu.</p>
+</div>
+</div>
+<div class="w-full lg:w-7/12 xl:w-2/3 flex flex-col justify-center px-margin py-xl lg:px-[10%] h-screen overflow-y-auto">
+<div class="lg:hidden flex items-center gap-sm mb-xl">
+<span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+<span class="font-headline-md text-headline-md text-primary tracking-tight">ReadBridge</span>
+</div>
+<div class="max-w-2xl">
+<div class="mb-xl">
+<span class="inline-block px-3 py-1 bg-surface-container-highest text-on-surface-variant rounded-full font-label-sm text-label-sm mb-md">Langkah 2 dari 3</span>
+<h1 class="font-display-lg text-display-lg text-on-surface mb-sm">Apa minat utamamu?</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Pilih topik yang kamu sukai untuk membantu kami merekomendasikan bacaan, jurnal, dan komunitas yang tepat untukmu.</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-gutter mb-xxl" id="interest-grid">
+<!-- Novel & Fiksi -->
+<div class="interest-card col-span-2 row-span-1 group relative p-lg rounded-xl flex flex-col justify-between items-start gap-md cursor-pointer transition-all duration-300 bg-inverse-on-surface ring-2 ring-primary shadow-sm overflow-hidden" data-id="fiksi">
+<div class="absolute -right-6 -bottom-6 opacity-10">
+<span class="material-symbols-outlined text-[120px]" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+</div>
+<span class="check-icon material-symbols-outlined text-primary bg-surface-container-lowest rounded-full p-1 absolute top-sm right-sm shadow-sm text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-sm z-10">
+<span class="material-symbols-outlined text-[28px]">auto_stories</span>
+</div>
+<div class="z-10">
+<h3 class="font-title-lg text-title-lg text-on-surface">Novel &amp; Fiksi</h3>
+<p class="font-label-md text-label-md text-on-surface-variant mt-1">Jelajahi dunia imajinasi.</p>
+</div>
+</div>
+<!-- Komik -->
+<div class="interest-card col-span-2 md:col-span-1 row-span-1 group relative p-lg rounded-xl flex flex-col justify-between items-start gap-md cursor-pointer transition-all duration-300 bg-surface-container-lowest border border-outline-variant hover:border-primary hover:shadow-md hover:bg-surface-container-low overflow-hidden" data-id="komik">
+<span class="check-icon material-symbols-outlined text-primary bg-surface-container-lowest rounded-full p-1 absolute top-sm right-sm shadow-sm text-[20px] hidden" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container mb-sm z-10">
+<span class="material-symbols-outlined text-[24px]">theater_comedy</span>
+</div>
+<div class="z-10">
+<h3 class="font-title-lg text-title-lg text-on-surface">Komik</h3>
+</div>
+</div>
+<!-- Jurnal Ilmiah -->
+<div class="interest-card col-span-2 md:col-span-1 row-span-2 group relative p-lg rounded-xl flex flex-col justify-start items-start gap-md cursor-pointer transition-all duration-300 bg-surface-container-lowest border border-outline-variant hover:border-primary hover:shadow-md hover:bg-surface-container-low overflow-hidden" data-id="jurnal">
+<div class="absolute -right-4 bottom-0 opacity-5">
+<span class="material-symbols-outlined text-[100px]" style="font-variation-settings: 'FILL' 1;">science</span>
+</div>
+<span class="check-icon material-symbols-outlined text-primary bg-surface-container-lowest rounded-full p-1 absolute top-sm right-sm shadow-sm text-[20px] hidden" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant mb-sm z-10">
+<span class="material-symbols-outlined text-[28px]">biotech</span>
+</div>
+<div class="z-10 h-full flex flex-col justify-between">
+<div>
+<h3 class="font-title-lg text-title-lg text-on-surface mb-xs">Jurnal Ilmiah</h3>
+<p class="font-label-md text-label-md text-on-surface-variant line-clamp-3">Akses riset terbaru dan publikasi akademik untuk mendukung studimu.</p>
+</div>
+</div>
+</div>
+<!-- Buku Pelajaran -->
+<div class="interest-card col-span-2 md:col-span-2 row-span-1 group relative p-lg rounded-xl flex flex-col justify-between items-start gap-md cursor-pointer transition-all duration-300 bg-surface-container-lowest border border-outline-variant hover:border-primary hover:shadow-md hover:bg-surface-container-low overflow-hidden" data-id="pelajaran">
+<span class="check-icon material-symbols-outlined text-primary bg-surface-container-lowest rounded-full p-1 absolute top-sm right-sm shadow-sm text-[20px] hidden" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex items-center gap-md z-10">
+<div class="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant shrink-0">
+<span class="material-symbols-outlined text-[28px]">school</span>
+</div>
+<div>
+<h3 class="font-title-lg text-title-lg text-on-surface">Buku Pelajaran</h3>
+<p class="font-label-md text-label-md text-on-surface-variant mt-1">Materi kurikulum &amp; referensi kelas.</p>
+</div>
+</div>
+</div>
+<!-- Pengembangan Diri -->
+<div class="interest-card col-span-2 md:col-span-1 row-span-1 group relative p-lg rounded-xl flex flex-col justify-between items-start gap-md cursor-pointer transition-all duration-300 bg-inverse-on-surface ring-2 ring-primary shadow-sm overflow-hidden" data-id="self_dev">
+<span class="check-icon material-symbols-outlined text-primary bg-surface-container-lowest rounded-full p-1 absolute top-sm right-sm shadow-sm text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed mb-sm z-10">
+<span class="material-symbols-outlined text-[24px]">psychology</span>
+</div>
+<div class="z-10">
+<h3 class="font-title-lg text-title-lg text-on-surface leading-tight">Pengembangan Diri</h3>
+</div>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row items-center justify-between gap-lg pt-lg border-t border-outline-variant/30">
+<button onclick="window.history.back()" class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors flex items-center gap-xs w-full sm:w-auto justify-center">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+                    Kembali
+                </button>
+<button id="btn-submit" class="w-full sm:w-auto bg-primary hover:bg-primary-container text-on-primary hover:text-on-primary-container font-label-md text-label-md px-xl py-3 rounded-full transition-all duration-200 shadow-sm flex items-center justify-center gap-sm">
+                    Mulai Menjelajah
+                    <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const cards = document.querySelectorAll('.interest-card');
+        
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                const isSelected = card.classList.contains('ring-2');
+                const checkIcon = card.querySelector('.check-icon');
+                
+                if (isSelected) {
+                    card.classList.remove('bg-inverse-on-surface', 'ring-2', 'ring-primary', 'shadow-sm');
+                    card.classList.add('bg-surface-container-lowest', 'border', 'border-outline-variant');
+                    if (checkIcon) checkIcon.classList.add('hidden');
+                } else {
+                    card.classList.add('bg-inverse-on-surface', 'ring-2', 'ring-primary', 'shadow-sm');
+                    card.classList.remove('bg-surface-container-lowest', 'border', 'border-outline-variant');
+                    if (checkIcon) checkIcon.classList.remove('hidden');
+                }
+            });
+        });
+
+        document.getElementById('btn-submit').addEventListener('click', () => {
+            const selectedCards = document.querySelectorAll('.interest-card.ring-2');
+            const interests = Array.from(selectedCards).map(card => card.dataset.id);
+            localStorage.setItem('rb_interests', JSON.stringify(interests));
+            window.location.href = 'index.html';
+        });
+    });
+</script>
+</body></html>

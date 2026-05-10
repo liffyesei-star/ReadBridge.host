@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Checkout - ReadBridge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-low": "#eff4ff",
+                      "on-error-container": "#93000a",
+                      "background": "#f8f9ff",
+                      "on-surface": "#0b1c30",
+                      "outline": "#737686",
+                      "error": "#ba1a1a",
+                      "outline-variant": "#c3c6d7",
+                      "surface-variant": "#d3e4fe",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-container": "#2563eb",
+                      "primary-fixed": "#dbe1ff",
+                      "inverse-surface": "#213145",
+                      "on-primary": "#ffffff",
+                      "on-primary-container": "#eeefff",
+                      "on-surface-variant": "#434655",
+                      "surface-container-high": "#dce9ff",
+                      "on-error": "#ffffff",
+                      "surface-tint": "#0053db",
+                      "primary": "#004ac6",
+                      "on-secondary": "#ffffff",
+                      "surface-container": "#e5eeff",
+                      "surface": "#f8f9ff",
+                      "on-background": "#0b1c30",
+                      "secondary": "#006c49",
+                      "secondary-container": "#6cf8bb",
+                      "on-secondary-container": "#00714d",
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xl": "32px",
+                      "xs": "4px",
+                      "lg": "24px",
+                      "sm": "8px",
+                      "margin": "24px",
+                      "xxl": "48px",
+                      "base": "8px",
+                      "gutter": "16px",
+                      "md": "16px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Plus Jakarta Sans"],
+                      "body-md": ["Plus Jakarta Sans"],
+                      "title-lg": ["Plus Jakarta Sans"],
+                      "label-sm": ["Plus Jakarta Sans"],
+                      "headline-lg": ["Plus Jakarta Sans"],
+                      "label-md": ["Plus Jakarta Sans"],
+                      "body-lg": ["Plus Jakarta Sans"],
+                      "title-md": ["Plus Jakarta Sans"]
+              }
+            }
+          }
+        }
+    </script>
+    <style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+        .icon-fill { font-variation-settings: 'FILL' 1; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <header class="bg-surface-container-lowest shadow-sm sticky top-0 w-full z-50">
+        <div class="flex items-center justify-between px-margin py-base max-w-[1280px] mx-auto">
+            <div class="flex items-center gap-4 relative cursor-pointer select-none" id="logo-menu-container">
+    <span id="logo-btn" class="text-[24px] text-primary tracking-tight font-bold flex items-center gap-1">
+        ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>
+    </span>
+    <!-- Logo Dropdown Menu -->
+    <div id="logo-dropdown" class="absolute left-0 top-full mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50">
+        <a href="index.html" class="px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">home</span> Beranda</a>
+        <a href="eksplor.html" class="px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">library_books</span> Eksplor Koleksi</a>
+        <a href="perpustakaan.html" class="px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">menu_book</span>Perpustakaan</a>
+        <a href="marketplace.html" class="px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">storefront</span> Marketplace</a>
+        <a href="komunitas.html" class="px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">forum</span> Komunitas</a>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const logoBtns = document.querySelectorAll('#logo-btn');
+        const logoDropdowns = document.querySelectorAll('#logo-dropdown');
+        if (logoBtns.length > 0 && logoDropdowns.length > 0) {
+            logoBtns.forEach((btn, i) => {
+                const dropdown = logoDropdowns[i];
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('hidden');
+                    dropdown.classList.toggle('flex');
+                });
+                document.addEventListener('click', (e) => {
+                    if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                        dropdown.classList.add('hidden');
+                        dropdown.classList.remove('flex');
+                    }
+                });
+            });
+        }
+    });
+</script>
+            <nav class="hidden md:flex items-center gap-lg">
+                <a class="text-on-surface-variant font-label-md hover:text-primary transition-all px-sm py-xs rounded" href="index.html">Beranda</a>
+                <a class="text-on-surface-variant font-label-md hover:text-primary transition-all px-sm py-xs rounded" href="eksplor.html">Koleksi</a>
+                <a class="text-on-surface-variant font-label-md hover:text-primary transition-all px-sm py-xs rounded" href="komunitas.html">Komunitas</a>
+            </nav>
+            <div class="flex items-center gap-md">
+                <div class="relative" id="profile-menu-container">
+                    <button id="profile-avatar-btn" class="focus:outline-none flex rounded-full">
+                        <img alt="User Profile Avatar" class="w-10 h-10 rounded-full object-cover border border-outline-variant cursor-pointer hover:ring-2 hover:ring-primary transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="profile-dropdown" class="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50">
+                        <div class="px-4 py-3 border-b border-outline-variant/30">
+                            <p class="font-label-sm text-label-sm text-on-surface-variant">Masuk sebagai</p>
+                            <p class="font-label-md text-label-md text-on-surface font-bold truncate">Siswa Indonesia</p>
+                        </div>
+                        <a href="#" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+                            <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
+                        </a>
+                        <a href="profile.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+                                <span class="material-symbols-outlined text-[20px]">person</span> Detail Akun
+                        </a>
+                        <a href="login.html" class="flex items-center gap-2 px-4 py-3 hover:bg-error/10 transition-colors font-label-md text-label-md text-error border-t border-outline-variant/30 font-bold" onclick="localStorage.removeItem('rb_is_logged_in')">
+                            <span class="material-symbols-outlined text-[20px]">logout</span> Log Out
+                        </a>
+                    </div>
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const btn = document.getElementById('profile-avatar-btn');
+                        const dropdown = document.getElementById('profile-dropdown');
+                        if (btn && dropdown) {
+                            btn.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                dropdown.classList.toggle('hidden');
+                                dropdown.classList.toggle('flex');
+                            });
+                            document.addEventListener('click', (e) => {
+                                if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                                    dropdown.classList.add('hidden');
+                                    dropdown.classList.remove('flex');
+                                }
+                            });
+                        }
+                    });
+                </script>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-[1280px] mx-auto px-margin py-xl flex flex-col gap-lg">
+        <h1 class="font-headline-lg text-headline-lg text-on-surface">Checkout</h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-lg items-start">
+            <!-- Kolom Kiri -->
+            <div class="lg:col-span-2 flex flex-col gap-lg">
+                <!-- Alamat Pengiriman -->
+                <section class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30 flex flex-col gap-md">
+                    <h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">location_on</span>
+                        Alamat Pengiriman
+                    </h2>
+                    <div id="address-display" class="hidden flex-col gap-2 p-md bg-surface border border-outline-variant rounded-lg relative">
+                        <span id="address-name" class="font-label-md text-label-md font-bold text-on-surface"></span>
+                        <span id="address-phone" class="font-body-md text-body-md text-on-surface-variant"></span>
+                        <p id="address-text" class="font-body-md text-body-md text-on-surface-variant"></p>
+                        <p id="address-alias" class="font-label-sm text-[11px] text-primary mt-1 hidden"></p>
+                        <button id="btn-edit-address" class="absolute top-4 right-4 text-primary font-label-md hover:underline">Ubah Alamat</button>
+                    </div>
+                    <div id="address-form-container" class="flex flex-col gap-md">
+                        <p class="font-body-md text-body-md text-on-surface-variant">Belum ada alamat yang tersimpan. Silakan isi alamat pengiriman Anda.</p>
+                        <div class="mb-3">
+                            <label class="flex items-center gap-2 cursor-pointer w-fit">
+                                <input type="checkbox" id="check-dropship" class="text-primary rounded border-outline-variant focus:ring-primary w-4 h-4">
+                                <span class="font-label-md text-sm text-on-surface">Kirim sebagai dropshipper / Alias</span>
+                            </label>
+                            <div id="dropship-container" class="hidden mt-2">
+                                <input type="text" id="input-alias" placeholder="Nama Dropshipper / Alias" class="w-full p-3 bg-surface border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+                            <input type="text" id="input-nama" placeholder="Nama Penerima" class="w-full p-3 bg-surface border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm">
+                            <input type="number" id="input-phone" placeholder="Nomor Telepon (Min 10 digit)" class="w-full p-3 bg-surface border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm">
+                        </div>
+                        <textarea id="input-address" placeholder="Alamat Lengkap (Jalan, RT/RW, Kelurahan, Kecamatan, Kota, Kode Pos)" class="w-full p-3 bg-surface border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-sm" rows="3"></textarea>
+                        <p id="address-error" class="text-error text-sm font-medium hidden"></p>
+                        <div class="flex justify-end">
+                            <button id="btn-save-address" class="bg-primary text-on-primary px-6 py-2 rounded-full font-label-md text-label-md hover:bg-primary/90 transition-colors">Simpan Alamat</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Detail Pesanan -->
+                <section class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30 flex flex-col gap-md">
+                    <h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">shopping_bag</span>
+                        Detail Pesanan
+                    </h2>
+                    <div class="flex gap-lg p-md bg-surface rounded-xl border border-outline-variant/30 items-center">
+                        <img id="co-image" alt="Sampul Buku" class="w-24 h-32 object-cover rounded shadow-sm flex-shrink-0" src=""/>
+                        <div class="flex flex-col gap-1 flex-grow">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span id="co-category" class="bg-primary-container text-on-primary-container px-2 py-0.5 rounded text-[10px] font-bold">BUKU</span>
+                                <span id="co-condition" class="bg-surface-container-high text-on-surface-variant px-2 py-0.5 rounded text-[10px] font-bold">Kondisi</span>
+                            </div>
+                            <h3 id="co-title" class="font-title-lg text-title-lg text-on-surface font-bold line-clamp-2">Memuat...</h3>
+                            <span id="co-author" class="font-label-md text-label-md text-outline"></span>
+                            <span id="co-price" class="font-title-md text-[18px] font-bold text-primary mt-2">Rp0</span>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Opsi Tambahan -->
+                <section class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30 flex flex-col gap-md">
+                    <h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">tune</span>
+                        Opsi Tambahan
+                    </h2>
+                    <div class="flex flex-col gap-md">
+                        <!-- Voucher -->
+                        <div>
+                            <label class="font-label-md text-label-md text-on-surface block mb-2">Makin hemat pakai promo (Opsional)</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="input-voucher" placeholder="Masukkan kode voucher" class="flex-grow p-3 bg-surface border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <button id="btn-apply-voucher" class="border border-primary text-primary px-4 py-2 rounded-lg font-label-md hover:bg-primary-container transition-colors">Terapkan</button>
+                            </div>
+                            <span id="voucher-msg" class="text-sm mt-1 hidden font-label-md"></span>
+                        </div>
+                        <hr class="border-outline-variant/30">
+                        <!-- Asuransi -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" id="check-insurance" class="w-5 h-5 text-primary bg-surface border-outline-variant rounded focus:ring-primary focus:ring-2">
+                                <div>
+                                    <span class="font-label-md text-label-md text-on-surface block">Asuransi Pengiriman</span>
+                                    <span class="font-body-md text-[13px] text-on-surface-variant">Melindungi barang dari kerusakan/hilang selama pengiriman</span>
+                                </div>
+                            </div>
+                            <span class="font-label-md text-label-md text-on-surface font-bold">Rp2.000</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Kolom Kanan -->
+            <div class="flex flex-col gap-lg">
+                <!-- Metode Pembayaran -->
+                <section class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30 flex flex-col gap-md">
+                    <h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">payments</span>
+                        Metode Pembayaran
+                    </h2>
+                    <div class="flex flex-col gap-2" id="payment-methods">
+                        <label class="flex items-center justify-between p-3 border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent">
+                            <div class="flex items-center gap-3">
+                                <input type="radio" name="payment" value="BCA Virtual Account" class="w-4 h-4 text-primary bg-surface border-outline focus:ring-primary">
+                                <span class="font-label-md text-label-md text-on-surface">BCA Virtual Account</span>
+                            </div>
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" class="h-4 object-contain" alt="BCA">
+                        </label>
+                        <label class="flex items-center justify-between p-3 border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent">
+                            <div class="flex items-center gap-3">
+                                <input type="radio" name="payment" value="Mandiri Virtual Account" class="w-4 h-4 text-primary bg-surface border-outline focus:ring-primary">
+                                <span class="font-label-md text-label-md text-on-surface">Mandiri Virtual Account</span>
+                            </div>
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg" class="h-4 object-contain" alt="Mandiri">
+                        </label>
+                        <label class="flex items-center justify-between p-3 border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent">
+                            <div class="flex items-center gap-3">
+                                <input type="radio" name="payment" value="GoPay" class="w-4 h-4 text-primary bg-surface border-outline focus:ring-primary">
+                                <span class="font-label-md text-label-md text-on-surface">GoPay</span>
+                            </div>
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg" class="h-4 object-contain" alt="GoPay">
+                        </label>
+                        <label class="flex items-center justify-between p-3 border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent">
+                            <div class="flex items-center gap-3">
+                                <input type="radio" name="payment" value="QRIS" class="w-4 h-4 text-primary bg-surface border-outline focus:ring-primary">
+                                <span class="font-label-md text-label-md text-on-surface">QRIS</span>
+                            </div>
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" class="h-4 object-contain" alt="QRIS">
+                        </label>
+                    </div>
+                </section>
+
+                <!-- Ringkasan Belanja -->
+                <section class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30 flex flex-col gap-md sticky top-24">
+                    <h2 class="font-title-lg text-title-lg text-on-surface">Ringkasan Belanja</h2>
+                    <div class="flex flex-col gap-sm">
+                        <div class="flex justify-between items-center text-on-surface-variant font-body-md text-sm">
+                            <span>Total Harga Barang</span>
+                            <span id="summary-price">Rp0</span>
+                        </div>
+                        <div class="flex justify-between items-center text-on-surface-variant font-body-md text-sm">
+                            <span>Ongkos Kirim</span>
+                            <span id="summary-shipping">Rp15.000</span>
+                        </div>
+                        <div class="flex justify-between items-center text-on-surface-variant font-body-md text-sm hidden" id="summary-insurance-row">
+                            <span>Asuransi Pengiriman</span>
+                            <span>Rp2.000</span>
+                        </div>
+                        <div class="flex justify-between items-center text-secondary font-body-md text-sm hidden" id="summary-discount-row">
+                            <span>Diskon Voucher</span>
+                            <span id="summary-discount">-Rp0</span>
+                        </div>
+                    </div>
+                    <hr class="border-outline-variant/30">
+                    <div class="flex justify-between items-center">
+                        <span class="font-title-lg text-title-lg text-on-surface">Total Tagihan</span>
+                        <span id="summary-total" class="font-headline-md text-headline-md font-bold text-primary">Rp0</span>
+                    </div>
+                    <button id="btn-pay" class="w-full bg-primary hover:bg-primary/90 text-on-primary font-label-md text-label-md py-4 rounded-full transition-colors mt-2 font-bold flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">lock</span>
+                        Bayar Sekarang
+                    </button>
+                    <p class="text-center text-[11px] text-outline mt-2">Dengan melanjutkan, Anda menyetujui Syarat dan Ketentuan ReadBridge.</p>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script src="main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // URL Params
+            const params = new URLSearchParams(window.location.search);
+            const bookId = parseInt(params.get('id'));
+            const source = params.get('source') || 'main'; // 'main' = buku baru, 'market' = preloved
+
+            // Get Data
+            let targetBook = null;
+            if (window.readbridgeData) {
+                if (source === 'market' && window.readbridgeData.marketplaceBooks) {
+                    targetBook = window.readbridgeData.marketplaceBooks.find(b => b.id === bookId);
+                } else if (window.readbridgeData.books) {
+                    targetBook = window.readbridgeData.books.find(b => b.id === bookId);
+                }
+            }
+
+            if (!targetBook) {
+                alert('Buku tidak ditemukan.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Fill Detail Item
+            document.getElementById('co-title').textContent = targetBook.title;
+            document.getElementById('co-author').textContent = targetBook.author;
+            document.getElementById('co-image').src = targetBook.image || 'https://via.placeholder.com/150';
+            
+            const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+            const itemPrice = targetBook.price || 0;
+            document.getElementById('co-price').textContent = formatter.format(itemPrice);
+
+            document.getElementById('co-category').textContent = source === 'market' ? 'PRE-LOVED' : 'BUKU BARU';
+            document.getElementById('co-condition').textContent = targetBook.condition || 'Baru';
+
+            // Address Logic
+            const addrDisplay = document.getElementById('address-display');
+            const addrForm = document.getElementById('address-form-container');
+            
+            function renderAddress() {
+                const saved = localStorage.getItem('rb_address');
+                if (saved) {
+                    const addr = JSON.parse(saved);
+                    document.getElementById('address-name').textContent = addr.name;
+                    document.getElementById('address-phone').textContent = addr.phone;
+                    document.getElementById('address-text').textContent = addr.text;
+                    const aliasEl = document.getElementById('address-alias');
+                    if (addr.alias) {
+                        aliasEl.textContent = 'Dikirim sebagai: ' + addr.alias;
+                        aliasEl.classList.remove('hidden');
+                    } else {
+                        aliasEl.classList.add('hidden');
+                    }
+                    addrDisplay.classList.remove('hidden');
+                    addrDisplay.classList.add('flex');
+                    addrForm.classList.add('hidden');
+                } else {
+                    addrDisplay.classList.add('hidden');
+                    addrDisplay.classList.remove('flex');
+                    addrForm.classList.remove('hidden');
+                    document.getElementById('input-nama').value = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+                }
+            }
+            renderAddress();
+
+            document.getElementById('check-dropship').addEventListener('change', (e) => {
+                const container = document.getElementById('dropship-container');
+                if (e.target.checked) container.classList.remove('hidden');
+                else container.classList.add('hidden');
+            });
+
+            document.getElementById('btn-save-address').addEventListener('click', () => {
+                const name = document.getElementById('input-nama').value.trim();
+                const phone = document.getElementById('input-phone').value.trim();
+                const text = document.getElementById('input-address').value.trim();
+                const err = document.getElementById('address-error');
+                
+                if (!name || !phone || !text) {
+                    err.textContent = 'Semua kolom alamat wajib diisi.';
+                    err.classList.remove('hidden');
+                    return;
+                }
+                if (!/^\d{10,}$/.test(phone)) {
+                    err.textContent = 'Nomor telepon harus berupa angka dan minimal 10 digit.';
+                    err.classList.remove('hidden');
+                    return;
+                }
+                err.classList.add('hidden');
+
+                let alias = null;
+                if (document.getElementById('check-dropship').checked) {
+                    alias = document.getElementById('input-alias').value.trim() || 'Dropshipper';
+                }
+
+                localStorage.setItem('rb_address', JSON.stringify({ name, phone, text, alias }));
+                renderAddress();
+            });
+
+            document.getElementById('btn-edit-address').addEventListener('click', () => {
+                const saved = JSON.parse(localStorage.getItem('rb_address') || '{}');
+                document.getElementById('input-nama').value = saved.name || (localStorage.getItem('rb_username') || 'Siswa Indonesia');
+                document.getElementById('input-phone').value = saved.phone || '';
+                document.getElementById('input-address').value = saved.text || '';
+                if (saved.alias) {
+                    document.getElementById('check-dropship').checked = true;
+                    document.getElementById('dropship-container').classList.remove('hidden');
+                    document.getElementById('input-alias').value = saved.alias;
+                } else {
+                    document.getElementById('check-dropship').checked = false;
+                    document.getElementById('dropship-container').classList.add('hidden');
+                    document.getElementById('input-alias').value = '';
+                }
+                
+                addrDisplay.classList.add('hidden');
+                addrDisplay.classList.remove('flex');
+                addrForm.classList.remove('hidden');
+            });
+
+            // Summary Calculation
+            let shippingFee = 15000;
+            let insuranceFee = 0;
+            let discount = 0;
+
+            function updateSummary() {
+                document.getElementById('summary-price').textContent = formatter.format(itemPrice);
+                
+                const insRow = document.getElementById('summary-insurance-row');
+                if (insuranceFee > 0) {
+                    insRow.classList.remove('hidden');
+                } else {
+                    insRow.classList.add('hidden');
+                }
+
+                const discRow = document.getElementById('summary-discount-row');
+                if (discount > 0) {
+                    document.getElementById('summary-discount').textContent = '-' + formatter.format(discount);
+                    discRow.classList.remove('hidden');
+                } else {
+                    discRow.classList.add('hidden');
+                }
+
+                const total = itemPrice + shippingFee + insuranceFee - discount;
+                document.getElementById('summary-total').textContent = formatter.format(total);
+            }
+
+            // Insurance Checkbox
+            document.getElementById('check-insurance').addEventListener('change', (e) => {
+                insuranceFee = e.target.checked ? 2000 : 0;
+                updateSummary();
+            });
+
+            // Voucher Logic
+            document.getElementById('btn-apply-voucher').addEventListener('click', () => {
+                const code = document.getElementById('input-voucher').value.trim().toUpperCase();
+                const msg = document.getElementById('voucher-msg');
+                msg.classList.remove('hidden');
+                if (code === 'DISKON10K') {
+                    discount = 10000;
+                    msg.textContent = 'Voucher berhasil digunakan! Diskon Rp10.000';
+                    msg.className = 'text-sm mt-1 text-secondary font-label-md block';
+                } else if (code === 'READBRIDGE20') {
+                    discount = itemPrice * 0.2;
+                    msg.textContent = 'Voucher berhasil digunakan! Diskon 20%';
+                    msg.className = 'text-sm mt-1 text-secondary font-label-md block';
+                } else {
+                    discount = 0;
+                    msg.textContent = 'Kode voucher tidak valid.';
+                    msg.className = 'text-sm mt-1 text-error font-label-md block';
+                }
+                updateSummary();
+            });
+
+            // Initial calculation
+            updateSummary();
+
+            // Checkout Button
+            document.getElementById('btn-pay').addEventListener('click', () => {
+                const savedAddress = localStorage.getItem('rb_address');
+                if (!savedAddress) {
+                    alert('Silakan isi dan simpan Alamat Pengiriman terlebih dahulu.');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+
+                const selectedPayment = document.querySelector('input[name="payment"]:checked');
+                if (!selectedPayment) {
+                    alert('Silakan pilih Metode Pembayaran.');
+                    return;
+                }
+
+                // Process transaction
+                const total = itemPrice + shippingFee + insuranceFee - discount;
+                const transaction = {
+                    id: 'TRX-' + Date.now().toString().slice(-6),
+                    date: new Date().toISOString(),
+                    item: targetBook,
+                    address: JSON.parse(savedAddress),
+                    payment: selectedPayment.value,
+                    subtotal: itemPrice,
+                    shippingFee,
+                    insuranceFee,
+                    discount,
+                    total,
+                    status: 'dikemas' // initial progress state
+                };
+
+                const history = JSON.parse(localStorage.getItem('rb_transactions') || '[]');
+                history.push(transaction);
+                localStorage.setItem('rb_transactions', JSON.stringify(history));
+
+                // Redirect to progress/invoice page
+                window.location.href = `transaksi.html?id=${transaction.id}`;
+            });
+        });
+    </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const savedName = localStorage.getItem('rb_username');
+    if (savedName) {
+        const els = document.querySelectorAll('span.text-on-surface, p.text-on-surface, h1, h2, h3, h4, h5, h6');
+        for (let i = 0; i < els.length; i++) {
+            if (els[i].textContent.trim() === 'Siswa Indonesia') {
+                els[i].textContent = savedName;
+            }
+        }
+    }
+});
+</script>
+
+<script id="dynamic-logo-menu">
+document.addEventListener("DOMContentLoaded", function() {
+    // Inject Logo Menu
+    const headerOrNav = document.querySelector('header, nav');
+    if (headerOrNav && !document.getElementById('logo-menu-container')) {
+        const treeWalker = document.createTreeWalker(headerOrNav, NodeFilter.SHOW_TEXT, {
+            acceptNode: function(node) {
+                return node.nodeValue.trim() === 'ReadBridge' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+            }
+        });
+        const logoTextNode = treeWalker.nextNode();
+        if (logoTextNode) {
+            const logoEl = logoTextNode.parentElement;
+            
+            if (logoEl.id === 'logo-btn' || logoEl.querySelector('#logo-btn')) return;
+
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'relative';
+            wrapper.style.display = 'inline-flex';
+            wrapper.style.alignItems = 'center';
+            wrapper.style.cursor = 'pointer';
+            wrapper.id = 'logo-menu-container';
+            
+            logoEl.parentNode.insertBefore(wrapper, logoEl);
+            wrapper.appendChild(logoEl);
+            
+            logoEl.id = 'logo-btn';
+            logoEl.style.display = 'flex';
+            logoEl.style.alignItems = 'center';
+            logoEl.style.gap = '4px';
+            logoEl.innerHTML = 'ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>';
+            
+            const dropdown = document.createElement('div');
+            dropdown.id = 'logo-dropdown';
+            dropdown.className = 'absolute left-0 top-full mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50';
+            
+            const links = [
+                { href: 'index.html', icon: 'home', text: 'Beranda' },
+                { href: 'eksplor.html', icon: 'library_books', text: 'Eksplor Koleksi' },
+                { href: 'sewa.html', icon: 'menu_book', text: 'Perpustakaan & Sewa' },
+                { href: 'marketplace.html', icon: 'storefront', text: 'Marketplace' },
+                { href: 'komunitas.html', icon: 'forum', text: 'Komunitas' },
+                { href: 'tentang-kami.html', icon: 'info', text: 'Tentang Kami' }
+            ];
+            
+            links.forEach(l => {
+                const a = document.createElement('a');
+                a.href = l.href;
+                a.className = 'px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-[14px] text-on-surface flex items-center gap-3 font-medium';
+                a.innerHTML = `<span class="material-symbols-outlined text-[20px] text-on-surface-variant">${l.icon}</span> ${l.text}`;
+                dropdown.appendChild(a);
+            });
+            
+            wrapper.appendChild(dropdown);
+            
+            logoEl.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropdown.classList.toggle('hidden');
+                dropdown.classList.toggle('flex');
+            });
+            document.addEventListener('click', (e) => {
+                if (!dropdown.contains(e.target) && !logoEl.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    dropdown.classList.remove('flex');
+                }
+            });
+        }
+    }
+});
+</script>
+</body>
+
+</html>
