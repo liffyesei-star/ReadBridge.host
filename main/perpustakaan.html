@@ -186,12 +186,32 @@
 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
 <input class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64" placeholder="Cari..." type="text"/>
 </div>
-<button class="p-2 text-on-surface-variant hover:text-primary-container transition-colors duration-200">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
-</button>
-<button class="w-10 h-10 rounded-full overflow-hidden border-2 border-surface-variant focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all">
-<img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzJATXKhAsalxwZIY8Lx3y5sjHseZyYaIN0h98jDRWvAhlA9_56ciCWjSiLcI0ddfxpNemSWBWjuJYo8e8bd2OxnGGWibwCgZX4wkfZst0umXyXlAeuphsALc_anbgB9n05A463-_QUcVMw6Vff9l2YisZj2YX4FhHbK0NF3RX3jzVECUd5Gj3YulbAJtvejsZZHz1-SN3ST_QZn8T6V-HKGju8VmZuQVLSLaRHHRJbPIRIwmqq2w1HaR9eoqblN7ofQ5EJF7FQWo"/>
-</button>
+<!-- Notifikasi: sekarang berfungsi sebagai link ke halaman notifikasi -->
+<a href="notifikasi.html" class="p-2 text-on-surface-variant hover:text-primary transition-colors duration-200 flex items-center justify-center">
+  <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</a>
+<!-- Profile Avatar dengan Dropdown Menu -->
+<div class="relative" id="profile-menu-container">
+  <button id="profile-avatar-btn" class="w-10 h-10 rounded-full overflow-hidden border-2 border-surface-variant focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all focus:outline-none">
+    <img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
+  </button>
+  <!-- Dropdown Menu -->
+  <div id="profile-dropdown" class="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50">
+    <div class="px-4 py-3 border-b border-outline-variant/30">
+      <p class="font-label-sm text-label-sm text-on-surface-variant">Masuk sebagai</p>
+      <p class="font-label-md text-label-md text-on-surface font-bold truncate rb-username-fill">Pengguna</p>
+    </div>
+    <a href="#" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+      <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
+    </a>
+    <a href="profile.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+      <span class="material-symbols-outlined text-[20px]">person</span> Detail Akun
+    </a>
+    <a href="login.html" class="flex items-center gap-2 px-4 py-3 hover:bg-error/10 transition-colors font-label-md text-label-md text-error border-t border-outline-variant/30 font-bold">
+      <span class="material-symbols-outlined text-[20px]">logout</span> Log Out
+    </a>
+  </div>
+</div>
 </div>
 </div>
 </header>
@@ -353,7 +373,7 @@
 <div class="font-title-lg text-title-lg font-black text-primary">ReadBridge</div>
 <div class="font-label-sm text-label-sm text-on-surface-variant">© 2024 ReadBridge Indonesia. Membangun Generasi Literasi.</div>
 <nav class="flex gap-4">
-<a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="#">Tentang Kami</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="tentang-kami.html">Tentang Kami</a>
 <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="#">Pusat Bantuan</a>
 <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="#">Privasi</a>
 <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="#">Syarat &amp; Ketentuan</a>
@@ -443,6 +463,33 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         }
     }
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Username fill dari localStorage
+  const savedName = localStorage.getItem('rb_username');
+  if (savedName) {
+    document.querySelectorAll('.rb-username-fill').forEach(el => el.textContent = savedName);
+  }
+
+  // Profile dropdown toggle
+  const btn      = document.getElementById('profile-avatar-btn');
+  const dropdown = document.getElementById('profile-dropdown');
+  if (btn && dropdown) {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle('hidden');
+      dropdown.classList.toggle('flex');
+    });
+    document.addEventListener('click', (e) => {
+      if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+        dropdown.classList.add('hidden');
+        dropdown.classList.remove('flex');
+      }
+    });
+  }
 });
 </script>
 </body></html>

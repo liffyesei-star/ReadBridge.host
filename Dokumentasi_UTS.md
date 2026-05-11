@@ -8,10 +8,98 @@
 
 Dalam mendemonstrasikan kemampuan aplikasi dalam mengelola data secara dinamis di sisi *client* (browser), dokumentasi ini mengambil contoh **Modul Pengelolaan Data Buku (Koleksi / Marketplace)**. Modul ini memiliki 4 alur utama:
 
-1. **Menampilkan Data (Read):** Saat halaman dimuat, program membaca data dari penyimpanan lokal (array JavaScript / `localStorage`). Jika data kosong, program menampilkan pesan kosong. Jika ada, data diproses melalui perulangan (looping) untuk menghasilkan elemen HTML secara dinamis dan ditampilkan ke layar pengguna.
-2. **Menambah Data (Create):** Pengguna memasukkan data (Judul, Penulis, Harga) melalui form. Program menangkap input tersebut, melakukan validasi (memastikan tidak ada kolom kosong), membuat objek data baru dengan ID unik, lalu menambahkannya ke dalam array penyimpanan dan memperbarui tampilan layar.
-3. **Mengubah Data (Update):** Pengguna menekan tombol "Edit" pada salah satu item buku. Program mencari data tersebut berdasarkan ID, lalu menampilkan nilainya ke dalam form edit. Setelah pengguna selesai mengubah data dan menyimpan, program memperbarui nilai pada array di memori dan menyegarkan tampilan.
-4. **Menghapus Data (Delete):** Pengguna menekan tombol "Hapus". Program menampilkan dialog konfirmasi. Jika disetujui, program mencari letak data tersebut di dalam array berdasarkan ID, menghapusnya dari memori (`localStorage`), dan menyegarkan tampilan.
+1. **Menampilkan Data (Read):** Saat halaman dimuat, program membaca data dari penyimpanan lokal (`localStorage`). Jika ada, data diproses melalui perulangan untuk menghasilkan elemen HTML secara dinamis dan ditampilkan ke layar.
+```javascript
+function readBuku() {
+    // Membaca data dari Local Storage, jika kosong buat array baru
+    let dataBuku = JSON.parse(localStorage.getItem('buku_db')) || [];
+    const container = document.getElementById('daftar-buku');
+    container.innerHTML = ''; // Kosongkan daftar sebelum dirender ulang
+
+    if (dataBuku.length === 0) {
+        container.innerHTML = '<p>Belum ada data buku.</p>';
+        return;
+    }
+
+    // Melakukan perulangan untuk merender data ke HTML
+    dataBuku.forEach(buku => {
+        container.innerHTML += `
+            <div class="card">
+                <h3>${buku.judul}</h3>
+                <p>Penulis: ${buku.penulis}</p>
+                <button onclick="editBuku(${buku.id})">Edit</button>
+                <button onclick="hapusBuku(${buku.id})">Hapus</button>
+            </div>
+        `;
+    });
+}
+```
+
+2. **Menambah Data (Create):** Pengguna memasukkan data melalui form. Program menangkap input tersebut, melakukan validasi, membuat objek data baru dengan ID unik, menyimpannya, lalu memperbarui layar.
+```javascript
+function tambahBuku(judulInput, penulisInput) {
+    if (!judulInput || !penulisInput) {
+        alert("Judul dan Penulis tidak boleh kosong!");
+        return;
+    }
+
+    let dataBuku = JSON.parse(localStorage.getItem('buku_db')) || [];
+    
+    // Membuat objek buku baru dengan ID unik (timestamp)
+    let bukuBaru = {
+        id: Date.now(),
+        judul: judulInput,
+        penulis: penulisInput
+    };
+
+    // Tambahkan ke array dan simpan kembali ke memori
+    dataBuku.push(bukuBaru);
+    localStorage.setItem('buku_db', JSON.stringify(dataBuku));
+    
+    readBuku(); // Refresh tampilan
+    alert("Buku berhasil ditambahkan!");
+}
+```
+
+3. **Mengubah Data (Update):** Program mencari data berdasarkan ID. Setelah pengguna selesai mengubah data, program memperbarui nilainya pada array di memori dan menyegarkan tampilan.
+```javascript
+function simpanEdit(idTarget, judulBaru, penulisBaru) {
+    let dataBuku = JSON.parse(localStorage.getItem('buku_db')) || [];
+    
+    // Mencari posisi index buku yang akan diedit
+    let index = dataBuku.findIndex(buku => buku.id === idTarget);
+    
+    if (index !== -1) {
+        // Mengubah nilai yang lama dengan yang baru
+        dataBuku[index].judul = judulBaru;
+        dataBuku[index].penulis = penulisBaru;
+        
+        // Simpan pembaruan ke storage
+        localStorage.setItem('buku_db', JSON.stringify(dataBuku));
+        readBuku(); // Refresh tampilan
+        alert("Data buku berhasil diubah!");
+    }
+}
+```
+
+4. **Menghapus Data (Delete):** Program menampilkan konfirmasi penghapusan. Jika disetujui, program menghapus data berdasarkan ID dari memori (`localStorage`) dan menyegarkan tampilan.
+```javascript
+function hapusBuku(idTarget) {
+    let konfirmasi = confirm("Apakah Anda yakin ingin menghapus buku ini?");
+    
+    if (konfirmasi) {
+        let dataBuku = JSON.parse(localStorage.getItem('buku_db')) || [];
+        
+        // Menyaring data agar hanya menyisakan buku yang TIDAK memiliki idTarget
+        let dataBukuBaru = dataBuku.filter(buku => buku.id !== idTarget);
+        
+        // Simpan data yang sudah dihapus tersebut kembali ke storage
+        localStorage.setItem('buku_db', JSON.stringify(dataBukuBaru));
+        readBuku(); // Refresh tampilan
+        alert("Buku berhasil dihapus!");
+    }
+}
+```
 
 ---
 
@@ -148,3 +236,34 @@ PANGGIL TampilkanData()
 *   **Input/Output (Jajargenjang):** Menunjukkan interaksi dengan antarmuka (User Interface), seperti mengisi form input, menampilkan tabel data, atau memunculkan pesan error di layar.
 *   **Proses (Persegi Panjang):** Menggambarkan proses internal di memori/JavaScript, seperti menyimpan data ke `localStorage`, mencari ID di dalam Array, atau membuat ID unik.
 *   **Decision (Belah Ketupat):** Digunakan untuk pengecekan kondisi logika bersyarat (*If-Else*), misalnya memvalidasi apakah input kosong, atau konfirmasi penghapusan data.
+
+---
+
+## D. Teknologi yang Digunakan
+
+Proyek web ReadBridge dibangun menggunakan *Tech Stack* (tumpukan teknologi) berbasis pengembangan antarmuka sisi klien (*Front-End Client Side*). Berikut rincian fungsi dan implementasinya:
+
+### 1. HTML5 (HyperText Markup Language)
+*   **Peran:** Kerangka dan Struktur Dasar
+*   **Fungsi:** Menyusun elemen-elemen halaman web seperti *header*, daftar navigasi, form input, tabel, teks, dan struktur *modal* (pop-up).
+*   **Implementasi:** Digunakan pada seluruh dokumen (lebih dari 15 file `.html` seperti `index.html`, `profile.html`, `marketplace.html`). 
+
+### 2. Tailwind CSS (via CDN)
+*   **Peran:** *Styling* (Pewarnaan & Tata Letak) dan *UI/UX Framework*
+*   **Fungsi:** Memperindah tampilan kerangka HTML agar terlihat profesional, modern (contoh: *Bento-Grid layout*), interaktif (efek *hover* & transisi), serta **Responsif** (tampilan menyesuaikan ukuran layar HP, tablet, maupun laptop secara otomatis).
+*   **Implementasi:** Diaplikasikan langsung di dalam file HTML menggunakan pemanggilan *utility-class* bawaan Tailwind. (Contoh: `<div class="flex items-center bg-surface-container rounded-xl p-4">`).
+
+### 3. Vanilla JavaScript (ES6)
+*   **Peran:** Interaktivitas dan Logika *Browser*
+*   **Fungsi:** Mengendalikan sistem *dropdown*, perhitungan harga keranjang belanja, menampung klik pengguna (*event listener*), validasi form, dan memanipulasi elemen layar tanpa me-refresh halaman (DOM Manipulation).
+*   **Implementasi:** Diterapkan melalui file skrip eksternal seperti `main.js`, `community-modal.js`, dan `update_name.js`, maupun melalui skrip *inline* di akhir dokumen HTML.
+
+### 4. Web Storage API (`localStorage`)
+*   **Peran:** Penyimpanan Data Klien Sementara (Pengganti *Database*)
+*   **Fungsi:** Menyimpan jejak aktivitas atau data masukan pengguna agar tidak hilang meskipun halaman di-*refresh* atau di-*close*. Sangat krusial untuk membuat web terasa hidup tanpa menggunakan peladen (*server-side backend* seperti PHP/MySQL).
+*   **Implementasi:** Digunakan untuk memalsukan fitur *Login* (menyimpan data profil nama akun), simulasi menyimpan status keranjang belanja, serta simulasi fitur penambahan koleksi buku (*CRUD*). (Contoh: `localStorage.setItem('rb_username', 'Nama User')`).
+
+### 5. Python (Opsional / *Development Utility*)
+*   **Peran:** Otomatisasi Pekerjaan *Developer* (Injeksi Skrip)
+*   **Fungsi:** Membantu pengembang web menghindari pengetikan ulang (*copy-paste*) kode secara manual ke puluhan file HTML yang berbeda jika terjadi pembaruan fitur (misalnya pembaruan *dropdown* menu navigasi).
+*   **Implementasi:** Dibuat secara khusus pada file `update_logo_menu.py` yang akan menyisir semua file HTML dan menyuntikkan (meng-*inject*) elemen menu dinamis secara serentak. File ini bukan untuk pengguna (*user*), melainkan sebagai alat bantu efisiensi kerja pengembang (*developer*).

@@ -201,15 +201,15 @@
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-gutter text-center">
                 <div class="flex flex-col items-center gap-sm">
-                    <span class="font-display-lg text-display-lg text-primary tracking-tight">500k+</span>
+                    <span class="font-display-lg text-display-lg text-primary tracking-tight impact-counter" data-target="500" data-suffix="k+">0</span>
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Buku Terdistribusi</span>
                 </div>
                 <div class="flex flex-col items-center gap-sm">
-                    <span class="font-display-lg text-display-lg text-primary tracking-tight">10k+</span>
+                    <span class="font-display-lg text-display-lg text-primary tracking-tight impact-counter" data-target="10" data-suffix="k+">0</span>
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Jurnal Diakses</span>
                 </div>
                 <div class="flex flex-col items-center gap-sm">
-                    <span class="font-display-lg text-display-lg text-primary tracking-tight">50+</span>
+                    <span class="font-display-lg text-display-lg text-primary tracking-tight impact-counter" data-target="50" data-suffix="+">0</span>
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Komunitas Terhubung</span>
                 </div>
             </div>
@@ -318,6 +318,51 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 </script>
-</body>
 
+<script>
+    function animateCounters() {
+        const counters = document.querySelectorAll('.impact-counter');
+        const duration = 2000; // Total duration in ms
+
+        counters.forEach(counter => {
+            const target = +counter.getAttribute('data-target');
+            const suffix = counter.getAttribute('data-suffix') || '';
+            const startTime = performance.now();
+
+            const updateCount = (currentTime) => {
+                const elapsedTime = currentTime - startTime;
+                const progress = Math.min(elapsedTime / duration, 1);
+                
+                // Easing function (easeOutQuad)
+                const easeValue = progress * (2 - progress);
+                const currentVal = Math.floor(easeValue * target);
+
+                counter.innerText = currentVal + suffix;
+
+                if (progress < 1) {
+                    requestAnimationFrame(updateCount);
+                } else {
+                    counter.innerText = target + suffix;
+                }
+            };
+
+            requestAnimationFrame(updateCount);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const impactCounters = document.querySelectorAll('.impact-counter');
+        if (impactCounters.length > 0) {
+            const section = impactCounters[0].closest('section');
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    animateCounters();
+                    observer.unobserve(section);
+                }
+            }, { threshold: 0.2 });
+            observer.observe(section);
+        }
+    });
+</script>
+</body>
 </html>

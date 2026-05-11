@@ -200,7 +200,7 @@
 </a>
 <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary cursor-pointer relative" id="profile-menu-container">
 <button id="profile-avatar-btn" class="focus:outline-none flex rounded-full w-full h-full">
-<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="A close up portrait of a young Indonesian male student with short dark hair, smiling warmly. The lighting is bright and even, typical of a modern profile picture. He is wearing a simple casual shirt. The background is a soft, out of focus light blue, matching the ReadBridge brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDC5YLmwNf1dasO2-UL4o46ixf8OgOY49-YK8C_eLptYhj3KpeJjv8RfjTfqWyJa2Sjqjddg36-btpPYsV6KJ0wQbDC8EbrIVyOn9lwED7DvsixS0W1nhEd_hI-RaMo-wLdnMoj-MwO9uQ9neKM-hlix4EOukMxOI7QyrvcK1SvpRCrviXqhmkCZYmuEsk6DGdWS-LPXaOAplMeDfdtPa0-Xw5Un-Zc0Rj-k3lJfEZhVFbiLTIE6yr-9slvHJuBfsOLKL9q1OSpZgU"/>
+<img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
 </button>
 
 <div id="profile-dropdown" class="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50">
@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <!-- Header/Profile Info -->
 <div class="flex flex-col items-center mb-xl mt-lg">
 <div class="w-20 h-20 rounded-full overflow-hidden mb-sm border-2 border-primary-container">
-<img alt="Student avatar" class="w-full h-full object-cover" data-alt="A close up portrait of a young Indonesian male student with short dark hair, smiling warmly. The lighting is bright and even, typical of a modern profile picture. He is wearing a simple casual shirt. The background is a soft, out of focus light blue, matching the ReadBridge brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_2FnLH_TESw42jyqZB0mUWKJaVt6zf5hiTg5ZWZhOcpmx5vutVVryymEBO-k14XWW75SSIOhQKCVA4j5RUGLH3XP0n_xcGzsahVC7Cpesz9HGc8Xxzk213uZoK5Vip0_BdZD5t81icbb40l4tmnHiU7i-MDFgtNDOvohGFcpgCKhipvWWBewINKUp6NaF0_QpU6TTs_Ffl2kVjyC_K00Um4voOP8Kh58dhxm3vagolsgIEalbLwisE0jHwLktSLwIiuWEZMEUsf8"/>
+<img alt="Student avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
 </div>
 <h2 class="font-headline-sm text-headline-sm font-bold text-primary text-center rb-username-fill">Budi Santoso</h2>
 <span class="font-label-md text-label-md text-on-surface-variant mt-1 px-3 py-1 bg-surface-variant rounded-full text-primary-fixed-dim">Scholar Level</span>
@@ -274,9 +274,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     Achievements
                 </a>
 </nav>
-<!-- CTA -->
+<!-- BridgePass CTA -->
 <div class="mt-auto">
-<button class="w-full py-3 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-surface-tint transition-colors shadow-sm">View BridgePass</button>
+  <!-- BridgePass Status Card -->
+  <div id="bridgepass-card" class="rounded-xl p-md mb-sm border bg-surface-container-low border-outline-variant">
+    <div class="flex items-center justify-between mb-xs">
+      <div class="flex items-center gap-xs">
+        <span class="material-symbols-outlined text-[18px]" id="bp-icon" style="font-variation-settings:'FILL' 1;">workspace_premium</span>
+        <span class="font-label-md text-label-md font-bold" id="bp-tier-label">Member Basic</span>
+      </div>
+      <span id="bp-badge" class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-outline-variant text-on-surface-variant">BASIC</span>
+    </div>
+    <p class="font-label-sm text-label-sm text-on-surface-variant" id="bp-desc">Upgrade ke Premium untuk akses penuh.</p>
+  </div>
+  <button id="open-bridgepass-modal" class="w-full py-3 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-surface-tint transition-colors shadow-sm flex items-center justify-center gap-xs">
+    <span class="material-symbols-outlined text-[18px]">workspace_premium</span>
+    <span id="bp-btn-label">Upgrade BridgePass</span>
+  </button>
 </div>
 </aside>
 <!-- Main Content Area -->
@@ -638,7 +652,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="flex items-center justify-between p-lg bg-surface-container border-t-2 border-primary-fixed-dim">
                         <div class="flex items-center gap-md">
                             <div class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-on-surface font-bold">42</div>
-                            <img alt="Current User Avatar" class="w-12 h-12 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-meYl2VWt3-_u1ggB_IrZVLYQuAg1Q-fae64ph70Jpk2jKiGRrelTD4umbXdf2EITw3HJwElnkkV5KdUUCrxQ8wb9ZG3PIXClkqTIOG-o2_dwpuWOaJ2cvL_Q0edsFgkdM0mWAZ9c9ztu1KE9laErFuMthggnZKUhyU0RAuZuwH0DOLrwBbw9F8UIrNFA0ty7zqlrD5dG3bOU4KkoRlygKbI5rSOtFcwgLUlkBkw6mqxSkGlSquYNS4WxyXa5VEDclgHadDIb1Dg"/>
+                            <img alt="Current User Avatar" class="w-12 h-12 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
                             <div>
                                 <p class="font-title-lg text-title-lg text-on-surface font-bold"><span class="rb-username-fill">Budi Santoso</span> (You)</p>
                                 <p class="font-label-sm text-label-sm text-primary mt-1">Scholar Level</p>
@@ -656,12 +670,115 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
 </main>
 </div>
+
+<!-- BridgePass Upgrade Modal -->
+<div id="bridgepass-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden" aria-modal="true" role="dialog">
+  <!-- Backdrop -->
+  <div id="bp-backdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+  <!-- Modal Panel -->
+  <div class="relative bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-primary to-primary-container p-lg text-on-primary relative overflow-hidden">
+      <div class="absolute -top-6 -right-6 w-32 h-32 bg-white/10 rounded-full"></div>
+      <div class="absolute -bottom-8 -left-4 w-24 h-24 bg-white/10 rounded-full"></div>
+      <div class="flex items-center justify-between relative z-10">
+        <div class="flex items-center gap-sm">
+          <span class="material-symbols-outlined text-3xl" style="font-variation-settings:'FILL' 1;">workspace_premium</span>
+          <div>
+            <h2 class="font-headline-md text-headline-md font-bold">BridgePass</h2>
+            <p class="font-label-sm text-label-sm opacity-80">Status keanggotaan Anda</p>
+          </div>
+        </div>
+        <button id="close-bridgepass-modal" class="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="flex border-b border-outline-variant">
+      <button id="bp-tab-info" class="flex-1 py-sm font-label-md text-label-md font-bold text-primary border-b-2 border-primary transition-colors" onclick="switchBPTab('info')">
+        Paket & Manfaat
+      </button>
+      <button id="bp-tab-referral" class="flex-1 py-sm font-label-md text-label-md text-on-surface-variant border-b-2 border-transparent hover:text-primary transition-colors" onclick="switchBPTab('referral')">
+        Kode Referral
+      </button>
+    </div>
+
+    <!-- Tab Content: Info -->
+    <div id="bp-content-info" class="p-lg flex flex-col gap-md">
+      <!-- Current Status -->
+      <div id="bp-current-status-panel" class="rounded-xl p-md bg-surface-container flex items-center gap-sm">
+        <span class="material-symbols-outlined text-2xl" id="bp-modal-icon" style="font-variation-settings:'FILL' 1;">workspace_premium</span>
+        <div>
+          <p class="font-label-sm text-label-sm text-on-surface-variant">Status Saat Ini</p>
+          <p class="font-title-lg text-title-lg font-bold text-on-surface" id="bp-modal-tier">Member Basic</p>
+        </div>
+      </div>
+      <!-- Benefits Comparison -->
+      <div class="grid grid-cols-2 gap-sm">
+        <div class="rounded-xl p-md bg-surface-container border border-outline-variant">
+          <p class="font-label-md text-label-md font-bold text-on-surface mb-sm">Basic</p>
+          <ul class="space-y-xs text-on-surface-variant">
+            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-secondary">check</span> Akses Eksplor</li>
+            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-secondary">check</span> Beli di Marketplace</li>
+            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-outline">close</span> Sewa Perpustakaan</li>
+            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-outline">close</span> Diskon Eksklusif</li>
+          </ul>
+        </div>
+        <div class="rounded-xl p-md bg-primary-container border-2 border-primary relative overflow-hidden">
+          <div class="absolute top-1 right-1 bg-primary text-on-primary text-[10px] font-bold px-1.5 py-0.5 rounded-full">PREMIUM</div>
+          <p class="font-label-md text-label-md font-bold text-on-primary-container mb-sm">Premium</p>
+          <ul class="space-y-xs text-on-primary-container">
+            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-secondary">check</span> Akses Eksplor</li>
+            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-secondary">check</span> Beli di Marketplace</li>
+            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-secondary">check</span> Sewa Perpustakaan</li>
+            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-secondary">check</span> Diskon Eksklusif</li>
+          </ul>
+        </div>
+      </div>
+      <!-- CTA to switch tab -->
+      <button onclick="switchBPTab('referral')" id="bp-to-referral-btn" class="w-full py-3 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-surface-tint transition-colors shadow-sm">
+        Tukar Kode Referral
+      </button>
+    </div>
+
+    <!-- Tab Content: Referral -->
+    <div id="bp-content-referral" class="p-lg flex-col gap-md hidden">
+      <!-- Already premium notice -->
+      <div id="bp-premium-notice" class="hidden rounded-xl p-md bg-secondary-container border border-secondary-fixed-dim flex items-center gap-sm">
+        <span class="material-symbols-outlined text-secondary" style="font-variation-settings:'FILL' 1;">verified</span>
+        <div>
+          <p class="font-label-md text-label-md font-bold text-on-secondary-container">Anda sudah Premium!</p>
+          <p class="font-label-sm text-label-sm text-on-secondary-container opacity-80">Nikmati semua fitur eksklusif BridgePass.</p>
+        </div>
+      </div>
+      <!-- Input form -->
+      <div id="bp-referral-form">
+        <p class="font-body-md text-body-md text-on-surface-variant mb-md">Masukkan kode referral yang Anda terima untuk mengaktifkan akses <strong class="text-on-surface">BridgePass Premium</strong>.</p>
+        <div class="flex flex-col gap-sm">
+          <label class="font-label-md text-label-md text-on-surface font-bold">Kode Referral</label>
+          <input id="bp-referral-input" type="text" placeholder="Masukkan kode, contoh: ABCDEFGH" class="w-full px-4 py-3 border-2 border-outline-variant rounded-xl font-body-md text-body-md bg-surface focus:outline-none focus:border-primary transition-colors uppercase tracking-widest" maxlength="12" />
+          <p id="bp-referral-error" class="font-label-sm text-label-sm text-error hidden flex items-center gap-xs">
+            <span class="material-symbols-outlined text-[14px]">error</span> Kode referral tidak valid. Coba lagi.
+          </p>
+          <p id="bp-referral-success" class="font-label-sm text-label-sm text-secondary hidden flex items-center gap-xs">
+            <span class="material-symbols-outlined text-[14px]">check_circle</span> Berhasil! Akun Anda telah diupgrade ke Premium.
+          </p>
+        </div>
+        <button id="bp-submit-referral" onclick="submitReferralCode()" class="mt-md w-full py-3 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-surface-tint transition-colors shadow-sm">
+          Aktifkan Kode
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Footer -->
 <footer class="bg-surface-container-highest dark:bg-inverse-surface border-t border-outline-variant w-full mt-auto">
 <div class="flex flex-col md:flex-row justify-between items-center px-margin py-lg max-w-[1280px] mx-auto gap-md">
 <span class="font-title-lg text-title-lg font-black text-primary dark:text-primary-fixed">ReadBridge</span>
 <div class="flex gap-md font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant">
-<a class="hover:underline decoration-primary underline-offset-4" href="#">Tentang Kami</a>
+<a class="hover:underline decoration-primary underline-offset-4" href="tentang-kami.html">Tentang Kami</a>
 <a class="hover:underline decoration-primary underline-offset-4" href="#">Pusat Bantuan</a>
 <a class="hover:underline decoration-primary underline-offset-4" href="#">Privasi</a>
 <a class="hover:underline decoration-primary underline-offset-4" href="#">Syarat &amp; Ketentuan</a>
@@ -671,7 +788,11 @@ document.addEventListener('DOMContentLoaded', () => {
 </footer>
 
 <script>
+// ─── VALID REFERRAL CODE ───
+const VALID_REFERRAL_CODE = 'SMNGTAFN';
+
 document.addEventListener("DOMContentLoaded", function() {
+    // ── Username Fill ──
     const savedName = localStorage.getItem('rb_username');
     if (savedName) {
         const els = document.querySelectorAll('.rb-username-fill');
@@ -680,7 +801,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Tabs logic
+    // ── Main Tab Logic (Detail Akun / Leaderboard) ──
     const tabDetail = document.getElementById('tab-detail');
     const tabLeaderboard = document.getElementById('tab-leaderboard');
     const contentDetail = document.getElementById('content-detail');
@@ -712,7 +833,138 @@ document.addEventListener("DOMContentLoaded", function() {
     if (window.location.hash === '#leaderboard') {
       showLeaderboard();
     }
+
+    // ── BridgePass Status Logic ──
+    updateBridgePassUI();
+
+    // Open modal
+    document.getElementById('open-bridgepass-modal').addEventListener('click', () => {
+        document.getElementById('bridgepass-modal').classList.remove('hidden');
+        document.getElementById('bridgepass-modal').classList.add('flex');
+        switchBPTab('info');
+        updateBridgePassUI();
+    });
+
+    // Close modal via X button
+    document.getElementById('close-bridgepass-modal').addEventListener('click', closeBPModal);
+
+    // Close modal via backdrop click
+    document.getElementById('bp-backdrop').addEventListener('click', closeBPModal);
 });
+
+// ─── BridgePass Helper Functions ───
+
+function closeBPModal() {
+    document.getElementById('bridgepass-modal').classList.add('hidden');
+    document.getElementById('bridgepass-modal').classList.remove('flex');
+    // Reset referral input & messages
+    const input = document.getElementById('bp-referral-input');
+    if (input) input.value = '';
+    document.getElementById('bp-referral-error').classList.add('hidden');
+    document.getElementById('bp-referral-success').classList.add('hidden');
+}
+
+function switchBPTab(tab) {
+    const infoContent = document.getElementById('bp-content-info');
+    const refContent  = document.getElementById('bp-content-referral');
+    const infoTab     = document.getElementById('bp-tab-info');
+    const refTab      = document.getElementById('bp-tab-referral');
+
+    if (tab === 'info') {
+        infoContent.classList.remove('hidden'); infoContent.classList.add('flex');
+        refContent.classList.add('hidden');     refContent.classList.remove('flex');
+        infoTab.className = 'flex-1 py-sm font-label-md text-label-md font-bold text-primary border-b-2 border-primary transition-colors';
+        refTab.className  = 'flex-1 py-sm font-label-md text-label-md text-on-surface-variant border-b-2 border-transparent hover:text-primary transition-colors';
+    } else {
+        refContent.classList.remove('hidden'); refContent.classList.add('flex'); refContent.classList.add('flex-col');
+        infoContent.classList.add('hidden');   infoContent.classList.remove('flex');
+        refTab.className  = 'flex-1 py-sm font-label-md text-label-md font-bold text-primary border-b-2 border-primary transition-colors';
+        infoTab.className = 'flex-1 py-sm font-label-md text-label-md text-on-surface-variant border-b-2 border-transparent hover:text-primary transition-colors';
+    }
+    updateBridgePassUI();
+}
+
+function updateBridgePassUI() {
+    const isPremium = localStorage.getItem('rb_bridgepass') === 'premium';
+
+    // ── Sidebar Card ──
+    const bpIcon       = document.getElementById('bp-icon');
+    const bpTierLabel  = document.getElementById('bp-tier-label');
+    const bpBadge      = document.getElementById('bp-badge');
+    const bpDesc       = document.getElementById('bp-desc');
+    const bpBtnLabel   = document.getElementById('bp-btn-label');
+
+    if (isPremium) {
+        bpIcon.textContent      = 'workspace_premium';
+        bpIcon.style.color      = '#004ac6'; // primary
+        bpTierLabel.textContent = 'Member Premium';
+        bpBadge.textContent     = 'PREMIUM';
+        bpBadge.className       = 'font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-primary-container text-primary font-bold';
+        bpDesc.textContent      = 'Anda memiliki akses penuh ke semua fitur.';
+        bpBtnLabel.textContent  = 'Lihat BridgePass';
+    } else {
+        bpIcon.textContent      = 'workspace_premium';
+        bpIcon.style.color      = '#737686'; // outline
+        bpTierLabel.textContent = 'Member Basic';
+        bpBadge.textContent     = 'BASIC';
+        bpBadge.className       = 'font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-outline-variant text-on-surface-variant';
+        bpDesc.textContent      = 'Upgrade ke Premium untuk akses penuh.';
+        bpBtnLabel.textContent  = 'Upgrade BridgePass';
+    }
+
+    // ── Modal Info Tab ──
+    const bpModalIcon  = document.getElementById('bp-modal-icon');
+    const bpModalTier  = document.getElementById('bp-modal-tier');
+    const bpToRefBtn   = document.getElementById('bp-to-referral-btn');
+    if (bpModalTier) {
+        bpModalTier.textContent  = isPremium ? 'Member Premium' : 'Member Basic';
+        bpModalIcon.style.color  = isPremium ? '#004ac6' : '#737686';
+        if (bpToRefBtn) bpToRefBtn.textContent = isPremium ? 'Status: Aktif ✓' : 'Tukar Kode Referral';
+        if (bpToRefBtn) bpToRefBtn.disabled = isPremium;
+    }
+
+    // ── Modal Referral Tab ──
+    const premiumNotice = document.getElementById('bp-premium-notice');
+    const referralForm  = document.getElementById('bp-referral-form');
+    if (premiumNotice && referralForm) {
+        if (isPremium) {
+            premiumNotice.classList.remove('hidden');
+            premiumNotice.classList.add('flex');
+            referralForm.classList.add('hidden');
+        } else {
+            premiumNotice.classList.add('hidden');
+            premiumNotice.classList.remove('flex');
+            referralForm.classList.remove('hidden');
+        }
+    }
+}
+
+function submitReferralCode() {
+    const input   = document.getElementById('bp-referral-input');
+    const errMsg  = document.getElementById('bp-referral-error');
+    const succMsg = document.getElementById('bp-referral-success');
+    const code    = input.value.trim().toUpperCase();
+
+    errMsg.classList.add('hidden');
+    succMsg.classList.add('hidden');
+
+    if (code === VALID_REFERRAL_CODE) {
+        // Simpan status premium ke localStorage
+        localStorage.setItem('rb_bridgepass', 'premium');
+        succMsg.classList.remove('hidden');
+        succMsg.classList.add('flex');
+        input.value = '';
+        input.disabled = true;
+        document.getElementById('bp-submit-referral').disabled = true;
+        // Perbarui semua UI BridgePass
+        updateBridgePassUI();
+    } else {
+        errMsg.classList.remove('hidden');
+        errMsg.classList.add('flex');
+        input.classList.add('border-error');
+        setTimeout(() => input.classList.remove('border-error'), 1500);
+    }
+}
 </script>
 
 <script id="dynamic-logo-menu">
