@@ -174,7 +174,7 @@
             </form>
             
 <script>
-                document.getElementById('register-form').addEventListener('submit', function(e) {
+                document.getElementById('register-form').addEventListener('submit', async function(e) {
                     e.preventDefault();
                     const fullName = document.getElementById('fullName').value;
                     const email = document.getElementById('email').value;
@@ -185,14 +185,33 @@
                         alert("Kata sandi dan konfirmasi kata sandi tidak cocok!");
                         return;
                     }
-                    // Simpan data pendaftaran ke local storage untuk digunakan di profil
-                    localStorage.setItem('readbridge_user_name', fullName);
-                    localStorage.setItem('readbridge_user_email', email);
-                    localStorage.setItem('readbridge_user_password', password);
-                    localStorage.setItem('rb_username', fullName);
-                    
-                    alert("Pendaftaran berhasil! Silakan masuk ke akun Anda.");
-                    window.location.href = 'login.html';
+
+                    try {
+                        const response = await fetch('http://localhost:5000/api/auth/register', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ nama: fullName, email, password })
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            // Simpan data pendaftaran ke local storage untuk digunakan di profil
+                            localStorage.setItem('readbridge_user_name', fullName);
+                            localStorage.setItem('readbridge_user_email', email);
+                            localStorage.setItem('rb_username', fullName);
+                            
+                            alert("Pendaftaran berhasil! Silakan masuk ke akun Anda.");
+                            window.location.href = 'login.html';
+                        } else {
+                            alert(data.message || "Pendaftaran gagal!");
+                        }
+                    } catch (error) {
+                        console.error("Register error:", error);
+                        alert("Gagal terhubung ke server. Pastikan backend sudah menyala.");
+                    }
                 });
             </script>
 

@@ -181,25 +181,37 @@
 </footer>
 
 <script>
-    document.getElementById('login-form').addEventListener('submit', function(e) {
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
 
-        const savedEmail = localStorage.getItem('readbridge_user_email');
-        const savedUsername = localStorage.getItem('readbridge_user_name');
-        const savedPassword = localStorage.getItem('readbridge_user_password');
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
 
-        if (!savedEmail && !savedUsername) {
-            alert("Akun tidak ditemukan. Silakan daftar terlebih dahulu.");
-            return;
-        }
+            const data = await response.json();
 
-        if ((email === savedEmail || email === savedUsername) && password === savedPassword) {
-            localStorage.setItem('rb_is_logged_in', 'true');
-            window.location.href = 'eksplor.html';
-        } else {
-            alert("Email/Username atau Kata Sandi salah!");
+            if (data.success) {
+                // Simpan token dan data user
+                localStorage.setItem('rb_is_logged_in', 'true');
+                localStorage.setItem('rb_token', data.token);
+                localStorage.setItem('rb_username', data.data.nama);
+                localStorage.setItem('rb_user_email', data.data.email);
+                
+                alert("Login berhasil!");
+                window.location.href = 'eksplor.html';
+            } else {
+                alert(data.message || "Email/Username atau Kata Sandi salah!");
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            alert("Gagal terhubung ke server. Pastikan backend sudah menyala.");
         }
     });
 </script>

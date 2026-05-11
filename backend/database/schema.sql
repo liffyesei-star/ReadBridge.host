@@ -11,9 +11,10 @@ USE readbridge_db;
 -- =============================================
 CREATE TABLE IF NOT EXISTS users (
   id            INT PRIMARY KEY AUTO_INCREMENT,
-  firebase_uid  VARCHAR(128) UNIQUE NOT NULL,
+  firebase_uid  VARCHAR(128) UNIQUE DEFAULT NULL,
   nama          VARCHAR(100) NOT NULL,
   email         VARCHAR(150) UNIQUE NOT NULL,
+  password      VARCHAR(255) DEFAULT NULL,
   foto_profil   VARCHAR(255) DEFAULT NULL,
   bio           TEXT DEFAULT NULL,
   role          ENUM('user', 'penulis', 'admin') DEFAULT 'user',
