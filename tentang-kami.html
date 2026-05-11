@@ -112,7 +112,7 @@
 <body class="antialiased min-h-screen flex flex-col">
     <!-- TopAppBar -->
     <header class="bg-surface-container-lowest shadow-sm sticky top-0 w-full z-50">
-        <div class="sticky top-0 w-full z-50 flex items-center justify-between px-margin py-base max-w-[1280px] mx-auto">
+        <div class="sticky top-0 w-full z-50 flex flex-wrap items-center justify-between px-4 md:px-margin gap-2 py-base max-w-[1280px] mx-auto">
             <div class="flex items-center gap-4 relative cursor-pointer select-none" id="logo-menu-container">
     <span id="logo-btn" class="text-[24px] text-primary tracking-tight font-bold flex items-center gap-1">
         ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>
@@ -165,12 +165,12 @@
     </header>
 
     <!-- Main Content Canvas -->
-    <main class="flex-grow flex flex-col items-center w-full max-w-[1280px] mx-auto px-margin py-xl gap-xxl">
+    <main class="flex-grow flex flex-col items-center w-full max-w-[1280px] mx-auto px-4 md:px-margin py-xl gap-xxl">
         <!-- Hero Section -->
         <section class="w-full relative rounded-xl overflow-hidden shadow-sm flex items-center justify-center min-h-[400px] bg-surface-container" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCF1sxPgTrZKCS61KKuaDjSK8d3QVBpzvJ6orIEDCozKJQnurdp8UaccSHkmorrdlxS52snJWDZiBe0c6XtTWnttSLGwYCYfaDF6MAYpWTOgmT_EuyHF3QlYnNr7uU6Nsx_H0LcKtU9lsRIMmz4UdogZpO8iHq6V3ryByrPOR8rLOvkxJtnHfs5hS46Y2-EhNlt0JzJX_7htxJ7JAkGdGcPB3e04hPPr1X3Qb5TyI2rqzkBmVtxCj7H-pipaxu6Htks5jsBnKhwId4'); background-size: cover; background-position: center;">
             <div class="absolute inset-0 bg-inverse-surface/60 mix-blend-multiply"></div>
-            <div class="relative z-10 text-center px-margin max-w-3xl">
-                <h1 class="font-display-lg text-display-lg text-on-primary mb-md tracking-tight">Membangun Jembatan Literasi untuk Masa Depan Indonesia</h1>
+            <div class="relative z-10 text-center px-4 md:px-margin max-w-3xl">
+                <h1 class="font-display-lg text-[32px] md:text-display-lg leading-tight text-on-primary mb-md tracking-tight">Membangun Jembatan Literasi untuk Masa Depan Indonesia</h1>
                 <p class="font-body-lg text-body-lg text-on-primary-container opacity-90">Menyediakan akses tak terbatas ke ilmu pengetahuan untuk setiap pelajar di seluruh pelosok nusantara.</p>
             </div>
         </section>
@@ -179,16 +179,16 @@
         <section class="w-full grid grid-cols-1 md:grid-cols-2 gap-gutter">
             <div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/30 flex flex-col gap-md">
                 <div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-primary">
-                    <span class="material-symbols-outlined text-headline-lg">explore</span>
+                    <span class="material-symbols-outlined text-[24px] md:text-headline-lg leading-tight">explore</span>
                 </div>
-                <h2 class="font-headline-md text-headline-md text-on-surface">Misi Kami</h2>
+                <h2 class="font-headline-md text-[20px] md:text-headline-md leading-tight text-on-surface">Misi Kami</h2>
                 <p class="font-body-md text-body-md text-on-surface-variant">Mendemokratisasi akses literatur akademik berkualitas. Kami percaya bahwa setiap pelajar, terlepas dari lokasi geografis mereka, berhak mendapatkan akses ke buku, jurnal, dan sumber daya pendidikan terbaik.</p>
             </div>
             <div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/30 flex flex-col gap-md">
                 <div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-secondary">
-                    <span class="material-symbols-outlined text-headline-lg">visibility</span>
+                    <span class="material-symbols-outlined text-[24px] md:text-headline-lg leading-tight">visibility</span>
                 </div>
-                <h2 class="font-headline-md text-headline-md text-on-surface">Visi Kami</h2>
+                <h2 class="font-headline-md text-[20px] md:text-headline-md leading-tight text-on-surface">Visi Kami</h2>
                 <p class="font-body-md text-body-md text-on-surface-variant">Menciptakan ekosistem literasi digital terbesar dan paling inklusif di Indonesia, di mana membaca bukan lagi sebuah keistimewaan, melainkan kebiasaan yang memberdayakan generasi penerus bangsa.</p>
             </div>
         </section>
@@ -196,20 +196,20 @@
         <!-- Impact Stats -->
         <section class="w-full bg-primary-fixed rounded-xl p-xl flex flex-col gap-lg shadow-sm">
             <div class="text-center mb-md">
-                <h2 class="font-headline-md text-headline-md text-on-primary-fixed">Dampak Kami</h2>
+                <h2 class="font-headline-md text-[20px] md:text-headline-md leading-tight text-on-primary-fixed">Dampak Kami</h2>
                 <p class="font-body-md text-body-md text-on-primary-fixed-variant mt-sm">Angka yang merepresentasikan perjalanan dedikasi kami.</p>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-gutter text-center">
                 <div class="flex flex-col items-center gap-sm">
-                    <span class="font-display-lg text-display-lg text-primary tracking-tight impact-counter" data-target="500" data-suffix="k+">0</span>
+                    <span class="font-display-lg text-[32px] md:text-display-lg leading-tight text-primary tracking-tight impact-counter" data-target="500" data-suffix="k+">0</span>
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Buku Terdistribusi</span>
                 </div>
                 <div class="flex flex-col items-center gap-sm">
-                    <span class="font-display-lg text-display-lg text-primary tracking-tight impact-counter" data-target="10" data-suffix="k+">0</span>
+                    <span class="font-display-lg text-[32px] md:text-display-lg leading-tight text-primary tracking-tight impact-counter" data-target="10" data-suffix="k+">0</span>
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Jurnal Diakses</span>
                 </div>
                 <div class="flex flex-col items-center gap-sm">
-                    <span class="font-display-lg text-display-lg text-primary tracking-tight impact-counter" data-target="50" data-suffix="+">0</span>
+                    <span class="font-display-lg text-[32px] md:text-display-lg leading-tight text-primary tracking-tight impact-counter" data-target="50" data-suffix="+">0</span>
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Komunitas Terhubung</span>
                 </div>
             </div>
@@ -218,9 +218,9 @@
 
     <!-- Footer -->
     <footer class="bg-surface-container border-t border-outline-variant w-full mt-auto">
-        <div class="w-full py-xl px-margin flex flex-col md:flex-row justify-between items-center gap-md max-w-[1280px] mx-auto">
+        <div class="w-full py-xl px-4 md:px-margin flex flex-col md:flex-row justify-between items-center gap-md max-w-[1280px] mx-auto">
             <div class="flex flex-col items-center md:items-start gap-sm">
-                <span class="font-headline-md text-headline-md text-primary font-bold">ReadBridge</span>
+                <span class="font-headline-md text-[20px] md:text-headline-md leading-tight text-primary font-bold">ReadBridge</span>
                 <span class="font-body-md text-body-md text-on-surface-variant">© 2024 ReadBridge Indonesia. Membangun Jembatan Literasi Masa Depan.</span>
             </div>
             <nav class="flex flex-wrap justify-center gap-lg">

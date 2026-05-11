@@ -62,10 +62,10 @@
 
 <!-- TopNavBar -->
 <header class="bg-surface shadow-sm sticky top-0 z-50">
-  <div class="flex justify-between items-center w-full px-margin py-sm max-w-[1280px] mx-auto">
+  <div class="flex justify-between items-center w-full px-4 md:px-margin py-sm max-w-[1280px] mx-auto">
     <div class="flex items-center gap-sm">
       <span class="material-symbols-outlined text-primary text-[32px] icon-fill">auto_stories</span>
-      <span class="font-headline-md text-headline-md font-bold text-primary">ReadBridge</span>
+      <span class="font-headline-md text-[20px] md:text-headline-md leading-tight font-bold text-primary">ReadBridge</span>
     </div>
     <nav class="hidden md:flex items-center gap-lg">
       <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="eksplor.html">Eksplor</a>
@@ -126,7 +126,7 @@
 </header>
 
 <!-- Main Content -->
-<main class="flex-grow w-full max-w-[1280px] mx-auto px-margin py-xl flex flex-col gap-xxl">
+<main class="flex-grow w-full max-w-[1280px] mx-auto px-4 md:px-margin py-xl flex flex-col gap-xxl">
   <!-- Breadcrumbs -->
   <nav class="flex items-center gap-sm text-on-surface-variant font-label-sm text-label-sm">
     <a class="hover:text-primary" href="marketplace.html">Marketplace</a>
@@ -148,7 +148,7 @@
     </div>
     <div class="w-full md:w-2/3 lg:w-3/4 flex flex-col gap-lg pt-sm">
       <div class="flex flex-col gap-xs">
-        <h1 id="detail-title" class="font-display-lg text-display-lg text-on-background">Laskar Pelangi</h1>
+        <h1 id="detail-title" class="font-display-lg text-[32px] md:text-display-lg leading-tight text-on-background">Laskar Pelangi</h1>
         <p id="detail-author" class="font-title-lg text-title-lg text-outline">Andrea Hirata</p>
         <div class="flex items-center gap-xs mt-xs">
           <span class="material-symbols-outlined text-secondary text-[18px] icon-fill">star</span>
@@ -163,7 +163,7 @@
       </div>
       <div class="py-md border-y border-outline-variant">
         <p class="font-label-sm text-label-sm text-on-surface-variant mb-xs">Harga Fisik</p>
-        <p id="detail-price" class="font-headline-lg text-headline-lg text-primary font-bold">Rp 85.000</p>
+        <p id="detail-price" class="font-headline-lg text-[24px] md:text-headline-lg leading-tight text-primary font-bold">Rp 85.000</p>
       </div>
       <div class="flex flex-col sm:flex-row gap-md flex-wrap">
         <button id="btn-buy" class="bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md px-xl py-md rounded-full transition-colors flex items-center justify-center gap-sm">
@@ -184,7 +184,7 @@
           Kisah perjuangan sepuluh anak di Desa Gantung, Belitung Timur, yang penuh semangat menuntut ilmu di tengah keterbatasan. Mereka bersekolah di SD Muhammadiyah yang nyaris ditutup, namun dedikasi dua orang guru, Bu Muslimah dan Pak Harfan, serta kebersamaan mereka menumbuhkan keajaiban-keajaiban kecil.
         </p>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-md mt-lg bg-surface-container-lowest p-lg rounded-xl ambient-shadow">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-md mt-lg bg-surface-container-lowest p-lg rounded-xl ambient-shadow">
         <div class="flex flex-col gap-xs"><span class="font-label-sm text-label-sm text-outline">Penerbit</span><span class="font-body-md text-body-md text-on-background font-medium">Bentang Pustaka</span></div>
         <div class="flex flex-col gap-xs"><span class="font-label-sm text-label-sm text-outline">Tahun Terbit</span><span class="font-body-md text-body-md text-on-background font-medium">2005</span></div>
         <div class="flex flex-col gap-xs"><span class="font-label-sm text-label-sm text-outline">Halaman</span><span class="font-body-md text-body-md text-on-background font-medium">529</span></div>
@@ -196,7 +196,7 @@
   <!-- Review Section -->
   <section class="flex flex-col gap-lg pt-xl border-t border-outline-variant">
     <div class="flex justify-between items-center">
-      <h2 class="font-headline-lg text-headline-lg text-on-background">Review Komunitas <span id="detail-reviews-title" class="text-outline font-title-lg ml-xs">(452)</span></h2>
+      <h2 class="font-headline-lg text-[24px] md:text-headline-lg leading-tight text-on-background">Review Komunitas <span id="detail-reviews-title" class="text-outline font-title-lg ml-xs">(452)</span></h2>
       <button id="btn-write-review" class="text-primary font-label-md text-label-md hover:underline flex items-center gap-xs">
         Tulis Review <span class="material-symbols-outlined text-[18px]">edit</span>
       </button>
@@ -264,7 +264,7 @@
 
   <!-- Rekomendasi Serupa -->
   <section class="flex flex-col gap-lg pt-xl border-t border-outline-variant">
-    <h2 class="font-headline-lg text-headline-lg text-on-background">Buku Serupa</h2>
+    <h2 class="font-headline-lg text-[24px] md:text-headline-lg leading-tight text-on-background">Buku Serupa</h2>
     <div class="flex gap-gutter overflow-x-auto hide-scrollbar snap-x pb-md">
       <div class="min-w-[160px] md:min-w-[200px] flex flex-col gap-sm snap-start group cursor-pointer">
         <div class="w-full aspect-[2/3] rounded-lg overflow-hidden ambient-shadow bg-surface-container-lowest relative">
@@ -290,7 +290,7 @@
 
 <!-- Footer -->
 <footer class="bg-surface-container-highest border-t border-outline-variant w-full mt-auto">
-  <div class="flex flex-col md:flex-row justify-between items-center px-margin py-lg max-w-[1280px] mx-auto gap-md">
+  <div class="flex flex-col md:flex-row justify-between items-center px-4 md:px-margin py-lg max-w-[1280px] mx-auto gap-md">
     <div class="flex items-center gap-sm">
       <span class="material-symbols-outlined text-primary text-[24px] icon-fill">auto_stories</span>
       <span class="font-title-lg text-title-lg font-black text-primary">ReadBridge</span>

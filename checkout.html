@@ -82,7 +82,7 @@
 <body class="antialiased min-h-screen flex flex-col">
     <!-- Navbar -->
     <header class="bg-surface-container-lowest shadow-sm sticky top-0 w-full z-50">
-        <div class="flex items-center justify-between px-margin py-base max-w-[1280px] mx-auto">
+        <div class="flex flex-wrap items-center justify-between px-4 md:px-margin gap-2 py-base max-w-[1280px] mx-auto">
             <div class="flex items-center gap-4 relative cursor-pointer select-none" id="logo-menu-container">
     <span id="logo-btn" class="text-[24px] text-primary tracking-tight font-bold flex items-center gap-1">
         ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>
@@ -168,8 +168,8 @@
         </div>
     </header>
 
-    <main class="flex-grow w-full max-w-[1280px] mx-auto px-margin py-xl flex flex-col gap-lg">
-        <h1 class="font-headline-lg text-headline-lg text-on-surface">Checkout</h1>
+    <main class="flex-grow w-full max-w-[1280px] mx-auto px-4 md:px-margin py-xl flex flex-col gap-lg">
+        <h1 class="font-headline-lg text-[24px] md:text-headline-lg leading-tight text-on-surface">Checkout</h1>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-lg items-start">
             <!-- Kolom Kiri -->
@@ -326,7 +326,7 @@
                     <hr class="border-outline-variant/30">
                     <div class="flex justify-between items-center">
                         <span class="font-title-lg text-title-lg text-on-surface">Total Tagihan</span>
-                        <span id="summary-total" class="font-headline-md text-headline-md font-bold text-primary">Rp0</span>
+                        <span id="summary-total" class="font-headline-md text-[20px] md:text-headline-md leading-tight font-bold text-primary">Rp0</span>
                     </div>
                     <button id="btn-pay" class="w-full bg-primary hover:bg-primary/90 text-on-primary font-label-md text-label-md py-4 rounded-full transition-colors mt-2 font-bold flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined">lock</span>
