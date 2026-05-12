@@ -12,6 +12,9 @@ const pool = mysql.createPool({
   queueLimit: 0,
   timezone: "+07:00",
   charset: "utf8mb4",
+  ssl: process.env.DB_HOST && process.env.DB_HOST !== "localhost" && process.env.DB_HOST !== "127.0.0.1" 
+    ? { rejectUnauthorized: false } 
+    : undefined
 });
 
 // Test koneksi saat startup
