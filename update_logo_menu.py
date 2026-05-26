@@ -1,3 +1,8 @@
+# Project: ReadBridge
+# Author: Liffy Sei / Affan
+# Date: May 2026
+# Role: Lead Developer & UI/UX Designer
+
 import os, re
 
 # Mengambil semua file yang berekstensi .html di direktori saat ini

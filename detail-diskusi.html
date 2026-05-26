@@ -1,6 +1,68 @@
 <!DOCTYPE html>
+<!--
+  Project: ReadBridge
+  Author: Liffy Sei / Affan
+  Date: May 2026
+  Role: Lead Developer & UI/UX Designer
+-->
+
 <html lang="id">
 <head>
+    <!-- Global Preference Controller Script to prevent FOUC -->
+    <script id="global-preferences-controller">
+        (function() {
+            // Function to apply theme
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+            
+            // Function to apply font size
+            function applyFontSize(size) {
+                if (size === 'kecil') {
+                    document.documentElement.style.fontSize = '14px';
+                } else if (size === 'besar') {
+                    document.documentElement.style.fontSize = '18px';
+                } else {
+                    document.documentElement.style.fontSize = '16px';
+                }
+            }
+            
+            // Function to apply font family
+            function applyFontFamily(family) {
+                let style = document.getElementById('global-font-override');
+                if (family === 'serif') {
+                    if (!style) {
+                        style = document.createElement('style');
+                        style.id = 'global-font-override';
+                        style.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span, a, button, input, select, textarea { font-family: Georgia, serif !important; }`;
+                        document.head.appendChild(style);
+                    }
+                } else {
+                    if (style) style.remove();
+                }
+            }
+
+            // Initial apply
+            applyTheme(localStorage.getItem('rb_theme'));
+            applyFontSize(localStorage.getItem('rb_font_size') || 'sedang');
+            applyFontFamily(localStorage.getItem('rb_font_family') || 'sans');
+
+            // Listen for storage events to sync across tabs
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'rb_theme') {
+                    applyTheme(e.newValue);
+                } else if (e.key === 'rb_font_size') {
+                    applyFontSize(e.newValue || 'sedang');
+                } else if (e.key === 'rb_font_family') {
+                    applyFontFamily(e.newValue || 'sans');
+                }
+            });
+        })();
+    </script>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Detail Diskusi - ReadBridge</title>
@@ -106,7 +168,7 @@
                         <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="tentang-kami.html">Tentang Kami</a>
                         <p class="font-label-md text-label-md text-on-surface font-bold truncate">Siswa Indonesia</p>
                     </div>
-                    <a href="#" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+                    <a href="pengaturan.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
                         <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
                     </a>
                     <a href="profile.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
@@ -374,8 +436,8 @@
         </div>
 <nav class="flex flex-wrap gap-md justify-center font-label-md text-label-md">
 <a class="text-on-surface-variant hover:text-primary transition-colors duration-200 active:opacity-80 transition-opacity" href="#">Tentang Kami</a>
-<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 active:opacity-80 transition-opacity" href="#">Pusat Bantuan</a>
-<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 active:opacity-80 transition-opacity" href="#">Syarat &amp; Ketentuan</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 active:opacity-80 transition-opacity" href="pusat-bantuan.html">Pusat Bantuan</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 active:opacity-80 transition-opacity" href="syarat-dan-ketentuan.html">Syarat &amp; Ketentuan</a>
 <a class="text-on-surface-variant hover:text-primary transition-colors duration-200 active:opacity-80 transition-opacity" href="#">Kebijakan Privasi</a>
 </nav>
 </footer>

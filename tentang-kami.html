@@ -1,6 +1,69 @@
 <!DOCTYPE html>
+<!--
+  Project: ReadBridge
+  Author: Liffy Sei / Affan
+  Date: May 2026
+  Role: Lead Developer & UI/UX Designer
+-->
+
 <html lang="id">
 <head>
+    <!-- Global Preference Controller Script to prevent FOUC -->
+    <script id="global-preferences-controller">
+        (function() {
+            // Function to apply theme
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+            
+            // Function to apply font size
+            function applyFontSize(size) {
+                if (size === 'kecil') {
+                    document.documentElement.style.fontSize = '14px';
+                } else if (size === 'besar') {
+                    document.documentElement.style.fontSize = '18px';
+                } else {
+                    document.documentElement.style.fontSize = '16px';
+                }
+            }
+            
+            // Function to apply font family
+            function applyFontFamily(family) {
+                let style = document.getElementById('global-font-override');
+                if (family === 'serif') {
+                    if (!style) {
+                        style = document.createElement('style');
+                        style.id = 'global-font-override';
+                        style.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span, a, button, input, select, textarea { font-family: Georgia, serif !important; }`;
+                        document.head.appendChild(style);
+                    }
+                } else {
+                    if (style) style.remove();
+                }
+            }
+
+            // Initial apply
+            applyTheme(localStorage.getItem('rb_theme'));
+            applyFontSize(localStorage.getItem('rb_font_size') || 'sedang');
+            applyFontFamily(localStorage.getItem('rb_font_family') || 'sans');
+
+            // Listen for storage events to sync across tabs
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'rb_theme') {
+                    applyTheme(e.newValue);
+                } else if (e.key === 'rb_font_size') {
+                    applyFontSize(e.newValue || 'sedang');
+                } else if (e.key === 'rb_font_family') {
+                    applyFontFamily(e.newValue || 'sans');
+                }
+            });
+        })();
+    </script>
+    <link rel="stylesheet" href="style.css"/>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Tentang Kami - ReadBridge</title>
@@ -156,10 +219,68 @@
                 <a class="text-primary font-title-lg border-b-2 border-primary pb-1" href="tentang-kami.html">Tentang Kami</a>
             </nav>
             <div class="flex items-center gap-md">
-                <a href="login.html" class="bg-primary text-on-primary font-label-md text-label-md px-lg py-sm rounded-full hover:bg-surface-tint transition-colors">Mulai Baca</a>
-                <button class="text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center h-10 w-10 rounded-full hover:bg-surface-container-low">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">account_circle</span>
-                </button>
+                <!-- Guest View -->
+                <div id="nav-guest" class="flex items-center gap-md">
+                    <a href="login.html" class="bg-primary text-on-primary font-label-md text-label-md px-lg py-sm rounded-full hover:bg-surface-tint transition-colors">Mulai Baca</a>
+                    <button class="text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center h-10 w-10 rounded-full hover:bg-surface-container-low" onclick="window.location.href='login.html'">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">account_circle</span>
+                    </button>
+                </div>
+                
+                <!-- Logged In View -->
+                <div id="nav-user" class="hidden items-center gap-4">
+                    <div class="relative" id="profile-menu-container-nav">
+                        <button id="profile-avatar-btn-nav" class="focus:outline-none flex rounded-full">
+                            <img alt="User Profile Avatar" class="w-10 h-10 rounded-full object-cover border border-outline-variant cursor-pointer hover:ring-2 hover:ring-primary transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div id="profile-dropdown-nav" class="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50">
+                            <div class="px-4 py-3 border-b border-outline-variant/30">
+                                <p class="font-label-sm text-label-sm text-on-surface-variant">Masuk sebagai</p>
+                                <p class="font-label-md text-label-md text-on-surface font-bold truncate">Siswa Indonesia</p>
+                            </div>
+                            <a href="pengaturan.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+                                <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
+                            </a>
+                            <a href="profile.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+                                <span class="material-symbols-outlined text-[20px]">person</span> Detail Akun
+                            </a>
+                            <a href="login.html" class="flex items-center gap-2 px-4 py-3 hover:bg-error/10 transition-colors font-label-md text-label-md text-error border-t border-outline-variant/30 font-bold" onclick="localStorage.removeItem('rb_is_logged_in')">
+                                <span class="material-symbols-outlined text-[20px]">logout</span> Log Out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const isLoggedIn = localStorage.getItem('rb_is_logged_in');
+                        const navGuest = document.getElementById('nav-guest');
+                        const navUser = document.getElementById('nav-user');
+                        
+                        if (isLoggedIn) {
+                            if (navGuest) navGuest.classList.add('hidden');
+                            if (navUser) navUser.classList.remove('hidden');
+                            if (navUser) navUser.classList.add('flex');
+                        }
+
+                        const btnNav = document.getElementById('profile-avatar-btn-nav');
+                        const dropdownNav = document.getElementById('profile-dropdown-nav');
+                        if (btnNav && dropdownNav) {
+                            btnNav.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                dropdownNav.classList.toggle('hidden');
+                                dropdownNav.classList.toggle('flex');
+                            });
+                            document.addEventListener('click', (e) => {
+                                if (!dropdownNav.contains(e.target) && !btnNav.contains(e.target)) {
+                                    dropdownNav.classList.add('hidden');
+                                    dropdownNav.classList.remove('flex');
+                                }
+                            });
+                        }
+                    });
+                </script>
             </div>
         </div>
     </header>
@@ -192,6 +313,170 @@
                 <p class="font-body-md text-body-md text-on-surface-variant">Menciptakan ekosistem literasi digital terbesar dan paling inklusif di Indonesia, di mana membaca bukan lagi sebuah keistimewaan, melainkan kebiasaan yang memberdayakan generasi penerus bangsa.</p>
             </div>
         </section>
+
+        <!-- Dynamic Scrolling Testimonials -->
+        <section class="w-full flex flex-col gap-lg overflow-hidden relative py-md select-none">
+            <div class="text-center mb-xs">
+                <h2 class="font-title-lg text-title-lg font-black text-on-surface flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-[28px]">chat_bubble</span> Apa Kata Mereka Tentang ReadBridge?
+                </h2>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-xs">Ulasan nyata dari para pelajar, pengajar, dan pembaca setia kami di seluruh Indonesia.</p>
+            </div>
+            
+            <!-- Row 1: Left to Right Scroll -->
+            <div class="relative w-full flex items-center">
+                <div id="testimonial-row-1" class="flex gap-md whitespace-nowrap transition-transform duration-100 ease-out py-xs" style="transform: translateX(-5%);">
+                    <!-- Card 1 -->
+                    <div class="inline-flex flex-col bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-md w-[280px] sm:w-[320px] shadow-sm shrink-0 whitespace-normal gap-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-sm">
+                            <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100" alt="Avatar"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-100 font-sans">@SantiWulandari</span>
+                                <span class="text-[10px] font-extrabold text-primary font-sans">MAHASISWI</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-on-surface-variant leading-relaxed">"Riset riset kuliah jadi lancar jaya berkat jurnal akademik eksklusif di sini. Platform literasi terbaik di Indonesia!"</p>
+                        <div class="flex text-amber-500 text-[12px]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span></div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="inline-flex flex-col bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-md w-[280px] sm:w-[320px] shadow-sm shrink-0 whitespace-normal gap-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-sm">
+                            <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=100" alt="Avatar"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-100 font-sans">@BudiSakti</span>
+                                <span class="text-[10px] font-extrabold text-secondary font-sans">PELAJAR SMA</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-on-surface-variant leading-relaxed">"BridgePass premium beneran ngebuka semua e-book, belajarku jadi super gampang sekarang!"</p>
+                        <div class="flex text-amber-500 text-[12px]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span></div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="inline-flex flex-col bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-md w-[280px] sm:w-[320px] shadow-sm shrink-0 whitespace-normal gap-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-sm">
+                            <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100" alt="Avatar"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-100 font-sans">@RianDika</span>
+                                <span class="text-[10px] font-extrabold text-tertiary font-sans">KLUB FIKSI</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-on-surface-variant leading-relaxed">"Komunitas diskusinya asik banget, bot interaksinya juga kerasa aktif banget tiap hari!"</p>
+                        <div class="flex text-amber-500 text-[12px]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span></div>
+                    </div>
+                    <!-- Card 4 -->
+                    <div class="inline-flex flex-col bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-md w-[280px] sm:w-[320px] shadow-sm shrink-0 whitespace-normal gap-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-sm">
+                            <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100" alt="Avatar"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-100 font-sans">@DewiMembaca</span>
+                                <span class="text-[10px] font-extrabold text-primary font-sans">SCHOLAR TIER</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-on-surface-variant leading-relaxed">"Suka banget sama progress tracking dan XP levelnya. Bikin termotivasi buat baca buku tiap hari!"</p>
+                        <div class="flex text-amber-500 text-[12px]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Right to Left Scroll -->
+            <div class="relative w-full flex items-center">
+                <div id="testimonial-row-2" class="flex gap-md whitespace-nowrap transition-transform duration-100 ease-out py-xs" style="transform: translateX(5%);">
+                    <!-- Card 1 -->
+                    <div class="inline-flex flex-col bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-md w-[280px] sm:w-[320px] shadow-sm shrink-0 whitespace-normal gap-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-sm">
+                            <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100" alt="Avatar"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-100 font-sans">@AndiSains</span>
+                                <span class="text-[10px] font-extrabold text-secondary font-sans">PEJUANG UTBK</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-on-surface-variant leading-relaxed">"Berkat platform ini, persiapan UTBKku ga pusing lagi. Akses modul belajarnya tak terbatas dan gratis!"</p>
+                        <div class="flex text-amber-500 text-[12px]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span></div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="inline-flex flex-col bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-md w-[280px] sm:w-[320px] shadow-sm shrink-0 whitespace-normal gap-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-sm">
+                            <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=100" alt="Avatar"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-100 font-sans">@BuHerlina</span>
+                                <span class="text-[10px] font-extrabold text-primary font-sans">PENGAJAR FISIKA</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-on-surface-variant leading-relaxed">"Buku pelajaran pendamping kurikulum merdeka di sini sangat lengkap. Sangat ngebantu aktivitas mengajar saya!"</p>
+                        <div class="flex text-amber-500 text-[12px]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span></div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="inline-flex flex-col bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-md w-[280px] sm:w-[320px] shadow-sm shrink-0 whitespace-normal gap-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-sm">
+                            <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100" alt="Avatar"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-100 font-sans">@LinaBuku</span>
+                                <span class="text-[10px] font-extrabold text-tertiary font-sans">PEMBACA CASUAL</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-on-surface-variant leading-relaxed">"Tema sepia-nya pembaca e-book di sini nyaman banget di mata, bikin betah baca berjam-jam tiap sore."</p>
+                        <div class="flex text-amber-500 text-[12px]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span></div>
+                    </div>
+                    <!-- Card 4 -->
+                    <div class="inline-flex flex-col bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-md w-[280px] sm:w-[320px] shadow-sm shrink-0 whitespace-normal gap-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-sm">
+                            <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100" alt="Avatar"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-100 font-sans">@PakDarmawan</span>
+                                <span class="text-[10px] font-extrabold text-secondary font-sans">DONATUR BUKU</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-on-surface-variant leading-relaxed">"Senang bisa mendonasikan buku bekas saya ke marketplace untuk disalurkan ke anak-anak yang membutuhkan."</p>
+                        <div class="flex text-amber-500 text-[12px]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonial Scroll Animation Script -->
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const row1 = document.getElementById('testimonial-row-1');
+                const row2 = document.getElementById('testimonial-row-2');
+                
+                if (row1 && row2) {
+                    const section = row1.closest('section');
+                    if (section) {
+                        const observer = new IntersectionObserver((entries) => {
+                            entries.forEach(entry => {
+                                if (entry.isIntersecting) {
+                                    window.addEventListener('scroll', handleScroll, { passive: true });
+                                    handleScroll();
+                                } else {
+                                    window.removeEventListener('scroll', handleScroll);
+                                }
+                            });
+                        }, { threshold: 0 });
+                        observer.observe(section);
+                        
+                        function handleScroll() {
+                            const rect = section.getBoundingClientRect();
+                            const viewportHeight = window.innerHeight;
+                            
+                            // Calculate total distance between section entering and leaving the viewport
+                            const totalDistance = viewportHeight + rect.height;
+                            // Current scroll progress (0 when top enters bottom, 1 when bottom leaves top)
+                            const entryProgress = (viewportHeight - rect.top) / totalDistance;
+                            
+                            // Clamp progress between 0 and 1
+                            const progress = Math.max(0, Math.min(1, entryProgress));
+                            
+                            // Row 1 starts at -35% (hidden left) and slides to 0% (center-right)
+                            const shift1 = -35 + (progress * 35);
+                            // Row 2 starts at 15% (hidden right) and slides to -20% (center-left)
+                            const shift2 = 15 - (progress * 35);
+                            
+                            row1.style.transform = `translateX(${shift1}%)`;
+                            row2.style.transform = `translateX(${shift2}%)`;
+                        }
+                    }
+                }
+            });
+        </script>
 
         <!-- Impact Stats -->
         <section class="w-full bg-primary-fixed rounded-xl p-xl flex flex-col gap-lg shadow-sm">
@@ -228,7 +513,7 @@
                 <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Tim</a>
                 <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Dampak</a>
                 <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Karir</a>
-                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Pusat Bantuan</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="pusat-bantuan.html">Pusat Bantuan</a>
             </nav>
         </div>
     </footer>
@@ -289,7 +574,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 { href: 'sewa.html', icon: 'menu_book', text: 'Perpustakaan & Sewa' },
                 { href: 'marketplace.html', icon: 'storefront', text: 'Marketplace' },
                 { href: 'komunitas.html', icon: 'forum', text: 'Komunitas' },
-                { href: 'tentang-kami.html', icon: 'info', text: 'Tentang Kami' }
+                { href: 'tentang-kami.html', icon: 'info', text: 'Tentang Kami' },
+                { href: 'syarat-dan-ketentuan.html', icon: 'gavel', text: 'Syarat & Ketentuan' },
+                { href: 'kebijakan-privasi.html', icon: 'shield', text: 'Kebijakan Privasi' }
             ];
             
             links.forEach(l => {

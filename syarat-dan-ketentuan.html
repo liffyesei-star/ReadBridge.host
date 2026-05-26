@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<!--
+  Project: ReadBridge
+  Author: Liffy Sei / Affan
+  Date: May 2026
+  Role: Lead Developer & UI/UX Designer
+-->
+
+<html lang="id">
+<head>
+    <script id="global-preferences-controller">
+        (function() {
+            function applyTheme(theme) {
+                if (theme === 'dark') document.documentElement.classList.add('dark');
+                else document.documentElement.classList.remove('dark');
+            }
+            function applyFontSize(size) {
+                if (size === 'kecil') document.documentElement.style.fontSize = '14px';
+                else if (size === 'besar') document.documentElement.style.fontSize = '18px';
+                else document.documentElement.style.fontSize = '16px';
+            }
+            function applyFontFamily(family) {
+                let style = document.getElementById('global-font-override');
+                if (family === 'serif') {
+                    if (!style) {
+                        style = document.createElement('style');
+                        style.id = 'global-font-override';
+                        style.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span, a, button, input, select, textarea { font-family: Georgia, serif !important; }`;
+                        document.head.appendChild(style);
+                    }
+                } else {
+                    if (style) style.remove();
+                }
+            }
+            applyTheme(localStorage.getItem('rb_theme'));
+            applyFontSize(localStorage.getItem('rb_font_size') || 'sedang');
+            applyFontFamily(localStorage.getItem('rb_font_family') || 'sans');
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'rb_theme') applyTheme(e.newValue);
+                else if (e.key === 'rb_font_size') applyFontSize(e.newValue || 'sedang');
+                else if (e.key === 'rb_font_family') applyFontFamily(e.newValue || 'sans');
+            });
+        })();
+    </script>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Syarat dan Ketentuan - ReadBridge</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="style.css"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#004ac6", "on-primary": "#ffffff", "primary-container": "#2563eb", "on-primary-container": "#eeefff",
+                        surface: "#f8f9ff", "on-surface": "#0b1c30", "surface-variant": "#d3e4fe", "on-surface-variant": "#434655",
+                        "surface-container-lowest": "#ffffff", "surface-container-low": "#eff4ff", "surface-container": "#e5eeff",
+                        "surface-container-high": "#dce9ff", background: "#f8f9ff", "on-background": "#0b1c30", outline: "#737686", "outline-variant": "#c3c6d7", error: "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+
+<!-- TopNavBar -->
+<nav class="bg-surface shadow-sm sticky top-0 z-50">
+  <div class="flex justify-between items-center w-full px-4 md:px-8 py-3 max-w-[1280px] mx-auto">
+    <div class="flex items-center gap-6">
+      <a class="text-xl md:text-2xl leading-tight font-bold text-primary" href="eksplor.html">ReadBridge</a>
+      <div class="hidden md:flex gap-6 text-sm font-medium">
+        <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="eksplor.html">Eksplor</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="komunitas.html">Komunitas</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="marketplace.html">Marketplace</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="perpustakaan.html">Perpustakaan</a>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <a href="pusat-bantuan.html" class="hidden md:flex items-center text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors">
+        Bantuan
+      </a>
+      <a href="notifikasi.html" class="flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors duration-200">
+        <span class="material-symbols-outlined">notifications</span>
+      </a>
+      <div class="relative" id="profile-menu-container">
+        <button id="profile-avatar-btn" class="focus:outline-none flex rounded-full">
+          <img alt="User Profile Avatar" class="w-10 h-10 rounded-full object-cover border border-outline-variant cursor-pointer hover:ring-2 hover:ring-primary transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
+        </button>
+        <!-- Dropdown Menu -->
+        <div id="profile-dropdown" class="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50">
+          <div class="px-4 py-3 border-b border-outline-variant/30">
+            <p class="text-xs text-on-surface-variant">Masuk sebagai</p>
+            <p class="text-sm text-on-surface font-bold truncate">Siswa Indonesia</p>
+          </div>
+          <a href="pengaturan.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors text-sm text-on-surface">
+            <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
+          </a>
+          <a href="profile.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors text-sm text-on-surface">
+            <span class="material-symbols-outlined text-[20px]">person</span> Detail Akun
+          </a>
+          <a href="login.html" class="flex items-center gap-2 px-4 py-3 hover:bg-error/10 transition-colors text-sm text-error border-t border-outline-variant/30 font-bold">
+            <span class="material-symbols-outlined text-[20px]">logout</span> Log Out
+          </a>
+        </div>
+      </div>
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const btn = document.getElementById('profile-avatar-btn');
+          const dropdown = document.getElementById('profile-dropdown');
+          if (btn && dropdown) {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              dropdown.classList.toggle('hidden');
+              dropdown.classList.toggle('flex');
+            });
+            document.addEventListener('click', (e) => {
+              if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                dropdown.classList.add('hidden');
+                dropdown.classList.remove('flex');
+              }
+            });
+          }
+        });
+      </script>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main class="flex-grow max-w-[800px] mx-auto w-full px-4 py-8 md:py-12">
+    <div class="mb-8">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-on-surface mb-4">Syarat dan Ketentuan</h1>
+        <p class="text-on-surface-variant text-lg">Terakhir diperbarui: 26 Mei 2026</p>
+    </div>
+
+    <div class="prose prose-slate max-w-none text-on-surface leading-relaxed">
+        <p class="mb-6">Selamat datang di ReadBridge. Dengan mengakses dan menggunakan platform ini, Anda menyetujui untuk mematuhi dan terikat pada syarat dan ketentuan yang diuraikan di bawah ini. Harap baca dokumen ini dengan saksama sebelum mulai menggunakan layanan kami.</p>
+
+        <h2 class="text-2xl font-bold mt-8 mb-4">1. Penerimaan Syarat Penggunaan</h2>
+        <p class="mb-4">Dengan mengakses, mendaftar, atau menggunakan aplikasi dan situs web ReadBridge, Anda dianggap telah membaca, memahami, dan menyetujui secara sadar seluruh syarat dan ketentuan ini. Jika Anda tidak setuju dengan salah satu atau seluruh syarat ini, Anda disarankan untuk tidak melanjutkan penggunaan platform.</p>
+
+        <h2 class="text-2xl font-bold mt-8 mb-4">2. Penggunaan Layanan</h2>
+        <p class="mb-4">ReadBridge menyediakan layanan penyewaan dan penjualan e-book, fitur komunitas edukatif, serta platform publikasi independen. Saat menggunakan layanan, Anda setuju untuk:</p>
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li>Memberikan informasi pendaftaran (seperti nama, email) yang benar dan mutakhir.</li>
+            <li>Tidak menggunakan bot, sistem otomasi, atau metode ekstraksi data ilegal (scraping) tanpa izin dari ReadBridge.</li>
+            <li>Menjaga keamanan akun Anda sendiri, termasuk kata sandi (password). Kami tidak bertanggung jawab atas kerugian yang diakibatkan oleh kelalaian pengguna.</li>
+            <li>Menggunakan bahasa yang pantas dan tidak melanggar hukum saat berinteraksi di forum/komunitas. Segala bentuk pelecehan, penyebaran hoaks, atau materi yang menyinggung SARA akan langsung ditindak berupa pembekuan akun.</li>
+        </ul>
+
+        <h2 class="text-2xl font-bold mt-8 mb-4">3. Kekayaan Intelektual dan Hak Cipta</h2>
+        <p class="mb-4">Semua konten digital (E-book, cover buku, jurnal) yang disajikan di ReadBridge dilindungi oleh hukum Hak Cipta. Pengguna hanya diberi lisensi terbatas untuk membaca dan mengaksesnya sesuai dengan tipe transaksi (Sewa/Beli) tanpa izin untuk menyalin, mendistribusikan, merekam layar, atau memodifikasinya.</p>
+        <p class="mb-6">Karya tulis independen yang dipublikasikan oleh penulis dalam platform adalah milik sah dari penulis yang bersangkutan dan tidak dapat disebarluaskan di luar sistem tanpa izin mereka.</p>
+
+        <h2 class="text-2xl font-bold mt-8 mb-4">4. Kebijakan Transaksi dan Pengembalian (Refund)</h2>
+        <p class="mb-4">ReadBridge melayani transaksi berupa penyewaan (durasi waktu) dan pembelian permanen buku digital. Semua pembayaran yang telah diselesaikan tidak dapat dibatalkan atau dikembalikan (No Refund), kecuali terdapat kegagalan teknis murni dari server kami yang menyebabkan buku sama sekali tidak bisa diakses dalam waktu 3x24 jam.</p>
+
+        <h2 class="text-2xl font-bold mt-8 mb-4">5. Perubahan Syarat dan Ketentuan</h2>
+        <p class="mb-6">Kami dapat merevisi Syarat dan Ketentuan ini dari waktu ke waktu. Revisi terbaru akan dipublikasikan di halaman ini dan mulai berlaku pada tanggal "Terakhir diperbarui". Anda disarankan untuk meninjau halaman ini secara berkala.</p>
+
+        <div class="bg-surface-container-low border border-outline-variant rounded-xl p-6 mt-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+                <h3 class="font-bold text-lg text-on-surface">Punya pertanyaan tentang kebijakan ini?</h3>
+                <p class="text-on-surface-variant text-sm mt-1">Tim dukungan kami siap membantu menjawab pertanyaan hukum Anda.</p>
+            </div>
+            <a href="pusat-bantuan.html" class="bg-primary text-white font-bold py-2.5 px-6 rounded-full hover:bg-primary-container transition-colors shadow-sm shrink-0">Hubungi Kami</a>
+        </div>
+    </div>
+</main>
+
+<footer class="bg-surface border-t border-outline-variant/30 py-6 mt-12">
+    <div class="max-w-[1280px] mx-auto px-4 md:px-8 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-4">
+        <p class="text-sm text-on-surface-variant">&copy; 2026 ReadBridge. Seluruh hak cipta dilindungi.</p>
+        <div class="flex items-center gap-4 text-sm font-medium">
+            <a href="syarat-dan-ketentuan.html" class="text-primary hover:underline">Syarat & Ketentuan</a>
+            <a href="kebijakan-privasi.html" class="text-on-surface-variant hover:text-primary transition-colors">Kebijakan Privasi</a>
+            <a href="pusat-bantuan.html" class="text-on-surface-variant hover:text-primary transition-colors">Pusat Bantuan</a>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

@@ -1,6 +1,68 @@
 <!DOCTYPE html>
+<!--
+  Project: ReadBridge
+  Author: Liffy Sei / Affan
+  Date: May 2026
+  Role: Lead Developer & UI/UX Designer
+-->
+
 <html class="light" lang="id">
 <head>
+    <!-- Global Preference Controller Script to prevent FOUC -->
+    <script id="global-preferences-controller">
+        (function() {
+            // Function to apply theme
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+            
+            // Function to apply font size
+            function applyFontSize(size) {
+                if (size === 'kecil') {
+                    document.documentElement.style.fontSize = '14px';
+                } else if (size === 'besar') {
+                    document.documentElement.style.fontSize = '18px';
+                } else {
+                    document.documentElement.style.fontSize = '16px';
+                }
+            }
+            
+            // Function to apply font family
+            function applyFontFamily(family) {
+                let style = document.getElementById('global-font-override');
+                if (family === 'serif') {
+                    if (!style) {
+                        style = document.createElement('style');
+                        style.id = 'global-font-override';
+                        style.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span, a, button, input, select, textarea { font-family: Georgia, serif !important; }`;
+                        document.head.appendChild(style);
+                    }
+                } else {
+                    if (style) style.remove();
+                }
+            }
+
+            // Initial apply
+            applyTheme(localStorage.getItem('rb_theme'));
+            applyFontSize(localStorage.getItem('rb_font_size') || 'sedang');
+            applyFontFamily(localStorage.getItem('rb_font_family') || 'sans');
+
+            // Listen for storage events to sync across tabs
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'rb_theme') {
+                    applyTheme(e.newValue);
+                } else if (e.key === 'rb_font_size') {
+                    applyFontSize(e.newValue || 'sedang');
+                } else if (e.key === 'rb_font_family') {
+                    applyFontFamily(e.newValue || 'sans');
+                }
+            });
+        })();
+    </script>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Daftar - ReadBridge</title>
@@ -165,7 +227,7 @@
                         <input required class="w-4 h-4 rounded-[4px] border-outline-variant text-primary focus:ring-primary bg-surface cursor-pointer mt-0.5" id="terms" type="checkbox"/>
                     </div>
                     <label class="font-body-md text-[14px] leading-tight text-on-surface-variant cursor-pointer" for="terms">
-                        Saya setuju dengan <a class="font-label-md text-label-md text-primary hover:underline" href="#">Syarat &amp; Ketentuan</a> serta <a class="font-label-md text-label-md text-primary hover:underline" href="#">Kebijakan Privasi</a> yang berlaku.
+                        Saya setuju dengan <a class="font-label-md text-label-md text-primary hover:underline" href="syarat-dan-ketentuan.html">Syarat &amp; Ketentuan</a> serta <a class="font-label-md text-label-md text-primary hover:underline" href="kebijakan-privasi.html">Kebijakan Privasi</a> yang berlaku.
                     </label>
                 </div>
                 <button class="w-full mt-sm py-sm px-lg bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-primary/90 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-surface-container-lowest" type="submit">
@@ -246,7 +308,7 @@
             <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Tim</a>
             <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Dampak</a>
             <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Karir</a>
-            <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Pusat Bantuan</a>
+            <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="pusat-bantuan.html">Pusat Bantuan</a>
         </nav>
     </div>
 </footer>

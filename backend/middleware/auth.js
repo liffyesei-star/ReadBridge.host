@@ -1,3 +1,9 @@
+/*
+  Project: ReadBridge
+  Author: Liffy Sei / Affan
+  Date: May 2026
+  Role: Lead Developer & UI/UX Designer
+*/
 const admin = require("../config/firebase");
 const db = require("../config/db");
 

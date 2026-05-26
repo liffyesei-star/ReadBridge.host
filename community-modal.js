@@ -1,7 +1,49 @@
+/*
+  Project: ReadBridge
+  Author: Liffy Sei / Affan
+  Date: May 2026
+  Role: Lead Developer & UI/UX Designer
+*/
 // JavaScript terpusat untuk Fitur Modal Diskusi dan Feed Komunitas
 
 const STORAGE_KEY = 'readbridge_community_posts_v2';
 const DRAFT_KEY   = 'readbridge_draft';
+
+window.activeFeedTab = 'Semua';
+window.activeTrendingTag = 'Semua';
+
+const TOPIC_DETAILS = {
+  '#UTBK2024': {
+    title: '#UTBK2024',
+    stats: '5.4k Postingan • Sangat Populer 🔥',
+    desc: 'Topik seputar persiapan ujian masuk perguruan tinggi negeri tahun 2024. Berisi latihan soal, informasi jadwal, tips belajar mandiri, dan sharing seputar jurusan impian.'
+  },
+  '#UTBK': {
+    title: '#UTBK',
+    stats: '4.8k Postingan • Populer 🔥',
+    desc: 'Semua hal seputar UTBK SNBT, materi tes potensi kognitif, penalaran matematika, dan literasi bahasa.'
+  },
+  '#ReviewBuku': {
+    title: '#ReviewBuku',
+    stats: '3.2k Postingan • Populer 🔥',
+    desc: 'Ulasan jujur, rekomendasi, dan bedah isi buku fiksi maupun non-fiksi oleh anggota komunitas.'
+  },
+  '#FiksiRemaja': {
+    title: '#FiksiRemaja',
+    stats: '1.8k Postingan • Menanjak 📈',
+    desc: 'Kumpulan diskusi seputar cerita romansa remaja, novel fiksi sekolah, dan persahabatan.'
+  },
+  '#Fiksi': {
+    title: '#Fiksi',
+    stats: '2.5k Postingan • Populer 🔥',
+    desc: 'Diskusi novel fantasi, sci-fi, fiksi sejarah, dan karya-karya fiksi imajinatif lainnya.'
+  },
+  '#Sastra': {
+    title: '#Sastra',
+    stats: '1.5k Postingan • Menanjak 📈',
+    desc: 'Apresiasi puisi, prosa klasik, novel sastra pemenang penghargaan, dan analisis gaya kepenulisan.'
+  }
+};
 
 // Seed data
 const defaultPosts = [
@@ -98,10 +140,13 @@ function getAvatarForUser(u){
 }
 
 function renderPostCard(p){
-  const tags=(p.tags||[]).map(t=>`<span class="bg-surface-container-high text-on-surface px-3 py-1 rounded-md font-label-sm text-label-sm cursor-pointer hover:bg-primary hover:text-on-primary transition-colors">${t}</span>`).join('');
+  const tags=(p.tags||[]).map(t=>`<span onclick="window.showTrendingTopicDetail('${t}')" class="bg-surface-container-high text-on-surface px-3 py-1 rounded-md font-label-sm text-label-sm cursor-pointer hover:bg-primary hover:text-on-primary transition-colors">${t}</span>`).join('');
   const badge=p.isCurrentUser
     ?`<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-2 tracking-wider">Anda Author</span>`
     :`<span class="bg-surface-container-highest text-on-surface-variant text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-2 tracking-wider">Author</span>`;
+  const trendingBadge = (window.activeFeedTab === 'Trending')
+    ? `<span class="bg-amber-500/10 text-amber-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-2 tracking-wider flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px] animate-pulse">local_fire_department</span>Trending</span>`
+    : '';
   const avatar=p.avatar||getAvatarForUser(p.username);
   const destBadge = p.destination ? `<span class="text-on-surface-variant/50 mx-2">•</span><span class="text-primary font-bold text-[11px] uppercase tracking-wider">${p.destination}</span>` : '';
   const editedBadge = p.isEdited ? `<span class="text-on-surface-variant/60 text-[11px] ml-2 italic">(Telah diedit)</span>` : '';
@@ -139,11 +184,12 @@ function renderPostCard(p){
     pollHTML += `<p class="text-on-surface-variant/60 text-[12px] ml-1 mt-1">${totalVotes} suara</p></div>`;
   }
 
-  return`<article data-post-id="${p.id}" class="bg-surface-container-lowest rounded-2xl p-lg flex flex-col gap-md shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-shadow border border-outline-variant/20">
+  const isTrending = (window.activeFeedTab === 'Trending');
+  return`<article data-post-id="${p.id}" class="bg-surface-container-lowest rounded-2xl p-lg flex flex-col gap-md shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300 border border-outline-variant/20 hover:-translate-y-0.5 ${isTrending ? 'border-l-4 border-l-amber-500/85 bg-gradient-to-r from-amber-500/[0.01] to-transparent' : ''}">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-sm text-on-surface-variant font-label-sm text-label-sm">
         <img src="${avatar}" alt="${p.username}" class="w-10 h-10 rounded-full object-cover border border-outline-variant/50 bg-surface-container-high"/>
-        <div class="flex flex-col"><div class="flex items-center"><span class="font-bold text-on-surface text-label-md">${p.username}</span>${badge}${destBadge}</div><span class="text-on-surface-variant/80">${formatWaktu(p.waktu)}${editedBadge}</span></div>
+        <div class="flex flex-col"><div class="flex items-center"><span class="font-bold text-on-surface text-label-md">${p.username}</span>${badge}${trendingBadge}${destBadge}</div><span class="text-on-surface-variant/80">${formatWaktu(p.waktu)}${editedBadge}</span></div>
       </div>
       <div class="relative">
         <button onclick="window.togglePostMenu(event, '${p.id}')" class="text-on-surface-variant hover:bg-surface-container p-2 rounded-full transition-colors"><span class="material-symbols-outlined">more_horiz</span></button>
@@ -216,16 +262,27 @@ function renderAllPosts(){
   let currentPageFilter = null;
   if (document.title.includes('Klub Pejuang SNBT')) currentPageFilter = 'Pejuang SNBT';
   else if (document.title.includes('Klub Pecinta Fiksi')) currentPageFilter = 'Pecinta Fiksi';
-  // Jika komunitas.html (Public Feed), tampilkan semua
 
-  const posts = getPosts().filter(p => {
-    if (!currentPageFilter) return true; // Tampilkan semua di Public Feed
-    return p.destination === currentPageFilter || p.destination === 'Public Feed'; // Di dalam klub, tampilkan post klub tsbt + post publik jika relevan (opsional, kita tampilkan saja yang spesifik klub)
-  });
+  let postsList = getPosts();
   
-  const filteredPosts = currentPageFilter ? getPosts().filter(p => p.destination === currentPageFilter) : getPosts();
+  // Filter by Page/Club
+  if (currentPageFilter) {
+    postsList = postsList.filter(p => p.destination === currentPageFilter);
+  }
+  
+  // Jika tab Trending aktif
+  if (window.activeFeedTab === 'Trending') {
+    // Filter berdasarkan Kategori (jika ada tag terpilih)
+    if (window.activeTrendingTag && window.activeTrendingTag !== 'Semua') {
+      postsList = postsList.filter(p => (p.tags || []).some(t => t.toLowerCase() === window.activeTrendingTag.toLowerCase()));
+    }
+    // Urutkan berdasarkan votes tertinggi
+    postsList = [...postsList].sort((a, b) => (b.votes || 0) - (a.votes || 0));
+  }
 
-  feed.innerHTML = filteredPosts.length > 0 ? filteredPosts.map(renderPostCard).join('') : '<p class="text-center text-on-surface-variant font-label-md py-8">Belum ada diskusi di sini.</p>';
+  feed.innerHTML = postsList.length > 0 
+    ? postsList.map(renderPostCard).join('') 
+    : '<p class="text-center text-on-surface-variant font-label-md py-8">Belum ada diskusi di sini.</p>';
 }
 
 function ubahVote(id,delta){
@@ -562,6 +619,23 @@ document.addEventListener('DOMContentLoaded', () => {
   setupTabs(); // Initialize club tabs
   renderAllPosts(); // Render posts initially
   renderJoinedClubs(); // Render clubs in left sidebar
+
+  // Bind Feed Tab clicks
+  document.getElementById('tab-feed-semua')?.addEventListener('click', () => window.switchFeedTab('Semua'));
+  document.getElementById('tab-feed-trending')?.addEventListener('click', () => window.switchFeedTab('Trending'));
+
+  // Bind Trending Filter Pill clicks
+  document.querySelectorAll('.trending-filter-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      window.filterTrendingByCategory(btn.dataset.tag);
+    });
+  });
+
+  // Bind close on overlay click for trending detail modal
+  const trendModal = document.getElementById('modal-detail-trending');
+  trendModal?.addEventListener('click', (e) => {
+    if (e.target === trendModal) window.closeTrendingModal();
+  });
 });
 
 // MODAL & FORM LOGIC
@@ -873,3 +947,883 @@ window.submitPollVote = function(postId, optIdx) {
   savePosts(posts);
   renderAllPosts();
 };
+
+// Tab Switching logic
+window.switchFeedTab = function(tab) {
+  window.activeFeedTab = tab;
+  
+  const tabSemua = document.getElementById('tab-feed-semua');
+  const tabTrending = document.getElementById('tab-feed-trending');
+  const filterContainer = document.getElementById('trending-filter-container');
+  
+  if (tabSemua && tabTrending) {
+    if (tab === 'Semua') {
+      tabSemua.className = 'feed-tab font-label-md text-label-md font-bold text-primary border-b-2 border-primary pb-3 px-2';
+      tabTrending.className = 'feed-tab font-label-md text-label-md text-on-surface-variant hover:text-primary pb-3 px-2 rounded-t-lg transition-colors';
+      filterContainer?.classList.add('hidden');
+    } else {
+      tabTrending.className = 'feed-tab font-label-md text-label-md font-bold text-primary border-b-2 border-primary pb-3 px-2';
+      tabSemua.className = 'feed-tab font-label-md text-label-md text-on-surface-variant hover:text-primary pb-3 px-2 rounded-t-lg transition-colors';
+      filterContainer?.classList.remove('hidden');
+    }
+  }
+  
+  renderAllPosts();
+};
+
+// Filter Trending by tag pill
+window.filterTrendingByCategory = function(tag) {
+  window.activeTrendingTag = tag;
+  
+  document.querySelectorAll('.trending-filter-pill').forEach(btn => {
+    if (btn.dataset.tag === tag) {
+      btn.className = 'trending-filter-pill px-4 py-1.5 rounded-full text-[13px] font-semibold border bg-primary text-white border-primary transition-all duration-200';
+    } else {
+      btn.className = 'trending-filter-pill px-4 py-1.5 rounded-full text-[13px] font-semibold border bg-surface-container text-on-surface border-outline-variant/30 hover:border-primary hover:text-primary transition-all duration-200';
+    }
+  });
+  
+  renderAllPosts();
+};
+
+// Detailed Trending Topic Modal
+window.showTrendingTopicDetail = function(tagName) {
+  const modal = document.getElementById('modal-detail-trending');
+  const titleEl = document.getElementById('trending-modal-title');
+  const statsEl = document.getElementById('trending-modal-stats');
+  const descEl = document.getElementById('trending-modal-desc');
+  const postsContainer = document.getElementById('trending-modal-posts');
+  const buatDiskusiBtn = document.getElementById('btn-trending-buat-diskusi');
+  
+  if (!modal) return;
+  
+  const detail = TOPIC_DETAILS[tagName] || {
+    title: tagName,
+    stats: 'Baru & Populer 🔥',
+    desc: `Ruang diskusi komunitas yang berfokus pada topik hangat ${tagName}. Cari tahu apa yang dipikirkan pengguna lain.`
+  };
+  
+  titleEl.innerHTML = `<span class="text-primary font-bold">${detail.title}</span>`;
+  statsEl.innerHTML = `${detail.stats}`;
+  descEl.textContent = detail.desc;
+  
+  // Find related posts
+  const relatedPosts = getPosts().filter(p => 
+    (p.tags || []).some(t => t.toLowerCase() === tagName.toLowerCase())
+  ).sort((a, b) => b.votes - a.votes);
+  
+  if (relatedPosts.length > 0) {
+    postsContainer.innerHTML = relatedPosts.map(p => `
+      <div class="bg-surface-container-low border border-outline-variant/20 p-4 rounded-xl shadow-sm hover:bg-surface-container transition-all">
+        <a href="detail-diskusi.html?id=${p.id}" class="hover:text-primary transition-colors"><h4 class="font-label-md text-label-md font-bold text-on-surface line-clamp-1">${p.judul}</h4></a>
+        <p class="text-on-surface-variant/80 text-[12px] mt-1 line-clamp-2">${p.isi.replace(/<[^>]*>/g, '')}</p>
+        <div class="flex items-center justify-between mt-3 text-[11px] text-on-surface-variant">
+          <span>Oleh ${p.username}</span>
+          <span class="flex items-center gap-1 font-bold text-primary"><span class="material-symbols-outlined text-[12px]">thumb_up</span> ${formatVotes(p.votes)}</span>
+        </div>
+      </div>
+    `).join('');
+  } else {
+    postsContainer.innerHTML = `<p class="text-on-surface-variant/80 text-[13px] italic py-4 text-center">Belum ada diskusi populer untuk tag ini. Jadilah yang pertama memulai!</p>`;
+  }
+  
+  // Buat Diskusi Button setup
+  buatDiskusiBtn.onclick = function() {
+    window.closeTrendingModal();
+    // Pre-fill tag in new post modal
+    activeTags = [tagName];
+    renderTagChips();
+    // Open modal
+    if (typeof window.openModal === 'function') {
+      window.openModal();
+    }
+  };
+  
+  // Add direct filter button to footer
+  let filterBtn = modal.querySelector('#btn-trending-filter-utama');
+  if (!filterBtn) {
+    filterBtn = document.createElement('button');
+    filterBtn.id = 'btn-trending-filter-utama';
+    filterBtn.className = 'px-4 py-2.5 rounded-full text-[13px] font-semibold text-primary hover:bg-primary/10 transition-colors border border-primary mr-2';
+    buatDiskusiBtn.parentNode.insertBefore(filterBtn, buatDiskusiBtn);
+  }
+  filterBtn.textContent = `Filter Feed: ${tagName}`;
+  filterBtn.onclick = function() {
+    window.filterFeedByTag(tagName);
+  };
+  
+  modal.classList.remove('hidden');
+};
+
+window.closeTrendingModal = function() {
+  const modal = document.getElementById('modal-detail-trending');
+  modal?.classList.add('hidden');
+};
+
+window.filterFeedByTag = function(tagName) {
+  window.closeTrendingModal();
+  
+  // Switch to Trending tab
+  window.switchFeedTab('Trending');
+  
+  // Set trending category to tag if it's one of the options
+  const formattedTag = tagName.startsWith('#') ? tagName : '#' + tagName;
+  const pill = document.querySelector(`.trending-filter-pill[data-tag="${formattedTag}"]`);
+  
+  if (pill) {
+    window.filterTrendingByCategory(formattedTag);
+  } else {
+    // If tag is not one of the predefined category buttons, let's temporarily set activeTrendingTag
+    window.activeTrendingTag = formattedTag;
+    
+    // De-activate all standard pills
+    document.querySelectorAll('.trending-filter-pill').forEach(btn => {
+      btn.className = 'trending-filter-pill px-4 py-1.5 rounded-full text-[13px] font-semibold border bg-surface-container text-on-surface border-outline-variant/30 hover:border-primary hover:text-primary transition-all duration-200';
+    });
+    
+    // Render with custom active tag
+    renderAllPosts();
+  }
+  
+  // Scroll to community feed
+  const feedEl = document.getElementById('community-feed');
+  feedEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+// ==========================================
+// COMMUNITY BOT SIMULATION
+// ==========================================
+
+const BOT_PROFILES = [
+  '@SastraWangi', '@BookNerd', '@HujanBulanJuni', '@TokyoReader', '@PenaSenja',
+  '@PejuangKampus', '@MathGenius', '@CalonMaba', '@Ambiskuh', '@TukangOverthinking',
+  '@KutuBuku', '@PecintaSastra', '@AnakRajin', '@SiswaIndonesia', '@AlumniSukses',
+  '@PemimpiBesar', '@PemburuPTN', '@SastraLover', '@BukuAdalahTeman'
+];
+
+const BOT_COMMENTS_FIKSI = [
+  "Wah, menarik banget ulasannya kak! Bikin pengen baca.",
+  "Setuju! Bagian itu emang paling seru.",
+  "Ada yang punya rekomendasi buku lain yang mirip ini?",
+  "Bener banget, aku juga mikir gitu pas baca.",
+  "Wah, belum pernah baca. Kayaknya masuk wishlist deh.",
+  "Boleh minta pendapat tentang bab akhirnya?",
+  "Aku suka banget sama gaya bahasa penulisnya, ngalir gitu aja.",
+  "Jujur, awalnya rada bosen tapi makin ke belakang makin seru!"
+];
+
+const BOT_COMMENTS_SNBT = [
+  "Makasih tipsnya kak, bermanfaat banget buat persiapan UTBK!",
+  "Wah, soal nomor 3 itu emang agak tricky. Ada cara cepatnya ga?",
+  "Semangat pejuang PTN! Kita pasti bisa.",
+  "Sama, aku juga masih sering bingung di materi ini.",
+  "Izin save ya kak, buat bahan belajar nanti.",
+  "Menurutku yang penting banyakin latihan soal aja.",
+  "Pilihan jurusannya apa nih kalau boleh tau?",
+  "Jangan lupa istirahat juga guys, jangan diforsir belajarnya."
+];
+
+class CommunityBot {
+  constructor() {
+    this.intervalId = null;
+    this.activeDest = null;
+    if (document.title.includes('Pejuang SNBT')) this.activeDest = 'Pejuang SNBT';
+    else if (document.title.includes('Pecinta Fiksi')) this.activeDest = 'Pecinta Fiksi';
+  }
+
+  start() {
+    if (!this.activeDest) return; // Hanya jalankan di halaman komunitas spesifik
+    
+    // Set interval acak antara 20 - 40 detik
+    const runSimulation = () => {
+      this.simulateAction();
+      const nextTime = Math.floor(Math.random() * (40000 - 20000 + 1)) + 20000;
+      this.intervalId = setTimeout(runSimulation, nextTime);
+    };
+    
+    // Start first simulation after 10 seconds
+    this.intervalId = setTimeout(runSimulation, 10000);
+  }
+
+  stop() {
+    if (this.intervalId) clearTimeout(this.intervalId);
+  }
+
+  simulateAction() {
+    const posts = getPosts().filter(p => p.destination === this.activeDest);
+    if (posts.length === 0) return;
+
+    // Pilih aksi acak: 0 = upvote (60%), 1 = comment (40%)
+    const action = Math.random() < 0.6 ? 0 : 1;
+    
+    // Pilih post acak
+    const targetPost = posts[Math.floor(Math.random() * posts.length)];
+    const randomUser = BOT_PROFILES[Math.floor(Math.random() * BOT_PROFILES.length)];
+
+    if (action === 0) {
+      this.simulateVote(targetPost.id);
+    } else {
+      this.simulateComment(targetPost, randomUser);
+    }
+  }
+
+  simulateVote(postId) {
+    const posts = getPosts();
+    const p = posts.find(x => x.id === postId);
+    if (p) {
+      p.votes = (p.votes || 0) + 1;
+      savePosts(posts);
+      
+      const el = document.getElementById(`vote-${postId}`);
+      if (el) {
+        el.textContent = formatVotes(p.votes);
+        el.parentElement.classList.add('bg-primary/20', 'scale-105', 'transition-all');
+        setTimeout(() => {
+          el.parentElement.classList.remove('bg-primary/20', 'scale-105');
+        }, 1000);
+      }
+    }
+  }
+
+  simulateComment(post, user) {
+    const posts = getPosts();
+    const p = posts.find(x => x.id === post.id);
+    if (!p) return;
+
+    const templates = this.activeDest === 'Pecinta Fiksi' ? BOT_COMMENTS_FIKSI : BOT_COMMENTS_SNBT;
+    const text = templates[Math.floor(Math.random() * templates.length)];
+
+    p.commentsList = p.commentsList || [];
+    p.commentsList.push({ username: user, text, waktu: new Date().toISOString() });
+    p.komentar = p.commentsList.length;
+    savePosts(posts);
+
+    // Update UI directly if comments section is open
+    const list = document.getElementById(`comments-list-${post.id}`);
+    if (list) {
+      list.insertAdjacentHTML('beforeend', `
+        <div class="flex gap-3 text-sm">
+          <img src="${getAvatarForUser(user)}" alt="${user}" class="w-8 h-8 rounded-full border border-outline-variant/50 bg-surface-container-high"/>
+          <div class="bg-primary/10 border border-primary/30 p-3 rounded-2xl rounded-tl-none flex-1 shadow-sm transition-all duration-1000">
+            <div class="flex items-center gap-2 mb-1"><span class="font-bold text-on-surface text-[13px]">${user}</span><span class="text-on-surface-variant/60 text-[11px]">Baru saja</span></div>
+            <p class="text-on-surface-variant text-[14px] leading-relaxed">${text}</p>
+          </div>
+        </div>
+      `);
+    }
+    const countEl = document.getElementById(`komentar-count-${post.id}`);
+    if (countEl) {
+      countEl.textContent = p.komentar;
+      countEl.parentElement.classList.add('text-primary', 'bg-primary/10', 'transition-all');
+      setTimeout(() => countEl.parentElement.classList.remove('text-primary', 'bg-primary/10'), 2000);
+    }
+
+    this.showToast(`💬 Diskusi baru saja dikomentari oleh ${user}`);
+  }
+
+  showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'fixed bottom-6 right-6 bg-surface-container-highest text-on-surface px-4 py-3 rounded-xl shadow-lg border border-outline-variant/30 flex items-center gap-3 z-[100] transform transition-all duration-300 translate-y-10 opacity-0';
+    toast.innerHTML = `<span class="font-label-md text-label-md">${message}</span>`;
+    
+    document.body.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => {
+      toast.classList.remove('translate-y-10', 'opacity-0');
+    }, 100);
+
+    // Remove after 3.5s
+    setTimeout(() => {
+      toast.classList.add('opacity-0', 'translate-y-2');
+      setTimeout(() => toast.remove(), 300);
+    }, 3500);
+  }
+}
+
+// ==========================================
+// SYSTEM REKOMENDASI BUKU & ULASAN INTERAKTIF
+// ==========================================
+
+const RECOMMENDATIONS_STORAGE_KEY = 'readbridge_book_recommendations_v2';
+const defaultRecommendations = [
+  {
+    id: 'rec-fiksi-1',
+    club: 'Pecinta Fiksi',
+    title: 'Cantik Itu Luka',
+    author: 'Eka Kurniawan',
+    cover: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAXUDfExqL3kiH5HpJqA3Rx-Ahaz0_lfHsDtiEc3nHqrVX6c2fI80nMaYXLD2Knjh37xVxbeEQ3hFnLzcZeXLpVpbHO7GCzSy1hnCtXo_qwqtU3sXXgAmLFifphjLqAPZyunIPpTzpmzCBEEKmtmqfRfFXNOIW7u-CcpbtT66h3zhNajQSYzZAVkWJAHX1Avd0Rs5i8KI55Hv_wzD5yJMQFwbVctiZM-mNKJweLUA3pgb4rVdnwhwQRhGP8hkS4gEyWO0l2Pqr5raY',
+    desc: 'Sebuah adikarya realisme magis Indonesia yang bercerita tentang perjuangan hidup Dewi Ayu dan anak-anak perempuannya yang sarat mitos, tragedi keluarga, dan sejarah kolonial.',
+    rentAvailable: true,
+    rentPrice: 'Rp 15.000',
+    buyPrice: 'Rp 95.000',
+    digitalReadAvailable: true,
+    reviews: [
+      {
+        id: 'rev-fiksi-1-1',
+        username: '@PecintaSastra',
+        rating: 5,
+        reviewText: 'Salah satu novel terbaik sastra Indonesia modern. Gaya penulisannya mirip Gabriel Garcia Marquez tapi kental dengan kearifan lokal Jawa dan sejarah kelam bangsa kita. Sangat direkomendasikan!',
+        upvotes: 45,
+        downvotes: 2,
+        userVoted: null,
+        comments: [
+          { username: '@SastraWangi', text: 'Setuju banget! Realisme magisnya bener-bener liar dan memikat.', waktu: '2 jam yang lalu' },
+          { username: '@KutuBuku', text: 'Buku ini emang mindblowing banget pas pertama kali baca.', waktu: '1 jam yang lalu' }
+        ]
+      },
+      {
+        id: 'rev-fiksi-1-2',
+        username: '@TokyoReader',
+        rating: 4,
+        reviewText: 'Karakter Dewi Ayu sangat kuat dan tak terlupakan. Ceritanya penuh satire politik dan mitologi lokal. Kadang bahasanya agak vulgar tapi itulah keunikannya.',
+        upvotes: 18,
+        downvotes: 1,
+        userVoted: null,
+        comments: []
+      }
+    ]
+  },
+  {
+    id: 'rec-fiksi-2',
+    club: 'Pecinta Fiksi',
+    title: 'Laut Bercerita',
+    author: 'Leila S. Chudori',
+    cover: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCBs_2IGw86OKGtH47-1Xz99vJjeMA3OIqQtK0EWVt8MJMjpIglrjV1_fA2LMf1H2pLwKOJUrzGVVx_xZo6YM3e_eWLmF80RicVWLlNfvgvSwpo4yVc6IqqAF8jQCsWREBoEDH_nC4q4pKH1kEv3c1vppEROFpnaAQOlXmZ6BrNbxr-HEJb6dW0P0EffIVbxxxlFDUzb-pIiecgvPP0a_CfKnssB6m1PzAujX_QeENvwswW5-WEgeFtxGrxgz_qXiUT-1uALtTif_I',
+    desc: 'Sebuah novel yang menyuarakan kebenaran dari sejarah kelam masa reformasi 1998, tentang persahabatan, cinta, keluarga, dan perjuangan aktivis mahasiswa yang hilang diculik.',
+    rentAvailable: true,
+    rentPrice: 'Rp 14.000',
+    buyPrice: 'Rp 88.000',
+    digitalReadAvailable: true,
+    reviews: [
+      {
+        id: 'rev-fiksi-2-1',
+        username: '@HujanBulanJuni',
+        rating: 5,
+        reviewText: 'Buku yang sukses bikin nangis bombay. Sudut pandang Biru Laut sangat puitis namun menyakitkan, sedangkan bagian Asmara Sandy memberi perspektif keluarga korban yang luar biasa mengharukan.',
+        upvotes: 38,
+        downvotes: 0,
+        userVoted: null,
+        comments: [
+          { username: '@PenaSenja', text: 'Sama kak, nyesek banget pas baca bagian ritual makan malam bersama kursi kosong.', waktu: '5 jam yang lalu' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'rec-snbt-1',
+    club: 'Pejuang SNBT',
+    title: 'Wangsit HOTS UTBK SNBT 2024',
+    author: 'Tim Wangsit',
+    cover: 'snbt_cover.png',
+    desc: 'Buku panduan terlengkap menghadapi ujian masuk perguruan tinggi negeri dengan metode pembagian bab soal HOTS terbaru beserta pembahasan rinci ala tentor berpengalaman.',
+    rentAvailable: true,
+    rentPrice: 'Rp 20.000',
+    buyPrice: 'Rp 120.000',
+    digitalReadAvailable: true,
+    reviews: [
+      {
+        id: 'rev-snbt-1-1',
+        username: '@PejuangKampus',
+        rating: 5,
+        reviewText: 'Soal-soalnya bener-bener HOTS dan mirip banget sama tipe UTBK tahun lalu. Penjelasan rumusnya simpel dan taktis, ngebantu banget naikin skor Try Out ku!',
+        upvotes: 62,
+        downvotes: 1,
+        userVoted: null,
+        comments: [
+          { username: '@CalonMaba', text: 'Bener kak! Terutama materi penalaran kuantitatifnya mantap.', waktu: '3 jam yang lalu' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'rec-snbt-2',
+    club: 'Pejuang SNBT',
+    title: 'TPS UTBK SNBT & Literasi 2024',
+    author: 'Forum Edukasi',
+    cover: 'snbt_icon.png',
+    desc: 'Latihan soal super intensif untuk mematangkan konsep Tes Potensi Skolastik (TPS) meliputi Kemampuan Penalaran Umum, Pengetahuan Umum, dan Literasi Bahasa.',
+    rentAvailable: true,
+    rentPrice: 'Rp 15.000',
+    buyPrice: 'Rp 95.000',
+    digitalReadAvailable: true,
+    reviews: [
+      {
+        id: 'rev-snbt-2-1',
+        username: '@Ambiskuh',
+        rating: 4,
+        reviewText: 'Penjelasan literasi bahasa Indonesianya sangat detail. Cocok buat yang mau mengejar target skor di atas 700.',
+        upvotes: 24,
+        downvotes: 0,
+        userVoted: null,
+        comments: []
+      }
+    ]
+  }
+];
+
+function getBookRecommendations() {
+  const data = localStorage.getItem(RECOMMENDATIONS_STORAGE_KEY);
+  if (data) return JSON.parse(data);
+  localStorage.setItem(RECOMMENDATIONS_STORAGE_KEY, JSON.stringify(defaultRecommendations));
+  return defaultRecommendations;
+}
+
+function saveBookRecommendations(data) {
+  localStorage.setItem(RECOMMENDATIONS_STORAGE_KEY, JSON.stringify(data));
+}
+
+function renderBookRecommendations() {
+  const container = document.getElementById('book-recommendation-container');
+  if (!container) return;
+
+  let activeClub = null;
+  if (document.title.includes('Pejuang SNBT')) activeClub = 'Pejuang SNBT';
+  else if (document.title.includes('Pecinta Fiksi')) activeClub = 'Pecinta Fiksi';
+  if (!activeClub) return;
+
+  const recs = getBookRecommendations().filter(r => r.club === activeClub);
+
+  let html = `
+    <!-- Form Tambah Rekomendasi / Review -->
+    <div class="bg-surface rounded-2xl p-lg border border-outline-variant/30 shadow-[0_2px_8px_rgba(0,0,0,0.03)] mb-md">
+      <h3 class="font-title-lg text-title-lg font-bold text-on-surface mb-xs flex items-center gap-xs">
+        <span class="material-symbols-outlined text-primary">rate_review</span>
+        Bagikan Rekomendasi & Ulasan
+      </h3>
+      <p class="font-label-sm text-label-sm text-on-surface-variant mb-md">Bantu teman klub kamu menemukan bacaan terbaik berikutnya!</p>
+      
+      <form id="form-rekomendasi" class="flex flex-col gap-4" onsubmit="window.submitBookRecommendation(event)">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1">
+            <label class="font-label-sm text-label-sm text-on-surface-variant">Judul Buku</label>
+            <input type="text" id="rec-input-judul" placeholder="Contoh: Cantik Itu Luka" required class="bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-2.5 text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none text-on-surface">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-label-sm text-label-sm text-on-surface-variant">Penulis / Pengarang</label>
+            <input type="text" id="rec-input-penulis" placeholder="Contoh: Eka Kurniawan" required class="bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-2.5 text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none text-on-surface">
+          </div>
+        </div>
+        
+        <div class="flex flex-col gap-1">
+          <label class="font-label-sm text-label-sm text-on-surface-variant">Deskripsi Singkat Buku (Opsional)</label>
+          <textarea id="rec-input-desc" placeholder="Tulis sinopsis singkat atau gambaran umum isi buku..." rows="2" class="bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-2.5 text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none text-on-surface"></textarea>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label class="font-label-sm text-label-sm text-on-surface-variant">Ulasan Jujur Kamu</label>
+          <textarea id="rec-input-review" placeholder="Bagikan ulasan jujur kamu tentang buku ini..." rows="3" required class="bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-2.5 text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none text-on-surface"></textarea>
+        </div>
+
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-2">
+          <div class="flex items-center gap-2">
+            <span class="font-label-sm text-label-sm text-on-surface-variant font-bold">Rating Kamu:</span>
+            <div class="flex items-center gap-1 text-amber-500" id="star-rating-selector">
+              ${[1,2,3,4,5].map(i => `
+                <span onclick="window.setRecommendationRating(${i})" id="selector-star-${i}" class="material-symbols-outlined text-[26px] cursor-pointer hover:scale-115 transition-transform" style="font-variation-settings: 'FILL' 1;">star</span>
+              `).join('')}
+            </div>
+            <input type="hidden" id="rec-input-rating" value="5">
+          </div>
+          
+          <button type="submit" class="bg-primary text-on-primary font-label-md text-label-md py-3 px-6 rounded-xl font-bold hover:bg-primary-container transition-all flex items-center justify-center gap-xs shadow-sm">
+            <span class="material-symbols-outlined text-[20px]">send</span> Kirim Rekomendasi
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  if (recs.length === 0) {
+    html += `
+      <div class="bg-surface rounded-2xl p-lg border border-outline-variant/20 shadow-sm text-center">
+        <p class="text-on-surface-variant font-label-md py-4">Belum ada rekomendasi buku di klub ini. Yuk, jadilah yang pertama merekomendasikan!</p>
+      </div>
+    `;
+    container.innerHTML = html;
+    return;
+  }
+
+  // Render list of recommendations
+  recs.forEach(rec => {
+    const totalReviews = rec.reviews.length;
+    const avgRating = totalReviews > 0 ? (rec.reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews).toFixed(1) : '0.0';
+
+    html += `
+      <div class="bg-surface rounded-2xl border border-outline-variant/30 shadow-[0_2px_8px_rgba(0,0,0,0.03)] overflow-hidden transition-all duration-300 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] mb-md">
+        <!-- Kartu Buku Utama -->
+        <div class="p-lg flex flex-col md:flex-row gap-lg bg-surface-container-lowest">
+          <div class="w-28 h-36 bg-surface-container-highest rounded-xl flex items-center justify-center overflow-hidden border border-outline-variant flex-shrink-0 shadow-sm self-center md:self-start">
+            <img src="${rec.cover || 'fiksi_icon.png'}" alt="${rec.title}" class="w-full h-full object-cover" onerror="this.src='fiksi_icon.png'"/>
+          </div>
+          <div class="flex-grow flex flex-col justify-between py-1 text-left">
+            <div>
+              <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                <h3 class="font-headline-md text-[20px] font-bold text-on-surface leading-tight">${rec.title}</h3>
+                <span class="text-on-surface-variant/40 hidden md:inline">•</span>
+                <span class="bg-secondary-container text-on-secondary-container px-3 py-0.5 rounded-full font-label-sm text-[12px] font-bold">${rec.author}</span>
+              </div>
+              <p class="font-body-md text-body-md text-on-surface-variant/80 text-[14px] leading-relaxed mb-4">${rec.desc || 'Tidak ada deskripsi tersedia.'}</p>
+            </div>
+            
+            <!-- CTAs & Ratings Summary -->
+            <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-outline-variant/20">
+              <div class="flex items-center gap-2">
+                <div class="flex text-amber-500">
+                  ${[1, 2, 3, 4, 5].map(star => {
+                    const fill = star <= Math.round(parseFloat(avgRating)) ? '1' : '0';
+                    return `<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' ${fill};">star</span>`;
+                  }).join('')}
+                </div>
+                <span class="font-bold text-on-surface text-label-md">${avgRating}</span>
+                <span class="text-on-surface-variant/50 text-[13px]">(${totalReviews} Ulasan)</span>
+              </div>
+              
+              <div class="flex flex-wrap items-center gap-2">
+                ${rec.digitalReadAvailable ? `
+                  <button onclick="window.readDigitalBookSimulator('${rec.title.replace(/'/g, "\\'")}')" class="px-4 py-2 bg-green-500 text-white rounded-full font-bold font-label-sm text-[12px] hover:bg-green-600 transition-colors shadow-sm flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]">menu_book</span> Baca E-Book
+                  </button>
+                ` : ''}
+                ${rec.rentAvailable ? `
+                  <a href="checkout-sewa.html?title=${encodeURIComponent(rec.title)}&author=${encodeURIComponent(rec.author)}&price=${encodeURIComponent(rec.rentPrice || 'Rp 15.000')}&cover=${encodeURIComponent(rec.cover)}" class="px-4 py-2 bg-primary text-on-primary rounded-full font-bold font-label-sm text-[12px] hover:bg-primary-container transition-colors shadow-sm flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]">bookmark_add</span> Sewa
+                  </a>
+                ` : ''}
+                <a href="checkout.html?title=${encodeURIComponent(rec.title)}&author=${encodeURIComponent(rec.author)}&price=${encodeURIComponent(rec.buyPrice)}&cover=${encodeURIComponent(rec.cover)}" class="px-4 py-2 bg-surface-container border border-outline-variant rounded-full font-bold font-label-sm text-[12px] text-on-surface hover:bg-surface-container-high transition-colors flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px]">shopping_cart</span> Beli (${rec.buyPrice})
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Seksi Ulasan -->
+        <div class="bg-surface-container-low px-lg py-md border-t border-outline-variant/30 flex flex-col gap-4">
+          <h4 class="font-label-md text-label-md font-bold text-on-surface-variant uppercase tracking-wider text-[11px] mb-1 text-left">Ulasan Pembaca Komunitas</h4>
+          <div class="flex flex-col gap-md">
+            ${rec.reviews.map(rev => {
+              const starsHtml = [1,2,3,4,5].map(star => {
+                const fill = star <= rev.rating ? '1' : '0';
+                return `<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' ${fill};">star</span>`;
+              }).join('');
+              
+              const isUpvoted = rev.userVoted === 'up';
+              const isDownvoted = rev.userVoted === 'down';
+              
+              return `
+                <div class="bg-surface-container-lowest rounded-2xl p-md border border-outline-variant/20 shadow-sm flex flex-col gap-2 relative">
+                  <!-- Profil Reviewer -->
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2 text-left">
+                      <img src="${getAvatarForUser(rev.username)}" alt="${rev.username}" class="w-8 h-8 rounded-full border border-outline-variant/30 object-cover bg-surface-container-high"/>
+                      <div class="flex flex-col">
+                        <div class="flex items-center gap-2">
+                          <span class="font-bold text-[13px] text-on-surface">${rev.username}</span>
+                          ${rev.username === '@SiswaIndonesia' ? `<span class="bg-primary/20 text-primary text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">Anda</span>` : ''}
+                        </div>
+                        <span class="text-[11px] text-on-surface-variant/70">Ulasan Terverifikasi</span>
+                      </div>
+                    </div>
+                    <div class="flex text-amber-500">
+                      ${starsHtml}
+                    </div>
+                  </div>
+                  
+                  <!-- Isi Ulasan -->
+                  <p class="font-body-md text-[14px] text-on-surface-variant leading-relaxed px-1 text-left">${rev.reviewText}</p>
+                  
+                  <!-- Aksi Ulasan -->
+                  <div class="flex items-center justify-between border-t border-outline-variant/20 pt-2.5 mt-1 text-[13px]">
+                    <div class="flex items-center gap-3">
+                      <!-- Upvote / Downvote -->
+                      <div class="flex items-center bg-surface-container-low rounded-full px-1 py-0.5 border border-outline-variant/20">
+                        <button onclick="window.voteBookReview('${rec.id}', '${rev.id}', 'up')" class="hover:text-primary hover:bg-surface-container-high p-1 rounded-full transition-colors flex items-center justify-center ${isUpvoted ? 'text-primary' : 'text-on-surface-variant'}">
+                          <span class="material-symbols-outlined text-[18px]">thumb_up</span>
+                        </button>
+                        <span class="font-bold text-[12px] px-1.5 text-on-surface">${rev.upvotes || 0}</span>
+                        <button onclick="window.voteBookReview('${rec.id}', '${rev.id}', 'down')" class="hover:text-error hover:bg-surface-container-high p-1 rounded-full transition-colors flex items-center justify-center ${isDownvoted ? 'text-error' : 'text-on-surface-variant'}">
+                          <span class="material-symbols-outlined text-[18px]">thumb_down</span>
+                        </button>
+                        <span class="font-bold text-[12px] px-1.5 text-on-surface-variant/80">${rev.downvotes || 0}</span>
+                      </div>
+                      
+                      <button onclick="window.toggleReviewCommentBox('${rev.id}')" class="flex items-center gap-xs text-on-surface hover:text-primary transition-colors font-medium">
+                        <span class="material-symbols-outlined text-[18px]">reply</span>
+                        Balasan (${rev.comments ? rev.comments.length : 0})
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Seksi Balasan -->
+                  <div id="review-comment-box-${rev.id}" class="hidden flex-col gap-3 mt-3 pt-3 border-t border-outline-variant/20">
+                    <div class="flex flex-col gap-2.5 pl-4 border-l-2 border-outline-variant/40" id="review-comments-list-${rev.id}">
+                      ${(rev.comments || []).map(c => `
+                        <div class="flex gap-2.5 text-sm text-left">
+                          <img src="${getAvatarForUser(c.username)}" alt="${c.username}" class="w-6 h-6 rounded-full border border-outline-variant/20 bg-surface-container-high"/>
+                          <div class="bg-surface-container-low border border-outline-variant/10 p-2.5 rounded-2xl rounded-tl-none flex-1 shadow-sm">
+                            <div class="flex items-center gap-1.5 mb-0.5">
+                              <span class="font-bold text-on-surface text-[12px]">${c.username}</span>
+                              ${c.username === '@SiswaIndonesia' ? `<span class="bg-primary/20 text-primary text-[8px] font-bold px-1 py-0.2 rounded uppercase">Anda</span>` : ''}
+                              <span class="text-on-surface-variant/50 text-[10px]">${c.waktu || 'Baru saja'}</span>
+                            </div>
+                            <p class="text-on-surface-variant text-[13px] leading-relaxed">${c.text}</p>
+                          </div>
+                        </div>
+                      `).join('')}
+                    </div>
+                    
+                    <!-- Input Form Balasan -->
+                    <div class="flex gap-2.5 items-center mt-1 pl-4">
+                      <img src="${getAvatarForUser('@SiswaIndonesia')}" alt="User" class="w-6 h-6 rounded-full border border-outline-variant/30"/>
+                      <div class="flex-1 relative flex">
+                        <input type="text" id="input-review-reply-${rev.id}" placeholder="Tulis balasan untuk ${rev.username}..." class="w-full bg-surface-container-low border border-outline-variant/30 rounded-full px-3.5 py-1.5 text-[13px] focus:ring-1 focus:ring-primary focus:border-primary outline-none pr-10 text-on-surface" onkeypress="if(event.key==='Enter') window.submitReviewReply('${rec.id}', '${rev.id}')"/>
+                        <button onclick="window.submitReviewReply('${rec.id}', '${rev.id}')" class="absolute right-1 top-1/2 -translate-y-1/2 text-primary hover:bg-primary/10 p-1 rounded-full transition-colors flex items-center justify-center">
+                          <span class="material-symbols-outlined text-[16px]">send</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+window.setRecommendationRating = function(rating) {
+  document.getElementById('rec-input-rating').value = rating;
+  for (let i = 1; i <= 5; i++) {
+    const star = document.getElementById(`selector-star-${i}`);
+    if (star) {
+      if (i <= rating) {
+        star.style.fontVariationSettings = "'FILL' 1";
+      } else {
+        star.style.fontVariationSettings = "'FILL' 0";
+      }
+    }
+  }
+};
+
+window.submitBookRecommendation = function(event) {
+  event.preventDefault();
+  
+  let activeClub = null;
+  if (document.title.includes('Pejuang SNBT')) activeClub = 'Pejuang SNBT';
+  else if (document.title.includes('Pecinta Fiksi')) activeClub = 'Pecinta Fiksi';
+  if (!activeClub) return;
+
+  const title = document.getElementById('rec-input-judul').value.trim();
+  const author = document.getElementById('rec-input-penulis').value.trim();
+  const desc = document.getElementById('rec-input-desc').value.trim();
+  const reviewText = document.getElementById('rec-input-review').value.trim();
+  const rating = parseInt(document.getElementById('rec-input-rating').value);
+
+  const recs = getBookRecommendations();
+  
+  // Periksa apakah buku sudah ada di list rekomendasi
+  let rec = recs.find(r => r.club === activeClub && r.title.toLowerCase() === title.toLowerCase());
+  
+  const newReview = {
+    id: 'rev-user-' + Date.now(),
+    username: '@SiswaIndonesia',
+    rating: rating,
+    reviewText: reviewText,
+    upvotes: 0,
+    downvotes: 0,
+    userVoted: null,
+    comments: []
+  };
+
+  if (rec) {
+    rec.reviews.push(newReview);
+  } else {
+    let coverUrl = 'snbt_cover.png';
+    if (activeClub === 'Pecinta Fiksi') {
+      coverUrl = 'fiksi_cover.png';
+    }
+    
+    const newRec = {
+      id: 'rec-' + Date.now(),
+      club: activeClub,
+      title: title,
+      author: author,
+      cover: coverUrl,
+      desc: desc,
+      rentAvailable: true,
+      rentPrice: 'Rp 15.000',
+      buyPrice: 'Rp 90.000',
+      digitalReadAvailable: true,
+      reviews: [newReview]
+    };
+    recs.push(newRec);
+  }
+
+  saveBookRecommendations(recs);
+  renderBookRecommendations();
+  
+  // Tampilkan toast keberhasilan
+  if (window.communityBot) {
+    window.communityBot.showToast("📚 Rekomendasi buku Anda berhasil diterbitkan!");
+  } else {
+    alert("📚 Rekomendasi buku Anda berhasil diterbitkan!");
+  }
+
+  // Reset input form
+  document.getElementById('rec-input-judul').value = '';
+  document.getElementById('rec-input-penulis').value = '';
+  document.getElementById('rec-input-desc').value = '';
+  document.getElementById('rec-input-review').value = '';
+  window.setRecommendationRating(5);
+};
+
+window.voteBookReview = function(bookId, reviewId, voteType) {
+  const recs = getBookRecommendations();
+  const rec = recs.find(r => r.id === bookId);
+  if (!rec) return;
+  const rev = rec.reviews.find(v => v.id === reviewId);
+  if (!rev) return;
+
+  if (rev.userVoted === voteType) {
+    if (voteType === 'up') rev.upvotes = Math.max(0, rev.upvotes - 1);
+    else rev.downvotes = Math.max(0, rev.downvotes - 1);
+    rev.userVoted = null;
+  } else {
+    if (rev.userVoted === 'up') rev.upvotes = Math.max(0, rev.upvotes - 1);
+    else if (rev.userVoted === 'down') rev.downvotes = Math.max(0, rev.downvotes - 1);
+    
+    if (voteType === 'up') rev.upvotes += 1;
+    else rev.downvotes += 1;
+    
+    rev.userVoted = voteType;
+  }
+
+  saveBookRecommendations(recs);
+  renderBookRecommendations();
+};
+
+window.toggleReviewCommentBox = function(reviewId) {
+  const el = document.getElementById(`review-comment-box-${reviewId}`);
+  if (el) {
+    el.classList.toggle('hidden');
+    el.classList.toggle('flex');
+  }
+};
+
+window.submitReviewReply = function(bookId, reviewId) {
+  const input = document.getElementById(`input-review-reply-${reviewId}`);
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+
+  const recs = getBookRecommendations();
+  const rec = recs.find(r => r.id === bookId);
+  if (!rec) return;
+  const rev = rec.reviews.find(v => v.id === reviewId);
+  if (!rev) return;
+
+  rev.comments = rev.comments || [];
+  rev.comments.push({
+    username: '@SiswaIndonesia',
+    text: text,
+    waktu: 'Baru saja'
+  });
+
+  saveBookRecommendations(recs);
+  input.value = '';
+  renderBookRecommendations();
+  
+  // Tetap buka kotak balasan
+  const box = document.getElementById(`review-comment-box-${reviewId}`);
+  if (box) {
+    box.classList.remove('hidden');
+    box.classList.add('flex');
+  }
+};
+
+window.readDigitalBookSimulator = function(bookTitle) {
+  let modal = document.getElementById('digital-reader-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'digital-reader-modal';
+    modal.className = 'fixed inset-0 bg-black/85 backdrop-blur-sm z-[200] flex items-center justify-center p-4 animate-fadeIn';
+    document.body.appendChild(modal);
+  }
+  
+  modal.innerHTML = `
+    <div class="bg-amber-50 text-[#2c1d11] rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col overflow-hidden max-h-[90vh]">
+      <!-- Header -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-[#ebd7c2] bg-[#fbf4eb]">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[#8c6239]">menu_book</span>
+          <h2 class="font-bold text-[16px] md:text-[18px] font-serif truncate">Membaca E-Book: ${bookTitle}</h2>
+        </div>
+        <button onclick="document.getElementById('digital-reader-modal').remove()" class="p-1.5 rounded-full hover:bg-[#ebd7c2] transition-colors text-stone-600 flex items-center justify-center">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+      <!-- Area Bacaan Buku -->
+      <div class="flex-1 overflow-y-auto px-8 py-6 font-serif text-[17px] leading-relaxed custom-scrollbar bg-[#fcf8f2] text-justify select-none">
+        <h3 class="text-center font-bold text-2xl mb-8 mt-4 text-[#5c3e21]">BAB I<br>Pertemuan Pertama</h3>
+        <p class="mb-4 indent-8">Pagi itu, sinar matahari menembus rimbunnya dedaunan jati di pinggir jalan raya utama. Angin dingin berhembus pelan membawa aroma tanah basah sehabis hujan lebat semalam. Di kejauhan, kepulan asap tipis mulai terlihat membubung dari warung kopi sederhana di bawah pohon beringin tua.</p>
+        <p class="mb-4 indent-8">Ia melangkah dengan perlahan, memeluk sebuah buku tebal bersampul biru pudar di dadanya seolah benda itu adalah hal paling berharga di dunia ini. Langkah kakinya sesekali terhenti, matanya menatap liar ke sekeliling seperti sedang mencari seseorang yang telah lama dinanti dalam kebisuan.</p>
+        <p class="mb-4 indent-8">"Apakah kau akan datang?" bisiknya perlahan pada angin yang lewat. Pertanyaan itu menguap begitu saja bersama dinginnya pagi, tanpa jawaban, menyisakan rahasia kecil yang hanya disimpan rapat-rapat oleh garis takdir.</p>
+        <p class="mb-4 indent-8">Di ReadBridge, Anda dapat menyewa, membeli, atau langsung membaca versi digital lengkap dari buku-buku berlisensi tinggi dengan kenyamanan premium setelan visual yang dapat diatur sesuka hati.</p>
+      </div>
+      <!-- Footer navigasi halaman -->
+      <div class="px-6 py-4 border-t border-[#ebd7c2] bg-[#fbf4eb] flex justify-between items-center text-sm font-sans text-stone-600">
+        <span>Halaman 1 dari 480</span>
+        <div class="flex items-center gap-2">
+          <button class="px-3 py-1 bg-[#ebd7c2] rounded hover:bg-[#dec4ab] transition-colors font-bold text-[12px] flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">chevron_left</span> Sebelumnya</button>
+          <button class="px-3 py-1 bg-[#ebd7c2] rounded hover:bg-[#dec4ab] transition-colors font-bold text-[12px] flex items-center gap-1">Selanjutnya <span class="material-symbols-outlined text-[16px]">chevron_right</span></button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  modal.style.display = 'flex';
+};
+
+// Inisialisasi Bot & Tab Switcher Klub
+document.addEventListener('DOMContentLoaded', () => {
+  window.communityBot = new CommunityBot();
+  window.communityBot.start();
+
+  // 1. Logika Tab Switcher Laman Klub
+  const clubTabs = document.querySelectorAll('.club-tab');
+  if (clubTabs.length > 0) {
+    clubTabs.forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        const targetTab = tab.dataset.tab;
+        
+        clubTabs.forEach(t => {
+          t.className = "club-tab px-md py-sm font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer";
+        });
+        tab.className = "club-tab px-md py-sm font-label-md text-label-md font-bold text-primary border-b-2 border-primary cursor-pointer";
+        
+        const panels = document.querySelectorAll('.tab-content');
+        panels.forEach(p => p.classList.add('hidden'));
+        
+        const targetPanel = document.getElementById(`tab-${targetTab}`);
+        if (targetPanel) {
+          targetPanel.classList.remove('hidden');
+        }
+        
+        if (targetTab === 'rekomendasi') {
+          renderBookRecommendations();
+        }
+      });
+    });
+    
+    // Auto-render rekomendasi jika tab awal aktif
+    const activeTab = document.querySelector('.club-tab.font-bold');
+    if (activeTab && activeTab.dataset.tab === 'rekomendasi') {
+      renderBookRecommendations();
+    }
+  }
+});

@@ -1,3 +1,9 @@
+/*
+  Project: ReadBridge
+  Author: Liffy Sei / Affan
+  Date: May 2026
+  Role: Lead Developer & UI/UX Designer
+*/
 // server.js - ReadBridge Backend
 require("dotenv").config();
 const express = require("express");

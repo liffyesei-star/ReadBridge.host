@@ -1,6 +1,69 @@
 <!DOCTYPE html>
+<!--
+  Project: ReadBridge
+  Author: Liffy Sei / Affan
+  Date: May 2026
+  Role: Lead Developer & UI/UX Designer
+-->
+
 <html lang="id">
 <head>
+    <!-- Global Preference Controller Script to prevent FOUC -->
+    <script id="global-preferences-controller">
+        (function() {
+            // Function to apply theme
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+            
+            // Function to apply font size
+            function applyFontSize(size) {
+                if (size === 'kecil') {
+                    document.documentElement.style.fontSize = '14px';
+                } else if (size === 'besar') {
+                    document.documentElement.style.fontSize = '18px';
+                } else {
+                    document.documentElement.style.fontSize = '16px';
+                }
+            }
+            
+            // Function to apply font family
+            function applyFontFamily(family) {
+                let style = document.getElementById('global-font-override');
+                if (family === 'serif') {
+                    if (!style) {
+                        style = document.createElement('style');
+                        style.id = 'global-font-override';
+                        style.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span, a, button, input, select, textarea { font-family: Georgia, serif !important; }`;
+                        document.head.appendChild(style);
+                    }
+                } else {
+                    if (style) style.remove();
+                }
+            }
+
+            // Initial apply
+            applyTheme(localStorage.getItem('rb_theme'));
+            applyFontSize(localStorage.getItem('rb_font_size') || 'sedang');
+            applyFontFamily(localStorage.getItem('rb_font_family') || 'sans');
+
+            // Listen for storage events to sync across tabs
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'rb_theme') {
+                    applyTheme(e.newValue);
+                } else if (e.key === 'rb_font_size') {
+                    applyFontSize(e.newValue || 'sedang');
+                } else if (e.key === 'rb_font_family') {
+                    applyFontFamily(e.newValue || 'sans');
+                }
+            });
+        })();
+    </script>
+    <link rel="stylesheet" href="style.css"/>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Beranda - ReadBridge</title>
@@ -159,6 +222,9 @@
                 <!-- Guest View -->
                 <div id="nav-guest" class="flex items-center gap-md">
                     <a href="login.html" class="bg-primary text-on-primary font-label-md text-label-md px-lg py-sm rounded-full hover:bg-surface-tint transition-colors">Mulai Baca</a>
+                    <button class="text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center h-10 w-10 rounded-full hover:bg-surface-container-low" onclick="window.location.href='login.html'">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">account_circle</span>
+                    </button>
                 </div>
                 
                 <!-- Logged In View -->
@@ -173,7 +239,7 @@
                                 <p class="font-label-sm text-label-sm text-on-surface-variant">Masuk sebagai</p>
                                 <p class="font-label-md text-label-md text-on-surface font-bold truncate">Siswa Indonesia</p>
                             </div>
-                            <a href="#" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+                            <a href="pengaturan.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
                                 <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
                             </a>
                             <a href="profile.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
@@ -284,52 +350,119 @@
 
     <!-- Main Content Canvas -->
     <main class="flex-grow flex flex-col items-center w-full max-w-[1280px] mx-auto px-4 md:px-margin py-xl gap-xxl">
-        <!-- Hero Section -->
-        <section class="w-full relative rounded-xl overflow-hidden shadow-sm flex items-center justify-center min-h-[400px] bg-surface-container" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCF1sxPgTrZKCS61KKuaDjSK8d3QVBpzvJ6orIEDCozKJQnurdp8UaccSHkmorrdlxS52snJWDZiBe0c6XtTWnttSLGwYCYfaDF6MAYpWTOgmT_EuyHF3QlYnNr7uU6Nsx_H0LcKtU9lsRIMmz4UdogZpO8iHq6V3ryByrPOR8rLOvkxJtnHfs5hS46Y2-EhNlt0JzJX_7htxJ7JAkGdGcPB3e04hPPr1X3Qb5TyI2rqzkBmVtxCj7H-pipaxu6Htks5jsBnKhwId4'); background-size: cover; background-position: center;">
-            <div class="absolute inset-0 bg-inverse-surface/60 mix-blend-multiply"></div>
-            <div class="relative z-10 text-center px-4 md:px-margin max-w-3xl">
-                <h1 class="font-display-lg text-[32px] md:text-display-lg leading-tight text-on-primary mb-md tracking-tight">Membangun Jembatan Literasi untuk Masa Depan Indonesia</h1>
-                <p class="font-body-lg text-body-lg text-on-primary-container opacity-90">Menyediakan akses tak terbatas ke ilmu pengetahuan untuk setiap pelajar di seluruh pelosok nusantara.</p>
+        <!-- Hero Section (Modern Dashboard Design) -->
+        <section class="w-full relative rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 dark:from-black dark:via-slate-950 dark:to-black border border-slate-800 p-lg md:p-xl flex flex-col lg:flex-row items-center justify-between gap-xl min-h-[460px] animate-fade-in-up">
+            <!-- Glow Backdrops -->
+            <div class="absolute -right-20 -top-20 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-20 -bottom-20 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <!-- Left: Hero Content -->
+            <div class="relative z-10 flex flex-col gap-md max-w-2xl text-left">
+                <span class="bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 px-3.5 py-1 rounded-full text-xs font-extrabold tracking-wider w-fit flex items-center gap-1 select-none">
+                    <span class="material-symbols-outlined text-[14px]">rocket_launch</span> PLATFORM LITERASI NO. 1 DI INDONESIA
+                </span>
+                <h1 class="font-display-lg text-[28px] sm:text-[36px] md:text-[44px] leading-tight text-white font-extrabold tracking-tight">
+                    Membangun Jembatan Literasi <br class="hidden sm:inline"/>
+                    <span class="bg-gradient-to-r from-indigo-400 via-emerald-400 to-amber-400 bg-clip-text text-transparent drop-shadow-sm">Masa Depan Indonesia</span>
+                </h1>
+                <p class="font-body-lg text-[15px] md:text-body-lg text-slate-300 leading-relaxed">
+                    Akses ribuan buku digital premium, modul pendamping sekolah, jurnal riset akademik eksklusif, serta rasakan keseruan diskusi komunitas belajar tanpa batas geografis.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-sm mt-sm">
+                    <a href="eksplor.html" class="px-6 py-3.5 bg-primary text-white font-bold text-label-md rounded-full shadow-[0_4px_16px_rgba(37,99,235,0.3)] hover:bg-surface-tint hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-sm">
+                        Mulai Menjelajah <span class="material-symbols-outlined text-[18px]">explore</span>
+                    </a>
+                    <a href="tentang-kami.html" class="px-6 py-3.5 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-label-md rounded-full transition-all text-center flex items-center justify-center gap-sm">
+                        Pelajari Misi Kami <span class="material-symbols-outlined text-[18px]">info</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right: Floating Glassmorphic Widgets Showcase -->
+            <div class="relative z-10 w-full lg:w-96 flex flex-col gap-sm select-none animate-pulse-soft">
+                <!-- Highlight Widget 1 -->
+                <div class="bg-white/5 dark:bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-xl p-sm flex items-center gap-sm shadow-xl transform hover:scale-[1.02] transition-transform duration-300">
+                    <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+                    </div>
+                    <div class="flex flex-col truncate">
+                        <span class="text-[11px] font-extrabold text-emerald-400">AKTIVITAS PREMIUM</span>
+                        <span class="text-xs font-bold text-slate-100 truncate">Siswa Indonesia diupgrade ke Premium 👑</span>
+                    </div>
+                </div>
+
+                <!-- Highlight Widget 2 -->
+                <div class="bg-white/5 dark:bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-xl p-sm flex items-center gap-sm shadow-xl ml-lg transform hover:scale-[1.02] transition-transform duration-300">
+                    <div class="w-10 h-10 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[20px]">auto_stories</span>
+                    </div>
+                    <div class="flex flex-col truncate">
+                        <span class="text-[11px] font-extrabold text-indigo-400">PEMBACA AKTIF</span>
+                        <span class="text-xs font-bold text-slate-100 truncate">Membaca "Atomic Habits (Bab 3)"</span>
+                    </div>
+                </div>
+
+                <!-- Highlight Widget 3 -->
+                <div class="bg-white/5 dark:bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-xl p-sm flex items-center gap-sm shadow-xl transform hover:scale-[1.02] transition-transform duration-300">
+                    <div class="w-10 h-10 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[20px]">military_tech</span>
+                    </div>
+                    <div class="flex flex-col truncate">
+                        <span class="text-[11px] font-extrabold text-amber-400">PRESTASI BELAJAR</span>
+                        <span class="text-xs font-bold text-slate-100 truncate">Selamat! +2,450 XP Scholar Level Up!</span>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- Fitur Utama -->
+        <!-- Fitur Utama (Redesigned Anti-Flat Cards) -->
         <section class="w-full grid grid-cols-1 md:grid-cols-3 gap-gutter">
-            <div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/30 flex flex-col items-center text-center gap-sm hover:shadow-md transition-shadow">
-                <div class="w-16 h-16 rounded-full bg-primary-container flex items-center justify-center text-primary mb-2">
-                    <span class="material-symbols-outlined text-[32px]">library_books</span>
+            <!-- Card 1 -->
+            <div class="bg-surface-container-lowest p-lg rounded-2xl shadow-sm border-t-4 border-t-primary border-x border-b border-outline-variant/20 flex flex-col items-center text-center gap-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300 group cursor-pointer">
+                <div class="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-xs group-hover:scale-110 transition-transform duration-300 shadow-sm">
+                    <span class="material-symbols-outlined text-[30px]">library_books</span>
                 </div>
-                <h3 class="font-title-lg text-title-lg text-on-surface">Koleksi Terlengkap</h3>
-                <p class="font-body-md text-body-md text-on-surface-variant">Akses ribuan buku, modul, dan jurnal akademik secara gratis untuk menunjang pembelajaran Anda.</p>
+                <h3 class="font-title-lg text-title-lg text-on-surface font-extrabold">E-Book & Jurnal Terlengkap</h3>
+                <p class="font-body-md text-[14px] md:text-body-md text-on-surface-variant leading-relaxed">
+                    Jelajahi modul pendamping sekolah, jurnal riset akademik, komik, hingga e-book pengembangan diri eksklusif untuk bekal studimu.
+                </p>
             </div>
-            <div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/30 flex flex-col items-center text-center gap-sm hover:shadow-md transition-shadow">
-                <div class="w-16 h-16 rounded-full bg-secondary-container flex items-center justify-center text-secondary mb-2">
-                    <span class="material-symbols-outlined text-[32px]">forum</span>
+            
+            <!-- Card 2 -->
+            <div class="bg-surface-container-lowest p-lg rounded-2xl shadow-sm border-t-4 border-t-secondary border-x border-b border-outline-variant/20 flex flex-col items-center text-center gap-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300 group cursor-pointer">
+                <div class="w-16 h-16 rounded-full bg-secondary/10 text-secondary flex items-center justify-center mb-xs group-hover:scale-110 transition-transform duration-300 shadow-sm">
+                    <span class="material-symbols-outlined text-[30px]">forum</span>
                 </div>
-                <h3 class="font-title-lg text-title-lg text-on-surface">Komunitas Aktif</h3>
-                <p class="font-body-md text-body-md text-on-surface-variant">Bergabung dengan klub belajar, berdiskusi, dan berbagi wawasan dengan sesama pelajar di seluruh Indonesia.</p>
+                <h3 class="font-title-lg text-title-lg text-on-surface font-extrabold">Komunitas Diskusi Interaktif</h3>
+                <p class="font-body-md text-[14px] md:text-body-md text-on-surface-variant leading-relaxed">
+                    Diskusikan materi UTBK/ujian, bedah buku populer, dan temukan teman belajar dari pelosok nusantara dengan simulasi bot interaktif.
+                </p>
             </div>
-            <div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/30 flex flex-col items-center text-center gap-sm hover:shadow-md transition-shadow">
-                <div class="w-16 h-16 rounded-full bg-tertiary-container flex items-center justify-center text-tertiary mb-2">
-                    <span class="material-symbols-outlined text-[32px]">workspace_premium</span>
+            
+            <!-- Card 3 -->
+            <div class="bg-surface-container-lowest p-lg rounded-2xl shadow-sm border-t-4 border-t-tertiary border-x border-b border-outline-variant/20 flex flex-col items-center text-center gap-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300 group cursor-pointer">
+                <div class="w-16 h-16 rounded-full bg-tertiary-container/10 text-tertiary flex items-center justify-center mb-xs group-hover:scale-110 transition-transform duration-300 shadow-sm">
+                    <span class="material-symbols-outlined text-[30px]">workspace_premium</span>
                 </div>
-                <h3 class="font-title-lg text-title-lg text-on-surface">Belajar Terstruktur</h3>
-                <p class="font-body-md text-body-md text-on-surface-variant">Materi disusun secara rapi dan mudah diakses, memfasilitasi perjalanan akademik Anda untuk mencapai target.</p>
+                <h3 class="font-title-lg text-title-lg text-on-surface font-extrabold">Premium BridgePass</h3>
+                <p class="font-body-md text-[14px] md:text-body-md text-on-surface-variant leading-relaxed">
+                    Hilangkan batas waktu membaca gratis dan nikmati akses sewa buku bebas hambatan dengan menukarkan kode referral keanggotaan.
+                </p>
             </div>
         </section>
 
         <!-- Koleksi Populer -->
         <section class="w-full flex flex-col gap-md mt-sm">
-            <div class="flex justify-between items-end mb-xs">
-                <h2 class="font-headline-md text-[20px] md:text-headline-md leading-tight text-on-surface">Buku Terpopuler Minggu Ini</h2>
-                <a href="#" class="font-label-md text-label-md text-primary hover:underline flex items-center gap-1">Lihat Semua <span class="material-symbols-outlined text-[16px]">arrow_forward</span></a>
+            <div class="flex justify-between items-end mb-xs border-b border-outline-variant/30 pb-xs">
+                <h2 class="font-title-lg text-title-lg font-extrabold text-on-surface">Katalog Buku Terpopuler Minggu Ini</h2>
+                <a href="eksplor.html" class="font-label-md text-label-md text-primary hover:underline flex items-center gap-1">Lihat Semua <span class="material-symbols-outlined text-[16px]">arrow_forward</span></a>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-gutter" id="popular-books-container">
                 <!-- Book 1 -->
-                <div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-outline-variant/30 flex flex-col gap-sm group cursor-pointer hover:shadow-md transition-all">
+                <div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-outline-variant/30 flex flex-col gap-sm group cursor-pointer hover:shadow-md transition-all" onclick="window.location.href='eksplor.html'">
                     <div class="w-full aspect-[3/4] bg-surface-container-high rounded-lg overflow-hidden relative">
                         <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Buku">
-                        <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-primary">Sastra</div>
+                        <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-primary shadow-sm select-none">Sastra</div>
                     </div>
                     <div class="mt-1">
                         <h4 class="font-label-md text-label-md font-bold text-on-surface line-clamp-1">Laskar Pelangi</h4>
@@ -337,10 +470,10 @@
                     </div>
                 </div>
                 <!-- Book 2 -->
-                <div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-outline-variant/30 flex flex-col gap-sm group cursor-pointer hover:shadow-md transition-all">
+                <div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-outline-variant/30 flex flex-col gap-sm group cursor-pointer hover:shadow-md transition-all" onclick="window.location.href='eksplor.html'">
                     <div class="w-full aspect-[3/4] bg-surface-container-high rounded-lg overflow-hidden relative">
                         <img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Buku">
-                        <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-primary">Akademik</div>
+                        <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-primary shadow-sm select-none">Akademik</div>
                     </div>
                     <div class="mt-1">
                         <h4 class="font-label-md text-label-md font-bold text-on-surface line-clamp-1">Modul UTBK 2024</h4>
@@ -348,10 +481,10 @@
                     </div>
                 </div>
                 <!-- Book 3 -->
-                <div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-outline-variant/30 flex flex-col gap-sm group cursor-pointer hover:shadow-md transition-all">
+                <div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-outline-variant/30 flex flex-col gap-sm group cursor-pointer hover:shadow-md transition-all" onclick="window.location.href='eksplor.html'">
                     <div class="w-full aspect-[3/4] bg-surface-container-high rounded-lg overflow-hidden relative">
                         <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Buku">
-                        <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-primary">Self-Help</div>
+                        <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-primary shadow-sm select-none">Self-Help</div>
                     </div>
                     <div class="mt-1">
                         <h4 class="font-label-md text-label-md font-bold text-on-surface line-clamp-1">Atomic Habits</h4>
@@ -359,10 +492,10 @@
                     </div>
                 </div>
                 <!-- Book 4 -->
-                <div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-outline-variant/30 flex flex-col gap-sm group cursor-pointer hover:shadow-md transition-all">
+                <div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-outline-variant/30 flex flex-col gap-sm group cursor-pointer hover:shadow-md transition-all" onclick="window.location.href='eksplor.html'">
                     <div class="w-full aspect-[3/4] bg-surface-container-high rounded-lg overflow-hidden relative">
                         <img src="https://images.unsplash.com/photo-1495640388908-05fd9211f733?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Buku">
-                        <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-primary">Fiksi</div>
+                        <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-primary shadow-sm select-none">Fiksi</div>
                     </div>
                     <div class="mt-1">
                         <h4 class="font-label-md text-label-md font-bold text-on-surface line-clamp-1">Bumi Manusia</h4>
@@ -372,24 +505,188 @@
             </div>
         </section>
 
+        <!-- Dynamic Scrolling Testimonials -->
+        <section class="w-full flex flex-col gap-lg overflow-hidden relative py-md select-none">
+            <div class="text-center mb-xs">
+                <h2 class="font-title-lg text-title-lg font-black text-on-surface flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-[28px]">chat_bubble</span> Apa Kata Mereka Tentang ReadBridge?
+                </h2>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-xs">Ulasan nyata dari para pelajar, pengajar, dan pembaca setia kami di seluruh Indonesia.</p>
+            </div>
+            
+            <!-- Row 1: Left to Right Scroll -->
+            <div class="relative w-full flex items-center">
+                <div id="testimonial-row-1" class="flex gap-md whitespace-nowrap transition-transform duration-100 ease-out py-xs" style="transform: translateX(-5%);">
+                    <!-- Card 1 -->
+                    <div class="inline-flex flex-col bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-md w-[280px] sm:w-[320px] shadow-sm shrink-0 whitespace-normal gap-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-sm">
+                            <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100" alt="Avatar"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-100 font-sans">@SantiWulandari</span>
+                                <span class="text-[10px] font-extrabold text-primary font-sans">MAHASISWI</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-on-surface-variant leading-relaxed">"Riset riset kuliah jadi lancar jaya berkat jurnal akademik eksklusif di sini. Platform literasi terbaik di Indonesia!"</p>
+                        <div class="flex text-amber-500 text-[12px]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span></div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="inline-flex flex-col bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-md w-[280px] sm:w-[320px] shadow-sm shrink-0 whitespace-normal gap-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-sm">
+                            <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=100" alt="Avatar"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-100 font-sans">@BudiSakti</span>
+                                <span class="text-[10px] font-extrabold text-secondary font-sans">PELAJAR SMA</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-on-surface-variant leading-relaxed">"BridgePass premium beneran ngebuka semua e-book, belajarku jadi super gampang sekarang!"</p>
+                        <div class="flex text-amber-500 text-[12px]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span></div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="inline-flex flex-col bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-md w-[280px] sm:w-[320px] shadow-sm shrink-0 whitespace-normal gap-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-sm">
+                            <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100" alt="Avatar"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-100 font-sans">@RianDika</span>
+                                <span class="text-[10px] font-extrabold text-tertiary font-sans">KLUB FIKSI</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-on-surface-variant leading-relaxed">"Komunitas diskusinya asik banget, bot interaksinya juga kerasa aktif banget tiap hari!"</p>
+                        <div class="flex text-amber-500 text-[12px]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span></div>
+                    </div>
+                    <!-- Card 4 -->
+                    <div class="inline-flex flex-col bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-md w-[280px] sm:w-[320px] shadow-sm shrink-0 whitespace-normal gap-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-sm">
+                            <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100" alt="Avatar"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-100 font-sans">@DewiMembaca</span>
+                                <span class="text-[10px] font-extrabold text-primary font-sans">SCHOLAR TIER</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-on-surface-variant leading-relaxed">"Suka banget sama progress tracking dan XP levelnya. Bikin termotivasi buat baca buku tiap hari!"</p>
+                        <div class="flex text-amber-500 text-[12px]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Right to Left Scroll -->
+            <div class="relative w-full flex items-center">
+                <div id="testimonial-row-2" class="flex gap-md whitespace-nowrap transition-transform duration-100 ease-out py-xs" style="transform: translateX(5%);">
+                    <!-- Card 1 -->
+                    <div class="inline-flex flex-col bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-md w-[280px] sm:w-[320px] shadow-sm shrink-0 whitespace-normal gap-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-sm">
+                            <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100" alt="Avatar"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-100 font-sans">@AndiSains</span>
+                                <span class="text-[10px] font-extrabold text-secondary font-sans">PEJUANG UTBK</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-on-surface-variant leading-relaxed">"Berkat platform ini, persiapan UTBKku ga pusing lagi. Akses modul belajarnya tak terbatas dan gratis!"</p>
+                        <div class="flex text-amber-500 text-[12px]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span></div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="inline-flex flex-col bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-md w-[280px] sm:w-[320px] shadow-sm shrink-0 whitespace-normal gap-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-sm">
+                            <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=100" alt="Avatar"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-100 font-sans">@BuHerlina</span>
+                                <span class="text-[10px] font-extrabold text-primary font-sans">PENGAJAR FISIKA</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-on-surface-variant leading-relaxed">"Buku pelajaran pendamping kurikulum merdeka di sini sangat lengkap. Sangat ngebantu aktivitas mengajar saya!"</p>
+                        <div class="flex text-amber-500 text-[12px]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span></div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="inline-flex flex-col bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-md w-[280px] sm:w-[320px] shadow-sm shrink-0 whitespace-normal gap-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-sm">
+                            <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100" alt="Avatar"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-100 font-sans">@LinaBuku</span>
+                                <span class="text-[10px] font-extrabold text-tertiary font-sans">PEMBACA CASUAL</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-on-surface-variant leading-relaxed">"Tema sepia-nya pembaca e-book di sini nyaman banget di mata, bikin betah baca berjam-jam tiap sore."</p>
+                        <div class="flex text-amber-500 text-[12px]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span></div>
+                    </div>
+                    <!-- Card 4 -->
+                    <div class="inline-flex flex-col bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-md w-[280px] sm:w-[320px] shadow-sm shrink-0 whitespace-normal gap-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-sm">
+                            <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100" alt="Avatar"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-100 font-sans">@PakDarmawan</span>
+                                <span class="text-[10px] font-extrabold text-secondary font-sans">DONATUR BUKU</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-on-surface-variant leading-relaxed">"Senang bisa mendonasikan buku bekas saya ke marketplace untuk disalurkan ke anak-anak yang membutuhkan."</p>
+                        <div class="flex text-amber-500 text-[12px]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonial Scroll Animation Script -->
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const row1 = document.getElementById('testimonial-row-1');
+                const row2 = document.getElementById('testimonial-row-2');
+                
+                if (row1 && row2) {
+                    const section = row1.closest('section');
+                    if (section) {
+                        const observer = new IntersectionObserver((entries) => {
+                            entries.forEach(entry => {
+                                if (entry.isIntersecting) {
+                                    window.addEventListener('scroll', handleScroll, { passive: true });
+                                    handleScroll();
+                                } else {
+                                    window.removeEventListener('scroll', handleScroll);
+                                }
+                            });
+                        }, { threshold: 0 });
+                        observer.observe(section);
+                        
+                        function handleScroll() {
+                            const rect = section.getBoundingClientRect();
+                            const viewportHeight = window.innerHeight;
+                            
+                            // Calculate total distance between section entering and leaving the viewport
+                            const totalDistance = viewportHeight + rect.height;
+                            // Current scroll progress (0 when top enters bottom, 1 when bottom leaves top)
+                            const entryProgress = (viewportHeight - rect.top) / totalDistance;
+                            
+                            // Clamp progress between 0 and 1
+                            const progress = Math.max(0, Math.min(1, entryProgress));
+                            
+                            // Row 1 starts at -35% (hidden left) and slides to 0% (center-right)
+                            const shift1 = -35 + (progress * 35);
+                            // Row 2 starts at 15% (hidden right) and slides to -20% (center-left)
+                            const shift2 = 15 - (progress * 35);
+                            
+                            row1.style.transform = `translateX(${shift1}%)`;
+                            row2.style.transform = `translateX(${shift2}%)`;
+                        }
+                    }
+                }
+            });
+        </script>
+
         <!-- Impact Stats -->
-        <section class="w-full bg-primary-fixed rounded-xl p-xl flex flex-col gap-lg shadow-sm">
+        <section class="w-full bg-primary-fixed rounded-2xl p-xl flex flex-col gap-lg shadow-sm">
             <div class="text-center mb-md">
-                <h2 class="font-headline-md text-[20px] md:text-headline-md leading-tight text-on-primary-fixed">Dampak Kami</h2>
-                <p class="font-body-md text-body-md text-on-primary-fixed-variant mt-sm">Angka yang merepresentasikan perjalanan dedikasi kami.</p>
+                <h2 class="font-title-lg text-title-lg font-black text-on-primary-fixed">Dampak Kami Terhadap Pendidikan</h2>
+                <p class="font-body-md text-body-md text-on-primary-fixed-variant mt-xs">Angka-angka pencapaian yang membuktikan keseriusan kami.</p>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-gutter text-center">
                 <div class="flex flex-col items-center gap-sm">
-                    <span class="font-display-lg text-[32px] md:text-display-lg leading-tight text-primary tracking-tight impact-counter" data-target="500" data-suffix="k+">0</span>
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Buku Terdistribusi</span>
+                    <span class="font-display-lg text-[32px] md:text-display-lg leading-tight text-primary tracking-tight impact-counter font-black" data-target="500" data-suffix="k+">0</span>
+                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-extrabold">Buku Terdistribusi</span>
                 </div>
                 <div class="flex flex-col items-center gap-sm">
-                    <span class="font-display-lg text-[32px] md:text-display-lg leading-tight text-primary tracking-tight impact-counter" data-target="10" data-suffix="k+">0</span>
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Jurnal Diakses</span>
+                    <span class="font-display-lg text-[32px] md:text-display-lg leading-tight text-primary tracking-tight impact-counter font-black" data-target="10" data-suffix="k+">0</span>
+                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-extrabold">Jurnal Diakses</span>
                 </div>
                 <div class="flex flex-col items-center gap-sm">
-                    <span class="font-display-lg text-[32px] md:text-display-lg leading-tight text-primary tracking-tight impact-counter" data-target="50" data-suffix="+">0</span>
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Komunitas Terhubung</span>
+                    <span class="font-display-lg text-[32px] md:text-display-lg leading-tight text-primary tracking-tight impact-counter font-black" data-target="50" data-suffix="+">0</span>
+                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-extrabold">Komunitas Terhubung</span>
                 </div>
             </div>
         </section>
@@ -407,7 +704,7 @@
                 <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Tim</a>
                 <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Dampak</a>
                 <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Karir</a>
-                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Pusat Bantuan</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="pusat-bantuan.html">Pusat Bantuan</a>
             </nav>
         </div>
     </footer>

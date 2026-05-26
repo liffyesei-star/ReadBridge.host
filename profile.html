@@ -1,954 +1,1784 @@
 <!DOCTYPE html>
+<!--
+  Project: ReadBridge
+  Author: Liffy Sei / Affan
+  Date: May 2026
+  Role: Lead Developer & UI/UX Designer
+-->
 
-<html lang="id"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>ReadBridge - Profile</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-        tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              "colors": {
-                      "secondary-fixed-dim": "#4edea3",
-                      "primary-fixed": "#dbe1ff",
-                      "on-background": "#0b1c30",
-                      "surface-container-lowest": "#ffffff",
-                      "on-tertiary-fixed-variant": "#783200",
-                      "secondary-fixed": "#6ffbbe",
-                      "on-secondary-fixed-variant": "#005236",
-                      "surface-container": "#e5eeff",
-                      "tertiary": "#8e3c00",
-                      "on-tertiary-container": "#ffece5",
-                      "on-error-container": "#93000a",
-                      "primary-fixed-dim": "#b4c5ff",
-                      "surface-dim": "#cbdbf5",
-                      "error": "#ba1a1a",
-                      "on-error": "#ffffff",
-                      "secondary": "#006c49",
-                      "secondary-container": "#6cf8bb",
-                      "primary": "#004ac6",
-                      "surface": "#f8f9ff",
-                      "on-surface-variant": "#434655",
-                      "on-surface": "#0b1c30",
-                      "tertiary-fixed": "#ffdbca",
-                      "on-primary-fixed-variant": "#003ea8",
-                      "surface-variant": "#d3e4fe",
-                      "inverse-surface": "#213145",
-                      "on-tertiary": "#ffffff",
-                      "on-primary-container": "#eeefff",
-                      "tertiary-container": "#b54e00",
-                      "outline": "#737686",
-                      "error-container": "#ffdad6",
-                      "surface-tint": "#0053db",
-                      "background": "#f8f9ff",
-                      "surface-bright": "#f8f9ff",
-                      "on-primary": "#ffffff",
-                      "surface-container-high": "#dce9ff",
-                      "surface-container-low": "#eff4ff",
-                      "on-secondary-fixed": "#002113",
-                      "on-secondary-container": "#00714d",
-                      "on-secondary": "#ffffff",
-                      "inverse-on-surface": "#eaf1ff",
-                      "inverse-primary": "#b4c5ff",
-                      "primary-container": "#2563eb",
-                      "on-primary-fixed": "#00174b",
-                      "on-tertiary-fixed": "#341100",
-                      "outline-variant": "#c3c6d7",
-                      "surface-container-highest": "#d3e4fe",
-                      "tertiary-fixed-dim": "#ffb690"
-              },
-              "borderRadius": {
-                      "DEFAULT": "0.25rem",
-                      "lg": "0.5rem",
-                      "xl": "0.75rem",
-                      "full": "9999px"
-              },
-              "spacing": {
-                      "md": "16px",
-                      "lg": "24px",
-                      "margin": "24px",
-                      "gutter": "16px",
-                      "sm": "8px",
-                      "base": "8px",
-                      "xl": "32px",
-                      "xxl": "48px",
-                      "xs": "4px"
-              },
-              "fontFamily": {
-                      "headline-lg": [
-                              "Plus Jakarta Sans"
-                      ],
-                      "label-md": [
-                              "Plus Jakarta Sans"
-                      ],
-                      "body-lg": [
-                              "Plus Jakarta Sans"
-                      ],
-                      "title-lg": [
-                              "Plus Jakarta Sans"
-                      ],
-                      "headline-md": [
-                              "Plus Jakarta Sans"
-                      ],
-                      "display-lg": [
-                              "Plus Jakarta Sans"
-                      ],
-                      "body-md": [
-                              "Plus Jakarta Sans"
-                      ],
-                      "label-sm": [
-                              "Plus Jakarta Sans"
-                      ]
-              },
-              "fontSize": {
-                      "headline-lg": [
-                              "32px",
-                              {
-                                      "lineHeight": "1.3",
-                                      "fontWeight": "700"
-                              }
-                      ],
-                      "label-md": [
-                              "14px",
-                              {
-                                      "lineHeight": "1.4",
-                                      "fontWeight": "500"
-                              }
-                      ],
-                      "body-lg": [
-                              "18px",
-                              {
-                                      "lineHeight": "1.6",
-                                      "fontWeight": "400"
-                              }
-                      ],
-                      "title-lg": [
-                              "20px",
-                              {
-                                      "lineHeight": "1.5",
-                                      "fontWeight": "600"
-                              }
-                      ],
-                      "headline-md": [
-                              "24px",
-                              {
-                                      "lineHeight": "1.4",
-                                      "fontWeight": "600"
-                              }
-                      ],
-                      "display-lg": [
-                              "48px",
-                              {
-                                      "lineHeight": "1.2",
-                                      "fontWeight": "700"
-                              }
-                      ],
-                      "body-md": [
-                              "16px",
-                              {
-                                      "lineHeight": "1.6",
-                                      "fontWeight": "400"
-                              }
-                      ],
-                      "label-sm": [
-                              "12px",
-                              {
-                                      "lineHeight": "1.2",
-                                      "fontWeight": "600"
-                              }
-                      ]
-              }
-      },
-          },
-        }
+
+<html lang="id">
+
+<head>
+    <!-- Global Preference Controller Script to prevent FOUC -->
+    <script id="global-preferences-controller">
+        (function() {
+            // Function to apply theme
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+            
+            // Function to apply font size
+            function applyFontSize(size) {
+                if (size === 'kecil') {
+                    document.documentElement.style.fontSize = '14px';
+                } else if (size === 'besar') {
+                    document.documentElement.style.fontSize = '18px';
+                } else {
+                    document.documentElement.style.fontSize = '16px';
+                }
+            }
+            
+            // Function to apply font family
+            function applyFontFamily(family) {
+                let style = document.getElementById('global-font-override');
+                if (family === 'serif') {
+                    if (!style) {
+                        style = document.createElement('style');
+                        style.id = 'global-font-override';
+                        style.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span, a, button, input, select, textarea { font-family: Georgia, serif !important; }`;
+                        document.head.appendChild(style);
+                    }
+                } else {
+                    if (style) style.remove();
+                }
+            }
+
+            // Initial apply
+            applyTheme(localStorage.getItem('rb_theme'));
+            applyFontSize(localStorage.getItem('rb_font_size') || 'sedang');
+            applyFontFamily(localStorage.getItem('rb_font_family') || 'sans');
+
+            // Listen for storage events to sync across tabs
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'rb_theme') {
+                    applyTheme(e.newValue);
+                } else if (e.key === 'rb_font_size') {
+                    applyFontSize(e.newValue || 'sedang');
+                } else if (e.key === 'rb_font_family') {
+                    applyFontFamily(e.newValue || 'sans');
+                }
+            });
+        })();
     </script>
-<style>
-        body { background-color: #f8f9ff; color: #0b1c30; }
-    </style>
+    <link rel="stylesheet" href="style.css"/>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>ReadBridge - Profile</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary-fixed-dim": "#4edea3",
+            "primary-fixed": "#dbe1ff",
+            "on-background": "#0b1c30",
+            "surface-container-lowest": "#ffffff",
+            "on-tertiary-fixed-variant": "#783200",
+            "secondary-fixed": "#6ffbbe",
+            "on-secondary-fixed-variant": "#005236",
+            "surface-container": "#e5eeff",
+            "tertiary": "#8e3c00",
+            "on-tertiary-container": "#ffece5",
+            "on-error-container": "#93000a",
+            "primary-fixed-dim": "#b4c5ff",
+            "surface-dim": "#cbdbf5",
+            "error": "#ba1a1a",
+            "on-error": "#ffffff",
+            "secondary": "#006c49",
+            "secondary-container": "#6cf8bb",
+            "primary": "#004ac6",
+            "surface": "#f8f9ff",
+            "on-surface-variant": "#434655",
+            "on-surface": "#0b1c30",
+            "tertiary-fixed": "#ffdbca",
+            "on-primary-fixed-variant": "#003ea8",
+            "surface-variant": "#d3e4fe",
+            "inverse-surface": "#213145",
+            "on-tertiary": "#ffffff",
+            "on-primary-container": "#eeefff",
+            "tertiary-container": "#b54e00",
+            "outline": "#737686",
+            "error-container": "#ffdad6",
+            "surface-tint": "#0053db",
+            "background": "#f8f9ff",
+            "surface-bright": "#f8f9ff",
+            "on-primary": "#ffffff",
+            "surface-container-high": "#dce9ff",
+            "surface-container-low": "#eff4ff",
+            "on-secondary-fixed": "#002113",
+            "on-secondary-container": "#00714d",
+            "on-secondary": "#ffffff",
+            "inverse-on-surface": "#eaf1ff",
+            "inverse-primary": "#b4c5ff",
+            "primary-container": "#2563eb",
+            "on-primary-fixed": "#00174b",
+            "on-tertiary-fixed": "#341100",
+            "outline-variant": "#c3c6d7",
+            "surface-container-highest": "#d3e4fe",
+            "tertiary-fixed-dim": "#ffb690"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "md": "16px",
+            "lg": "24px",
+            "margin": "24px",
+            "gutter": "16px",
+            "sm": "8px",
+            "base": "8px",
+            "xl": "32px",
+            "xxl": "48px",
+            "xs": "4px"
+          },
+          "fontFamily": {
+            "headline-lg": [
+              "Plus Jakarta Sans"
+            ],
+            "label-md": [
+              "Plus Jakarta Sans"
+            ],
+            "body-lg": [
+              "Plus Jakarta Sans"
+            ],
+            "title-lg": [
+              "Plus Jakarta Sans"
+            ],
+            "headline-md": [
+              "Plus Jakarta Sans"
+            ],
+            "display-lg": [
+              "Plus Jakarta Sans"
+            ],
+            "body-md": [
+              "Plus Jakarta Sans"
+            ],
+            "label-sm": [
+              "Plus Jakarta Sans"
+            ]
+          },
+          "fontSize": {
+            "headline-lg": [
+              "32px",
+              {
+                "lineHeight": "1.3",
+                "fontWeight": "700"
+              }
+            ],
+            "label-md": [
+              "14px",
+              {
+                "lineHeight": "1.4",
+                "fontWeight": "500"
+              }
+            ],
+            "body-lg": [
+              "18px",
+              {
+                "lineHeight": "1.6",
+                "fontWeight": "400"
+              }
+            ],
+            "title-lg": [
+              "20px",
+              {
+                "lineHeight": "1.5",
+                "fontWeight": "600"
+              }
+            ],
+            "headline-md": [
+              "24px",
+              {
+                "lineHeight": "1.4",
+                "fontWeight": "600"
+              }
+            ],
+            "display-lg": [
+              "48px",
+              {
+                "lineHeight": "1.2",
+                "fontWeight": "700"
+              }
+            ],
+            "body-md": [
+              "16px",
+              {
+                "lineHeight": "1.6",
+                "fontWeight": "400"
+              }
+            ],
+            "label-sm": [
+              "12px",
+              {
+                "lineHeight": "1.2",
+                "fontWeight": "600"
+              }
+            ]
+          }
+        },
+      },
+    }
+  </script>
+  <style>
+    body {
+      background-color: #f8f9ff;
+      color: #0b1c30;
+    }
+  </style>
 </head>
+
 <body class="font-body-md text-body-md antialiased min-h-screen flex flex-col">
-<!-- TopNavBar -->
-<nav class="bg-surface dark:bg-on-background shadow-sm docked full-width top-0 z-50">
-<div class="flex justify-between items-center w-full px-4 md:px-margin py-sm max-w-[1280px] mx-auto">
-<!-- Brand -->
-<div class="flex items-center gap-sm">
-<a href="index.html" class="font-headline-md text-[20px] md:text-headline-md leading-tight font-bold text-primary dark:text-primary-fixed-dim">ReadBridge</a>
-</div>
-<!-- Search (Right aligned as per JSON) -->
-<div class="hidden md:flex flex-1 justify-end max-w-md mx-md">
-<div class="relative w-full">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-<input class="w-full pl-10 pr-4 py-2 bg-surface-container-high border-none rounded-lg focus:ring-2 focus:ring-primary outline-none font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant" placeholder="Search..." type="text"/>
-</div>
-</div>
-<!-- Navigation Links -->
-<div class="hidden md:flex items-center gap-lg font-body-md text-body-md font-label-md text-label-md">
-<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:text-primary-container dark:hover:text-primary-fixed transition-colors duration-200" href="eksplor.html">Eksplor</a>
-<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:text-primary-container dark:hover:text-primary-fixed transition-colors duration-200" href="komunitas.html">Komunitas</a>
-<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:text-primary-container dark:hover:text-primary-fixed transition-colors duration-200" href="marketplace.html">Marketplace</a>
-<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:text-primary-container dark:hover:text-primary-fixed transition-colors duration-200" href="perpustakaan.html">Perpustakaan</a>
-</div>
-<!-- Trailing Actions & Profile -->
-<div class="flex items-center gap-md ml-auto md:ml-lg">
-<a href="notifikasi.html" class="text-on-surface-variant hover:text-primary transition-colors duration-200 flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-high">
-<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
-</a>
-<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary cursor-pointer relative" id="profile-menu-container">
-<button id="profile-avatar-btn" class="focus:outline-none flex rounded-full w-full h-full">
-<img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
-</button>
+  <!-- TopNavBar -->
+  <nav class="bg-surface dark:bg-on-background shadow-sm docked full-width top-0 z-50">
+    <div class="flex justify-between items-center w-full px-4 md:px-margin py-sm max-w-[1280px] mx-auto">
+      <!-- Brand -->
+      <div class="flex items-center gap-sm">
+        <a href="index.html"
+          class="font-headline-md text-[20px] md:text-headline-md leading-tight font-bold text-primary dark:text-primary-fixed-dim">ReadBridge</a>
+      </div>
+      <!-- Search (Right aligned as per JSON) -->
+      <div class="hidden md:flex flex-1 justify-end max-w-md mx-md">
+        <div class="relative w-full">
+          <span
+            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+          <input
+            class="w-full pl-10 pr-4 py-2 bg-surface-container-high border-none rounded-lg focus:ring-2 focus:ring-primary outline-none font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant"
+            placeholder="Search..." type="text" />
+        </div>
+      </div>
+      <!-- Navigation Links -->
+      <div class="hidden md:flex items-center gap-lg font-body-md text-body-md font-label-md text-label-md">
+        <a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:text-primary-container dark:hover:text-primary-fixed transition-colors duration-200"
+          href="eksplor.html">Eksplor</a>
+        <a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:text-primary-container dark:hover:text-primary-fixed transition-colors duration-200"
+          href="komunitas.html">Komunitas</a>
+        <a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:text-primary-container dark:hover:text-primary-fixed transition-colors duration-200"
+          href="marketplace.html">Marketplace</a>
+        <a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:text-primary-container dark:hover:text-primary-fixed transition-colors duration-200"
+          href="perpustakaan.html">Perpustakaan</a>
+      </div>
+      <!-- Trailing Actions & Profile -->
+      <div class="flex items-center gap-md ml-auto md:ml-lg">
+        <a href="notifikasi.html"
+          class="text-on-surface-variant hover:text-primary transition-colors duration-200 flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-high">
+          <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+        </a>
+        <div class="relative" id="profile-menu-container">
+          <button id="profile-avatar-btn" class="focus:outline-none flex rounded-full">
+            <img alt="User profile avatar"
+              class="w-10 h-10 rounded-full object-cover border-2 border-primary cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4" />
+          </button>
 
-<div id="profile-dropdown" class="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50">
-  <div class="px-4 py-3 border-b border-outline-variant/30">
-    <p class="font-label-sm text-label-sm text-on-surface-variant">Masuk sebagai</p>
-    <p class="font-label-md text-label-md text-on-surface font-bold truncate rb-username-fill">Budi Santoso</p>
-  </div>
-  <a href="#" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
-    <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
-  </a>
-  <a href="profile.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
-                                <span class="material-symbols-outlined text-[20px]">person</span> Detail Akun
-  </a>
-  <a href="login.html" class="flex items-center gap-2 px-4 py-3 hover:bg-error/10 transition-colors font-label-md text-label-md text-error border-t border-outline-variant/30 font-bold">
-    <span class="material-symbols-outlined text-[20px]">logout</span> Log Out
-  </a>
-</div>
+          <div id="profile-dropdown"
+            class="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50">
+            <div class="px-4 py-3 border-b border-outline-variant/30">
+              <p class="font-label-sm text-label-sm text-on-surface-variant">Masuk sebagai</p>
+              <p class="font-label-md text-label-md text-on-surface font-bold truncate rb-username-fill">Budi Santoso
+              </p>
+            </div>
+            <a href="pengaturan.html"
+              class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+              <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
+            </a>
+            <a href="profile.html"
+              class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+              <span class="material-symbols-outlined text-[20px]">person</span> Detail Akun
+            </a>
+            <a href="login.html"
+              class="flex items-center gap-2 px-4 py-3 hover:bg-error/10 transition-colors font-label-md text-label-md text-error border-t border-outline-variant/30 font-bold">
+              <span class="material-symbols-outlined text-[20px]">logout</span> Log Out
+            </a>
+          </div>
 
-</div>
-</div>
-</div>
-</nav>
+        </div>
+      </div>
+    </div>
+  </nav>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.getElementById('profile-avatar-btn');
-  const dropdown = document.getElementById('profile-dropdown');
-  if (btn && dropdown) {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      dropdown.classList.toggle('hidden');
-      dropdown.classList.toggle('flex');
-    });
-    document.addEventListener('click', (e) => {
-      if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
-        dropdown.classList.add('hidden');
-        dropdown.classList.remove('flex');
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('profile-avatar-btn');
+      const dropdown = document.getElementById('profile-dropdown');
+      if (btn && dropdown) {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          dropdown.classList.toggle('hidden');
+          dropdown.classList.toggle('flex');
+        });
+        document.addEventListener('click', (e) => {
+          if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+            dropdown.classList.add('hidden');
+            dropdown.classList.remove('flex');
+          }
+        });
       }
     });
-  }
-});
-</script>
+  </script>
 
-<div class="flex flex-1 max-w-[1280px] mx-auto w-full">
-<!-- SideNavBar -->
-<aside class="hidden md:flex h-full w-64 fixed left-0 top-0 pt-20 bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant dark:border-outline flat no shadows flex-col gap-md p-md">
-<!-- Header/Profile Info -->
-<div class="flex flex-col items-center mb-xl mt-lg">
-<div class="w-20 h-20 rounded-full overflow-hidden mb-sm border-2 border-primary-container">
-<img alt="Student avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
-</div>
-<h2 class="font-headline-sm text-headline-sm font-bold text-primary text-center rb-username-fill">Budi Santoso</h2>
-<span class="font-label-md text-label-md text-on-surface-variant mt-1 px-3 py-1 bg-surface-variant rounded-full text-primary-fixed-dim">Scholar Level</span>
-</div>
-<!-- Navigation Tabs -->
-<nav class="flex flex-col gap-sm flex-1">
-<a class="flex items-center gap-md px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all Active: translate-x-1 transition-transform" href="#leaderboard" onclick="document.getElementById('tab-leaderboard').click()">
-<span class="material-symbols-outlined text-on-primary-container" data-icon="leaderboard">leaderboard</span>
-                    XP Progress & Leaderboard
-                </a>
-<a class="flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
-<span class="material-symbols-outlined text-secondary dark:text-secondary-fixed-dim" data-icon="local_fire_department" data-weight="fill" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
-                    Reading Streak
-                </a>
-<a class="flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
-<span class="material-symbols-outlined text-tertiary-container" data-icon="military_tech">military_tech</span>
-                    Current Level
-                </a>
-<a class="flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
-<span class="material-symbols-outlined text-primary" data-icon="workspace_premium">workspace_premium</span>
-                    Achievements
-                </a>
-</nav>
-<!-- BridgePass CTA -->
-<div class="mt-auto">
-  <!-- BridgePass Status Card -->
-  <div id="bridgepass-card" class="rounded-xl p-md mb-sm border bg-surface-container-low border-outline-variant">
-    <div class="flex items-center justify-between mb-xs">
-      <div class="flex items-center gap-xs">
-        <span class="material-symbols-outlined text-[18px]" id="bp-icon" style="font-variation-settings:'FILL' 1;">workspace_premium</span>
-        <span class="font-label-md text-label-md font-bold" id="bp-tier-label">Member Basic</span>
+  <div class="flex flex-1 max-w-[1280px] mx-auto w-full">
+    <!-- SideNavBar -->
+    <aside
+      class="hidden md:flex h-full w-64 fixed left-0 top-0 pt-20 bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant dark:border-outline flat no shadows flex-col gap-md p-md">
+      <!-- Header/Profile Info -->
+      <div class="flex flex-col items-center mb-xl mt-lg">
+        <div class="w-20 h-20 rounded-full overflow-hidden mb-sm border-2 border-primary-container">
+          <img alt="Student avatar" class="w-full h-full object-cover"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4" />
+        </div>
+        <h2 class="font-headline-sm text-headline-sm font-bold text-primary text-center rb-username-fill">Budi Santoso
+        </h2>
+        <span
+          class="font-label-md text-label-md text-on-surface-variant mt-1 px-3 py-1 bg-surface-variant rounded-full text-primary-fixed-dim">Scholar
+          Level</span>
       </div>
-      <span id="bp-badge" class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-outline-variant text-on-surface-variant">BASIC</span>
-    </div>
-    <p class="font-label-sm text-label-sm text-on-surface-variant" id="bp-desc">Upgrade ke Premium untuk akses penuh.</p>
-  </div>
-  <button id="open-bridgepass-modal" class="w-full py-3 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-surface-tint transition-colors shadow-sm flex items-center justify-center gap-xs">
-    <span class="material-symbols-outlined text-[18px]">workspace_premium</span>
-    <span id="bp-btn-label">Upgrade BridgePass</span>
-  </button>
-</div>
-</aside>
-<!-- Main Content Area -->
-<main class="flex-1 md:ml-64 pt-20 p-margin pb-xxl flex flex-col gap-lg">
-  <!-- Tabs -->
-  <div class="flex items-center gap-md border-b border-outline-variant w-full">
-    <button id="tab-detail" class="font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors">Detail Akun</button>
-    <button id="tab-leaderboard" class="font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors">Leaderboard & Quests</button>
-  </div>
+      <!-- Navigation Tabs -->
+      <nav class="flex flex-col gap-sm flex-1">
+        <a id="sidebar-tab-detail"
+          class="flex items-center gap-md px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all"
+          href="javascript:void(0)" onclick="document.getElementById('tab-detail').click()">
+          <span class="material-symbols-outlined text-on-primary-container" data-icon="person">person</span>
+          Detail Akun
+        </a>
+        <a id="sidebar-tab-leaderboard"
+          class="flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all"
+          href="javascript:void(0)" onclick="document.getElementById('tab-leaderboard').click()">
+          <span class="material-symbols-outlined text-on-surface-variant dark:text-outline-variant"
+            data-icon="leaderboard">leaderboard</span>
+          XP Progress & Leaderboard
+        </a>
+        <a class="flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all"
+          href="javascript:void(0)" onclick="window.showStreakModal()">
+          <span class="material-symbols-outlined text-secondary dark:text-secondary-fixed-dim"
+            data-icon="local_fire_department" data-weight="fill"
+            style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+          Reading Streak
+        </a>
+        <a class="flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all"
+          href="javascript:void(0)" onclick="window.showLevelModal()">
+          <span class="material-symbols-outlined text-tertiary-container" data-icon="military_tech">military_tech</span>
+          Current Level
+        </a>
+        <a class="flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all"
+          href="javascript:void(0)" onclick="window.showAchievementsInfo()">
+          <span class="material-symbols-outlined text-primary" data-icon="workspace_premium">workspace_premium</span>
+          Achievements
+        </a>
+      </nav>
+      <!-- BridgePass CTA -->
+      <div class="mt-auto">
+        <!-- BridgePass Status Card -->
+        <div id="bridgepass-card" class="rounded-xl p-md mb-sm border bg-surface-container-low border-outline-variant">
+          <div class="flex items-center justify-between mb-xs">
+            <div class="flex items-center gap-xs">
+              <span class="material-symbols-outlined text-[18px]" id="bp-icon"
+                style="font-variation-settings:'FILL' 1;">workspace_premium</span>
+              <span class="font-label-md text-label-md font-bold" id="bp-tier-label">Member Basic</span>
+            </div>
+            <span id="bp-badge"
+              class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-outline-variant text-on-surface-variant">BASIC</span>
+          </div>
+          <p class="font-label-sm text-label-sm text-on-surface-variant" id="bp-desc">Upgrade ke Premium untuk akses
+            penuh.</p>
+        </div>
+        <button id="open-bridgepass-modal"
+          class="w-full py-3 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-surface-tint transition-colors shadow-sm flex items-center justify-center gap-xs">
+          <span class="material-symbols-outlined text-[18px]">workspace_premium</span>
+          <span id="bp-btn-label">Upgrade BridgePass</span>
+        </button>
+      </div>
+    </aside>
+    <!-- Main Content Area -->
+    <main class="flex-1 md:ml-64 pt-20 p-margin pb-xxl flex flex-col gap-lg">
+      <!-- Tabs -->
+      <div class="flex items-center gap-md border-b border-outline-variant w-full">
+        <button id="tab-detail"
+          class="font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors">Detail
+          Akun</button>
+        <button id="tab-leaderboard"
+          class="font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors">Leaderboard
+          & Quests</button>
+      </div>
 
-  <div id="content-detail" class="grid grid-cols-1 lg:grid-cols-3 gap-lg w-full">
-<!-- Left Column: Gamification Profile Bento Grid -->
-<div class="lg:col-span-1 flex flex-col gap-lg">
-<!-- Level Card -->
-<div class="bg-surface-container-lowest rounded-xl p-lg shadow-sm relative overflow-hidden">
-<div class="absolute top-0 right-0 p-4 opacity-10">
-<span class="material-symbols-outlined text-6xl text-primary">school</span>
-</div>
-<h3 class="font-title-lg text-title-lg text-on-surface mb-xs relative z-10">Level Scholar</h3>
-<p class="font-body-md text-body-md text-on-surface-variant mb-md relative z-10">Keep reading to reach 'Master'</p>
-<div class="w-full bg-surface-variant rounded-full h-3 mb-2">
-<div class="bg-primary h-3 rounded-full" style="width: 75%"></div>
-</div>
-<div class="flex justify-between font-label-sm text-label-sm text-outline">
-<span>1500 XP</span>
-<span>2000 XP</span>
-</div>
-</div>
-<!-- Streak Card -->
-<div class="bg-gradient-to-br from-tertiary-fixed to-surface-container-lowest rounded-xl p-lg shadow-sm flex items-center justify-between border border-tertiary-fixed-dim">
-<div>
-<h3 class="font-title-lg text-title-lg text-on-tertiary-fixed-variant mb-xs">Reading Streak</h3>
-<p class="font-body-md text-body-md text-tertiary-container">Don't break the chain!</p>
-</div>
-<div class="flex flex-col items-center justify-center bg-surface-container-lowest rounded-full w-20 h-20 shadow-sm border border-tertiary-fixed">
-<span class="material-symbols-outlined text-tertiary text-3xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
-<span class="font-title-lg text-title-lg font-bold text-tertiary-container leading-none mt-1">12</span>
-</div>
-</div>
-<!-- Badges Grid -->
-<div class="bg-surface-container-lowest rounded-xl p-lg shadow-sm">
-<h3 class="font-title-lg text-title-lg text-on-surface mb-md">Achievements</h3>
-<div class="grid grid-cols-3 gap-sm">
-<div class="flex flex-col items-center text-center">
-<div class="w-14 h-14 bg-secondary-container rounded-full flex items-center justify-center mb-2 shadow-sm border border-secondary-fixed-dim">
-<span class="material-symbols-outlined text-on-secondary-container">brightness_5</span>
-</div>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Early Bird</span>
-</div>
-<div class="flex flex-col items-center text-center">
-<div class="w-14 h-14 bg-primary-fixed rounded-full flex items-center justify-center mb-2 shadow-sm border border-primary-fixed-dim">
-<span class="material-symbols-outlined text-on-primary-fixed">menu_book</span>
-</div>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Bookworm</span>
-</div>
-<div class="flex flex-col items-center text-center">
-<div class="w-14 h-14 bg-surface-variant rounded-full flex items-center justify-center mb-2 border border-outline-variant opacity-50">
-<span class="material-symbols-outlined text-outline">lock</span>
-</div>
-<span class="font-label-sm text-label-sm text-outline">Locked</span>
-</div>
-<div class="flex flex-col items-center text-center">
-<div class="w-14 h-14 bg-surface-variant rounded-full flex items-center justify-center mb-2 border border-outline-variant opacity-50">
-<span class="material-symbols-outlined text-outline">lock</span>
-</div>
-<span class="font-label-sm text-label-sm text-outline">Locked</span>
-</div>
-<div class="flex flex-col items-center text-center">
-<div class="w-14 h-14 bg-surface-variant rounded-full flex items-center justify-center mb-2 border border-outline-variant opacity-50">
-<span class="material-symbols-outlined text-outline">lock</span>
-</div>
-<span class="font-label-sm text-label-sm text-outline">Locked</span>
-</div>
-<div class="flex flex-col items-center text-center">
-<div class="w-14 h-14 bg-surface-variant rounded-full flex items-center justify-center mb-2 border border-outline-variant opacity-50">
-<span class="material-symbols-outlined text-outline">lock</span>
-</div>
-<span class="font-label-sm text-label-sm text-outline">Locked</span>
-</div>
-</div>
-</div>
-</div>
-<!-- Right Column: Sections -->
-<div class="lg:col-span-2 flex flex-col gap-lg">
-<!-- Aktivitas User Section -->
-<section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
-<div class="px-lg py-md border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
-<h2 class="font-headline-md text-[20px] md:text-headline-md leading-tight text-on-surface">Aktivitas User</h2>
-<button class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-xs">
-                                Semua Aktivitas
-                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</button>
-</div>
-<div class="p-0">
-<!-- Activity Item 1 -->
-<div class="flex gap-md p-lg border-b border-outline-variant hover:bg-surface-bright transition-colors">
-<div class="w-12 h-12 bg-surface-variant rounded-lg flex-shrink-0 flex items-center justify-center">
-<span class="material-symbols-outlined text-primary">chat</span>
-</div>
-<div>
-<div class="flex items-center gap-xs mb-1">
-<span class="font-label-md text-label-md font-bold text-on-surface rb-username-fill">Budi Santoso</span>
-<span class="font-body-md text-body-md text-on-surface-variant">berkomentar di diskusi</span>
-<span class="font-label-md text-label-md font-bold text-primary">"Sastra Modern Indonesia"</span>
-</div>
-<p class="font-body-md text-body-md text-on-surface-variant mb-2">Menurut saya, perkembangan karakter di bab 3 sangat mengejutkan, tapi masuk akal jika kita melihat latar belakangnya.</p>
-<span class="font-label-sm text-label-sm text-outline">2 jam yang lalu</span>
-</div>
-</div>
-<!-- Activity Item 2 -->
-<div class="flex gap-md p-lg border-b border-outline-variant hover:bg-surface-bright transition-colors">
-<div class="w-12 h-12 bg-secondary-container rounded-lg flex-shrink-0 flex items-center justify-center">
-<span class="material-symbols-outlined text-secondary">star</span>
-</div>
-<div>
-<div class="flex items-center gap-xs mb-1">
-<span class="font-label-md text-label-md font-bold text-on-surface rb-username-fill">Budi Santoso</span>
-<span class="font-body-md text-body-md text-on-surface-variant">mereview buku</span>
-<span class="font-label-md text-label-md font-bold text-secondary">"Bumi Manusia"</span>
-</div>
-<div class="flex gap-1 text-secondary mb-2">
-<span class="material-symbols-outlined text-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star_half</span>
-</div>
-<p class="font-body-md text-body-md text-on-surface-variant mb-2">Karya klasik yang wajib dibaca oleh setiap pelajar. Membuka wawasan tentang sejarah.</p>
-<span class="font-label-sm text-label-sm text-outline">Kemarin</span>
-</div>
-</div>
-</div>
-</section>
-<!-- Riwayat Transaksi Section -->
-<section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
-<div class="px-lg py-md border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
-<h2 class="font-headline-md text-[20px] md:text-headline-md leading-tight text-on-surface">Riwayat Transaksi</h2>
-<a href="transaksi.html" class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-xs">
-                                Lihat Semua
-                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</a>
-</div>
-<div class="p-lg grid grid-cols-1 md:grid-cols-2 gap-md">
-<!-- Transaction Card 1 -->
-<div class="border border-outline-variant rounded-lg p-md flex gap-md hover:border-primary transition-colors bg-surface-bright">
-<div class="w-16 h-24 bg-surface-variant rounded flex-shrink-0 overflow-hidden">
-<img alt="Book cover" class="w-full h-full object-cover" data-alt="A generic book cover showing a minimalist illustration of an open door leading to a bright landscape. The colors are muted pastels, mostly blue and beige. It represents an educational or literary book on a modern reading platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUbmpgftk1jeHE6zOnE8qckNOVjeK8HZW_sBebWLYbGFGQ0Bn_fkMTCp2Z2I3vSs1LCbkjkYH5AZ3c4-SoF9Mv25t113IPa1G_WF2sgTYY-uomp4KfSFeV9Vxk6VNzJ9uzY-6umKGw4dTWDbJXwDhXN6R0y6e0Y3fKL_CJjHdurzA_7Bx74PeZUpg0K_7o9LJxxFAcQz_81y2U55J6BNrAMpHYWwXHaRXCasEih6N-fSoc9z4kCOuQKa9uVDTEzZ2SVEqwrmOE_rw"/>
-</div>
-<div class="flex flex-col justify-between flex-1">
-<div>
-<div class="flex justify-between items-start mb-1">
-<span class="font-label-sm text-label-sm px-2 py-1 bg-surface-container rounded text-primary-fixed-dim">Sewa</span>
-<span class="font-label-sm text-label-sm text-outline">24 Okt 2023</span>
-</div>
-<h4 class="font-title-lg text-title-lg text-on-surface leading-tight line-clamp-1">Filsafat Pendidikan</h4>
-</div>
-<div class="flex justify-between items-end mt-2">
-<span class="font-label-md text-label-md font-bold text-on-surface">Rp 15.000</span>
-<span class="font-label-sm text-label-sm text-secondary flex items-center gap-1">
-<span class="material-symbols-outlined text-xs">check_circle</span> Selesai
-                                        </span>
-</div>
-</div>
-</div>
-<!-- Transaction Card 2 -->
-<div class="border border-outline-variant rounded-lg p-md flex gap-md hover:border-primary transition-colors bg-surface-bright">
-<div class="w-16 h-24 bg-surface-variant rounded flex-shrink-0 overflow-hidden">
-<img alt="Book cover" class="w-full h-full object-cover" data-alt="A generic book cover displaying abstract geometric shapes in bold primary colors like red, blue, and yellow. It looks like a textbook cover for a design or mathematics course. The aesthetic is clean and academic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6iDYuii6_ZrY2rVwGrwzCkdKWe8L6Z95f9KdHPIy9Lk_ox0qVn1zvnEUpoYisVVIq1WeU5juko2ckXKtUOmeUudYaNPjFpvXepGY8gIrdFQKTi8ch02E9MGkjDU4rprNfHDT7sokF6gLpkH4GsTXmn4hVp2yyfytv2NJphgdruli5gJCvt2D6XF4udyz9TG2XNlKnJUAzxjGOerrkjEyxCBHfrH0G09XpvAbfE55vnuObCKW4YQxy2YI6oeSxQ6fYzX0wE_oDdrU"/>
-</div>
-<div class="flex flex-col justify-between flex-1">
-<div>
-<div class="flex justify-between items-start mb-1">
-<span class="font-label-sm text-label-sm px-2 py-1 bg-tertiary-fixed rounded text-on-tertiary-fixed-variant">Beli</span>
-<span class="font-label-sm text-label-sm text-outline">15 Okt 2023</span>
-</div>
-<h4 class="font-title-lg text-title-lg text-on-surface leading-tight line-clamp-1">Kalkulus Dasar Lanjut</h4>
-</div>
-<div class="flex justify-between items-end mt-2">
-<span class="font-label-md text-label-md font-bold text-on-surface">Rp 85.000</span>
-<span class="font-label-sm text-label-sm text-secondary flex items-center gap-1">
-<span class="material-symbols-outlined text-xs">check_circle</span> Selesai
-                                        </span>
-</div>
-</div>
-</div>
-</div>
-</section>
-</div>
-  </div>
-
-  <div id="content-leaderboard" class="hidden flex-col gap-lg w-full">
-    <div>
-        <h1 class="font-display-lg text-[32px] md:text-display-lg leading-tight text-on-surface mb-sm">Leaderboard & Progress</h1>
-        <p class="font-body-lg text-body-lg text-on-surface-variant">Track your reading journey, complete daily quests, and climb the ranks.</p>
-    </div>
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
-        <!-- Left Column: Daily Quests & Level -->
+      <div id="content-detail" class="grid grid-cols-1 lg:grid-cols-3 gap-lg w-full">
+        <!-- Left Column: Gamification Profile Bento Grid -->
         <div class="lg:col-span-1 flex flex-col gap-lg">
-            <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg flex flex-col">
-                <div class="flex justify-between items-center mb-md">
-                    <h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-sm">
-                        <span class="material-symbols-outlined text-tertiary-container">task_alt</span>
-                        Daily Quests
-                    </h2>
-                    <span class="bg-primary-container text-on-primary-container font-label-sm text-label-sm px-2 py-1 rounded-full">3 / 4 Done</span>
-                </div>
-                <p class="font-body-sm text-body-sm text-on-surface-variant mb-lg">Complete tasks to earn daily XP bonuses.</p>
-                <div class="space-y-sm">
-                    <!-- Quest 1: Done -->
-                    <div class="bg-surface-variant rounded-lg p-md border border-outline-variant flex gap-sm opacity-60">
-                        <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                        <div>
-                            <h4 class="font-label-md text-label-md text-on-surface line-through">Baca 30 menit</h4>
-                            <p class="font-label-sm text-label-sm text-primary">+50 XP</p>
-                        </div>
-                    </div>
-                    <!-- Quest 2: Done -->
-                    <div class="bg-surface-variant rounded-lg p-md border border-outline-variant flex gap-sm opacity-60">
-                        <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                        <div>
-                            <h4 class="font-label-md text-label-md text-on-surface line-through">Login selama 3 hari beruntun</h4>
-                            <p class="font-label-sm text-label-sm text-primary">+20 XP</p>
-                        </div>
-                    </div>
-                    <!-- Quest 3: Done -->
-                    <div class="bg-surface-variant rounded-lg p-md border border-outline-variant flex gap-sm opacity-60">
-                        <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                        <div>
-                            <h4 class="font-label-md text-label-md text-on-surface line-through">Balas Diskusi Komunitas</h4>
-                            <p class="font-label-sm text-label-sm text-primary">+30 XP</p>
-                        </div>
-                    </div>
-                    <!-- Quest 4: Active -->
-                    <div class="bg-surface-bright rounded-lg p-md border-2 border-primary shadow-sm flex gap-sm relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
-                        <span class="material-symbols-outlined text-outline">radio_button_unchecked</span>
-                        <div class="w-full">
-                            <h4 class="font-label-md text-label-md text-on-surface font-bold">Tulis Review Buku</h4>
-                            <p class="font-label-sm text-label-sm text-primary font-bold">+100 XP</p>
-                            <div class="w-full bg-surface-variant rounded-full h-1.5 mt-2 mb-2">
-                                <div class="bg-primary h-1.5 rounded-full" style="width: 0%"></div>
-                            </div>
-                            <button class="mt-xs text-xs font-label-sm text-primary hover:underline">Start Task</button>
-                        </div>
-                    </div>
-                </div>
+          <!-- Level Card -->
+          <div id="level-card" onclick="window.showLevelModal()"
+            class="bg-surface-container-lowest rounded-xl p-lg shadow-sm relative overflow-hidden cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+            <div class="absolute top-0 right-0 p-4 opacity-10">
+              <span class="material-symbols-outlined text-6xl text-primary">school</span>
             </div>
-            
-            <!-- Level Progression Visualization Moved to Left Column for balance -->
-            <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg">
-                <h2 class="font-title-lg text-title-lg text-on-surface mb-lg flex items-center gap-sm">
-                    <span class="material-symbols-outlined text-secondary">route</span>
-                    Level System
-                </h2>
-                <div class="relative flex items-center justify-between w-full mt-md mb-xl px-sm">
-                    <!-- Connecting Line -->
-                    <div class="absolute top-1/2 left-0 w-full h-1 bg-surface-variant -z-10 -translate-y-1/2"></div>
-                    <div class="absolute top-1/2 left-0 w-3/4 h-1 bg-secondary -z-10 -translate-y-1/2"></div>
-                    <!-- Level: Explorer -->
-                    <div class="flex flex-col items-center gap-sm z-10">
-                        <div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm">
-                            <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">explore</span>
-                        </div>
-                    </div>
-                    <!-- Level: Reader -->
-                    <div class="flex flex-col items-center gap-sm z-10">
-                        <div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm">
-                            <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">menu_book</span>
-                        </div>
-                    </div>
-                    <!-- Level: Thinker -->
-                    <div class="flex flex-col items-center gap-sm z-10">
-                        <div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm ring-4 ring-secondary-container">
-                            <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
-                        </div>
-                    </div>
-                    <!-- Level: Scholar -->
-                    <div class="flex flex-col items-center gap-sm z-10">
-                        <div class="w-10 h-10 rounded-full bg-surface-variant text-outline flex items-center justify-center shadow-sm">
-                            <span class="material-symbols-outlined text-sm">school</span>
-                        </div>
-                    </div>
-                </div>
-                <p class="font-body-md text-body-md text-on-surface-variant text-center mt-md">You are currently a <strong class="text-on-surface">Thinker</strong>. Earn 750 more XP to become a Scholar!</p>
+            <h3 class="font-title-lg text-title-lg text-on-surface mb-xs relative z-10">Level Scholar</h3>
+            <p id="level-card-desc" class="font-body-md text-body-md text-on-surface-variant mb-md relative z-10">
+              Dapatkan 250 XP lagi untuk naik tingkat</p>
+            <div class="w-full bg-surface-variant rounded-full h-3 mb-2">
+              <div id="level-card-progress" class="bg-primary h-3 rounded-full" style="width: 75%"></div>
             </div>
-        </div>
-
-        <!-- Right Column: Top Readers -->
-        <div class="lg:col-span-2 flex flex-col gap-lg">
-            <!-- Top Readers Bento Card -->
-            <section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
-                <div class="px-lg py-md border-b border-outline-variant flex justify-between items-center bg-surface-container-low relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-primary-fixed-dim rounded-full blur-3xl opacity-20 -mr-10 -mt-10 pointer-events-none"></div>
-                    <h2 class="font-headline-md text-[20px] md:text-headline-md leading-tight text-on-surface flex items-center gap-sm relative z-10">
-                        <span class="material-symbols-outlined text-tertiary-container text-3xl" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
-                        Top Readers This Week
-                    </h2>
-                    <button class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-xs relative z-10">
-                        Lihat Semua
-                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                    </button>
-                </div>
-                <div class="p-0">
-                    <!-- Rank 1 -->
-                    <div class="flex items-center justify-between p-lg border-b border-outline-variant bg-surface-bright hover:bg-surface-container-low transition-colors">
-                        <div class="flex items-center gap-md">
-                            <div class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-tertiary-container font-bold">1</div>
-                            <img alt="Rank 1 Avatar" class="w-12 h-12 rounded-full border-2 border-tertiary-container object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYSATplkSy0hzVu5GLHcXic-9UEdLZlD-r97dqSDHJLry8Fy_xJsqGoqfybvAE1KqAdWqhrNfMbpeqjRdQgaXtP_25qeVBakpNpLuCpEyd-yD6ZjCm72eFUlypkk-FW2VcuslBvHXGKxFgoxeTr0HINf47TZfw7Zu9FK56xaWDAUCIO5g1v_oyz4-YQLK1_QCczsUNRqY8-o_41OZz9QhPSv05vt6YbhMinHTMVKMKDZy15DKrjHSe7A5dbmEaoZGoqISuD6i4NGQ"/>
-                            <div>
-                                <p class="font-title-lg text-title-lg text-on-surface line-clamp-1">Siti Rahma</p>
-                                <div class="flex items-center gap-xs mt-1">
-                                    <span class="material-symbols-outlined text-primary text-[14px]">military_tech</span>
-                                    <span class="font-label-sm text-label-sm text-on-surface-variant">Scholar</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-headline-sm text-headline-sm text-primary font-bold">12,450 XP</p>
-                            <p class="font-label-sm text-label-sm text-on-surface-variant flex items-center justify-end gap-xs mt-1">
-                                <span class="material-symbols-outlined text-[12px] text-secondary">trending_up</span> +850 this week
-                            </p>
-                        </div>
-                    </div>
-                    <!-- Rank 2 -->
-                    <div class="flex items-center justify-between p-lg border-b border-outline-variant hover:bg-surface-bright transition-colors">
-                        <div class="flex items-center gap-md">
-                            <div class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-outline font-bold">2</div>
-                            <img alt="Rank 2 Avatar" class="w-12 h-12 rounded-full border-2 border-outline object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkVFk8yIgRYWYK08SuvbzAgjCKLtzO-ZPr6HLql2ewhDUGDUhSK8bt8MdaBF0yQ7_ppDc4PAA8vooK7vCzJRCHRwJzHVVO0fqC_codm5GE6uARvyhH7IwtuZa4rg8F9yreEYNRY47pa6vpYu5lgcMa0TXLggHLA3LkyM0prFhRF77jLwOzD5ZUaqDOFc8Z5QBYmn4qWpF_jCs8_UOrIllMVJeNj5hXADYqjqDlnXTK2zUfT4B17lEcElJnmkyIdRSmk1MlfCkuCj4"/>
-                            <div>
-                                <p class="font-title-lg text-title-lg text-on-surface line-clamp-1">Ahmad Fauzi</p>
-                                <div class="flex items-center gap-xs mt-1">
-                                    <span class="material-symbols-outlined text-primary text-[14px]">military_tech</span>
-                                    <span class="font-label-sm text-label-sm text-on-surface-variant">Scholar</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-headline-sm text-headline-sm text-on-surface font-bold">11,200 XP</p>
-                        </div>
-                    </div>
-                    <!-- Rank 3 -->
-                    <div class="flex items-center justify-between p-lg border-b border-outline-variant hover:bg-surface-bright transition-colors">
-                        <div class="flex items-center gap-md">
-                            <div class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-tertiary font-bold">3</div>
-                            <img alt="Rank 3 Avatar" class="w-12 h-12 rounded-full border-2 border-tertiary object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3rQv1FHOh2C6RzOMY9vSgKVpD8rGlRlceJmf0O0Al8iIOypa7yZWjTfrChWMPu1yIcpW9xFo8GpvVUpSUdUDDbq5OaJ1lgp2BpaRBw-eqSuy_uGW95DswfA1yG4T1c5UabeOS1526tqHDE2Ib2VbgEWDaD12ddDouvGp5eFiH-f-zZib5fd1SH5V16p_YSB6eK3TZNOmBpkbxdmIG2C505nK31aHZRI4sI0R_kv2DqPRYAq460llG9vxXjL-WqMhGXeNlFjfIdW4"/>
-                            <div>
-                                <p class="font-title-lg text-title-lg text-on-surface line-clamp-1">Diana Kusuma</p>
-                                <div class="flex items-center gap-xs mt-1">
-                                    <span class="material-symbols-outlined text-primary text-[14px]">lightbulb</span>
-                                    <span class="font-label-sm text-label-sm text-on-surface-variant">Thinker</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-headline-sm text-headline-sm text-on-surface font-bold">10,850 XP</p>
-                        </div>
-                    </div>
-                    <!-- Current User Rank (Sticky at bottom concept) -->
-                    <div class="flex items-center justify-between p-lg bg-surface-container border-t-2 border-primary-fixed-dim">
-                        <div class="flex items-center gap-md">
-                            <div class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-on-surface font-bold">42</div>
-                            <img alt="Current User Avatar" class="w-12 h-12 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
-                            <div>
-                                <p class="font-title-lg text-title-lg text-on-surface font-bold"><span class="rb-username-fill">Budi Santoso</span> (You)</p>
-                                <p class="font-label-sm text-label-sm text-primary mt-1">Scholar Level</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-headline-sm text-headline-sm text-primary font-bold">4,250 XP</p>
-                            <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">1,200 to rank 41</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-    </div>
-  </div>
-</main>
-</div>
-
-<!-- BridgePass Upgrade Modal -->
-<div id="bridgepass-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden" aria-modal="true" role="dialog">
-  <!-- Backdrop -->
-  <div id="bp-backdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
-  <!-- Modal Panel -->
-  <div class="relative bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
-    <!-- Header -->
-    <div class="bg-gradient-to-r from-primary to-primary-container p-lg text-on-primary relative overflow-hidden">
-      <div class="absolute -top-6 -right-6 w-32 h-32 bg-white/10 rounded-full"></div>
-      <div class="absolute -bottom-8 -left-4 w-24 h-24 bg-white/10 rounded-full"></div>
-      <div class="flex items-center justify-between relative z-10">
-        <div class="flex items-center gap-sm">
-          <span class="material-symbols-outlined text-3xl" style="font-variation-settings:'FILL' 1;">workspace_premium</span>
-          <div>
-            <h2 class="font-headline-md text-[20px] md:text-headline-md leading-tight font-bold">BridgePass</h2>
-            <p class="font-label-sm text-label-sm opacity-80">Status keanggotaan Anda</p>
+            <div class="flex justify-between font-label-sm text-label-sm text-outline">
+              <span id="level-card-xp-min">1500 XP</span>
+              <span id="level-card-xp-max">2000 XP</span>
+            </div>
+          </div>
+          <!-- Streak Card -->
+          <div id="streak-card" onclick="window.showStreakModal()"
+            class="bg-gradient-to-br from-tertiary-fixed to-surface-container-lowest rounded-xl p-lg shadow-sm flex items-center justify-between border border-tertiary-fixed-dim cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+            <div>
+              <h3 class="font-title-lg text-title-lg text-on-tertiary-fixed-variant mb-xs">Reading Streak</h3>
+              <p class="font-body-md text-body-md text-tertiary-container">Jangan putus membaca!</p>
+            </div>
+            <div
+              class="flex flex-col items-center justify-center bg-surface-container-lowest rounded-full w-20 h-20 shadow-sm border border-tertiary-fixed">
+              <span class="material-symbols-outlined text-tertiary text-3xl" data-weight="fill"
+                style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+              <span id="streak-card-count"
+                class="font-title-lg text-title-lg font-bold text-tertiary-container leading-none mt-1">12</span>
+            </div>
+          </div>
+          <!-- Badges Grid -->
+          <div id="achievements-section"
+            class="bg-surface-container-lowest rounded-xl p-lg shadow-sm transition-all duration-500">
+            <h3 class="font-title-lg text-title-lg text-on-surface mb-md">Achievements</h3>
+            <div class="grid grid-cols-3 gap-sm" id="achievements-grid">
+              <!-- Diisi secara dinamis -->
+            </div>
           </div>
         </div>
-        <button id="close-bridgepass-modal" class="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
+        <!-- Right Column: Sections -->
+        <div class="lg:col-span-2 flex flex-col gap-lg">
+          <!-- Aktivitas User Section -->
+          <section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+            <div
+              class="px-lg py-md border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+              <h2 class="font-headline-md text-[20px] md:text-headline-md leading-tight text-on-surface">Aktivitas User
+              </h2>
+              <a href="komunitas.html"
+                class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-xs">
+                Semua Aktivitas
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </a>
+            </div>
+            <div class="p-0" id="activity-list-container">
+              <!-- Diisi dinamis -->
+            </div>
+          </section>
+          <!-- Riwayat Transaksi Section -->
+          <section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+            <div
+              class="px-lg py-md border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+              <h2 class="font-headline-md text-[20px] md:text-headline-md leading-tight text-on-surface">Riwayat
+                Transaksi</h2>
+              <a href="javascript:void(0)" onclick="document.getElementById('tab-leaderboard').click()"
+                class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-xs">
+                Lihat Semua
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </a>
+            </div>
+            <div class="p-lg grid grid-cols-1 md:grid-cols-2 gap-md" id="transaction-list-container">
+              <!-- Diisi dinamis -->
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div id="content-leaderboard" class="hidden flex-col gap-lg w-full">
+        <div>
+          <h1 class="font-display-lg text-[32px] md:text-display-lg leading-tight text-on-surface mb-sm">Leaderboard &
+            Progress</h1>
+          <p class="font-body-lg text-body-lg text-on-surface-variant">Track your reading journey, complete daily
+            quests, and climb the ranks.</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+          <!-- Left Column: Daily Quests & Level -->
+          <div class="lg:col-span-1 flex flex-col gap-lg">
+            <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg flex flex-col">
+              <div class="flex justify-between items-center mb-md">
+                <h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-sm">
+                  <span class="material-symbols-outlined text-tertiary-container">task_alt</span>
+                  Daily Quests
+                </h2>
+                <span
+                  class="bg-primary-container text-on-primary-container font-label-sm text-label-sm px-2 py-1 rounded-full">3
+                  / 4 Done</span>
+              </div>
+              <p class="font-body-sm text-body-sm text-on-surface-variant mb-lg">Complete tasks to earn daily XP
+                bonuses.</p>
+              <div class="space-y-sm">
+                <!-- Quest 1: Done -->
+                <div class="bg-surface-variant rounded-lg p-md border border-outline-variant flex gap-sm opacity-60">
+                  <span class="material-symbols-outlined text-secondary"
+                    style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                  <div>
+                    <h4 class="font-label-md text-label-md text-on-surface line-through">Baca 30 menit</h4>
+                    <p class="font-label-sm text-label-sm text-primary">+50 XP</p>
+                  </div>
+                </div>
+                <!-- Quest 2: Done -->
+                <div class="bg-surface-variant rounded-lg p-md border border-outline-variant flex gap-sm opacity-60">
+                  <span class="material-symbols-outlined text-secondary"
+                    style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                  <div>
+                    <h4 class="font-label-md text-label-md text-on-surface line-through">Login selama 3 hari beruntun
+                    </h4>
+                    <p class="font-label-sm text-label-sm text-primary">+20 XP</p>
+                  </div>
+                </div>
+                <!-- Quest 3: Done -->
+                <div class="bg-surface-variant rounded-lg p-md border border-outline-variant flex gap-sm opacity-60">
+                  <span class="material-symbols-outlined text-secondary"
+                    style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                  <div>
+                    <h4 class="font-label-md text-label-md text-on-surface line-through">Balas Diskusi Komunitas</h4>
+                    <p class="font-label-sm text-label-sm text-primary">+30 XP</p>
+                  </div>
+                </div>
+                <!-- Quest 4: Active -->
+                <div
+                  class="bg-surface-bright rounded-lg p-md border-2 border-primary shadow-sm flex gap-sm relative overflow-hidden">
+                  <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+                  <span class="material-symbols-outlined text-outline">radio_button_unchecked</span>
+                  <div class="w-full">
+                    <h4 class="font-label-md text-label-md text-on-surface font-bold">Tulis Review Buku</h4>
+                    <p class="font-label-sm text-label-sm text-primary font-bold">+100 XP</p>
+                    <div class="w-full bg-surface-variant rounded-full h-1.5 mt-2 mb-2">
+                      <div class="bg-primary h-1.5 rounded-full" style="width: 0%"></div>
+                    </div>
+                    <button class="mt-xs text-xs font-label-sm text-primary hover:underline">Start Task</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Level Progression Visualization Moved to Left Column for balance -->
+            <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg">
+              <h2 class="font-title-lg text-title-lg text-on-surface mb-lg flex items-center gap-sm">
+                <span class="material-symbols-outlined text-secondary">route</span>
+                Level System
+              </h2>
+              <div class="relative flex items-center justify-between w-full mt-md mb-xl px-sm">
+                <!-- Connecting Line -->
+                <div class="absolute top-1/2 left-0 w-full h-1 bg-surface-variant -z-10 -translate-y-1/2"></div>
+                <div class="absolute top-1/2 left-0 w-3/4 h-1 bg-secondary -z-10 -translate-y-1/2"></div>
+                <!-- Level: Explorer -->
+                <div class="flex flex-col items-center gap-sm z-10">
+                  <div
+                    class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm">
+                    <span class="material-symbols-outlined text-sm"
+                      style="font-variation-settings: 'FILL' 1;">explore</span>
+                  </div>
+                </div>
+                <!-- Level: Reader -->
+                <div class="flex flex-col items-center gap-sm z-10">
+                  <div
+                    class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm">
+                    <span class="material-symbols-outlined text-sm"
+                      style="font-variation-settings: 'FILL' 1;">menu_book</span>
+                  </div>
+                </div>
+                <!-- Level: Thinker -->
+                <div class="flex flex-col items-center gap-sm z-10">
+                  <div
+                    class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm ring-4 ring-secondary-container">
+                    <span class="material-symbols-outlined text-sm"
+                      style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+                  </div>
+                </div>
+                <!-- Level: Scholar -->
+                <div class="flex flex-col items-center gap-sm z-10">
+                  <div
+                    class="w-10 h-10 rounded-full bg-surface-variant text-outline flex items-center justify-center shadow-sm">
+                    <span class="material-symbols-outlined text-sm">school</span>
+                  </div>
+                </div>
+              </div>
+              <p class="font-body-md text-body-md text-on-surface-variant text-center mt-md">You are currently a <strong
+                  class="text-on-surface">Thinker</strong>. Earn 750 more XP to become a Scholar!</p>
+            </div>
+          </div>
+
+          <!-- Right Column: Top Readers -->
+          <div class="lg:col-span-2 flex flex-col gap-lg">
+            <!-- Top Readers Bento Card -->
+            <section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+              <div
+                class="px-lg py-md border-b border-outline-variant flex justify-between items-center bg-surface-container-low relative overflow-hidden">
+                <div
+                  class="absolute top-0 right-0 w-32 h-32 bg-primary-fixed-dim rounded-full blur-3xl opacity-20 -mr-10 -mt-10 pointer-events-none">
+                </div>
+                <h2
+                  class="font-headline-md text-[20px] md:text-headline-md leading-tight text-on-surface flex items-center gap-sm relative z-10">
+                  <span class="material-symbols-outlined text-tertiary-container text-3xl"
+                    style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+                  Top Readers This Week
+                </h2>
+                <button
+                  class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-xs relative z-10">
+                  Lihat Semua
+                  <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </button>
+              </div>
+              <div class="p-0">
+                <!-- Rank 1 -->
+                <div
+                  class="flex items-center justify-between p-lg border-b border-outline-variant bg-surface-bright hover:bg-surface-container-low transition-colors">
+                  <div class="flex items-center gap-md">
+                    <div
+                      class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-tertiary-container font-bold">
+                      1</div>
+                    <img alt="Rank 1 Avatar"
+                      class="w-12 h-12 rounded-full border-2 border-tertiary-container object-cover"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYSATplkSy0hzVu5GLHcXic-9UEdLZlD-r97dqSDHJLry8Fy_xJsqGoqfybvAE1KqAdWqhrNfMbpeqjRdQgaXtP_25qeVBakpNpLuCpEyd-yD6ZjCm72eFUlypkk-FW2VcuslBvHXGKxFgoxeTr0HINf47TZfw7Zu9FK56xaWDAUCIO5g1v_oyz4-YQLK1_QCczsUNRqY8-o_41OZz9QhPSv05vt6YbhMinHTMVKMKDZy15DKrjHSe7A5dbmEaoZGoqISuD6i4NGQ" />
+                    <div>
+                      <p class="font-title-lg text-title-lg text-on-surface line-clamp-1">Siti Rahma</p>
+                      <div class="flex items-center gap-xs mt-1">
+                        <span class="material-symbols-outlined text-primary text-[14px]">military_tech</span>
+                        <span class="font-label-sm text-label-sm text-on-surface-variant">Scholar</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-headline-sm text-headline-sm text-primary font-bold">12,450 XP</p>
+                    <p
+                      class="font-label-sm text-label-sm text-on-surface-variant flex items-center justify-end gap-xs mt-1">
+                      <span class="material-symbols-outlined text-[12px] text-secondary">trending_up</span> +850 this
+                      week
+                    </p>
+                  </div>
+                </div>
+                <!-- Rank 2 -->
+                <div
+                  class="flex items-center justify-between p-lg border-b border-outline-variant hover:bg-surface-bright transition-colors">
+                  <div class="flex items-center gap-md">
+                    <div
+                      class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-outline font-bold">
+                      2</div>
+                    <img alt="Rank 2 Avatar" class="w-12 h-12 rounded-full border-2 border-outline object-cover"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkVFk8yIgRYWYK08SuvbzAgjCKLtzO-ZPr6HLql2ewhDUGDUhSK8bt8MdaBF0yQ7_ppDc4PAA8vooK7vCzJRCHRwJzHVVO0fqC_codm5GE6uARvyhH7IwtuZa4rg8F9yreEYNRY47pa6vpYu5lgcMa0TXLggHLA3LkyM0prFhRF77jLwOzD5ZUaqDOFc8Z5QBYmn4qWpF_jCs8_UOrIllMVJeNj5hXADYqjqDlnXTK2zUfT4B17lEcElJnmkyIdRSmk1MlfCkuCj4" />
+                    <div>
+                      <p class="font-title-lg text-title-lg text-on-surface line-clamp-1">Ahmad Fauzi</p>
+                      <div class="flex items-center gap-xs mt-1">
+                        <span class="material-symbols-outlined text-primary text-[14px]">military_tech</span>
+                        <span class="font-label-sm text-label-sm text-on-surface-variant">Scholar</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-headline-sm text-headline-sm text-on-surface font-bold">11,200 XP</p>
+                  </div>
+                </div>
+                <!-- Rank 3 -->
+                <div
+                  class="flex items-center justify-between p-lg border-b border-outline-variant hover:bg-surface-bright transition-colors">
+                  <div class="flex items-center gap-md">
+                    <div
+                      class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-tertiary font-bold">
+                      3</div>
+                    <img alt="Rank 3 Avatar" class="w-12 h-12 rounded-full border-2 border-tertiary object-cover"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3rQv1FHOh2C6RzOMY9vSgKVpD8rGlRlceJmf0O0Al8iIOypa7yZWjTfrChWMPu1yIcpW9xFo8GpvVUpSUdUDDbq5OaJ1lgp2BpaRBw-eqSuy_uGW95DswfA1yG4T1c5UabeOS1526tqHDE2Ib2VbgEWDaD12ddDouvGp5eFiH-f-zZib5fd1SH5V16p_YSB6eK3TZNOmBpkbxdmIG2C505nK31aHZRI4sI0R_kv2DqPRYAq460llG9vxXjL-WqMhGXeNlFjfIdW4" />
+                    <div>
+                      <p class="font-title-lg text-title-lg text-on-surface line-clamp-1">Diana Kusuma</p>
+                      <div class="flex items-center gap-xs mt-1">
+                        <span class="material-symbols-outlined text-primary text-[14px]">lightbulb</span>
+                        <span class="font-label-sm text-label-sm text-on-surface-variant">Thinker</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-headline-sm text-headline-sm text-on-surface font-bold">10,850 XP</p>
+                  </div>
+                </div>
+                <!-- Current User Rank (Sticky at bottom concept) -->
+                <div
+                  class="flex items-center justify-between p-lg bg-surface-container border-t-2 border-primary-fixed-dim">
+                  <div class="flex items-center gap-md">
+                    <div
+                      class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-on-surface font-bold">
+                      42</div>
+                    <img alt="Current User Avatar" class="w-12 h-12 rounded-full object-cover"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4" />
+                    <div>
+                      <p class="font-title-lg text-title-lg text-on-surface font-bold"><span
+                          class="rb-username-fill">Budi Santoso</span> (You)</p>
+                      <p class="font-label-sm text-label-sm text-primary mt-1">Scholar Level</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-headline-sm text-headline-sm text-primary font-bold">4,250 XP</p>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">1,200 to rank 41</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- BridgePass Upgrade Modal -->
+  <div id="bridgepass-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden" aria-modal="true"
+    role="dialog">
+    <!-- Backdrop -->
+    <div id="bp-backdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+    <!-- Modal Panel -->
+    <div
+      class="relative bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-primary to-primary-container p-lg text-on-primary relative overflow-hidden">
+        <div class="absolute -top-6 -right-6 w-32 h-32 bg-white/10 rounded-full"></div>
+        <div class="absolute -bottom-8 -left-4 w-24 h-24 bg-white/10 rounded-full"></div>
+        <div class="flex items-center justify-between relative z-10">
+          <div class="flex items-center gap-sm">
+            <span class="material-symbols-outlined text-3xl"
+              style="font-variation-settings:'FILL' 1;">workspace_premium</span>
+            <div>
+              <h2 class="font-headline-md text-[20px] md:text-headline-md leading-tight font-bold">BridgePass</h2>
+              <p class="font-label-sm text-label-sm opacity-80">Status keanggotaan Anda</p>
+            </div>
+          </div>
+          <button id="close-bridgepass-modal"
+            class="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="flex border-b border-outline-variant">
+        <button id="bp-tab-info"
+          class="flex-1 py-sm font-label-md text-label-md font-bold text-primary border-b-2 border-primary transition-colors"
+          onclick="switchBPTab('info')">
+          Paket & Manfaat
+        </button>
+        <button id="bp-tab-referral"
+          class="flex-1 py-sm font-label-md text-label-md text-on-surface-variant border-b-2 border-transparent hover:text-primary transition-colors"
+          onclick="switchBPTab('referral')">
+          Kode Referral
+        </button>
+      </div>
+
+      <!-- Tab Content: Info -->
+      <div id="bp-content-info" class="p-lg flex flex-col gap-md">
+        <!-- Current Status -->
+        <div id="bp-current-status-panel" class="rounded-xl p-md bg-surface-container flex items-center gap-sm">
+          <span class="material-symbols-outlined text-2xl" id="bp-modal-icon"
+            style="font-variation-settings:'FILL' 1;">workspace_premium</span>
+          <div>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">Status Saat Ini</p>
+            <p class="font-title-lg text-title-lg font-bold text-on-surface" id="bp-modal-tier">Member Basic</p>
+          </div>
+        </div>
+        <!-- Benefits Comparison -->
+        <div class="grid grid-cols-2 gap-sm">
+          <div class="rounded-xl p-md bg-surface-container border border-outline-variant">
+            <p class="font-label-md text-label-md font-bold text-on-surface mb-sm">Basic</p>
+            <ul class="space-y-xs text-on-surface-variant">
+              <li class="flex items-center gap-xs font-label-sm text-label-sm"><span
+                  class="material-symbols-outlined text-[14px] text-secondary">check</span> Akses Eksplor</li>
+              <li class="flex items-center gap-xs font-label-sm text-label-sm"><span
+                  class="material-symbols-outlined text-[14px] text-secondary">check</span> Beli di Marketplace</li>
+              <li class="flex items-center gap-xs font-label-sm text-label-sm"><span
+                  class="material-symbols-outlined text-[14px] text-outline">close</span> Sewa Perpustakaan</li>
+              <li class="flex items-center gap-xs font-label-sm text-label-sm"><span
+                  class="material-symbols-outlined text-[14px] text-outline">close</span> Diskon Eksklusif</li>
+            </ul>
+          </div>
+          <div class="rounded-xl p-md bg-primary-container border-2 border-primary relative overflow-hidden">
+            <div
+              class="absolute top-1 right-1 bg-primary text-on-primary text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+              PREMIUM</div>
+            <p class="font-label-md text-label-md font-bold text-on-primary-container mb-sm">Premium</p>
+            <ul class="space-y-xs text-on-primary-container">
+              <li class="flex items-center gap-xs font-label-sm text-label-sm"><span
+                  class="material-symbols-outlined text-[14px] text-secondary">check</span> Akses Eksplor</li>
+              <li class="flex items-center gap-xs font-label-sm text-label-sm"><span
+                  class="material-symbols-outlined text-[14px] text-secondary">check</span> Beli di Marketplace</li>
+              <li class="flex items-center gap-xs font-label-sm text-label-sm"><span
+                  class="material-symbols-outlined text-[14px] text-secondary">check</span> Sewa Perpustakaan</li>
+              <li class="flex items-center gap-xs font-label-sm text-label-sm"><span
+                  class="material-symbols-outlined text-[14px] text-secondary">check</span> Diskon Eksklusif</li>
+            </ul>
+          </div>
+        </div>
+        <!-- CTA to switch tab -->
+        <button onclick="switchBPTab('referral')" id="bp-to-referral-btn"
+          class="w-full py-3 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-surface-tint transition-colors shadow-sm">
+          Tukar Kode Referral
+        </button>
+      </div>
+
+      <!-- Tab Content: Referral -->
+      <div id="bp-content-referral" class="p-lg flex-col gap-md hidden">
+        <!-- Already premium notice -->
+        <div id="bp-premium-notice"
+          class="hidden rounded-xl p-md bg-secondary-container border border-secondary-fixed-dim flex items-center gap-sm">
+          <span class="material-symbols-outlined text-secondary"
+            style="font-variation-settings:'FILL' 1;">verified</span>
+          <div>
+            <p class="font-label-md text-label-md font-bold text-on-secondary-container">Anda sudah Premium!</p>
+            <p class="font-label-sm text-label-sm text-on-secondary-container opacity-80">Nikmati semua fitur eksklusif
+              BridgePass.</p>
+          </div>
+        </div>
+        <!-- Input form -->
+        <div id="bp-referral-form">
+          <p class="font-body-md text-body-md text-on-surface-variant mb-md">Masukkan kode referral yang Anda terima
+            untuk mengaktifkan akses <strong class="text-on-surface">BridgePass Premium</strong>.</p>
+          <div class="flex flex-col gap-sm">
+            <label class="font-label-md text-label-md text-on-surface font-bold">Kode Referral</label>
+            <input id="bp-referral-input" type="text" placeholder="Masukkan kode, contoh: ABCDEFGH"
+              class="w-full px-4 py-3 border-2 border-outline-variant rounded-xl font-body-md text-body-md bg-surface focus:outline-none focus:border-primary transition-colors uppercase tracking-widest"
+              maxlength="12" />
+            <p id="bp-referral-error" class="font-label-sm text-label-sm text-error hidden flex items-center gap-xs">
+              <span class="material-symbols-outlined text-[14px]">error</span> Kode referral tidak valid. Coba lagi.
+            </p>
+            <p id="bp-referral-success"
+              class="font-label-sm text-label-sm text-secondary hidden flex items-center gap-xs">
+              <span class="material-symbols-outlined text-[14px]">check_circle</span> Berhasil! Akun Anda telah
+              diupgrade ke Premium.
+            </p>
+          </div>
+          <button id="bp-submit-referral" onclick="submitReferralCode()"
+            class="mt-md w-full py-3 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-surface-tint transition-colors shadow-sm">
+            Aktifkan Kode
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Footer -->
+  <footer class="bg-surface-container-highest dark:bg-inverse-surface border-t border-outline-variant w-full mt-auto">
+    <div
+      class="flex flex-col md:flex-row justify-between items-center px-4 md:px-margin py-lg max-w-[1280px] mx-auto gap-md">
+      <span class="font-title-lg text-title-lg font-black text-primary dark:text-primary-fixed">ReadBridge</span>
+      <div class="flex gap-md font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant">
+        <a class="hover:underline decoration-primary underline-offset-4" href="tentang-kami.html">Tentang Kami</a>
+        <a class="hover:underline decoration-primary underline-offset-4" href="pusat-bantuan.html">Pusat Bantuan</a>
+        <a class="hover:underline decoration-primary underline-offset-4" href="kebijakan-privasi.html">Kebijakan Privasi</a>
+        <a class="hover:underline decoration-primary underline-offset-4" href="syarat-dan-ketentuan.html">Syarat &amp; Ketentuan</a>
+      </div>
+      <p class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant">© 2024 ReadBridge
+        Indonesia. Membangun Generasi Literasi.</p>
+    </div>
+  </footer>
+
+  <!-- Modal Detail Reading Streak -->
+  <div id="modal-streak-detail"
+    class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 transition-opacity duration-300">
+    <div
+      class="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col transition-all duration-300">
+      <div
+        class="bg-gradient-to-r from-tertiary-fixed to-amber-500/20 p-lg text-on-surface flex items-center justify-between border-b border-outline-variant/30">
+        <div class="flex items-center gap-sm">
+          <span class="material-symbols-outlined text-tertiary text-3xl"
+            style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+          <div>
+            <h2 class="font-bold text-[20px] text-on-surface">Reading Streak</h2>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">Pertahankan konsistensi membacamu!</p>
+          </div>
+        </div>
+        <button onclick="window.closeStreakModal()"
+          class="w-9 h-9 rounded-full bg-white/50 hover:bg-white/80 flex items-center justify-center transition-colors">
           <span class="material-symbols-outlined text-[20px]">close</span>
         </button>
       </div>
-    </div>
+      <div class="p-lg flex flex-col gap-md">
+        <div class="bg-surface-container-low p-md rounded-xl flex items-center justify-between">
+          <div>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">Streak Saat Ini</p>
+            <p id="streak-modal-count" class="font-headline-lg text-primary font-bold">12 Hari</p>
+          </div>
+          <div class="text-right">
+            <p class="font-label-sm text-label-sm text-on-surface-variant">Streak Tertinggi</p>
+            <p id="streak-modal-highest" class="font-headline-sm text-on-surface font-bold">15 Hari</p>
+          </div>
+        </div>
 
-    <!-- Tab Navigation -->
-    <div class="flex border-b border-outline-variant">
-      <button id="bp-tab-info" class="flex-1 py-sm font-label-md text-label-md font-bold text-primary border-b-2 border-primary transition-colors" onclick="switchBPTab('info')">
-        Paket & Manfaat
-      </button>
-      <button id="bp-tab-referral" class="flex-1 py-sm font-label-md text-label-md text-on-surface-variant border-b-2 border-transparent hover:text-primary transition-colors" onclick="switchBPTab('referral')">
-        Kode Referral
-      </button>
-    </div>
-
-    <!-- Tab Content: Info -->
-    <div id="bp-content-info" class="p-lg flex flex-col gap-md">
-      <!-- Current Status -->
-      <div id="bp-current-status-panel" class="rounded-xl p-md bg-surface-container flex items-center gap-sm">
-        <span class="material-symbols-outlined text-2xl" id="bp-modal-icon" style="font-variation-settings:'FILL' 1;">workspace_premium</span>
+        <!-- Kalender Mini Streak (7 Hari Terakhir) -->
         <div>
-          <p class="font-label-sm text-label-sm text-on-surface-variant">Status Saat Ini</p>
-          <p class="font-title-lg text-title-lg font-bold text-on-surface" id="bp-modal-tier">Member Basic</p>
+          <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2 font-bold">7 Hari
+            Terakhir</p>
+          <div class="grid grid-cols-7 gap-sm text-center">
+            <div class="flex flex-col items-center gap-1">
+              <span class="font-label-sm text-xs text-outline">Sen</span>
+              <div class="w-8 h-8 rounded-full bg-secondary text-on-secondary flex items-center justify-center"><span
+                  class="material-symbols-outlined text-[16px] font-bold">check</span></div>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <span class="font-label-sm text-xs text-outline">Sel</span>
+              <div class="w-8 h-8 rounded-full bg-secondary text-on-secondary flex items-center justify-center"><span
+                  class="material-symbols-outlined text-[16px] font-bold">check</span></div>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <span class="font-label-sm text-xs text-outline">Rab</span>
+              <div class="w-8 h-8 rounded-full bg-secondary text-on-secondary flex items-center justify-center"><span
+                  class="material-symbols-outlined text-[16px] font-bold">check</span></div>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <span class="font-label-sm text-xs text-outline">Kam</span>
+              <div class="w-8 h-8 rounded-full bg-secondary text-on-secondary flex items-center justify-center"><span
+                  class="material-symbols-outlined text-[16px] font-bold">check</span></div>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <span class="font-label-sm text-xs text-outline">Jum</span>
+              <div class="w-8 h-8 rounded-full bg-secondary text-on-secondary flex items-center justify-center"><span
+                  class="material-symbols-outlined text-[16px] font-bold">check</span></div>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <span class="font-label-sm text-xs text-outline">Sab</span>
+              <div class="w-8 h-8 rounded-full bg-secondary text-on-secondary flex items-center justify-center"><span
+                  class="material-symbols-outlined text-[16px] font-bold">check</span></div>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <span class="font-label-sm text-xs text-outline">Min</span>
+              <div class="w-8 h-8 rounded-full bg-amber-500 text-white flex items-center justify-center animate-pulse">
+                <span class="material-symbols-outlined text-[16px] font-bold">local_fire_department</span></div>
+            </div>
+          </div>
         </div>
-      </div>
-      <!-- Benefits Comparison -->
-      <div class="grid grid-cols-2 gap-sm">
-        <div class="rounded-xl p-md bg-surface-container border border-outline-variant">
-          <p class="font-label-md text-label-md font-bold text-on-surface mb-sm">Basic</p>
-          <ul class="space-y-xs text-on-surface-variant">
-            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-secondary">check</span> Akses Eksplor</li>
-            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-secondary">check</span> Beli di Marketplace</li>
-            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-outline">close</span> Sewa Perpustakaan</li>
-            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-outline">close</span> Diskon Eksklusif</li>
-          </ul>
-        </div>
-        <div class="rounded-xl p-md bg-primary-container border-2 border-primary relative overflow-hidden">
-          <div class="absolute top-1 right-1 bg-primary text-on-primary text-[10px] font-bold px-1.5 py-0.5 rounded-full">PREMIUM</div>
-          <p class="font-label-md text-label-md font-bold text-on-primary-container mb-sm">Premium</p>
-          <ul class="space-y-xs text-on-primary-container">
-            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-secondary">check</span> Akses Eksplor</li>
-            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-secondary">check</span> Beli di Marketplace</li>
-            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-secondary">check</span> Sewa Perpustakaan</li>
-            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-secondary">check</span> Diskon Eksklusif</li>
-          </ul>
-        </div>
-      </div>
-      <!-- CTA to switch tab -->
-      <button onclick="switchBPTab('referral')" id="bp-to-referral-btn" class="w-full py-3 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-surface-tint transition-colors shadow-sm">
-        Tukar Kode Referral
-      </button>
-    </div>
 
-    <!-- Tab Content: Referral -->
-    <div id="bp-content-referral" class="p-lg flex-col gap-md hidden">
-      <!-- Already premium notice -->
-      <div id="bp-premium-notice" class="hidden rounded-xl p-md bg-secondary-container border border-secondary-fixed-dim flex items-center gap-sm">
-        <span class="material-symbols-outlined text-secondary" style="font-variation-settings:'FILL' 1;">verified</span>
-        <div>
-          <p class="font-label-md text-label-md font-bold text-on-secondary-container">Anda sudah Premium!</p>
-          <p class="font-label-sm text-label-sm text-on-secondary-container opacity-80">Nikmati semua fitur eksklusif BridgePass.</p>
-        </div>
-      </div>
-      <!-- Input form -->
-      <div id="bp-referral-form">
-        <p class="font-body-md text-body-md text-on-surface-variant mb-md">Masukkan kode referral yang Anda terima untuk mengaktifkan akses <strong class="text-on-surface">BridgePass Premium</strong>.</p>
-        <div class="flex flex-col gap-sm">
-          <label class="font-label-md text-label-md text-on-surface font-bold">Kode Referral</label>
-          <input id="bp-referral-input" type="text" placeholder="Masukkan kode, contoh: ABCDEFGH" class="w-full px-4 py-3 border-2 border-outline-variant rounded-xl font-body-md text-body-md bg-surface focus:outline-none focus:border-primary transition-colors uppercase tracking-widest" maxlength="12" />
-          <p id="bp-referral-error" class="font-label-sm text-label-sm text-error hidden flex items-center gap-xs">
-            <span class="material-symbols-outlined text-[14px]">error</span> Kode referral tidak valid. Coba lagi.
-          </p>
-          <p id="bp-referral-success" class="font-label-sm text-label-sm text-secondary hidden flex items-center gap-xs">
-            <span class="material-symbols-outlined text-[14px]">check_circle</span> Berhasil! Akun Anda telah diupgrade ke Premium.
-          </p>
-        </div>
-        <button id="bp-submit-referral" onclick="submitReferralCode()" class="mt-md w-full py-3 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-surface-tint transition-colors shadow-sm">
-          Aktifkan Kode
+        <p class="font-body-md text-[13px] text-on-surface-variant leading-relaxed">Reading Streak dihitung dari login
+          harian Anda atau aktivitas membaca (sewa/beli) dan interaksi di komunitas. Jangan biarkan streak padam!</p>
+
+        <button onclick="window.closeStreakModal(); window.location.href='eksplor.html';"
+          class="mt-2 w-full py-3 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-surface-tint transition-all shadow-sm">
+          Mulai Membaca Sekarang
         </button>
       </div>
     </div>
   </div>
-</div>
-<!-- Footer -->
-<footer class="bg-surface-container-highest dark:bg-inverse-surface border-t border-outline-variant w-full mt-auto">
-<div class="flex flex-col md:flex-row justify-between items-center px-4 md:px-margin py-lg max-w-[1280px] mx-auto gap-md">
-<span class="font-title-lg text-title-lg font-black text-primary dark:text-primary-fixed">ReadBridge</span>
-<div class="flex gap-md font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant">
-<a class="hover:underline decoration-primary underline-offset-4" href="tentang-kami.html">Tentang Kami</a>
-<a class="hover:underline decoration-primary underline-offset-4" href="#">Pusat Bantuan</a>
-<a class="hover:underline decoration-primary underline-offset-4" href="#">Privasi</a>
-<a class="hover:underline decoration-primary underline-offset-4" href="#">Syarat &amp; Ketentuan</a>
-</div>
-<p class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant">© 2024 ReadBridge Indonesia. Membangun Generasi Literasi.</p>
-</div>
-</footer>
 
-<script>
-// ─── VALID REFERRAL CODE ───
-const VALID_REFERRAL_CODE = 'SMNGTAFN';
+  <!-- Modal Detail Level System -->
+  <div id="modal-level-detail"
+    class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 transition-opacity duration-300">
+    <div
+      class="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col transition-all duration-300">
+      <div
+        class="bg-gradient-to-r from-primary to-primary-container p-lg text-on-primary flex items-center justify-between border-b border-outline-variant/30">
+        <div class="flex items-center gap-sm">
+          <span class="material-symbols-outlined text-[24px]">school</span>
+          <div>
+            <h2 class="font-bold text-[20px] text-on-primary">Scholar Level & XP</h2>
+            <p class="font-label-sm text-label-sm text-on-primary-container/80">Sistem peringkat Scholar ReadBridge</p>
+          </div>
+        </div>
+        <button onclick="window.closeLevelModal()"
+          class="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+      <div class="p-lg flex flex-col gap-md">
+        <div class="bg-surface-container-low p-md rounded-xl flex items-center justify-between">
+          <div>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">XP Anda Saat Ini</p>
+            <p id="level-modal-xp" class="font-headline-lg text-primary font-bold">1750 XP</p>
+          </div>
+          <div class="text-right">
+            <p class="font-label-sm text-label-sm text-on-surface-variant">Pangkat Anda</p>
+            <p id="level-modal-rank-name" class="font-headline-sm text-secondary font-bold">Thinker</p>
+          </div>
+        </div>
 
-document.addEventListener("DOMContentLoaded", function() {
-    // ── Username Fill ──
-    const savedName = localStorage.getItem('rb_username');
-    if (savedName) {
-        const els = document.querySelectorAll('.rb-username-fill');
-        for (let i = 0; i < els.length; i++) {
-            els[i].textContent = savedName;
+        <!-- Penjelasan Level -->
+        <div class="flex flex-col gap-sm">
+          <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-bold">Tahapan
+            Peringkat</p>
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center gap-sm p-2 rounded-lg bg-surface border border-outline-variant/30">
+              <span
+                class="w-8 h-8 rounded-full bg-secondary/15 text-secondary flex items-center justify-center font-bold text-xs">1</span>
+              <div class="flex-1">
+                <p class="font-label-md text-label-md font-bold text-on-surface">Explorer (0 - 500 XP)</p>
+                <p class="text-[11px] text-on-surface-variant">Peringkat awal untuk pembaca pemula.</p>
+              </div>
+              <span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span>
+            </div>
+            <div class="flex items-center gap-sm p-2 rounded-lg bg-surface border border-outline-variant/30">
+              <span
+                class="w-8 h-8 rounded-full bg-secondary/15 text-secondary flex items-center justify-center font-bold text-xs">2</span>
+              <div class="flex-1">
+                <p class="font-label-md text-label-md font-bold text-on-surface">Reader (501 - 1200 XP)</p>
+                <p class="text-[11px] text-on-surface-variant">Aktif menyewa dan membaca ulasan buku.</p>
+              </div>
+              <span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span>
+            </div>
+            <div class="flex items-center gap-sm p-2 rounded-lg bg-surface border-2 border-primary">
+              <span
+                class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">3</span>
+              <div class="flex-1">
+                <p class="font-label-md text-label-md font-bold text-primary">Thinker (1201 - 2000 XP)</p>
+                <p class="text-[11px] text-primary">Aktif menulis komentar dan berdiskusi di komunitas.</p>
+              </div>
+              <span id="level-modal-check-thinker"
+                class="material-symbols-outlined text-[18px] text-primary">sync</span>
+            </div>
+            <div class="flex items-center gap-sm p-2 rounded-lg bg-surface border border-outline-variant/30 opacity-60"
+              id="level-modal-scholar-row">
+              <span
+                class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center font-bold text-xs">4</span>
+              <div class="flex-1">
+                <p class="font-label-md text-label-md font-bold text-outline" id="level-modal-scholar-title">Scholar
+                  (2000+ XP)</p>
+                <p class="text-[11px] text-outline" id="level-modal-scholar-desc">Tingkat tertinggi dengan kontribusi
+                  maksimal.</p>
+              </div>
+              <span class="material-symbols-outlined text-[18px] text-outline" id="level-modal-scholar-icon">lock</span>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="window.closeLevelModal()"
+          class="w-full py-3 bg-surface-container border border-outline-variant rounded-full font-label-md text-label-md text-on-surface hover:bg-surface-container-high transition-colors">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Detail Achievement -->
+  <div id="modal-achievement-detail"
+    class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 transition-opacity duration-300">
+    <div
+      class="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col transition-all duration-300">
+      <div class="bg-surface-container-low p-lg flex items-center justify-between border-b border-outline-variant/30">
+        <h2 class="font-bold text-[20px] text-on-surface flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-[24px]" id="ach-modal-top-icon">military_tech</span>
+          Detail Pencapaian
+        </h2>
+        <button onclick="window.closeAchModal()"
+          class="w-9 h-9 rounded-full bg-surface-container-high hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+      <div class="p-lg flex flex-col items-center text-center gap-md">
+        <!-- Icon Besar -->
+        <div id="ach-modal-icon-bg" class="w-20 h-20 rounded-full flex items-center justify-center shadow-md">
+          <span class="material-symbols-outlined text-[44px]" id="ach-modal-icon">military_tech</span>
+        </div>
+
+        <div>
+          <h3 id="ach-modal-name" class="font-title-lg text-title-lg font-bold text-on-surface">Bookworm</h3>
+          <span id="ach-modal-status-badge"
+            class="mt-1 inline-block font-label-sm text-[10px] font-bold px-2.5 py-0.5 rounded-full">TERKUNCI</span>
+        </div>
+
+        <p id="ach-modal-desc" class="font-body-md text-[14px] text-on-surface-variant leading-relaxed">Selesaikan sewa
+          atau beli minimal 3 buku di marketplace.</p>
+
+        <!-- Progress Bar di modal -->
+        <div class="w-full flex flex-col gap-1 mt-2">
+          <div class="flex justify-between text-[11px] font-bold text-outline">
+            <span>Progres</span>
+            <span id="ach-modal-progress-label">0/3</span>
+          </div>
+          <div class="w-full bg-surface-variant rounded-full h-2">
+            <div id="ach-modal-progress-bar" class="bg-primary h-2 rounded-full" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <button id="ach-modal-action-btn"
+          class="w-full py-3 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-primary-container transition-colors mt-2">
+          Ke Marketplace
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ─── VALID REFERRAL CODE ───
+    const VALID_REFERRAL_CODE = 'SMNGTAFN';
+
+    // --- Achievements Database ---
+    const ACHIEVEMENTS_DATA = [
+      {
+        id: 'early_bird',
+        name: 'Early Bird',
+        desc: 'Buka ReadBridge di pagi hari sebelum jam 9 pagi.',
+        icon: 'brightness_5',
+        target: 1,
+        current: 1, // Unlocked by default
+        actionText: 'Kembali',
+        action: () => window.closeAchModal()
+      },
+      {
+        id: 'bookworm',
+        name: 'Bookworm',
+        desc: 'Selesaikan transaksi sewa atau beli minimal 3 buku di marketplace.',
+        icon: 'menu_book',
+        target: 3,
+        current: 0, // Calculated dynamically
+        actionText: 'Buka Marketplace',
+        action: () => { window.closeAchModal(); window.location.href = 'marketplace.html'; }
+      },
+      {
+        id: 'active_contributor',
+        name: 'Active Contributor',
+        desc: 'Tulis minimal 3 diskusi atau komentar di komunitas.',
+        icon: 'chat',
+        target: 3,
+        current: 0, // Calculated dynamically
+        actionText: 'Kunjungi Komunitas',
+        action: () => { window.closeAchModal(); window.location.href = 'komunitas.html'; }
+      },
+      {
+        id: 'wealthy_reader',
+        name: 'Wealthy Reader',
+        desc: 'Belanja dengan total nominal transaksi di atas Rp 100.000.',
+        icon: 'payments',
+        target: 100000,
+        current: 0, // Calculated dynamically
+        actionText: 'Beli Buku',
+        action: () => { window.closeAchModal(); window.location.href = 'marketplace.html'; }
+      },
+      {
+        id: 'streak_master',
+        name: 'Streak Master',
+        desc: 'Mencapai reading streak minimal 7 hari beruntun.',
+        icon: 'local_fire_department',
+        target: 7,
+        current: 0, // Calculated dynamically
+        actionText: 'Baca Buku',
+        action: () => { window.closeAchModal(); window.location.href = 'eksplor.html'; }
+      },
+      {
+        id: 'premium_scholar',
+        name: 'Premium Scholar',
+        desc: 'Upgrade status keanggotaan Anda ke BridgePass Premium.',
+        icon: 'workspace_premium',
+        target: 1,
+        current: 0, // Calculated dynamically
+        actionText: 'Upgrade BridgePass',
+        action: () => { window.closeAchModal(); document.getElementById('open-bridgepass-modal').click(); }
+      }
+    ];
+
+    document.addEventListener("DOMContentLoaded", function () {
+      // ── Username Fill ──
+      const savedName = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+      const els = document.querySelectorAll('.rb-username-fill');
+      for (let i = 0; i < els.length; i++) {
+        els[i].textContent = savedName;
+      }
+
+      // --- Dynamic Gamification Logic ---
+      calculateGamification(savedName);
+
+      // ── Main Tab Logic (Detail Akun / Leaderboard) ──
+      const tabDetail = document.getElementById('tab-detail');
+      const tabLeaderboard = document.getElementById('tab-leaderboard');
+      const contentDetail = document.getElementById('content-detail');
+      const contentLeaderboard = document.getElementById('content-leaderboard');
+      const sidebarTabDetail = document.getElementById('sidebar-tab-detail');
+      const sidebarTabLeaderboard = document.getElementById('sidebar-tab-leaderboard');
+
+      function showDetail() {
+        tabDetail.className = "font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors";
+        tabLeaderboard.className = "font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors";
+        contentDetail.classList.remove('hidden');
+        contentDetail.classList.add('grid');
+        contentLeaderboard.classList.add('hidden');
+        contentLeaderboard.classList.remove('flex');
+
+        if (sidebarTabDetail && sidebarTabLeaderboard) {
+          sidebarTabDetail.className = "flex items-center gap-md px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all";
+          const iconDet = sidebarTabDetail.querySelector('span');
+          if (iconDet) iconDet.className = "material-symbols-outlined text-on-primary-container";
+
+          sidebarTabLeaderboard.className = "flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all";
+          const iconLead = sidebarTabLeaderboard.querySelector('span');
+          if (iconLead) iconLead.className = "material-symbols-outlined text-on-surface-variant dark:text-outline-variant";
         }
-    }
+      }
 
-    // ── Main Tab Logic (Detail Akun / Leaderboard) ──
-    const tabDetail = document.getElementById('tab-detail');
-    const tabLeaderboard = document.getElementById('tab-leaderboard');
-    const contentDetail = document.getElementById('content-detail');
-    const contentLeaderboard = document.getElementById('content-leaderboard');
+      function showLeaderboard() {
+        tabLeaderboard.className = "font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors";
+        tabDetail.className = "font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors";
+        contentLeaderboard.classList.remove('hidden');
+        contentLeaderboard.classList.add('flex');
+        contentDetail.classList.add('hidden');
+        contentDetail.classList.remove('grid');
 
-    function showDetail() {
-      tabDetail.className = "font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors";
-      tabLeaderboard.className = "font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors";
-      contentDetail.classList.remove('hidden');
-      contentDetail.classList.add('grid');
-      contentLeaderboard.classList.add('hidden');
-      contentLeaderboard.classList.remove('flex');
-    }
+        if (sidebarTabDetail && sidebarTabLeaderboard) {
+          sidebarTabLeaderboard.className = "flex items-center gap-md px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all";
+          const iconLead = sidebarTabLeaderboard.querySelector('span');
+          if (iconLead) iconLead.className = "material-symbols-outlined text-on-primary-container";
 
-    function showLeaderboard() {
-      tabLeaderboard.className = "font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors";
-      tabDetail.className = "font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors";
-      contentLeaderboard.classList.remove('hidden');
-      contentLeaderboard.classList.add('flex');
-      contentDetail.classList.add('hidden');
-      contentDetail.classList.remove('grid');
-    }
+          sidebarTabDetail.className = "flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all";
+          const iconDet = sidebarTabDetail.querySelector('span');
+          if (iconDet) iconDet.className = "material-symbols-outlined text-on-surface-variant dark:text-outline-variant";
+        }
+      }
 
-    if(tabDetail && tabLeaderboard) {
-      tabDetail.addEventListener('click', showDetail);
-      tabLeaderboard.addEventListener('click', showLeaderboard);
-    }
-    
-    if (window.location.hash === '#leaderboard') {
-      showLeaderboard();
-    }
+      if (tabDetail && tabLeaderboard) {
+        tabDetail.addEventListener('click', showDetail);
+        tabLeaderboard.addEventListener('click', showLeaderboard);
+      }
 
-    // ── BridgePass Status Logic ──
-    updateBridgePassUI();
+      if (window.location.hash === '#leaderboard') {
+        showLeaderboard();
+      }
 
-    // Open modal
-    document.getElementById('open-bridgepass-modal').addEventListener('click', () => {
+      // ── BridgePass Status Logic ──
+      updateBridgePassUI();
+
+      // Open modal
+      document.getElementById('open-bridgepass-modal').addEventListener('click', () => {
         document.getElementById('bridgepass-modal').classList.remove('hidden');
         document.getElementById('bridgepass-modal').classList.add('flex');
         switchBPTab('info');
         updateBridgePassUI();
+      });
+
+      // Close modal via X button
+      document.getElementById('close-bridgepass-modal').addEventListener('click', closeBPModal);
+
+      // Close modal via backdrop click
+      document.getElementById('bp-backdrop').addEventListener('click', closeBPModal);
+
+      // Bind close on backdrop for streak and level modal
+      document.getElementById('modal-streak-detail').addEventListener('click', (e) => {
+        if (e.target.id === 'modal-streak-detail') window.closeStreakModal();
+      });
+      document.getElementById('modal-level-detail').addEventListener('click', (e) => {
+        if (e.target.id === 'modal-level-detail') window.closeLevelModal();
+      });
+      document.getElementById('modal-achievement-detail').addEventListener('click', (e) => {
+        if (e.target.id === 'modal-achievement-detail') window.closeAchModal();
+      });
     });
 
-    // Close modal via X button
-    document.getElementById('close-bridgepass-modal').addEventListener('click', closeBPModal);
+    // --- Dynamic Gamification Core ---
+    function calculateGamification(savedName) {
+      // 1. Ambil data aktivitas komunitas
+      let communityPosts = [];
+      try {
+        communityPosts = JSON.parse(localStorage.getItem('readbridge_community_posts_v2') || '[]');
+      } catch (e) { console.error(e); }
 
-    // Close modal via backdrop click
-    document.getElementById('bp-backdrop').addEventListener('click', closeBPModal);
-});
+      const userHandle = '@' + savedName.replace(/\s+/g, '');
+      let userPostsCount = 0;
+      let userCommentsCount = 0;
+      let combinedActivities = [];
 
-// ─── BridgePass Helper Functions ───
+      // Cari posts dan comments oleh user
+      communityPosts.forEach(p => {
+        // Post oleh user
+        if (p.username === savedName || p.username === userHandle || p.isCurrentUser) {
+          userPostsCount++;
+          combinedActivities.push({
+            type: 'post',
+            title: p.judul,
+            content: p.isi.replace(/<[^>]*>/g, ''), // strip html
+            waktu: p.waktu,
+            link: `detail-diskusi.html?id=${p.id}`
+          });
+        }
+        // Komentar oleh user
+        if (p.commentsList) {
+          p.commentsList.forEach(c => {
+            if (c.username === savedName || c.username === userHandle) {
+              userCommentsCount++;
+              combinedActivities.push({
+                type: 'comment',
+                title: p.judul,
+                content: c.text,
+                waktu: c.waktu,
+                link: `detail-diskusi.html?id=${p.id}`
+              });
+            }
+          });
+        }
+      });
 
-function closeBPModal() {
-    document.getElementById('bridgepass-modal').classList.add('hidden');
-    document.getElementById('bridgepass-modal').classList.remove('flex');
-    // Reset referral input & messages
-    const input = document.getElementById('bp-referral-input');
-    if (input) input.value = '';
-    document.getElementById('bp-referral-error').classList.add('hidden');
-    document.getElementById('bp-referral-success').classList.add('hidden');
-}
+      // Urutkan aktivitas berdasarkan waktu (terbaru dahulu)
+      combinedActivities.sort((a, b) => new Date(b.waktu) - new Date(a.waktu));
 
-function switchBPTab(tab) {
-    const infoContent = document.getElementById('bp-content-info');
-    const refContent  = document.getElementById('bp-content-referral');
-    const infoTab     = document.getElementById('bp-tab-info');
-    const refTab      = document.getElementById('bp-tab-referral');
+      // Render Aktivitas User
+      const activityContainer = document.getElementById('activity-list-container');
+      if (activityContainer) {
+        if (combinedActivities.length > 0) {
+          activityContainer.innerHTML = combinedActivities.slice(0, 3).map(act => {
+            const icon = act.type === 'post' ? 'edit_document' : 'chat';
+            const label = act.type === 'post' ? 'membuat diskusi baru' : 'berkomentar di diskusi';
+            const formattedTime = formatWaktuAgo(act.waktu);
+            return `
+                  <div class="flex gap-md p-lg border-b border-outline-variant hover:bg-surface-bright transition-colors">
+                    <div class="w-12 h-12 bg-surface-variant rounded-lg flex-shrink-0 flex items-center justify-center">
+                      <span class="material-symbols-outlined text-primary">${icon}</span>
+                    </div>
+                    <div>
+                      <div class="flex items-center gap-xs mb-1 flex-wrap">
+                        <span class="font-label-md text-label-md font-bold text-on-surface rb-username-fill">${savedName}</span>
+                        <span class="font-body-md text-[14px] text-on-surface-variant">${label}</span>
+                        <a href="${act.link}" class="font-label-md text-label-md font-bold text-primary hover:underline">"${act.title}"</a>
+                      </div>
+                      <p class="font-body-md text-[14px] text-on-surface-variant mb-2 line-clamp-2">${act.content}</p>
+                      <span class="font-label-sm text-label-sm text-outline">${formattedTime}</span>
+                    </div>
+                  </div>
+                `;
+          }).join('');
+        } else {
+          activityContainer.innerHTML = `
+              <div class="p-lg text-center">
+                <p class="font-body-md text-on-surface-variant py-md">Belum ada aktivitas terekam. Mulai berdiskusi di komunitas!</p>
+                <a href="komunitas.html" class="inline-block mt-xs text-primary font-bold hover:underline">Pergi ke Komunitas →</a>
+              </div>
+            `;
+        }
+      }
 
-    if (tab === 'info') {
+      // 2. Ambil data transaksi
+      let transactions = [];
+      try {
+        transactions = JSON.parse(localStorage.getItem('rb_transactions') || '[]');
+      } catch (e) { console.error(e); }
+
+      // Render Riwayat Transaksi
+      const txContainer = document.getElementById('transaction-list-container');
+      let totalSpent = 0;
+      if (txContainer) {
+        if (transactions.length > 0) {
+          // Urutkan transaksi (terbaru dahulu)
+          const sortedTx = [...transactions].reverse();
+          txContainer.innerHTML = sortedTx.slice(0, 4).map(tx => {
+            const isSewa = tx.payment && tx.payment.includes('Sewa') || (tx.item && tx.item.priceHarian);
+            const typeLabel = isSewa ? 'Sewa' : 'Beli';
+            const typeBg = isSewa ? 'bg-surface-container text-primary-fixed-dim' : 'bg-tertiary-fixed text-on-tertiary-fixed-variant';
+            const formattedDate = new Date(tx.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+            const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+            const priceLabel = formatter.format(tx.total || tx.subtotal);
+
+            // Hitung total belanja untuk achievement
+            totalSpent += (tx.total || tx.subtotal || 0);
+
+            const bookCover = tx.item && (tx.item.image || tx.item.img) || 'https://via.placeholder.com/150';
+            const bookTitle = tx.item ? tx.item.title : 'Buku ReadBridge';
+
+            const statusColor = tx.status === 'selesai' || tx.status === 'dikemas' ? 'text-secondary' : 'text-outline';
+            const statusLabel = tx.status === 'dikemas' ? 'Dikemas' : 'Selesai';
+
+            return `
+                  <div class="border border-outline-variant rounded-lg p-md flex gap-md hover:border-primary transition-colors bg-surface-bright">
+                    <div class="w-16 h-24 bg-surface-variant rounded flex-shrink-0 overflow-hidden">
+                      <img alt="${bookTitle}" class="w-full h-full object-cover" src="${bookCover}"/>
+                    </div>
+                    <div class="flex flex-col justify-between flex-1">
+                      <div>
+                        <div class="flex justify-between items-start mb-1 gap-1">
+                          <span class="font-label-sm text-[10px] font-bold px-2 py-0.5 rounded ${typeBg}">${typeLabel}</span>
+                          <span class="font-label-sm text-[11px] text-outline">${formattedDate}</span>
+                        </div>
+                        <h4 class="font-title-lg text-[15px] font-bold text-on-surface leading-tight line-clamp-1">${bookTitle}</h4>
+                      </div>
+                      <div class="flex justify-between items-end mt-2">
+                        <span class="font-label-md text-label-md font-bold text-on-surface">${priceLabel}</span>
+                        <span class="font-label-sm text-label-sm ${statusColor} flex items-center gap-0.5">
+                          <span class="material-symbols-outlined text-xs">check_circle</span> ${statusLabel}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                `;
+          }).join('');
+        } else {
+          txContainer.innerHTML = `
+              <div class="col-span-full p-lg text-center">
+                <p class="font-body-md text-on-surface-variant py-md">Belum ada transaksi pembelian atau sewa buku.</p>
+                <a href="marketplace.html" class="inline-block mt-xs text-primary font-bold hover:underline">Kunjungi Marketplace →</a>
+              </div>
+            `;
+        }
+      }
+
+      // Hitung sisa total belanja dari semua transaksi di database
+      totalSpent = transactions.reduce((sum, tx) => sum + (tx.total || tx.subtotal || 0), 0);
+
+      // 3. Kalkulasi Reading Streak
+      let currentStreak = parseInt(localStorage.getItem('rb_reading_streak') || '12');
+      // Sinkronkan ke modal streak
+      const streakCountEls = document.querySelectorAll('#streak-card-count, #streak-modal-count');
+      streakCountEls.forEach(el => el.textContent = currentStreak + ' Hari');
+
+      // Tulis ke modal streak tertinggi (streak + 3)
+      const highestStreakEl = document.getElementById('streak-modal-highest');
+      if (highestStreakEl) highestStreakEl.textContent = (currentStreak + 3) + ' Hari';
+
+      // 4. Kalkulasi XP dan Level
+      let baseXP = 800; // XP awal default
+      let xpFromTransactions = transactions.length * 150; // +150 XP per transaksi
+      let xpFromActivities = combinedActivities.length * 50; // +50 XP per diskusi/komentar
+
+      let totalXP = baseXP + xpFromTransactions + xpFromActivities;
+      // Tulis XP ke local storage agar tersimpan
+      localStorage.setItem('rb_user_xp', totalXP);
+
+      // Update level status berdasarkan total XP
+      let currentLevelName = 'Explorer';
+      let minXP = 0;
+      let maxXP = 500;
+      let nextLevelName = 'Reader';
+
+      if (totalXP > 2000) {
+        currentLevelName = 'Scholar';
+        minXP = 2000;
+        maxXP = 3500;
+        nextLevelName = 'Master';
+      } else if (totalXP > 1200) {
+        currentLevelName = 'Thinker';
+        minXP = 1200;
+        maxXP = 2000;
+        nextLevelName = 'Scholar';
+      } else if (totalXP > 500) {
+        currentLevelName = 'Reader';
+        minXP = 500;
+        maxXP = 1200;
+        nextLevelName = 'Thinker';
+      }
+
+      // Update UI Level Card
+      const levelTitle = document.querySelector('#level-card h3');
+      if (levelTitle) levelTitle.textContent = 'Level ' + currentLevelName;
+
+      const xpLeft = maxXP - totalXP;
+      const progressPercent = Math.min(100, Math.max(0, ((totalXP - minXP) / (maxXP - minXP)) * 100));
+
+      const levelDesc = document.getElementById('level-card-desc');
+      if (levelDesc) {
+        if (totalXP >= 3500) {
+          levelDesc.textContent = 'Anda telah mencapai level tertinggi!';
+        } else {
+          levelDesc.textContent = `Dapatkan ${xpLeft} XP lagi untuk naik tingkat ke ${nextLevelName}`;
+        }
+      }
+
+      const levelProgress = document.getElementById('level-card-progress');
+      if (levelProgress) levelProgress.style.width = progressPercent + '%';
+
+      const xpMinEl = document.getElementById('level-card-xp-min');
+      if (xpMinEl) xpMinEl.textContent = totalXP + ' XP';
+
+      const xpMaxEl = document.getElementById('level-card-xp-max');
+      if (xpMaxEl) xpMaxEl.textContent = maxXP + ' XP';
+
+      // Update Level Modal
+      const levelModalXp = document.getElementById('level-modal-xp');
+      if (levelModalXp) levelModalXp.textContent = totalXP + ' XP';
+
+      const levelModalRank = document.getElementById('level-modal-rank-name');
+      if (levelModalRank) levelModalRank.textContent = currentLevelName;
+
+      // Update modal progress roadmap
+      const checkThinkerIcon = document.getElementById('level-modal-check-thinker');
+      if (checkThinkerIcon) {
+        if (totalXP > 2000) {
+          checkThinkerIcon.textContent = 'check_circle';
+          checkThinkerIcon.className = 'material-symbols-outlined text-[18px] text-secondary';
+        } else {
+          checkThinkerIcon.textContent = 'sync';
+          checkThinkerIcon.className = 'material-symbols-outlined text-[18px] text-primary animate-pulse';
+        }
+      }
+
+      const scholarRow = document.getElementById('level-modal-scholar-row');
+      const scholarTitle = document.getElementById('level-modal-scholar-title');
+      const scholarDesc = document.getElementById('level-modal-scholar-desc');
+      const scholarIcon = document.getElementById('level-modal-scholar-icon');
+
+      if (scholarRow && totalXP >= 2000) {
+        scholarRow.className = 'flex items-center gap-sm p-2 rounded-lg bg-surface border-2 border-primary';
+        scholarRow.classList.remove('opacity-60');
+        if (scholarTitle) {
+          scholarTitle.textContent = 'Scholar (Level Anda)';
+          scholarTitle.className = 'font-label-md text-label-md font-bold text-primary';
+        }
+        if (scholarDesc) {
+          scholarDesc.textContent = 'Selamat! Anda adalah seorang Scholar berdedikasi.';
+          scholarDesc.className = 'text-[11px] text-primary';
+        }
+        if (scholarIcon) {
+          scholarIcon.textContent = 'check_circle';
+          scholarIcon.className = 'material-symbols-outlined text-[18px] text-secondary';
+        }
+      }
+
+      // 5. Update Achievements & Render Grid
+      // Update Dynamic values
+      ACHIEVEMENTS_DATA.find(a => a.id === 'bookworm').current = transactions.length;
+      ACHIEVEMENTS_DATA.find(a => a.id === 'active_contributor').current = combinedActivities.length;
+      ACHIEVEMENTS_DATA.find(a => a.id === 'wealthy_reader').current = totalSpent;
+      ACHIEVEMENTS_DATA.find(a => a.id === 'streak_master').current = currentStreak;
+      ACHIEVEMENTS_DATA.find(a => a.id === 'premium_scholar').current = localStorage.getItem('rb_bridgepass') === 'premium' ? 1 : 0;
+
+      const achGrid = document.getElementById('achievements-grid');
+      if (achGrid) {
+        achGrid.innerHTML = ACHIEVEMENTS_DATA.map(ach => {
+          const isUnlocked = ach.current >= ach.target;
+          const bgClass = isUnlocked
+            ? 'bg-secondary-container text-on-secondary-container border border-secondary-fixed-dim'
+            : 'bg-surface-variant text-outline border border-outline-variant opacity-60';
+          const iconColor = isUnlocked ? 'text-secondary' : 'text-outline';
+          const icon = isUnlocked ? ach.icon : 'lock';
+
+          return `
+              <div onclick="window.showAchDetail('${ach.id}')" class="flex flex-col items-center text-center cursor-pointer hover:-translate-y-0.5 hover:scale-105 transition-all duration-300">
+                <div class="w-14 h-14 ${bgClass} rounded-full flex items-center justify-center mb-2 shadow-sm">
+                  <span class="material-symbols-outlined ${iconColor}">${icon}</span>
+                </div>
+                <span class="font-label-sm text-[12px] font-bold text-on-surface-variant">${ach.name}</span>
+              </div>
+            `;
+        }).join('');
+      }
+    }
+
+    // Format Waktu Helper
+    function formatWaktuAgo(s) {
+      if (!s) return 'Baru saja';
+      if (s.includes('jam') || s.includes('hari') || s.includes('Kemarin')) return s;
+      const d = Date.now() - new Date(s).getTime(), m = Math.floor(d / 60000), h = Math.floor(d / 3600000), dy = Math.floor(d / 86400000);
+      if (m < 1) return 'Baru saja';
+      if (h < 1) return `${m} menit yang lalu`;
+      if (dy < 1) return `${h} jam yang lalu`;
+      if (dy === 1) return 'Kemarin';
+      return `${dy} hari yang lalu`;
+    }
+
+    // --- Modal Helper Functions ---
+    window.showStreakModal = function () {
+      const modal = document.getElementById('modal-streak-detail');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    };
+    window.closeStreakModal = function () {
+      const modal = document.getElementById('modal-streak-detail');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    };
+
+    window.showLevelModal = function () {
+      const modal = document.getElementById('modal-level-detail');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    };
+    window.closeLevelModal = function () {
+      const modal = document.getElementById('modal-level-detail');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    };
+
+    window.showAchievementsInfo = function () {
+      const tabDetail = document.getElementById('tab-detail');
+      if (tabDetail) {
+        tabDetail.click();
+      }
+      setTimeout(() => {
+        const section = document.getElementById('achievements-section');
+        if (section) {
+          section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Add custom highlight classes
+          section.classList.add('ring-4', 'ring-primary/45', 'scale-[1.02]');
+          setTimeout(() => {
+            section.classList.remove('ring-4', 'ring-primary/45', 'scale-[1.02]');
+          }, 1500);
+        }
+      }, 100);
+    };
+
+    window.showAchDetail = function (achId) {
+      const ach = ACHIEVEMENTS_DATA.find(a => a.id === achId);
+      if (!ach) return;
+
+      const modal = document.getElementById('modal-achievement-detail');
+      const modalIcon = document.getElementById('ach-modal-icon');
+      const modalIconBg = document.getElementById('ach-modal-icon-bg');
+      const modalName = document.getElementById('ach-modal-name');
+      const modalStatus = document.getElementById('ach-modal-status-badge');
+      const modalDesc = document.getElementById('ach-modal-desc');
+      const progressLabel = document.getElementById('ach-modal-progress-label');
+      const progressBar = document.getElementById('ach-modal-progress-bar');
+      const actionBtn = document.getElementById('ach-modal-action-btn');
+
+      if (!modal) return;
+
+      const isUnlocked = ach.current >= ach.target;
+
+      // Set Nama & Deskripsi
+      modalName.textContent = ach.name;
+      modalDesc.textContent = ach.desc;
+
+      // Set Progress
+      let progressText = `${ach.current}/${ach.target}`;
+      let percent = Math.min(100, Math.max(0, (ach.current / ach.target) * 100));
+
+      if (ach.id === 'wealthy_reader') {
+        const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+        progressText = `${formatter.format(ach.current)} / ${formatter.format(ach.target)}`;
+      }
+      progressLabel.textContent = progressText;
+      progressBar.style.width = percent + '%';
+
+      // Set Icon & Status
+      if (isUnlocked) {
+        modalIcon.textContent = ach.icon;
+        modalIcon.className = 'material-symbols-outlined text-[44px] text-on-secondary-container';
+        modalIconBg.className = 'w-20 h-20 bg-secondary-container rounded-full flex items-center justify-center shadow-md border border-secondary-fixed-dim';
+
+        modalStatus.textContent = 'TERBUKA';
+        modalStatus.className = 'mt-1 inline-block font-label-sm text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-secondary-container text-secondary border border-secondary-fixed-dim';
+
+        actionBtn.textContent = 'Selesai';
+        actionBtn.disabled = true;
+        actionBtn.className = 'w-full py-3 bg-surface-variant text-outline rounded-full font-label-md text-label-md cursor-not-allowed mt-2';
+      } else {
+        modalIcon.textContent = 'lock';
+        modalIcon.className = 'material-symbols-outlined text-[44px] text-outline';
+        modalIconBg.className = 'w-20 h-20 bg-surface-variant rounded-full flex items-center justify-center shadow-md border border-outline-variant opacity-60';
+
+        modalStatus.textContent = 'TERKUNCI';
+        modalStatus.className = 'mt-1 inline-block font-label-sm text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-surface-variant text-outline border border-outline-variant';
+
+        actionBtn.textContent = ach.actionText;
+        actionBtn.disabled = false;
+        actionBtn.className = 'w-full py-3 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-primary-container transition-colors mt-2';
+        actionBtn.onclick = ach.action;
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    };
+
+    window.closeAchModal = function () {
+      const modal = document.getElementById('modal-achievement-detail');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    };
+
+    // ─── BridgePass Helper Functions ───
+
+    function closeBPModal() {
+      document.getElementById('bridgepass-modal').classList.add('hidden');
+      document.getElementById('bridgepass-modal').classList.remove('flex');
+      // Reset referral input & messages
+      const input = document.getElementById('bp-referral-input');
+      if (input) input.value = '';
+      document.getElementById('bp-referral-error').classList.add('hidden');
+      document.getElementById('bp-referral-success').classList.add('hidden');
+    }
+
+    function switchBPTab(tab) {
+      const infoContent = document.getElementById('bp-content-info');
+      const refContent = document.getElementById('bp-content-referral');
+      const infoTab = document.getElementById('bp-tab-info');
+      const refTab = document.getElementById('bp-tab-referral');
+
+      if (tab === 'info') {
         infoContent.classList.remove('hidden'); infoContent.classList.add('flex');
-        refContent.classList.add('hidden');     refContent.classList.remove('flex');
+        refContent.classList.add('hidden'); refContent.classList.remove('flex');
         infoTab.className = 'flex-1 py-sm font-label-md text-label-md font-bold text-primary border-b-2 border-primary transition-colors';
-        refTab.className  = 'flex-1 py-sm font-label-md text-label-md text-on-surface-variant border-b-2 border-transparent hover:text-primary transition-colors';
-    } else {
+        refTab.className = 'flex-1 py-sm font-label-md text-label-md text-on-surface-variant border-b-2 border-transparent hover:text-primary transition-colors';
+      } else {
         refContent.classList.remove('hidden'); refContent.classList.add('flex'); refContent.classList.add('flex-col');
-        infoContent.classList.add('hidden');   infoContent.classList.remove('flex');
-        refTab.className  = 'flex-1 py-sm font-label-md text-label-md font-bold text-primary border-b-2 border-primary transition-colors';
+        infoContent.classList.add('hidden'); infoContent.classList.remove('flex');
+        refTab.className = 'flex-1 py-sm font-label-md text-label-md font-bold text-primary border-b-2 border-primary transition-colors';
         infoTab.className = 'flex-1 py-sm font-label-md text-label-md text-on-surface-variant border-b-2 border-transparent hover:text-primary transition-colors';
+      }
+      updateBridgePassUI();
     }
-    updateBridgePassUI();
-}
 
-function updateBridgePassUI() {
-    const isPremium = localStorage.getItem('rb_bridgepass') === 'premium';
+    function updateBridgePassUI() {
+      const isPremium = localStorage.getItem('rb_bridgepass') === 'premium';
 
-    // ── Sidebar Card ──
-    const bpIcon       = document.getElementById('bp-icon');
-    const bpTierLabel  = document.getElementById('bp-tier-label');
-    const bpBadge      = document.getElementById('bp-badge');
-    const bpDesc       = document.getElementById('bp-desc');
-    const bpBtnLabel   = document.getElementById('bp-btn-label');
+      // ── Sidebar Card ──
+      const bpIcon = document.getElementById('bp-icon');
+      const bpTierLabel = document.getElementById('bp-tier-label');
+      const bpBadge = document.getElementById('bp-badge');
+      const bpDesc = document.getElementById('bp-desc');
+      const bpBtnLabel = document.getElementById('bp-btn-label');
 
-    if (isPremium) {
-        bpIcon.textContent      = 'workspace_premium';
-        bpIcon.style.color      = '#004ac6'; // primary
+      if (isPremium) {
+        bpIcon.textContent = 'workspace_premium';
+        bpIcon.style.color = '#004ac6'; // primary
         bpTierLabel.textContent = 'Member Premium';
-        bpBadge.textContent     = 'PREMIUM';
-        bpBadge.className       = 'font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-primary-container text-primary font-bold';
-        bpDesc.textContent      = 'Anda memiliki akses penuh ke semua fitur.';
-        bpBtnLabel.textContent  = 'Lihat BridgePass';
-    } else {
-        bpIcon.textContent      = 'workspace_premium';
-        bpIcon.style.color      = '#737686'; // outline
+        bpBadge.textContent = 'PREMIUM';
+        bpBadge.className = 'font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-primary-container text-primary font-bold';
+        bpDesc.textContent = 'Anda memiliki akses penuh ke semua fitur.';
+        bpBtnLabel.textContent = 'Lihat BridgePass';
+      } else {
+        bpIcon.textContent = 'workspace_premium';
+        bpIcon.style.color = '#737686'; // outline
         bpTierLabel.textContent = 'Member Basic';
-        bpBadge.textContent     = 'BASIC';
-        bpBadge.className       = 'font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-outline-variant text-on-surface-variant';
-        bpDesc.textContent      = 'Upgrade ke Premium untuk akses penuh.';
-        bpBtnLabel.textContent  = 'Upgrade BridgePass';
-    }
+        bpBadge.textContent = 'BASIC';
+        bpBadge.className = 'font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-outline-variant text-on-surface-variant';
+        bpDesc.textContent = 'Upgrade ke Premium untuk akses penuh.';
+        bpBtnLabel.textContent = 'Upgrade BridgePass';
+      }
 
-    // ── Modal Info Tab ──
-    const bpModalIcon  = document.getElementById('bp-modal-icon');
-    const bpModalTier  = document.getElementById('bp-modal-tier');
-    const bpToRefBtn   = document.getElementById('bp-to-referral-btn');
-    if (bpModalTier) {
-        bpModalTier.textContent  = isPremium ? 'Member Premium' : 'Member Basic';
-        bpModalIcon.style.color  = isPremium ? '#004ac6' : '#737686';
+      // ── Modal Info Tab ──
+      const bpModalIcon = document.getElementById('bp-modal-icon');
+      const bpModalTier = document.getElementById('bp-modal-tier');
+      const bpToRefBtn = document.getElementById('bp-to-referral-btn');
+      if (bpModalTier) {
+        bpModalTier.textContent = isPremium ? 'Member Premium' : 'Member Basic';
+        bpModalIcon.style.color = isPremium ? '#004ac6' : '#737686';
         if (bpToRefBtn) bpToRefBtn.textContent = isPremium ? 'Status: Aktif ✓' : 'Tukar Kode Referral';
         if (bpToRefBtn) bpToRefBtn.disabled = isPremium;
-    }
+      }
 
-    // ── Modal Referral Tab ──
-    const premiumNotice = document.getElementById('bp-premium-notice');
-    const referralForm  = document.getElementById('bp-referral-form');
-    if (premiumNotice && referralForm) {
+      // ── Modal Referral Tab ──
+      const premiumNotice = document.getElementById('bp-premium-notice');
+      const referralForm = document.getElementById('bp-referral-form');
+      if (premiumNotice && referralForm) {
         if (isPremium) {
-            premiumNotice.classList.remove('hidden');
-            premiumNotice.classList.add('flex');
-            referralForm.classList.add('hidden');
+          premiumNotice.classList.remove('hidden');
+          premiumNotice.classList.add('flex');
+          referralForm.classList.add('hidden');
         } else {
-            premiumNotice.classList.add('hidden');
-            premiumNotice.classList.remove('flex');
-            referralForm.classList.remove('hidden');
+          premiumNotice.classList.add('hidden');
+          premiumNotice.classList.remove('flex');
+          referralForm.classList.remove('hidden');
         }
+      }
     }
-}
 
-function submitReferralCode() {
-    const input   = document.getElementById('bp-referral-input');
-    const errMsg  = document.getElementById('bp-referral-error');
-    const succMsg = document.getElementById('bp-referral-success');
-    const code    = input.value.trim().toUpperCase();
+    function submitReferralCode() {
+      const input = document.getElementById('bp-referral-input');
+      const errMsg = document.getElementById('bp-referral-error');
+      const succMsg = document.getElementById('bp-referral-success');
+      const code = input.value.trim().toUpperCase();
 
-    errMsg.classList.add('hidden');
-    succMsg.classList.add('hidden');
+      errMsg.classList.add('hidden');
+      succMsg.classList.add('hidden');
 
-    if (code === VALID_REFERRAL_CODE) {
+      if (code === VALID_REFERRAL_CODE) {
         // Simpan status premium ke localStorage
         localStorage.setItem('rb_bridgepass', 'premium');
         succMsg.classList.remove('hidden');
@@ -958,84 +1788,89 @@ function submitReferralCode() {
         document.getElementById('bp-submit-referral').disabled = true;
         // Perbarui semua UI BridgePass
         updateBridgePassUI();
-    } else {
+        // recalculate profile achievement for Premium Scholar
+        const savedName = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+        calculateGamification(savedName);
+      } else {
         errMsg.classList.remove('hidden');
         errMsg.classList.add('flex');
         input.classList.add('border-error');
         setTimeout(() => input.classList.remove('border-error'), 1500);
+      }
     }
-}
-</script>
+  </script>
 
-<script id="dynamic-logo-menu">
-document.addEventListener("DOMContentLoaded", function() {
-    // Inject Logo Menu
-    const headerOrNav = document.querySelector('header, nav');
-    if (headerOrNav && !document.getElementById('logo-menu-container')) {
+  <script id="dynamic-logo-menu">
+    document.addEventListener("DOMContentLoaded", function () {
+      // Inject Logo Menu
+      const headerOrNav = document.querySelector('header, nav');
+      if (headerOrNav && !document.getElementById('logo-menu-container')) {
         const treeWalker = document.createTreeWalker(headerOrNav, NodeFilter.SHOW_TEXT, {
-            acceptNode: function(node) {
-                return node.nodeValue.trim() === 'ReadBridge' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
-            }
+          acceptNode: function (node) {
+            return node.nodeValue.trim() === 'ReadBridge' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+          }
         });
         const logoTextNode = treeWalker.nextNode();
         if (logoTextNode) {
-            const logoEl = logoTextNode.parentElement;
-            
-            if (logoEl.id === 'logo-btn' || logoEl.querySelector('#logo-btn')) return;
+          const logoEl = logoTextNode.parentElement;
 
-            const wrapper = document.createElement('div');
-            wrapper.style.position = 'relative';
-            wrapper.style.display = 'inline-flex';
-            wrapper.style.alignItems = 'center';
-            wrapper.style.cursor = 'pointer';
-            wrapper.id = 'logo-menu-container';
-            
-            logoEl.parentNode.insertBefore(wrapper, logoEl);
-            wrapper.appendChild(logoEl);
-            
-            logoEl.id = 'logo-btn';
-            logoEl.style.display = 'flex';
-            logoEl.style.alignItems = 'center';
-            logoEl.style.gap = '4px';
-            logoEl.innerHTML = 'ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>';
-            
-            const dropdown = document.createElement('div');
-            dropdown.id = 'logo-dropdown';
-            dropdown.className = 'absolute left-0 top-full mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50';
-            
-            const links = [
-                { href: 'index.html', icon: 'home', text: 'Beranda' },
-                { href: 'eksplor.html', icon: 'library_books', text: 'Eksplor Koleksi' },
-                { href: 'marketplace.html#sewa', icon: 'menu_book', text: 'Perpustakaan & Sewa' },
-                { href: 'marketplace.html', icon: 'storefront', text: 'Marketplace' },
-                { href: 'komunitas.html', icon: 'forum', text: 'Komunitas' },
-                { href: 'tentang-kami.html', icon: 'info', text: 'Tentang Kami' }
-            ];
-            
-            links.forEach(l => {
-                const a = document.createElement('a');
-                a.href = l.href;
-                a.className = 'px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-[14px] text-on-surface flex items-center gap-3 font-medium';
-                a.innerHTML = `<span class="material-symbols-outlined text-[20px] text-on-surface-variant">${l.icon}</span> ${l.text}`;
-                dropdown.appendChild(a);
-            });
-            
-            wrapper.appendChild(dropdown);
-            
-            logoEl.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                dropdown.classList.toggle('hidden');
-                dropdown.classList.toggle('flex');
-            });
-            document.addEventListener('click', (e) => {
-                if (!dropdown.contains(e.target) && !logoEl.contains(e.target)) {
-                    dropdown.classList.add('hidden');
-                    dropdown.classList.remove('flex');
-                }
-            });
+          if (logoEl.id === 'logo-btn' || logoEl.querySelector('#logo-btn')) return;
+
+          const wrapper = document.createElement('div');
+          wrapper.style.position = 'relative';
+          wrapper.style.display = 'inline-flex';
+          wrapper.style.alignItems = 'center';
+          wrapper.style.cursor = 'pointer';
+          wrapper.id = 'logo-menu-container';
+
+          logoEl.parentNode.insertBefore(wrapper, logoEl);
+          wrapper.appendChild(logoEl);
+
+          logoEl.id = 'logo-btn';
+          logoEl.style.display = 'flex';
+          logoEl.style.alignItems = 'center';
+          logoEl.style.gap = '4px';
+          logoEl.innerHTML = 'ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>';
+
+          const dropdown = document.createElement('div');
+          dropdown.id = 'logo-dropdown';
+          dropdown.className = 'absolute left-0 top-full mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50';
+
+          const links = [
+            { href: 'index.html', icon: 'home', text: 'Beranda' },
+            { href: 'eksplor.html', icon: 'library_books', text: 'Eksplor Koleksi' },
+            { href: 'marketplace.html#sewa', icon: 'menu_book', text: 'Perpustakaan & Sewa' },
+            { href: 'marketplace.html', icon: 'storefront', text: 'Marketplace' },
+            { href: 'komunitas.html', icon: 'forum', text: 'Komunitas' },
+            { href: 'tentang-kami.html', icon: 'info', text: 'Tentang Kami' }
+          ];
+
+          links.forEach(l => {
+            const a = document.createElement('a');
+            a.href = l.href;
+            a.className = 'px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-[14px] text-on-surface flex items-center gap-3 font-medium';
+            a.innerHTML = `<span class="material-symbols-outlined text-[20px] text-on-surface-variant">${l.icon}</span> ${l.text}`;
+            dropdown.appendChild(a);
+          });
+
+          wrapper.appendChild(dropdown);
+
+          logoEl.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropdown.classList.toggle('hidden');
+            dropdown.classList.toggle('flex');
+          });
+          document.addEventListener('click', (e) => {
+            if (!dropdown.contains(e.target) && !logoEl.contains(e.target)) {
+              dropdown.classList.add('hidden');
+              dropdown.classList.remove('flex');
+            }
+          });
         }
-    }
-});
-</script>
-</body></html>
+      }
+    });
+  </script>
+</body>
+
+</html>

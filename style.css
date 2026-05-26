@@ -1,3 +1,9 @@
+/*
+  Project: ReadBridge
+  Author: Liffy Sei / Affan
+  Date: May 2026
+  Role: Lead Developer & UI/UX Designer
+*/
 /* ============================================================
    ReadBridge - Global Custom Stylesheet
    Digunakan bersama Tailwind CSS untuk styling tambahan
@@ -525,4 +531,149 @@ button {
 .rb-availability--limited {
   background-color: var(--color-error-container);
   color: var(--color-on-error-container);
+}
+
+/* ============================================================
+   ReadBridge - Dark Mode System & Class Overrides
+   ============================================================ */
+
+/* 1. CSS Variable Overrides for Dark Mode */
+.dark {
+  /* Primary Override */
+  --color-primary:           #60a5fa;
+  --color-on-primary:        #0f172a;
+  --color-primary-container: #1e3a8a;
+  --color-on-primary-container: #dbeafe;
+  --color-primary-fixed:     #1e3a8a;
+
+  /* Secondary Override */
+  --color-secondary:           #34d399;
+  --color-on-secondary:        #064e3b;
+  --color-secondary-container: #064e3b;
+  --color-on-secondary-container: #a7f3d0;
+  --color-secondary-fixed:     #064e3b;
+
+  /* Tertiary Override */
+  --color-tertiary:           #fb923c;
+  --color-tertiary-container: #7c2d12;
+  --color-on-tertiary:        #ffffff;
+  --color-on-tertiary-container: #ffedd5;
+  --color-tertiary-fixed-dim: #7c2d12;
+
+  /* Surface Override */
+  --color-surface:                 #0b1c30;
+  --color-surface-container-lowest:  #071424;
+  --color-surface-container-low:     #0b1c30;
+  --color-surface-container:         #0f1d30;
+  --color-surface-container-high:    #172a45;
+  --color-surface-container-highest: #223c60;
+
+  /* Background & Text Override */
+  --color-background:       #0b1c30;
+  --color-on-background:    #f8fafc;
+  --color-on-surface:       #f8fafc;
+  --color-on-surface-variant: #94a3b8;
+  --color-outline:          #475569;
+  --color-outline-variant:  #1e293b;
+}
+
+/* 2. Global Dark Mode HTML/Body Override */
+.dark body {
+  background-color: var(--color-background) !important;
+  color: var(--color-on-background) !important;
+}
+
+/* 3. Global Card & Grid Elements Override to prevent bright backgrounds */
+.dark .bg-surface-container-lowest,
+.dark .bg-white,
+.dark .bg-surface,
+.dark .bg-surface-bright {
+  background-color: var(--color-surface-container-lowest) !important;
+}
+
+.dark .bg-surface-container-low,
+.dark .bg-background {
+  background-color: var(--color-surface-container-low) !important;
+}
+
+.dark .bg-surface-container {
+  background-color: var(--color-surface-container) !important;
+}
+
+.dark .bg-surface-container-high {
+  background-color: var(--color-surface-container-high) !important;
+}
+
+.dark .bg-surface-container-highest,
+.dark .bg-surface-variant {
+  background-color: var(--color-surface-container-highest) !important;
+}
+
+/* 4. Text & Accent Color Synchronization */
+.dark .text-on-surface,
+.dark .text-on-background {
+  color: var(--color-on-surface) !important;
+}
+
+.dark .text-on-surface-variant,
+.dark .text-outline {
+  color: var(--color-on-surface-variant) !important;
+}
+
+/* Ensure material symbols icons are visible in dark mode */
+.dark .material-symbols-outlined {
+  color: inherit;
+}
+
+/* 5. Border Overrides */
+.dark .border,
+.dark .border-t,
+.dark .border-b,
+.dark .border-l,
+.dark .border-r,
+.dark .border-outline-variant,
+.dark .border-outline-variant\/30,
+.dark .border-outline-variant\/20,
+.dark .border-surface-variant {
+  border-color: var(--color-outline-variant) !important;
+}
+
+/* 6. Form elements override */
+.dark input, 
+.dark select, 
+.dark textarea {
+  background-color: var(--color-surface-container) !important;
+  border-color: var(--color-outline-variant) !important;
+  color: var(--color-on-surface) !important;
+}
+
+.dark input::placeholder {
+  color: var(--color-on-surface-variant) !important;
+  opacity: 0.7;
+}
+
+/* 7. Specific Component Fixes */
+.dark #profile-dropdown,
+.dark #logo-dropdown {
+  background-color: var(--color-surface-container-lowest) !important;
+  border-color: var(--color-outline-variant) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark #profile-dropdown a:hover,
+.dark #logo-dropdown a:hover,
+.dark .hover\:bg-surface-container-low:hover,
+.dark .hover\:bg-surface-container-high:hover {
+  background-color: var(--color-surface-container-high) !important;
+}
+
+/* Active state for sidebar navigation tabs */
+.dark #sidebar-tab-detail,
+.dark .bg-primary-container {
+  background-color: var(--color-primary) !important;
+  color: var(--color-on-primary) !important;
+}
+.dark #sidebar-tab-detail span,
+.dark .bg-primary-container span {
+  color: var(--color-on-primary) !important;
 }

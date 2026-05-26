@@ -1,3 +1,9 @@
+/*
+  Project: ReadBridge
+  Author: Liffy Sei / Affan
+  Date: May 2026
+  Role: Lead Developer & UI/UX Designer
+*/
 const mysql = require("mysql2/promise");
 require("dotenv").config();
 

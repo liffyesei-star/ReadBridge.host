@@ -1,7 +1,68 @@
+<!--
+  Project: ReadBridge
+  Author: Liffy Sei / Affan
+  Date: May 2026
+  Role: Lead Developer & UI/UX Designer
+-->
 <!-- ReadBridge - Eksplor -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <!-- Global Preference Controller Script to prevent FOUC -->
+    <script id="global-preferences-controller">
+        (function() {
+            // Function to apply theme
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+            
+            // Function to apply font size
+            function applyFontSize(size) {
+                if (size === 'kecil') {
+                    document.documentElement.style.fontSize = '14px';
+                } else if (size === 'besar') {
+                    document.documentElement.style.fontSize = '18px';
+                } else {
+                    document.documentElement.style.fontSize = '16px';
+                }
+            }
+            
+            // Function to apply font family
+            function applyFontFamily(family) {
+                let style = document.getElementById('global-font-override');
+                if (family === 'serif') {
+                    if (!style) {
+                        style = document.createElement('style');
+                        style.id = 'global-font-override';
+                        style.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span, a, button, input, select, textarea { font-family: Georgia, serif !important; }`;
+                        document.head.appendChild(style);
+                    }
+                } else {
+                    if (style) style.remove();
+                }
+            }
+
+            // Initial apply
+            applyTheme(localStorage.getItem('rb_theme'));
+            applyFontSize(localStorage.getItem('rb_font_size') || 'sedang');
+            applyFontFamily(localStorage.getItem('rb_font_family') || 'sans');
+
+            // Listen for storage events to sync across tabs
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'rb_theme') {
+                    applyTheme(e.newValue);
+                } else if (e.key === 'rb_font_size') {
+                    applyFontSize(e.newValue || 'sedang');
+                } else if (e.key === 'rb_font_family') {
+                    applyFontFamily(e.newValue || 'sans');
+                }
+            });
+        })();
+    </script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Eksplor - ReadBridge</title>
@@ -82,7 +143,7 @@
             <p class="font-label-sm text-label-sm text-on-surface-variant">Masuk sebagai</p>
             <p class="font-label-md text-label-md text-on-surface font-bold truncate">Siswa Indonesia</p>
           </div>
-          <a href="#" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+          <a href="pengaturan.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
             <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
           </a>
           <a href="profile.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
@@ -258,6 +319,37 @@
         </div>
       </div>
 
+      <!-- Filter Buku Digital -->
+      <div id="filter-buku-digital" class="filter-section hidden">
+        <div class="mb-lg">
+          <h4 class="font-label-md text-label-md text-on-surface-variant mb-sm">Kategori E-Book</h4>
+          <div class="flex flex-col gap-sm">
+            <label class="flex items-center gap-sm cursor-pointer"><input id="filter-ebook-cat-fiksi" checked class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/><span class="font-body-md text-body-md text-on-surface">Novel & Fiksi</span></label>
+            <label class="flex items-center gap-sm cursor-pointer"><input id="filter-ebook-cat-selfdev" checked class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/><span class="font-body-md text-body-md text-on-surface">Pengembangan Diri</span></label>
+            <label class="flex items-center gap-sm cursor-pointer"><input id="filter-ebook-cat-komik" checked class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/><span class="font-body-md text-body-md text-on-surface">Komik</span></label>
+            <label class="flex items-center gap-sm cursor-pointer"><input id="filter-ebook-cat-sains" checked class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/><span class="font-body-md text-body-md text-on-surface">Sains & Teknologi</span></label>
+            <label class="flex items-center gap-sm cursor-pointer"><input id="filter-ebook-cat-pelajaran" checked class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/><span class="font-body-md text-body-md text-on-surface">Buku Pelajaran</span></label>
+          </div>
+        </div>
+        <div class="mb-lg">
+          <h4 class="font-label-md text-label-md text-on-surface-variant mb-sm">Tipe Akses E-Book</h4>
+          <div class="flex flex-col gap-sm">
+            <label class="flex items-center gap-sm cursor-pointer">
+              <input id="filter-ebook-access-all" checked class="text-primary focus:ring-primary border-outline-variant" name="ebook_access" type="radio" value="all"/>
+              <span class="font-body-md text-body-md text-on-surface">Semua E-Book</span>
+            </label>
+            <label class="flex items-center gap-sm cursor-pointer">
+              <input id="filter-ebook-access-free" class="text-primary focus:ring-primary border-outline-variant" name="ebook_access" type="radio" value="free"/>
+              <span class="font-body-md text-body-md text-on-surface">Akses Gratis (Free)</span>
+            </label>
+            <label class="flex items-center gap-sm cursor-pointer">
+              <input id="filter-ebook-access-premium" class="text-primary focus:ring-primary border-outline-variant" name="ebook_access" type="radio" value="premium"/>
+              <span class="font-body-md text-body-md text-on-surface">Premium Only 👑</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
       <button id="apply-filter-btn" class="w-full mt-lg py-2 px-4 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-colors shadow-sm">Terapkan Filter</button>
     </div>
   </aside>
@@ -278,10 +370,11 @@
     </div>
 
     <!-- Tabs -->
-    <div id="explore-tabs" class="flex border-b border-outline-variant gap-lg">
-      <button id="tab-buku" class="font-title-lg text-title-lg text-primary border-b-2 border-primary pb-2 px-2 transition-colors">Buku</button>
-      <button id="tab-jurnal" class="font-title-lg text-title-lg text-on-surface-variant hover:text-primary transition-colors pb-2 px-2">Jurnal</button>
-      <button id="tab-diskusi" class="font-title-lg text-title-lg text-on-surface-variant hover:text-primary transition-colors pb-2 px-2">Diskusi</button>
+    <div id="explore-tabs" class="flex border-b border-outline-variant gap-lg overflow-x-auto hide-scrollbar">
+      <button id="tab-buku" class="font-title-lg text-title-lg text-primary border-b-2 border-primary pb-2 px-2 transition-colors shrink-0">Buku</button>
+      <button id="tab-jurnal" class="font-title-lg text-title-lg text-on-surface-variant hover:text-primary transition-colors pb-2 px-2 shrink-0">Jurnal</button>
+      <button id="tab-diskusi" class="font-title-lg text-title-lg text-on-surface-variant hover:text-primary transition-colors pb-2 px-2 shrink-0">Diskusi</button>
+      <button id="tab-buku-digital" class="font-title-lg text-title-lg text-on-surface-variant hover:text-primary transition-colors pb-2 px-2 shrink-0 select-none">Buku Digital</button>
     </div>
 
     <!-- Results -->
@@ -290,6 +383,62 @@
       <select class="bg-surface-container border border-outline-variant rounded-lg px-3 py-1.5 font-label-md text-label-md text-on-surface focus:outline-none focus:border-primary">
         <option>Paling Relevan</option><option>Terbaru</option><option>Harga: Rendah - Tinggi</option><option>Rating Tertinggi</option>
       </select>
+    </div>
+
+    <!-- Ebook Section -->
+    <div id="ebook-section" class="hidden flex-col gap-lg animate-fade-in-up">
+      <!-- Premium E-Book Banner -->
+      <div id="ebook-premium-banner" class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 dark:from-slate-950 dark:via-indigo-980 dark:to-slate-950 rounded-2xl p-lg md:p-xl text-white border border-indigo-500/20 shadow-xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
+        <div class="absolute -right-16 -top-16 w-48 h-48 bg-indigo-500/10 rounded-full blur-xl"></div>
+        <div class="absolute -left-16 -bottom-16 w-48 h-48 bg-emerald-500/10 rounded-full blur-xl"></div>
+        <div class="relative z-10 flex flex-col gap-xs max-w-xl">
+          <div class="flex items-center gap-2">
+            <span class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-3 py-1 rounded-full text-xs font-bold tracking-wider inline-flex items-center gap-1 select-none">
+              <span class="material-symbols-outlined text-[14px]">workspace_premium</span> READBRIDGE PREMIUM
+            </span>
+          </div>
+          <h2 id="ebook-banner-title" class="font-headline-lg text-[22px] md:text-headline-lg font-extrabold text-white tracking-tight mt-sm">Unlock Unlimited E-Books with BridgePass 👑</h2>
+          <p id="ebook-banner-desc" class="font-body-md text-[14px] md:text-body-md text-slate-300 leading-relaxed">Nikmati akses membaca sepuasnya untuk ribuan buku digital premium, jurnal eksklusif, perpustakaan sewa, dan hilangkan semua batasan waktu membaca gratis sekarang!</p>
+        </div>
+        <div class="relative z-10 shrink-0 self-stretch md:self-auto flex items-center">
+          <button id="ebook-upgrade-cta-btn" class="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-label-md rounded-full shadow-[0_4px_16px_rgba(245,158,11,0.3)] transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-sm">
+            <span class="material-symbols-outlined font-bold text-[18px]">workspace_premium</span> Upgrade ke Premium
+          </button>
+        </div>
+      </div>
+
+      <!-- Monthly Spotlight Section -->
+      <div id="ebook-monthly-special-section" class="flex flex-col gap-md">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-sm border-b border-outline-variant/30 pb-xs">
+          <div class="flex items-center gap-2 select-none">
+            <span class="material-symbols-outlined text-amber-500 text-[26px]">workspace_premium</span>
+            <h3 class="font-title-lg text-title-lg text-on-surface font-extrabold">E-Book Premium Pilihan Bulan Ini</h3>
+          </div>
+          <div class="flex items-center gap-2 bg-amber-500/10 text-amber-600 dark:text-amber-500 border border-amber-500/20 px-3 py-1.5 rounded-xl font-label-sm text-[12px] font-bold select-none">
+            <span class="material-symbols-outlined text-[16px] animate-pulse-soft">schedule</span>
+            <span>Diperbarui dalam: </span>
+            <span id="monthly-special-timer" class="font-mono tracking-wider font-extrabold text-amber-500">14 Hari 18 Jam 25 Menit 10 Detik</span>
+          </div>
+        </div>
+        <div id="ebook-monthly-grid" class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+          <!-- Monthly specials injected by main.js -->
+        </div>
+      </div>
+
+      <!-- Onboarding Interests Recommendations Section -->
+      <div id="ebook-onboarding-section" class="flex flex-col gap-lg">
+        <!-- Cluster rows injected by main.js -->
+      </div>
+
+      <!-- E-Book Directory Section -->
+      <div id="ebook-directory-section" class="flex flex-col gap-md mt-md">
+        <div class="border-b border-outline-variant/30 pb-xs">
+          <h3 class="font-title-lg text-title-lg text-on-surface font-extrabold">Semua Katalog Buku Digital</h3>
+        </div>
+        <div id="ebook-directory-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter">
+          <!-- Ebooks catalogue injected by main.js -->
+        </div>
+      </div>
     </div>
 
     <!-- Books Grid -->
@@ -318,9 +467,9 @@
     <div class="font-title-lg text-title-lg font-black text-primary">ReadBridge</div>
     <div class="flex gap-lg font-label-sm text-label-sm text-on-surface-variant">
       <a class="hover:underline decoration-primary underline-offset-4" href="tentang-kami.html">Tentang Kami</a>
-      <a class="hover:underline decoration-primary underline-offset-4" href="#">Pusat Bantuan</a>
-      <a class="hover:underline decoration-primary underline-offset-4" href="#">Privasi</a>
-      <a class="hover:underline decoration-primary underline-offset-4" href="#">Syarat &amp; Ketentuan</a>
+      <a class="hover:underline decoration-primary underline-offset-4" href="pusat-bantuan.html">Pusat Bantuan</a>
+      <a class="hover:underline decoration-primary underline-offset-4" href="kebijakan-privasi.html">Kebijakan Privasi</a>
+      <a class="hover:underline decoration-primary underline-offset-4" href="syarat-dan-ketentuan.html">Syarat &amp; Ketentuan</a>
     </div>
     <div class="font-label-sm text-label-sm text-on-surface-variant">© 2024 ReadBridge Indonesia. Membangun Generasi Literasi.</div>
   </div>
@@ -412,6 +561,224 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 </script>
+<!-- E-Book Reader Modal -->
+<div id="ebook-reader-modal" class="fixed inset-0 z-[110] bg-background hidden flex-col transition-all duration-300" role="dialog" aria-modal="true">
+  <!-- Top bar -->
+  <header class="bg-surface border-b border-outline-variant px-4 py-sm flex justify-between items-center z-10 shrink-0">
+    <div class="flex items-center gap-md">
+      <button id="reader-close-btn" class="w-10 h-10 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant transition-colors">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
+      <div class="flex flex-col">
+        <h4 id="reader-book-title" class="font-title-lg text-[16px] md:text-title-lg font-extrabold text-on-surface truncate max-w-[150px] sm:max-w-xs md:max-w-md">Sejarah Nasional Indonesia</h4>
+        <p id="reader-book-author" class="font-label-sm text-label-sm text-on-surface-variant">Marwati Djoened</p>
+      </div>
+    </div>
+    
+    <!-- Free Reading Timer -->
+    <div id="reader-timer-container" class="hidden items-center gap-xs px-3 py-1.5 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-500 border border-orange-500/20 font-label-md text-[13px] md:text-label-md font-bold transition-all duration-300">
+      <span class="material-symbols-outlined text-[16px] animate-pulse">hourglass_top</span>
+      <span class="hidden sm:inline">Membaca Gratis Sisa: </span>
+      <span id="reader-timer-countdown" class="font-mono tracking-widest font-extrabold text-orange-600 dark:text-orange-500">60.0s</span>
+    </div>
+    
+    <!-- Premium Status Indicator -->
+    <div id="reader-premium-status" class="hidden items-center gap-xs px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 border border-emerald-500/20 font-label-md text-[13px] md:text-label-md font-bold">
+      <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+      <span>Akses Premium Aktif ✓</span>
+    </div>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-sm">
+      <!-- Font sizing control -->
+      <div class="relative shrink-0" id="reader-font-menu-container">
+        <button id="reader-font-btn" class="w-10 h-10 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant transition-colors" title="Kustomisasi Pembaca">
+          <span class="material-symbols-outlined">format_size</span>
+        </button>
+        <!-- Dropdown Font controls -->
+        <div id="reader-font-dropdown" class="absolute right-0 mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-2xl border border-outline-variant/30 p-md hidden flex-col gap-sm z-50">
+          <div>
+            <span class="font-label-sm text-label-sm text-on-surface-variant">Ukuran Teks</span>
+            <div class="flex items-center gap-2 mt-xs">
+              <button id="font-size-sm" class="flex-1 py-1 border border-outline-variant rounded-md text-xs font-medium hover:bg-surface-container font-label-sm">Kecil</button>
+              <button id="font-size-md" class="flex-1 py-1 border-2 border-primary bg-primary-container text-on-primary-container rounded-md text-sm font-bold font-label-md">Sedang</button>
+              <button id="font-size-lg" class="flex-1 py-1 border border-outline-variant rounded-md text-md font-medium hover:bg-surface-container font-body-lg">Besar</button>
+            </div>
+          </div>
+          <div class="border-t border-outline-variant/30 pt-sm mt-xs">
+            <span class="font-label-sm text-label-sm text-on-surface-variant">Tema Pembaca</span>
+            <div class="grid grid-cols-3 gap-2 mt-xs">
+              <button id="reader-theme-light" class="py-2 border-2 border-primary bg-white text-slate-850 rounded-md font-bold text-xs">Light</button>
+              <button id="reader-theme-sepia" class="py-2 border border-outline-variant bg-[#FBF0D9] text-[#5F4B32] rounded-md font-medium text-xs">Sepia</button>
+              <button id="reader-theme-dark" class="py-2 border border-outline-variant bg-slate-900 text-slate-100 rounded-md font-medium text-xs">Dark</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Viewport -->
+  <div class="flex-grow flex w-full relative overflow-hidden bg-white text-slate-800" id="reader-viewport">
+    
+    <!-- Left Table of Contents Sidebar -->
+    <aside class="w-64 border-r border-outline-variant/30 flex-shrink-0 hidden md:flex flex-col bg-surface p-md gap-md z-10 select-none overflow-y-auto thin-scrollbar">
+      <h5 class="font-label-md text-label-md text-on-surface font-bold">Daftar Isi E-Book</h5>
+      <ul class="flex flex-col gap-1" id="reader-toc">
+        <!-- TOC injected by main.js -->
+      </ul>
+    </aside>
+
+    <!-- Center Immersive Text Area -->
+    <div class="flex-grow flex flex-col relative overflow-y-auto h-full px-6 py-lg md:px-xxl justify-between max-w-3xl mx-auto" id="reader-text-container">
+      
+      <!-- Actual Content -->
+      <article id="reader-content-area" class="prose dark:prose-invert max-w-none text-justify flex flex-col gap-md select-text" style="font-family: Georgia, Cambria, 'Times New Roman', Times, serif;">
+        <h2 id="reader-chapter-title" class="text-2xl font-bold font-sans text-left border-b border-outline-variant/20 pb-sm mb-sm text-slate-900">Bab 1: Pendahuluan</h2>
+        <div id="reader-chapter-text" class="text-[17px] leading-[1.8] tracking-wide text-slate-800 flex flex-col gap-md">
+          <!-- Text pages injected by main.js -->
+        </div>
+      </article>
+
+      <!-- Page Navigations -->
+      <footer class="flex items-center justify-between border-t border-outline-variant/30 mt-xl pt-md pb-md shrink-0">
+        <button id="reader-prev-btn" class="flex items-center gap-xs px-4 py-2 border border-outline-variant rounded-full text-on-surface-variant hover:bg-surface-container font-label-md text-label-md transition-colors">
+          <span class="material-symbols-outlined text-[18px]">chevron_left</span> Sebelumnya
+        </button>
+        <span id="reader-page-indicator" class="font-label-sm text-[12px] md:text-label-md text-on-surface-variant font-bold">Halaman 1 dari 5</span>
+        <button id="reader-next-btn" class="flex items-center gap-xs px-4 py-2 border border-outline-variant rounded-full text-on-surface-variant hover:bg-surface-container font-label-md text-label-md transition-colors">
+          Berikutnya <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+        </button>
+      </footer>
+    </div>
+
+    <!-- Screen Glassmorphic Locked Overlay -->
+    <div id="reader-locked-overlay" class="absolute inset-0 bg-white/70 dark:bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-md z-30 hidden animate-fade-in-up">
+      <div class="bg-surface-container-lowest border border-amber-500/20 max-w-md w-full rounded-2xl shadow-2xl p-xl flex flex-col items-center text-center gap-md">
+        <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 shadow-lg shadow-amber-500/20">
+          <span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+        </div>
+        <div class="flex flex-col gap-xs">
+          <h3 id="locked-overlay-title" class="font-headline-sm text-headline-sm font-extrabold text-on-surface">Batas Membaca Gratis Tercapai 👑</h3>
+          <p id="locked-overlay-desc" class="font-body-md text-body-md text-on-surface-variant">Aktivasi **BridgePass Premium** untuk langsung membuka semua bab e-book ini, ribuan buku digital, jurnal akademik eksklusif, serta sewa tak terbatas tanpa interupsi waktu!</p>
+        </div>
+        <div class="flex flex-col gap-sm w-full mt-sm">
+          <button id="reader-upgrade-btn" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-label-md rounded-full shadow-[0_4px_16px_rgba(245,158,11,0.25)] transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-sm">
+            <span class="material-symbols-outlined font-bold text-[18px]">workspace_premium</span> Aktifkan BridgePass Premium
+          </button>
+          <button id="reader-locked-close-btn" class="w-full py-3 border border-outline-variant hover:bg-surface-container text-on-surface-variant font-medium text-label-md rounded-full transition-colors">
+            Kembali ke Katalog
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BridgePass Upgrade Modal in Explore -->
+<div id="bridgepass-modal" class="fixed inset-0 z-[120] flex items-center justify-center p-4 hidden animate-fade-in-up" aria-modal="true" role="dialog">
+  <!-- Backdrop -->
+  <div id="bp-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+  
+  <!-- Modal Panel -->
+  <div class="relative bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col z-10 border border-outline-variant/30">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-primary to-primary-container p-lg text-on-primary relative overflow-hidden">
+      <div class="absolute -top-6 -right-6 w-32 h-32 bg-white/10 rounded-full"></div>
+      <div class="absolute -bottom-8 -left-4 w-24 h-24 bg-white/10 rounded-full"></div>
+      <div class="flex items-center justify-between relative z-10">
+        <div class="flex items-center gap-sm">
+          <span class="material-symbols-outlined text-3xl" style="font-variation-settings:'FILL' 1;">workspace_premium</span>
+          <div>
+            <h2 class="font-headline-md text-[20px] md:text-headline-md leading-tight font-bold">BridgePass</h2>
+            <p class="font-label-sm text-label-sm opacity-80">Status keanggotaan Anda</p>
+          </div>
+        </div>
+        <button id="close-bridgepass-modal" class="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="flex border-b border-outline-variant bg-surface-container-low">
+      <button id="bp-tab-info" class="flex-1 py-3 font-label-md text-label-md font-bold text-primary border-b-2 border-primary transition-colors">
+        Paket & Manfaat
+      </button>
+      <button id="bp-tab-referral" class="flex-1 py-3 font-label-md text-label-md text-on-surface-variant border-b-2 border-transparent hover:text-primary transition-colors">
+        Kode Referral
+      </button>
+    </div>
+
+    <!-- Tab Content: Info -->
+    <div id="bp-content-info" class="p-lg flex flex-col gap-md">
+      <!-- Current Status -->
+      <div id="bp-current-status-panel" class="rounded-xl p-md bg-surface-container flex items-center gap-sm">
+        <span class="material-symbols-outlined text-2xl text-primary" id="bp-modal-icon" style="font-variation-settings:'FILL' 1;">workspace_premium</span>
+        <div>
+          <p class="font-label-sm text-label-sm text-on-surface-variant">Status Saat Ini</p>
+          <p class="font-title-lg text-title-lg font-bold text-on-surface" id="bp-modal-tier">Member Basic</p>
+        </div>
+      </div>
+      <!-- Benefits Comparison -->
+      <div class="grid grid-cols-2 gap-sm">
+        <div class="rounded-xl p-md bg-surface-container border border-outline-variant">
+          <p class="font-label-md text-label-md font-bold text-on-surface mb-sm">Basic</p>
+          <ul class="space-y-xs text-on-surface-variant">
+            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-secondary">check</span> Akses Eksplor</li>
+            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-secondary">check</span> Beli di Marketplace</li>
+            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-outline">close</span> Sewa & E-Book Bebas</li>
+            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-outline">close</span> Membaca Tanpa Batas</li>
+          </ul>
+        </div>
+        <div class="rounded-xl p-md bg-primary-container border-2 border-primary relative overflow-hidden">
+          <div class="absolute top-1 right-1 bg-primary text-on-primary text-[10px] font-bold px-1.5 py-0.5 rounded-full">PREMIUM</div>
+          <p class="font-label-md text-label-md font-bold text-on-primary-container mb-sm">Premium</p>
+          <ul class="space-y-xs text-on-primary-container">
+            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-secondary">check</span> Akses Eksplor</li>
+            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-secondary">check</span> Beli di Marketplace</li>
+            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-secondary">check</span> Sewa & E-Book Bebas</li>
+            <li class="flex items-center gap-xs font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px] text-secondary">check</span> Membaca Tanpa Batas</li>
+          </ul>
+        </div>
+      </div>
+      <!-- CTA to switch tab -->
+      <button id="bp-to-referral-btn" class="w-full py-3 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-surface-tint transition-colors shadow-sm">
+        Tukar Kode Referral
+      </button>
+    </div>
+
+    <!-- Tab Content: Referral -->
+    <div id="bp-content-referral" class="p-lg flex flex-col gap-md hidden">
+      <!-- Already premium notice -->
+      <div id="bp-premium-notice" class="hidden rounded-xl p-md bg-secondary-container border border-secondary-fixed-dim flex items-center gap-sm">
+        <span class="material-symbols-outlined text-secondary" style="font-variation-settings:'FILL' 1;">verified</span>
+        <div>
+          <p class="font-label-md text-label-md font-bold text-on-secondary-container">Anda sudah Premium!</p>
+          <p class="font-label-sm text-label-sm text-on-secondary-container opacity-80">Nikmati semua fitur eksklusif BridgePass.</p>
+        </div>
+      </div>
+      <!-- Input form -->
+      <div id="bp-referral-form" class="flex flex-col gap-md">
+        <p class="font-body-md text-body-md text-on-surface-variant">Masukkan kode referral yang Anda terima untuk mengaktifkan akses <strong class="text-on-surface">BridgePass Premium</strong>.</p>
+        <div class="flex flex-col gap-sm">
+          <label class="font-label-md text-label-md text-on-surface font-bold">Kode Referral</label>
+          <input id="bp-referral-input" type="text" placeholder="Masukkan kode, contoh: ABCDEFGH" class="w-full px-4 py-3 border-2 border-outline-variant rounded-xl font-body-md text-body-md bg-surface focus:outline-none focus:border-primary transition-colors uppercase tracking-widest" maxlength="12" />
+          <p id="bp-referral-error" class="font-label-sm text-label-sm text-error hidden flex items-center gap-xs">
+            <span class="material-symbols-outlined text-[14px]">error</span> Kode referral tidak valid. Coba lagi.
+          </p>
+          <p id="bp-referral-success" class="font-label-sm text-label-sm text-secondary hidden flex items-center gap-xs">
+            <span class="material-symbols-outlined text-[14px]">check_circle</span> Berhasil! Akun Anda telah diupgrade ke Premium.
+          </p>
+        </div>
+        <button id="bp-submit-referral" class="w-full py-3 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-surface-tint transition-colors shadow-sm">
+          Aktifkan Kode
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 
 </html>

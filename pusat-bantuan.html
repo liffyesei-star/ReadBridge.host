@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<!--
+  Project: ReadBridge
+  Author: Liffy Sei / Affan
+  Date: May 2026
+  Role: Lead Developer & UI/UX Designer
+-->
+
+<html lang="id">
+<head>
+    <script id="global-preferences-controller">
+        (function() {
+            function applyTheme(theme) {
+                if (theme === 'dark') document.documentElement.classList.add('dark');
+                else document.documentElement.classList.remove('dark');
+            }
+            function applyFontSize(size) {
+                if (size === 'kecil') document.documentElement.style.fontSize = '14px';
+                else if (size === 'besar') document.documentElement.style.fontSize = '18px';
+                else document.documentElement.style.fontSize = '16px';
+            }
+            function applyFontFamily(family) {
+                let style = document.getElementById('global-font-override');
+                if (family === 'serif') {
+                    if (!style) {
+                        style = document.createElement('style');
+                        style.id = 'global-font-override';
+                        style.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span, a, button, input, select, textarea { font-family: Georgia, serif !important; }`;
+                        document.head.appendChild(style);
+                    }
+                } else {
+                    if (style) style.remove();
+                }
+            }
+            applyTheme(localStorage.getItem('rb_theme'));
+            applyFontSize(localStorage.getItem('rb_font_size') || 'sedang');
+            applyFontFamily(localStorage.getItem('rb_font_family') || 'sans');
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'rb_theme') applyTheme(e.newValue);
+                else if (e.key === 'rb_font_size') applyFontSize(e.newValue || 'sedang');
+                else if (e.key === 'rb_font_family') applyFontFamily(e.newValue || 'sans');
+            });
+        })();
+    </script>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Pusat Bantuan - ReadBridge</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="style.css"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#004ac6", "on-primary": "#ffffff", "primary-container": "#2563eb", "on-primary-container": "#eeefff",
+                        surface: "#f8f9ff", "on-surface": "#0b1c30", "surface-variant": "#d3e4fe", "on-surface-variant": "#434655",
+                        "surface-container-lowest": "#ffffff", "surface-container-low": "#eff4ff", "surface-container": "#e5eeff",
+                        "surface-container-high": "#dce9ff", background: "#f8f9ff", "on-background": "#0b1c30", outline: "#737686", "outline-variant": "#c3c6d7", error: "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 500px; /* Adjust according to expected content length */
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+
+<!-- TopNavBar -->
+<nav class="bg-surface shadow-sm sticky top-0 z-50">
+  <div class="flex justify-between items-center w-full px-4 md:px-8 py-3 max-w-[1280px] mx-auto">
+    <div class="flex items-center gap-6">
+      <a class="text-xl md:text-2xl leading-tight font-bold text-primary" href="eksplor.html">ReadBridge</a>
+      <div class="hidden md:flex gap-6 text-sm font-medium">
+        <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="eksplor.html">Eksplor</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="komunitas.html">Komunitas</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="marketplace.html">Marketplace</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="perpustakaan.html">Perpustakaan</a>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <a href="pusat-bantuan.html" class="hidden md:flex items-center text-sm font-semibold text-primary border-b-2 border-primary pb-1">
+        Bantuan
+      </a>
+      <a href="notifikasi.html" class="flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors duration-200">
+        <span class="material-symbols-outlined">notifications</span>
+      </a>
+      <div class="relative" id="profile-menu-container">
+        <button id="profile-avatar-btn" class="focus:outline-none flex rounded-full">
+          <img alt="User Profile Avatar" class="w-10 h-10 rounded-full object-cover border border-outline-variant cursor-pointer hover:ring-2 hover:ring-primary transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
+        </button>
+        <!-- Dropdown Menu -->
+        <div id="profile-dropdown" class="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50">
+          <div class="px-4 py-3 border-b border-outline-variant/30">
+            <p class="text-xs text-on-surface-variant">Masuk sebagai</p>
+            <p class="text-sm text-on-surface font-bold truncate">Siswa Indonesia</p>
+          </div>
+          <a href="pengaturan.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors text-sm text-on-surface">
+            <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
+          </a>
+          <a href="profile.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors text-sm text-on-surface">
+            <span class="material-symbols-outlined text-[20px]">person</span> Detail Akun
+          </a>
+          <a href="login.html" class="flex items-center gap-2 px-4 py-3 hover:bg-error/10 transition-colors text-sm text-error border-t border-outline-variant/30 font-bold">
+            <span class="material-symbols-outlined text-[20px]">logout</span> Log Out
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section with Search -->
+<section class="bg-primary-container text-on-primary-container py-16 px-4">
+    <div class="max-w-[800px] mx-auto text-center flex flex-col items-center">
+        <h1 class="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight">Halo, ada yang bisa kami bantu?</h1>
+        <p class="text-lg md:text-xl opacity-90 mb-8 max-w-2xl">Cari topik seputar langganan, penyewaan buku, masalah akun, atau jelajahi FAQ di bawah ini.</p>
+        
+        <!-- Search Bar -->
+        <div class="relative w-full max-w-xl shadow-lg rounded-full">
+            <span class="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[24px]">search</span>
+            <input id="faq-search" type="text" placeholder="Ketik pertanyaan Anda di sini..." class="w-full pl-14 pr-6 py-4 bg-surface-container-lowest border-2 border-transparent focus:border-primary rounded-full text-on-surface text-lg outline-none transition-all">
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<main class="flex-grow max-w-[1000px] mx-auto w-full px-4 py-12 flex flex-col lg:flex-row gap-12">
+    
+    <!-- FAQ Section -->
+    <div class="flex-grow w-full">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-on-surface">Pertanyaan Umum (FAQ)</h2>
+            <span id="search-result-count" class="text-sm font-semibold text-primary hidden bg-surface-container py-1 px-3 rounded-full">Ditemukan 3 hasil</span>
+        </div>
+
+        <div id="faq-list" class="flex flex-col gap-4">
+            
+            <!-- Item 1 -->
+            <div class="faq-item bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm transition-all hover:shadow-md" data-keywords="langganan bridgepass premium akses fitur bayar kartu kredit">
+                <button class="w-full px-6 py-4 flex items-center justify-between text-left font-semibold text-lg text-on-surface focus:outline-none">
+                    <span>Bagaimana cara mengaktifkan langganan BridgePass Premium?</span>
+                    <span class="material-symbols-outlined faq-icon text-outline transition-transform duration-300">expand_more</span>
+                </button>
+                <div class="faq-answer px-6 text-on-surface-variant bg-surface-container-low border-t border-outline-variant/30">
+                    <p>Anda bisa berlangganan BridgePass Premium dengan mengakses tab <strong>Eksplor</strong>, lalu mengklik banner Premium berwarna emas, atau melalui Pengaturan Akun. Pembayaran mendukung QRIS, Transfer Bank, dan Kartu Kredit. Setelah pembayaran berhasil, akses e-book premium Anda akan terbuka secara instan.</p>
+                </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="faq-item bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm transition-all hover:shadow-md" data-keywords="sewa buku e-book waktu durasi hilang batas baca batas waktu">
+                <button class="w-full px-6 py-4 flex items-center justify-between text-left font-semibold text-lg text-on-surface focus:outline-none">
+                    <span>Apakah e-book yang disewa memiliki batas waktu?</span>
+                    <span class="material-symbols-outlined faq-icon text-outline transition-transform duration-300">expand_more</span>
+                </button>
+                <div class="faq-answer px-6 text-on-surface-variant bg-surface-container-low border-t border-outline-variant/30">
+                    <p>Ya, untuk opsi <strong>Sewa</strong>, durasi maksimal yang diberikan adalah 14 hari sejak transaksi berhasil. Setelah masa sewa habis, e-book tersebut akan hilang dari Rak Buku Anda. Namun, jika Anda membeli buku tersebut (opsi <strong>Beli</strong>), akses tidak akan pernah kedaluwarsa.</p>
+                </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="faq-item bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm transition-all hover:shadow-md" data-keywords="komunitas klub gabung diskusi post buat topik hapus">
+                <button class="w-full px-6 py-4 flex items-center justify-between text-left font-semibold text-lg text-on-surface focus:outline-none">
+                    <span>Bagaimana cara berpartisipasi dalam Komunitas Klub?</span>
+                    <span class="material-symbols-outlined faq-icon text-outline transition-transform duration-300">expand_more</span>
+                </button>
+                <div class="faq-answer px-6 text-on-surface-variant bg-surface-container-low border-t border-outline-variant/30">
+                    <p>Cukup klik ikon <strong>Komunitas</strong> di navigasi atas. Di panel kiri, Anda akan melihat tombol "Gabung Club". Pilih klub (misalnya: Pecinta Fiksi atau Pejuang SNBT) lalu klik Gabung. Setelah itu, Anda bisa membuat post baru, membalas komentar orang lain, dan memberikan rekomendasi buku.</p>
+                </div>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="faq-item bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm transition-all hover:shadow-md" data-keywords="password kata sandi lupa akun reset email ganti profil masuk login">
+                <button class="w-full px-6 py-4 flex items-center justify-between text-left font-semibold text-lg text-on-surface focus:outline-none">
+                    <span>Saya lupa kata sandi akun saya. Apa yang harus dilakukan?</span>
+                    <span class="material-symbols-outlined faq-icon text-outline transition-transform duration-300">expand_more</span>
+                </button>
+                <div class="faq-answer px-6 text-on-surface-variant bg-surface-container-low border-t border-outline-variant/30">
+                    <p>Di halaman Login, silakan klik tombol <strong>Lupa Kata Sandi</strong>. Masukkan alamat email yang terdaftar. Kami akan mengirimkan tautan reset kata sandi ke email tersebut. Klik tautannya, lalu buat kata sandi baru yang aman.</p>
+                </div>
+            </div>
+
+            <!-- Item 5 -->
+            <div class="faq-item bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm transition-all hover:shadow-md" data-keywords="refund pengembalian dana batal uang kembali salah beli transaksi error">
+                <button class="w-full px-6 py-4 flex items-center justify-between text-left font-semibold text-lg text-on-surface focus:outline-none">
+                    <span>Apakah saya bisa meminta pengembalian dana (Refund)?</span>
+                    <span class="material-symbols-outlined faq-icon text-outline transition-transform duration-300">expand_more</span>
+                </button>
+                <div class="faq-answer px-6 text-on-surface-variant bg-surface-container-low border-t border-outline-variant/30">
+                    <p>Sesuai Syarat & Ketentuan kami, seluruh transaksi bersifat final (No Refund). Pengecualian hanya berlaku apabila terjadi kesalahan teknis dari sisi server kami yang membuat buku tidak bisa diunduh atau dibaca dalam kurun waktu 3x24 jam. Jika hal ini terjadi, hubungi kami melalui formulir kontak.</p>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="faq-empty-state" class="hidden py-8 text-center bg-surface-container rounded-xl border border-outline-variant border-dashed">
+                <span class="material-symbols-outlined text-[48px] text-outline mb-2">search_off</span>
+                <p class="font-bold text-on-surface text-lg">Tidak ada hasil ditemukan</p>
+                <p class="text-sm text-on-surface-variant">Coba gunakan kata kunci lain atau hubungi kami secara langsung.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Contact Form Sidebar -->
+    <aside class="w-full lg:w-[350px] shrink-0 h-fit sticky top-[100px]">
+        <div class="bg-surface rounded-2xl shadow-sm border border-outline-variant/30 p-6">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="material-symbols-outlined text-primary text-[32px] bg-primary/10 p-2 rounded-xl">support_agent</span>
+                <div>
+                    <h3 class="font-bold text-lg text-on-surface">Masih butuh bantuan?</h3>
+                    <p class="text-xs text-on-surface-variant">Kirim pesan langsung ke tim support kami.</p>
+                </div>
+            </div>
+            
+            <form id="contact-form" class="flex flex-col gap-4">
+                <div class="flex flex-col gap-1">
+                    <label class="text-sm font-semibold text-on-surface">Nama Anda</label>
+                    <input type="text" id="contact-name" required placeholder="Contoh: Budi Santoso" class="px-4 py-2 bg-surface-container border border-outline-variant rounded-xl text-sm focus:outline-none focus:border-primary">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-sm font-semibold text-on-surface">Alamat Email</label>
+                    <input type="email" id="contact-email" required placeholder="budi@example.com" class="px-4 py-2 bg-surface-container border border-outline-variant rounded-xl text-sm focus:outline-none focus:border-primary">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-sm font-semibold text-on-surface">Pesan / Keluhan</label>
+                    <textarea id="contact-message" required rows="4" placeholder="Ceritakan detail masalah yang Anda alami..." class="px-4 py-2 bg-surface-container border border-outline-variant rounded-xl text-sm focus:outline-none focus:border-primary resize-none"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-primary text-white font-bold py-3 rounded-xl hover:bg-primary-container transition-colors shadow-sm flex items-center justify-center gap-2 mt-2">
+                    Kirim Pesan <span class="material-symbols-outlined text-[18px]">send</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+</main>
+
+<footer class="bg-surface border-t border-outline-variant/30 py-6 mt-12">
+    <div class="max-w-[1280px] mx-auto px-4 md:px-8 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-4">
+        <p class="text-sm text-on-surface-variant">&copy; 2026 ReadBridge. Seluruh hak cipta dilindungi.</p>
+        <div class="flex items-center gap-4 text-sm font-medium">
+            <a href="syarat-dan-ketentuan.html" class="text-on-surface-variant hover:text-primary transition-colors">Syarat & Ketentuan</a>
+            <a href="kebijakan-privasi.html" class="text-on-surface-variant hover:text-primary transition-colors">Kebijakan Privasi</a>
+            <a href="pusat-bantuan.html" class="text-primary hover:underline">Pusat Bantuan</a>
+        </div>
+    </div>
+</footer>
+
+<!-- Interactive Scripts -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. Profile Dropdown Logic ---
+        const btn = document.getElementById('profile-avatar-btn');
+        const dropdown = document.getElementById('profile-dropdown');
+        if (btn && dropdown) {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('hidden');
+                dropdown.classList.toggle('flex');
+            });
+            document.addEventListener('click', (e) => {
+                if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    dropdown.classList.remove('flex');
+                }
+            });
+        }
+
+        // --- 2. FAQ Accordion Logic ---
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            const btn = item.querySelector('button');
+            btn.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+                
+                // Optional: Close all other accordions when one is opened
+                faqItems.forEach(i => i.classList.remove('active', 'border-primary'));
+                
+                if (!isActive) {
+                    item.classList.add('active', 'border-primary');
+                }
+            });
+        });
+
+        // --- 3. Live Search Filter Logic ---
+        const searchInput = document.getElementById('faq-search');
+        const emptyState = document.getElementById('faq-empty-state');
+        const countBadge = document.getElementById('search-result-count');
+
+        searchInput.addEventListener('input', (e) => {
+            const keyword = e.target.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            faqItems.forEach(item => {
+                const questionText = item.querySelector('button span:first-child').textContent.toLowerCase();
+                const keywordsData = item.getAttribute('data-keywords').toLowerCase();
+                
+                if (questionText.includes(keyword) || keywordsData.includes(keyword)) {
+                    item.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                    item.classList.remove('active'); // Close if hidden
+                }
+            });
+
+            if (visibleCount === 0) {
+                emptyState.classList.remove('hidden');
+                countBadge.classList.add('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                if (keyword.length > 0) {
+                    countBadge.textContent = `Ditemukan ${visibleCount} hasil`;
+                    countBadge.classList.remove('hidden');
+                } else {
+                    countBadge.classList.add('hidden');
+                }
+            }
+        });
+
+        // --- 4. Contact Form Submission Simulation ---
+        const contactForm = document.getElementById('contact-form');
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('contact-name').value;
+            
+            // Show alert
+            alert(`Terima kasih, ${name}! Pesan Anda telah terkirim ke tim Support ReadBridge. Kami akan membalas melalui email maksimal 1x24 jam.`);
+            
+            // Reset form
+            contactForm.reset();
+        });
+    });
+</script>
+
+</body>
+</html>

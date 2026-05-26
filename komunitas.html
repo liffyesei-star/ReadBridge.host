@@ -1,7 +1,68 @@
+<!--
+  Project: ReadBridge
+  Author: Liffy Sei / Affan
+  Date: May 2026
+  Role: Lead Developer & UI/UX Designer
+-->
 <!-- ReadBridge - Komunitas -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <!-- Global Preference Controller Script to prevent FOUC -->
+    <script id="global-preferences-controller">
+        (function() {
+            // Function to apply theme
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+            
+            // Function to apply font size
+            function applyFontSize(size) {
+                if (size === 'kecil') {
+                    document.documentElement.style.fontSize = '14px';
+                } else if (size === 'besar') {
+                    document.documentElement.style.fontSize = '18px';
+                } else {
+                    document.documentElement.style.fontSize = '16px';
+                }
+            }
+            
+            // Function to apply font family
+            function applyFontFamily(family) {
+                let style = document.getElementById('global-font-override');
+                if (family === 'serif') {
+                    if (!style) {
+                        style = document.createElement('style');
+                        style.id = 'global-font-override';
+                        style.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span, a, button, input, select, textarea { font-family: Georgia, serif !important; }`;
+                        document.head.appendChild(style);
+                    }
+                } else {
+                    if (style) style.remove();
+                }
+            }
+
+            // Initial apply
+            applyTheme(localStorage.getItem('rb_theme'));
+            applyFontSize(localStorage.getItem('rb_font_size') || 'sedang');
+            applyFontFamily(localStorage.getItem('rb_font_family') || 'sans');
+
+            // Listen for storage events to sync across tabs
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'rb_theme') {
+                    applyTheme(e.newValue);
+                } else if (e.key === 'rb_font_size') {
+                    applyFontSize(e.newValue || 'sedang');
+                } else if (e.key === 'rb_font_family') {
+                    applyFontFamily(e.newValue || 'sans');
+                }
+            });
+        })();
+    </script>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>Komunitas - ReadBridge</title>
@@ -56,6 +117,12 @@
   <div class="flex justify-between items-center w-full px-4 md:px-margin py-sm max-w-[1280px] mx-auto">
     <div class="flex items-center gap-lg">
       <a href="detail.html" class="font-headline-md text-[20px] md:text-headline-md leading-tight font-bold text-primary">ReadBridge</a>
+      <div class="hidden md:flex gap-lg font-label-md text-label-md">
+        <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="eksplor.html">Eksplor</a>
+        <a class="text-primary font-bold border-b-2 border-primary pb-1" href="komunitas.html">Komunitas</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="marketplace.html">Marketplace</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="perpustakaan.html">Perpustakaan</a>
+      </div>
     </div>
     <div class="flex items-center gap-md">
       <div class="relative hidden lg:block">
@@ -75,7 +142,7 @@
             <p class="font-label-sm text-label-sm text-on-surface-variant">Masuk sebagai</p>
             <p class="font-label-md text-label-md text-on-surface font-bold truncate">Siswa Indonesia</p>
           </div>
-          <a href="#" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+          <a href="pengaturan.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
             <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
           </a>
           <a href="profile.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
@@ -113,19 +180,7 @@
 <main class="flex-grow max-w-[1280px] mx-auto w-full px-4 md:px-margin py-lg grid grid-cols-1 lg:grid-cols-12 gap-xl">
   <!-- Left Sidebar -->
   <aside class="hidden lg:flex lg:col-span-3 flex-col gap-xl sticky top-[80px] h-fit">
-    <div class="flex flex-col gap-sm">
-      <a class="flex items-center gap-sm px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors font-label-md text-label-md" href="eksplor.html">
-        <span class="material-symbols-outlined text-[24px]">explore</span> Eksplor
-      </a>
-      <a class="flex items-center gap-sm px-4 py-3 rounded-xl bg-secondary-container text-on-secondary-container font-bold font-label-md text-label-md" href="komunitas.html">
-        <span class="material-symbols-outlined text-[24px]">groups</span> Komunitas
-      </a>
-      <a class="flex items-center gap-sm px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors font-label-md text-label-md" href="marketplace.html">
-        <span class="material-symbols-outlined text-[24px]">storefront</span> Marketplace
-      </a>
-      <a class="flex items-center gap-sm px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors font-label-md text-label-md" href="perpustakaan.html">
-        <span class="material-symbols-outlined text-[24px]">menu_book</span>Perpustakaan</a>
-    </div>
+    <!-- Redundant menu items removed -->
     <div class="flex flex-col gap-sm">
       <h3 class="font-label-sm text-label-sm text-on-surface-variant px-4 uppercase tracking-wider font-bold">Community Section</h3>
       <a class="flex items-center gap-sm px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors font-label-md text-label-md bg-secondary-container text-on-secondary-container font-bold" href="#">
@@ -141,9 +196,19 @@
   <!-- Main Feed -->
   <section class="lg:col-span-6 flex flex-col gap-md">
     <div class="flex gap-lg mb-sm border-b border-outline-variant/30 pb-0">
-      <button class="font-label-md text-label-md font-bold text-primary border-b-2 border-primary pb-3 px-2">Semua</button>
+      <button id="tab-feed-semua" class="feed-tab font-label-md text-label-md font-bold text-primary border-b-2 border-primary pb-3 px-2">Semua</button>
       <a href="club.html" class="font-label-md text-label-md text-on-surface-variant hover:text-primary pb-3 px-2 rounded-t-lg transition-colors cursor-pointer">Club Saya</a>
-      <button class="font-label-md text-label-md text-on-surface-variant hover:text-primary pb-3 px-2 rounded-t-lg transition-colors">Trending</button>
+      <button id="tab-feed-trending" class="feed-tab font-label-md text-label-md text-on-surface-variant hover:text-primary pb-3 px-2 rounded-t-lg transition-colors">Trending</button>
+    </div>
+
+    <!-- Filter Kategori Trending (Hidden by Default) -->
+    <div id="trending-filter-container" class="hidden flex flex-wrap gap-2 mb-sm items-center py-2 animate-fadeIn">
+      <span class="font-label-sm text-label-sm text-on-surface-variant mr-1">Filter Kategori:</span>
+      <button data-tag="Semua" class="trending-filter-pill px-4 py-1.5 rounded-full text-[13px] font-semibold border bg-primary text-white border-primary transition-all duration-200">Semua</button>
+      <button data-tag="#UTBK" class="trending-filter-pill px-4 py-1.5 rounded-full text-[13px] font-semibold border bg-surface-container text-on-surface border-outline-variant/30 hover:border-primary hover:text-primary transition-all duration-200">#UTBK</button>
+      <button data-tag="#ReviewBuku" class="trending-filter-pill px-4 py-1.5 rounded-full text-[13px] font-semibold border bg-surface-container text-on-surface border-outline-variant/30 hover:border-primary hover:text-primary transition-all duration-200">#ReviewBuku</button>
+      <button data-tag="#Fiksi" class="trending-filter-pill px-4 py-1.5 rounded-full text-[13px] font-semibold border bg-surface-container text-on-surface border-outline-variant/30 hover:border-primary hover:text-primary transition-all duration-200">#Fiksi</button>
+      <button data-tag="#Sastra" class="trending-filter-pill px-4 py-1.5 rounded-full text-[13px] font-semibold border bg-surface-container text-on-surface border-outline-variant/30 hover:border-primary hover:text-primary transition-all duration-200">#Sastra</button>
     </div>
 
     <!-- Dynamic Feed (diisi oleh JavaScript dari localStorage) -->
@@ -159,9 +224,9 @@
     <div class="bg-surface-container-lowest rounded-2xl p-lg shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-outline-variant/20">
       <h3 class="font-title-lg text-title-lg text-on-surface mb-md font-bold">Trending Topics</h3>
       <ul class="flex flex-col gap-2">
-        <li><a class="flex justify-between items-center py-2 hover:bg-surface-container-low px-3 rounded-lg transition-colors group" href="#"><span class="font-label-md text-label-md text-on-surface font-bold group-hover:text-primary">#UTBK2024</span><span class="font-label-sm text-label-sm text-on-surface-variant/80">5.4k Post</span></a></li>
-        <li><a class="flex justify-between items-center py-2 hover:bg-surface-container-low px-3 rounded-lg transition-colors group" href="#"><span class="font-label-md text-label-md text-on-surface font-bold group-hover:text-primary">#ReviewBuku</span><span class="font-label-sm text-label-sm text-on-surface-variant/80">3.2k Post</span></a></li>
-        <li><a class="flex justify-between items-center py-2 hover:bg-surface-container-low px-3 rounded-lg transition-colors group" href="#"><span class="font-label-md text-label-md text-on-surface font-bold group-hover:text-primary">#FiksiRemaja</span><span class="font-label-sm text-label-sm text-on-surface-variant/80">1.8k Post</span></a></li>
+        <li><a class="flex justify-between items-center py-2 hover:bg-surface-container-low px-3 rounded-lg transition-colors group" href="javascript:void(0)" onclick="window.showTrendingTopicDetail('#UTBK2024')"><span class="font-label-md text-label-md text-on-surface font-bold group-hover:text-primary">#UTBK2024</span><span class="font-label-sm text-label-sm text-on-surface-variant/80">5.4k Post</span></a></li>
+        <li><a class="flex justify-between items-center py-2 hover:bg-surface-container-low px-3 rounded-lg transition-colors group" href="javascript:void(0)" onclick="window.showTrendingTopicDetail('#ReviewBuku')"><span class="font-label-md text-label-md text-on-surface font-bold group-hover:text-primary">#ReviewBuku</span><span class="font-label-sm text-label-sm text-on-surface-variant/80">3.2k Post</span></a></li>
+        <li><a class="flex justify-between items-center py-2 hover:bg-surface-container-low px-3 rounded-lg transition-colors group" href="javascript:void(0)" onclick="window.showTrendingTopicDetail('#FiksiRemaja')"><span class="font-label-md text-label-md text-on-surface font-bold group-hover:text-primary">#FiksiRemaja</span><span class="font-label-sm text-label-sm text-on-surface-variant/80">1.8k Post</span></a></li>
       </ul>
     </div>
     <div class="bg-surface-container-lowest rounded-2xl p-lg shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-outline-variant/20">
@@ -214,7 +279,7 @@
             <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Tim</a>
             <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Dampak</a>
             <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Karir</a>
-            <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="#">Pusat Bantuan</a>
+            <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary" href="pusat-bantuan.html">Pusat Bantuan</a>
         </nav>
     </div>
 </footer>
@@ -342,6 +407,64 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 </script>
+
+<!-- Modal Detail Topik Trending -->
+<div id="modal-detail-trending" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 transition-opacity duration-300">
+  <div class="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-lg flex flex-col overflow-hidden transition-all duration-300 max-h-[85vh]">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-outline-variant/30">
+      <h2 id="trending-modal-title" class="font-bold text-[20px] text-on-surface flex items-center gap-2">
+        <span class="text-primary font-bold">#TopicName</span>
+      </h2>
+      <button onclick="window.closeTrendingModal()" class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant flex items-center justify-center">
+        <span class="material-symbols-outlined text-[22px]">close</span>
+      </button>
+    </div>
+    <!-- Body (Scrollable) -->
+    <div class="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-4 custom-scrollbar">
+      <!-- Info Statis Topik -->
+      <div class="bg-surface-container-low p-4 rounded-xl flex items-center justify-between">
+        <div>
+          <p class="font-label-sm text-label-sm text-on-surface-variant">Status Kepopuleran</p>
+          <p id="trending-modal-stats" class="font-headline-md text-[20px] text-primary font-bold flex items-center gap-1">Sangat Populer 🔥</p>
+        </div>
+        <div class="bg-primary/10 text-primary p-3 rounded-full flex items-center justify-center">
+          <span class="material-symbols-outlined text-[28px] animate-bounce">local_fire_department</span>
+        </div>
+      </div>
+      
+      <!-- Deskripsi Topik -->
+      <div>
+        <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1 font-bold">Tentang Topik Ini</p>
+        <p id="trending-modal-desc" class="font-body-md text-[14px] text-on-surface-variant leading-relaxed">Topik terhangat yang sedang dibicarakan oleh komunitas saat ini.</p>
+      </div>
+
+      <!-- Postingan Terkait -->
+      <div>
+        <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-3 font-bold">Diskusi Populer Terkait</p>
+        <div id="trending-modal-posts" class="flex flex-col gap-3">
+          <!-- Diisi dinamis -->
+        </div>
+      </div>
+    </div>
+    <!-- Footer / Action -->
+    <div class="px-6 py-4 border-t border-outline-variant/30 bg-surface-container flex justify-end">
+      <button id="btn-trending-buat-diskusi" class="flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold bg-primary text-on-primary hover:bg-primary/90 transition-colors shadow-sm">
+        <span class="material-symbols-outlined text-[18px]">add</span> Mulai Diskusi Tag Ini
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+</style>
 </body>
 
 </html>

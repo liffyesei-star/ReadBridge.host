@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<!--
+  Project: ReadBridge
+  Author: Liffy Sei / Affan
+  Date: May 2026
+  Role: Lead Developer & UI/UX Designer
+-->
+
+<html lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>ReadBridge - Pengaturan Premium</title>
+    
+    <!-- Global Preference Controller Script to prevent FOUC -->
+    <script id="global-preferences-controller">
+        (function() {
+            // Function to apply theme
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+            
+            // Function to apply font size
+            function applyFontSize(size) {
+                if (size === 'kecil') {
+                    document.documentElement.style.fontSize = '14px';
+                } else if (size === 'besar') {
+                    document.documentElement.style.fontSize = '18px';
+                } else {
+                    document.documentElement.style.fontSize = '16px';
+                }
+            }
+            
+            // Function to apply font family
+            function applyFontFamily(family) {
+                let style = document.getElementById('global-font-override');
+                if (family === 'serif') {
+                    if (!style) {
+                        style = document.createElement('style');
+                        style.id = 'global-font-override';
+                        style.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span, a, button, input, select, textarea { font-family: Georgia, serif !important; }`;
+                        document.head.appendChild(style);
+                    }
+                } else {
+                    if (style) style.remove();
+                }
+            }
+
+            // Initial apply
+            applyTheme(localStorage.getItem('rb_theme'));
+            applyFontSize(localStorage.getItem('rb_font_size') || 'sedang');
+            applyFontFamily(localStorage.getItem('rb_font_family') || 'sans');
+
+            // Listen for storage events to sync across tabs
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'rb_theme') {
+                    applyTheme(e.newValue);
+                } else if (e.key === 'rb_font_size') {
+                    applyFontSize(e.newValue || 'sedang');
+                } else if (e.key === 'rb_font_family') {
+                    applyFontFamily(e.newValue || 'sans');
+                }
+            });
+        })();
+    </script>
+    <link rel="stylesheet" href="style.css"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed-dim": "#4edea3",
+                      "primary-fixed": "#dbe1ff",
+                      "on-background": "#0b1c30",
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary-fixed-variant": "#783200",
+                      "secondary-fixed": "#6ffbbe",
+                      "on-secondary-fixed-variant": "#005236",
+                      "surface-container": "#e5eeff",
+                      "tertiary": "#8e3c00",
+                      "on-tertiary-container": "#ffece5",
+                      "on-error-container": "#93000a",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "surface-dim": "#cbdbf5",
+                      "error": "#ba1a1a",
+                      "on-error": "#ffffff",
+                      "secondary": "#006c49",
+                      "secondary-container": "#6cf8bb",
+                      "primary": "#004ac6",
+                      "surface": "#f8f9ff",
+                      "on-surface-variant": "#434655",
+                      "on-surface": "#0b1c30",
+                      "tertiary-fixed": "#ffdbca",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "surface-variant": "#d3e4fe",
+                      "inverse-surface": "#213145",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-container": "#eeefff",
+                      "tertiary-container": "#b54e00",
+                      "outline": "#737686",
+                      "error-container": "#ffdad6",
+                      "surface-tint": "#0053db",
+                      "background": "#f8f9ff",
+                      "surface-bright": "#f8f9ff",
+                      "on-primary": "#ffffff",
+                      "surface-container-high": "#dce9ff",
+                      "surface-container-low": "#eff4ff",
+                      "on-secondary-fixed": "#002113",
+                      "on-secondary-container": "#00714d",
+                      "on-secondary": "#ffffff",
+                      "inverse-on-surface": "#eaf1ff",
+                      "inverse-primary": "#b4c5ff",
+                      "primary-container": "#2563eb",
+                      "on-primary-fixed": "#00174b",
+                      "on-tertiary-fixed": "#341100",
+                      "outline-variant": "#c3c6d7",
+                      "surface-container-highest": "#d3e4fe",
+                      "tertiary-fixed-dim": "#ffb690"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "md": "16px",
+                      "lg": "24px",
+                      "margin": "24px",
+                      "gutter": "16px",
+                      "sm": "8px",
+                      "base": "8px",
+                      "xl": "32px",
+                      "xxl": "48px",
+                      "xs": "4px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Plus Jakarta Sans"],
+                      "label-md": ["Plus Jakarta Sans"],
+                      "body-lg": ["Plus Jakarta Sans"],
+                      "title-lg": ["Plus Jakarta Sans"],
+                      "headline-md": ["Plus Jakarta Sans"],
+                      "display-lg": ["Plus Jakarta Sans"],
+                      "body-md": ["Plus Jakarta Sans"],
+                      "label-sm": ["Plus Jakarta Sans"]
+              }
+            }
+          }
+        }
+    </script>
+    <style>
+        body { background-color: #f8f9ff; color: #0b1c30; }
+        .dark body { background-color: #0b1c30; color: #f8f9ff; }
+        
+        /* Toggle Switch Styling */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #10B981;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #10B981;
+        }
+        .toggle-checkbox {
+            right: 0;
+            z-index: 1;
+            border-color: #c3c6d7;
+            transition: all 0.3s;
+        }
+        .toggle-label {
+            transition: all 0.3s;
+        }
+        
+        /* Interactive chip transition */
+        .chip-active {
+            background-color: #2563eb;
+            color: #ffffff;
+            border-color: #2563eb;
+        }
+        .dark .chip-active {
+            background-color: #2563eb;
+            color: #ffffff;
+            border-color: #b4c5ff;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md antialiased min-h-screen flex flex-col transition-colors duration-300">
+    <!-- TopNavBar -->
+    <nav class="bg-surface-container-lowest dark:bg-inverse-surface shadow-sm sticky top-0 z-50">
+        <div class="flex justify-between items-center w-full px-4 md:px-margin py-sm max-w-[1280px] mx-auto gap-2">
+            <!-- Brand & logo dropdown -->
+            <div class="flex items-center gap-4 relative cursor-pointer select-none" id="logo-menu-container">
+                <span id="logo-btn" class="text-[24px] text-primary dark:text-primary-fixed-dim tracking-tight font-bold flex items-center gap-1">
+                    ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>
+                </span>
+                <!-- Logo Dropdown Menu -->
+                <div id="logo-dropdown" class="absolute left-0 top-full mt-2 w-56 bg-surface-container-lowest dark:bg-inverse-surface rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50">
+                    <a href="index.html" class="px-4 py-3 hover:bg-surface-container-low dark:hover:bg-on-background transition-colors font-label-md text-label-md text-on-surface dark:text-on-primary-container flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">home</span> Beranda</a>
+                    <a href="eksplor.html" class="px-4 py-3 hover:bg-surface-container-low dark:hover:bg-on-background transition-colors font-label-md text-label-md text-on-surface dark:text-on-primary-container flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">library_books</span> Eksplor Koleksi</a>
+                    <a href="perpustakaan.html" class="px-4 py-3 hover:bg-surface-container-low dark:hover:bg-on-background transition-colors font-label-md text-label-md text-on-surface dark:text-on-primary-container flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">menu_book</span>Perpustakaan</a>
+                    <a href="marketplace.html" class="px-4 py-3 hover:bg-surface-container-low dark:hover:bg-on-background transition-colors font-label-md text-label-md text-on-surface dark:text-on-primary-container flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">storefront</span> Marketplace</a>
+                    <a href="komunitas.html" class="px-4 py-3 hover:bg-surface-container-low dark:hover:bg-on-background transition-colors font-label-md text-label-md text-on-surface dark:text-on-primary-container flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">forum</span> Komunitas</a>
+                </div>
+            </div>
+            
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const btn = document.getElementById('logo-btn');
+                    const dropdown = document.getElementById('logo-dropdown');
+                    if (btn && dropdown) {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            dropdown.classList.toggle('hidden');
+                            dropdown.classList.toggle('flex');
+                        });
+                        document.addEventListener('click', (e) => {
+                            if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                                dropdown.classList.add('hidden');
+                                dropdown.classList.remove('flex');
+                            }
+                        });
+                    }
+                });
+            </script>
+            
+            <!-- Navigation Links -->
+            <div class="hidden md:flex items-center gap-lg font-body-md text-body-md font-label-md text-label-md">
+                <a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed transition-colors hover:bg-surface-container-low dark:hover:bg-on-background transition-all px-3 py-1 rounded-lg" href="eksplor.html">Eksplor</a>
+                <a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed transition-colors hover:bg-surface-container-low dark:hover:bg-on-background transition-all px-3 py-1 rounded-lg" href="komunitas.html">Komunitas</a>
+                <a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed transition-colors hover:bg-surface-container-low dark:hover:bg-on-background transition-all px-3 py-1 rounded-lg" href="marketplace.html">Marketplace</a>
+                <a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed transition-colors hover:bg-surface-container-low dark:hover:bg-on-background transition-all px-3 py-1 rounded-lg" href="perpustakaan.html">Perpustakaan</a>
+            </div>
+
+            <!-- Profile Menu -->
+            <div class="flex items-center gap-md ml-auto md:ml-lg">
+                <div class="relative" id="profile-menu-container">
+                    <button id="profile-avatar-btn" class="focus:outline-none flex rounded-full">
+                        <img alt="User profile avatar" id="profile-avatar-nav" class="w-10 h-10 rounded-full object-cover border border-outline-variant cursor-pointer hover:ring-2 hover:ring-primary transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
+                    </button>
+
+                    <div id="profile-dropdown" class="absolute right-0 mt-2 w-48 bg-surface-container-lowest dark:bg-inverse-surface rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50">
+                        <div class="px-4 py-3 border-b border-outline-variant/30">
+                            <p class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant">Masuk sebagai</p>
+                            <p class="font-label-md text-label-md text-on-surface dark:text-on-primary-container font-bold truncate rb-username-fill">Siswa Indonesia</p>
+                        </div>
+                        <a href="pengaturan.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low dark:hover:bg-on-background transition-colors font-label-md text-label-md text-on-surface dark:text-on-primary-container">
+                            <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
+                        </a>
+                        <a href="profile.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low dark:hover:bg-on-background transition-colors font-label-md text-label-md text-on-surface dark:text-on-primary-container">
+                            <span class="material-symbols-outlined text-[20px]">person</span> Detail Akun
+                        </a>
+                        <a href="login.html" class="flex items-center gap-2 px-4 py-3 hover:bg-error/10 transition-colors font-label-md text-label-md text-error border-t border-outline-variant/30 font-bold" onclick="localStorage.removeItem('rb_is_logged_in')">
+                            <span class="material-symbols-outlined text-[20px]">logout</span> Log Out
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 w-full max-w-[1024px] mx-auto p-margin mt-lg pb-xxl">
+        <!-- Dashboard Gamification Stats Block -->
+        <div class="w-full bg-gradient-to-r from-primary to-indigo-600 dark:from-slate-900 dark:to-slate-800 rounded-3xl p-lg md:p-xl text-white shadow-lg mb-xl flex flex-col md:flex-row justify-between items-center gap-lg border border-primary-container/20">
+            <div class="flex items-center gap-md">
+                <div class="w-16 h-16 rounded-full border-2 border-white/20 overflow-hidden relative shadow-md">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4" id="avatar-showcase" class="w-full h-full object-cover" alt="Profile">
+                </div>
+                <div>
+                    <h2 class="font-headline-md text-headline-md font-bold flex items-center gap-2">
+                        <span class="rb-username-fill">Siswa Indonesia</span>
+                        <span id="premium-badge" class="hidden text-xs bg-amber-500 text-slate-950 font-black px-2 py-0.5 rounded-full flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>PASS</span>
+                    </h2>
+                    <p class="font-body-md text-white/80 mt-1 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[16px]">military_tech</span> Scholar Level 14 · <span class="font-bold text-white">2,450 XP</span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-md select-none shrink-0 bg-white/10 dark:bg-slate-950/30 backdrop-blur-md px-md py-sm rounded-2xl border border-white/10">
+                <div class="text-right">
+                    <p class="text-[11px] font-extrabold text-white/60 tracking-wider">PRESTASI HARI INI</p>
+                    <p class="text-md font-bold">30 Menit Membaca 🔥</p>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-headline-md">
+                    👑
+                </div>
+            </div>
+        </div>
+
+        <h1 class="font-display-lg text-[28px] md:text-headline-lg font-extrabold text-on-surface dark:text-on-primary-container mb-lg">Pengaturan Aplikasi</h1>
+        
+        <div class="flex flex-col md:flex-row gap-lg">
+            <!-- Sidebar Navigation (Bento Design) -->
+            <aside class="w-full md:w-64 flex-shrink-0 flex flex-col gap-sm">
+                <nav class="flex flex-col gap-sm bg-surface-container-lowest dark:bg-inverse-surface border border-outline-variant/30 p-md rounded-2xl shadow-sm">
+                    <button id="tab-btn-akun" onclick="switchTab('akun')" class="flex items-center gap-3 px-4 py-3.5 rounded-xl bg-primary-container text-on-primary-container font-bold transition-all text-left shadow-sm">
+                        <span class="material-symbols-outlined">manage_accounts</span> Akun & BridgePass
+                    </button>
+                    <button id="tab-btn-preferensi" onclick="switchTab('preferensi')" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-on-background transition-all text-left font-bold">
+                        <span class="material-symbols-outlined">palette</span> Preferensi Tampilan
+                    </button>
+                    <button id="tab-btn-minat" onclick="switchTab('minat')" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-on-background transition-all text-left font-bold">
+                        <span class="material-symbols-outlined">interests</span> Rekomendasi Minat
+                    </button>
+                    <button id="tab-btn-notifikasi" onclick="switchTab('notifikasi')" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-on-background transition-all text-left font-bold">
+                        <span class="material-symbols-outlined">notifications</span> Notifikasi Email
+                    </button>
+                    <button id="tab-btn-sistem" onclick="switchTab('sistem')" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-on-background transition-all text-left font-bold">
+                        <span class="material-symbols-outlined">settings_suggest</span> Sistem & Diagnostik
+                    </button>
+                </nav>
+            </aside>
+
+            <!-- Settings Content Panel -->
+            <div class="flex-1">
+                <!-- Tab: Akun & Keamanan (Premium BridgePass Panel Included) -->
+                <section id="tab-content-akun" class="bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl p-lg shadow-sm border border-outline-variant/30 flex flex-col gap-lg transition-opacity duration-300">
+                    <div>
+                        <h2 class="font-title-lg text-title-lg font-extrabold text-on-surface dark:text-on-primary-container border-b border-outline-variant/20 pb-2 mb-md">Profil Pribadi</h2>
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-md mb-md">
+                            <div class="w-16 h-16 rounded-full border-2 border-outline-variant overflow-hidden shrink-0">
+                                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4" id="avatar-preview" class="w-full h-full object-cover" alt="Profile">
+                            </div>
+                            <div class="flex flex-col gap-2 w-full max-w-sm">
+                                <label class="font-label-sm text-[12px] font-extrabold text-on-surface-variant dark:text-outline-variant uppercase">Link Foto Profil (Simulasi)</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="input-avatar" class="flex-1 px-4 py-2 rounded-lg border border-outline-variant bg-surface dark:bg-on-background dark:border-outline focus:ring-2 focus:ring-primary outline-none text-xs text-on-surface dark:text-on-primary-container" placeholder="https://unsplash.com/photo...">
+                                    <button onclick="updateAvatar()" class="px-4 py-2 bg-primary text-white font-bold text-xs rounded-lg hover:bg-surface-tint">Upload</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-sm max-w-md">
+                            <label class="font-label-md font-bold text-on-surface dark:text-on-primary-container">Nama Tampilan</label>
+                            <input type="text" id="input-nama" class="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface dark:bg-on-background dark:border-outline focus:ring-2 focus:ring-primary outline-none transition-shadow text-on-surface dark:text-on-primary-container" value="Siswa Indonesia">
+                        </div>
+                    </div>
+
+                    <!-- BridgePass Premium Member Panel -->
+                    <div class="mt-md bg-gradient-to-br from-slate-900 to-indigo-950 dark:from-black dark:to-slate-900 text-white rounded-2xl p-md border border-slate-800 flex flex-col gap-md relative overflow-hidden shadow-md select-none">
+                        <!-- Glow effect -->
+                        <div class="absolute -right-20 -top-20 w-48 h-48 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                        
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-center gap-sm">
+                                <div class="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center">
+                                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-extrabold text-indigo-400 tracking-wider">STATUS BRIDGAPASS KEANGGOTAAN</p>
+                                    <h3 class="font-title-lg text-title-lg font-black flex items-center gap-1 text-slate-100" id="bridgepass-status-text">Premium 👑</h3>
+                                </div>
+                            </div>
+                            <span class="text-[10px] bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 font-extrabold px-3 py-1 rounded-full uppercase" id="bridgepass-badge-label">Aktif</span>
+                        </div>
+
+                        <!-- Code input section (only shown for Basic) -->
+                        <div id="bridgepass-basic-input" class="flex flex-col gap-sm">
+                            <p class="text-xs text-slate-300">Masukkan kode referral referral valid untuk mengaktifkan keanggotaan BridgePass Premium secara instan dan hilangkan seluruh batasan membaca buku digital.</p>
+                            <div class="flex gap-2 max-w-sm mt-1">
+                                <input type="text" id="input-referral-settings" class="flex-1 px-4 py-2.5 rounded-lg border border-slate-700 bg-slate-950 text-white placeholder-slate-500 focus:ring-2 focus:ring-primary outline-none text-xs tracking-wider" placeholder="Masukkan Kode (e.g. SMNGTAFN)">
+                                <button onclick="activateBridgePassSettings()" class="px-5 py-2.5 bg-primary text-white font-bold text-xs rounded-lg hover:bg-indigo-600 transition-all shrink-0">Aktifkan Kode</button>
+                            </div>
+                        </div>
+
+                        <!-- Deactivate button (only shown for Premium for testing purposes) -->
+                        <div id="bridgepass-premium-info" class="hidden flex justify-between items-center gap-sm mt-2 border-t border-slate-800 pt-md">
+                            <p class="text-xs text-slate-400">Selamat! Seluruh fitur Buku Digital premium Anda terbuka penuh tanpa batas.</p>
+                            <button onclick="deactivatePremium()" class="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-lg text-xs font-bold transition-colors">Nonaktifkan</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 class="font-title-lg text-title-lg font-extrabold text-on-surface dark:text-on-primary-container border-b border-outline-variant/20 pb-2 mb-md mt-md">Keamanan Akun</h2>
+                        <div class="flex flex-col gap-sm max-w-md mb-md">
+                            <label class="font-label-md font-bold text-on-surface dark:text-on-primary-container">Email</label>
+                            <input type="email" class="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface dark:bg-on-background dark:border-outline focus:ring-2 focus:ring-primary outline-none text-on-surface dark:text-on-primary-container opacity-60" value="siswa.indonesia@readbridge.co.id" disabled>
+                            <p class="text-[11px] text-on-surface-variant dark:text-outline-variant">Email terverifikasi secara akademis oleh institusi sekolah.</p>
+                        </div>
+                        <button class="px-5 py-2.5 border border-outline-variant rounded-xl text-on-surface dark:text-on-primary-container font-bold hover:bg-surface-container-high transition-colors text-xs">Ubah Password</button>
+                    </div>
+
+                    <div class="pt-4 mt-4 border-t border-outline-variant/30 flex justify-end">
+                        <button onclick="saveProfile()" class="px-6 py-3 bg-primary text-on-primary rounded-full font-bold shadow-md hover:bg-primary-container transition-all hover:-translate-y-0.5">Simpan Perubahan</button>
+                    </div>
+                </section>
+
+                <!-- Tab: Preferensi Tampilan & Tipografi (with Live Preview) -->
+                <section id="tab-content-preferensi" class="hidden bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl p-lg shadow-sm border border-outline-variant/30 flex-col gap-lg transition-opacity duration-300">
+                    <div>
+                        <h2 class="font-title-lg text-title-lg font-extrabold text-on-surface dark:text-on-primary-container border-b border-outline-variant/20 pb-2 mb-md">Tema Aplikasi</h2>
+                        <div class="grid grid-cols-2 gap-md max-w-md">
+                            <div onclick="setTheme('light')" id="theme-btn-light" class="cursor-pointer border-2 border-outline-variant rounded-2xl p-4 flex flex-col items-center gap-2 hover:bg-surface-container-low transition-colors select-none">
+                                <span class="material-symbols-outlined text-[32px] text-on-surface dark:text-on-primary-container">light_mode</span>
+                                <span class="font-bold text-on-surface dark:text-on-primary-container text-xs">Terang (Light)</span>
+                            </div>
+                            <div onclick="setTheme('dark')" id="theme-btn-dark" class="cursor-pointer border-2 border-outline-variant rounded-2xl p-4 flex flex-col items-center gap-2 hover:bg-surface-container-high dark:hover:bg-on-background transition-colors select-none">
+                                <span class="material-symbols-outlined text-[32px] text-on-surface dark:text-on-primary-container">dark_mode</span>
+                                <span class="font-bold text-on-surface dark:text-on-primary-container text-xs">Gelap (Dark)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 class="font-title-lg text-title-lg font-extrabold text-on-surface dark:text-on-primary-container border-b border-outline-variant/20 pb-2 mb-md mt-md">Ukuran Teks & Tipografi</h2>
+                        <div class="flex flex-col gap-md">
+                            <!-- Font size selector -->
+                            <div class="flex flex-col gap-2">
+                                <span class="text-xs font-bold text-on-surface-variant dark:text-outline-variant">UKURAN FONT INTERACTIVE</span>
+                                <div class="flex gap-sm">
+                                    <button onclick="setFontSizeSetting('kecil')" id="font-size-btn-kecil" class="px-4 py-2 border border-outline-variant rounded-lg font-bold text-xs hover:bg-surface-container-high transition-colors">Kecil (14px)</button>
+                                    <button onclick="setFontSizeSetting('sedang')" id="font-size-btn-sedang" class="px-4 py-2 border border-outline-variant rounded-lg font-bold text-xs hover:bg-surface-container-high transition-colors">Sedang (16px)</button>
+                                    <button onclick="setFontSizeSetting('besar')" id="font-size-btn-besar" class="px-4 py-2 border border-outline-variant rounded-lg font-bold text-xs hover:bg-surface-container-high transition-colors">Besar (18px)</button>
+                                </div>
+                            </div>
+
+                            <!-- Font family selector -->
+                            <div class="flex flex-col gap-2 mt-2">
+                                <span class="text-xs font-bold text-on-surface-variant dark:text-outline-variant">GAYA FONT MEMBACA</span>
+                                <div class="flex gap-sm">
+                                    <button onclick="setFontFamilySetting('sans')" id="font-family-btn-sans" class="px-4 py-2 border border-outline-variant rounded-lg font-bold text-xs hover:bg-surface-container-high transition-colors">Plus Jakarta (Sans)</button>
+                                    <button onclick="setFontFamilySetting('serif')" id="font-family-btn-serif" class="px-4 py-2 border border-outline-variant rounded-lg font-bold text-xs hover:bg-surface-container-high transition-colors">Georgia Serif</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live Interactive Reading Preview Box -->
+                        <div class="w-full bg-surface dark:bg-on-background rounded-2xl p-md mt-md border border-outline-variant/30 relative select-none">
+                            <span class="absolute top-2 right-2 text-[9px] font-extrabold text-primary bg-primary/10 px-2 py-0.5 rounded uppercase">Uji Coba Tampilan Live</span>
+                            <div class="mt-1" id="reading-preview-box">
+                                <h4 class="font-bold text-md mb-2" id="preview-title">Judul Buku: Stoikisme & Ketenangan Jiwa</h4>
+                                <p class="leading-relaxed text-sm text-on-surface-variant dark:text-outline-variant" id="preview-text">
+                                    "Ketenangan sejati diperoleh bukan dengan mencoba mengendalikan dunia luar, melainkan dengan menertibkan penilaian dan pikiran kita sendiri. Pikiran kitalah yang mendikte kebahagiaan kita."
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 mt-4 border-t border-outline-variant/30 text-on-surface-variant dark:text-outline-variant text-[11px]">
+                        Preferensi tampilan disimpan secara otomatis dan langsung diterapkan ke seluruh halaman website ReadBridge secara instan.
+                    </div>
+                </section>
+
+                <!-- Tab: Rekomendasi Minat (Interactive Chip Selection) -->
+                <section id="tab-content-minat" class="hidden bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl p-lg shadow-sm border border-outline-variant/30 flex-col gap-lg transition-opacity duration-300">
+                    <div>
+                        <h2 class="font-title-lg text-title-lg font-extrabold text-on-surface dark:text-on-primary-container border-b border-outline-variant/20 pb-2 mb-md">Minat Baca & Onboarding</h2>
+                        <p class="text-xs text-on-surface-variant dark:text-outline-variant leading-relaxed mb-md">Pilih bidang minat Anda. Kami akan otomatis menyesuaikan katalog dan rak buku digital rekomendasi di halaman Beranda dan Eksplor Anda.</p>
+                        
+                        <!-- Chips Grid Container -->
+                        <div class="flex flex-wrap gap-sm" id="interests-chips-grid">
+                            <div onclick="toggleInterestChip('fiksi')" id="chip-fiksi" class="cursor-pointer border border-outline-variant rounded-full px-4 py-2 text-xs font-bold text-on-surface dark:text-on-primary-container hover:bg-surface-container-high transition-all select-none flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[16px]">novelty</span> Novel & Fiksi
+                            </div>
+                            <div onclick="toggleInterestChip('komik')" id="chip-komik" class="cursor-pointer border border-outline-variant rounded-full px-4 py-2 text-xs font-bold text-on-surface dark:text-on-primary-container hover:bg-surface-container-high transition-all select-none flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[16px]">comic_bubble</span> Komik & Manga
+                            </div>
+                            <div onclick="toggleInterestChip('jurnal')" id="chip-jurnal" class="cursor-pointer border border-outline-variant rounded-full px-4 py-2 text-xs font-bold text-on-surface dark:text-on-primary-container hover:bg-surface-container-high transition-all select-none flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[16px]">science</span> Jurnal Riset
+                            </div>
+                            <div onclick="toggleInterestChip('pelajaran')" id="chip-pelajaran" class="cursor-pointer border border-outline-variant rounded-full px-4 py-2 text-xs font-bold text-on-surface dark:text-on-primary-container hover:bg-surface-container-high transition-all select-none flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[16px]">menu_book</span> Buku Sekolah & UTBK
+                            </div>
+                            <div onclick="toggleInterestChip('self_dev')" id="chip-self_dev" class="cursor-pointer border border-outline-variant rounded-full px-4 py-2 text-xs font-bold text-on-surface dark:text-on-primary-container hover:bg-surface-container-high transition-all select-none flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[16px]">psychology</span> Stoikisme & Self-Help
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 mt-4 border-t border-outline-variant/30 flex justify-end">
+                        <button onclick="saveInterests()" class="px-6 py-3 bg-primary text-on-primary rounded-full font-bold shadow-md hover:bg-primary-container transition-all hover:-translate-y-0.5">Simpan Kategori Minat</button>
+                    </div>
+                </section>
+
+                <!-- Tab: Notifikasi -->
+                <section id="tab-content-notifikasi" class="hidden bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl p-lg shadow-sm border border-outline-variant/30 flex-col gap-lg transition-opacity duration-300">
+                    <div>
+                        <h2 class="font-title-lg text-title-lg font-extrabold text-on-surface dark:text-on-primary-container border-b border-outline-variant/20 pb-2 mb-md">Notifikasi Email</h2>
+                        <div class="flex items-center justify-between py-3.5 border-b border-outline-variant/20">
+                            <div>
+                                <p class="font-bold text-on-surface dark:text-on-primary-container text-xs">Ringkasan Aktivitas Mingguan</p>
+                                <p class="text-[11px] text-on-surface-variant dark:text-outline-variant mt-0.5">Dapatkan email rangkuman tentang XP dan pencapaian membaca Anda minggu ini.</p>
+                            </div>
+                            <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in shrink-0">
+                                <input type="checkbox" name="toggle" id="toggle1" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                                <label for="toggle1" class="toggle-label block overflow-hidden h-6 rounded-full bg-outline-variant cursor-pointer"></label>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between py-3.5 border-b border-outline-variant/20">
+                            <div>
+                                <p class="font-bold text-on-surface dark:text-on-primary-container text-xs">Balasan Komunitas Baru</p>
+                                <p class="text-[11px] text-on-surface-variant dark:text-outline-variant mt-0.5">Notifikasi instan ketika seseorang membalas utas diskusi Anda di komunitas.</p>
+                            </div>
+                            <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in shrink-0">
+                                <input type="checkbox" name="toggle" id="toggle2" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                                <label for="toggle2" class="toggle-label block overflow-hidden h-6 rounded-full bg-outline-variant cursor-pointer"></label>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between py-3.5">
+                            <div>
+                                <p class="font-bold text-on-surface dark:text-on-primary-container text-xs">Promo Marketplace</p>
+                                <p class="text-[11px] text-on-surface-variant dark:text-outline-variant mt-0.5">Info penawaran sewa buku pelajaran murah dan kode diskon marketplace buku bekas.</p>
+                            </div>
+                            <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in shrink-0">
+                                <input type="checkbox" name="toggle" id="toggle3" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                                <label for="toggle3" class="toggle-label block overflow-hidden h-6 rounded-full bg-outline-variant cursor-pointer"></label>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tab: Sistem & Diagnostik -->
+                <section id="tab-content-sistem" class="hidden bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl p-lg shadow-sm border border-outline-variant/30 flex-col gap-lg transition-opacity duration-300">
+                    <div>
+                        <h2 class="font-title-lg text-title-lg font-extrabold text-on-surface dark:text-on-primary-container border-b border-outline-variant/20 pb-2 mb-md">Diagnostik & Simulasi Data</h2>
+                        <p class="text-xs text-on-surface-variant dark:text-outline-variant leading-relaxed mb-md">Kami menggunakan cache browser lokal (localStorage) untuk menyimpan simulasi profil, status keanggotaan BridgePass, ulasan stoik, bot interaktif, dan data lainnya.</p>
+                        
+                        <div class="bg-red-500/10 border border-red-500/20 text-red-500 p-md rounded-2xl flex flex-col gap-sm select-none">
+                            <h4 class="font-bold text-xs flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">warning</span> Zona Bahaya</h4>
+                            <p class="text-[11px] text-red-500/80 leading-relaxed">Menghapus data aplikasi akan membersihkan seluruh nama profil, minat onboarding, riwayat level XP, dan menonaktifkan BridgePass Premium Anda secara universal. Tindakan ini tidak dapat dibatalkan.</p>
+                            
+                            <button onclick="resetApplicationData()" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl transition-all w-fit mt-1 shadow-sm">Reset Data Aplikasi</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-surface-container-highest dark:bg-inverse-surface border-t border-outline-variant w-full mt-auto">
+        <div class="flex flex-col md:flex-row justify-between items-center px-4 md:px-margin py-lg max-w-[1280px] mx-auto gap-md">
+            <span class="font-title-lg text-title-lg font-black text-primary dark:text-primary-fixed">ReadBridge</span>
+            <div class="flex gap-md font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant">
+                <a class="hover:underline decoration-primary underline-offset-4" href="tentang-kami.html">Tentang Kami</a>
+                <a class="hover:underline decoration-primary underline-offset-4" href="pusat-bantuan.html">Pusat Bantuan</a>
+                <a class="hover:underline decoration-primary underline-offset-4" href="kebijakan-privasi.html">Kebijakan Privasi</a>
+                <a class="hover:underline decoration-primary underline-offset-4" href="syarat-dan-ketentuan.html">Syarat &amp; Ketentuan</a>
+            </div>
+            <p class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant">© 2024 ReadBridge Indonesia. Membangun Generasi Literasi.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Profile Dropdown Setup
+            const btn = document.getElementById('profile-avatar-btn');
+            const dropdown = document.getElementById('profile-dropdown');
+            if (btn && dropdown) {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('hidden');
+                    dropdown.classList.toggle('flex');
+                });
+                document.addEventListener('click', (e) => {
+                    if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                        dropdown.classList.add('hidden');
+                        dropdown.classList.remove('flex');
+                    }
+                });
+            }
+
+            // Initialization
+            initTheme();
+            initProfile();
+            initBridgePassSettings();
+            initInterestsChips();
+            initTypographySettings();
+        });
+
+        // Tabs Logic
+        function switchTab(tabId) {
+            const tabs = ['akun', 'preferensi', 'minat', 'notifikasi', 'sistem'];
+            tabs.forEach(t => {
+                document.getElementById('tab-content-' + t).classList.add('hidden');
+                document.getElementById('tab-content-' + t).classList.remove('flex');
+                
+                const btn = document.getElementById('tab-btn-' + t);
+                btn.className = "flex items-center gap-3 px-4 py-3.5 rounded-xl text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-on-background transition-all text-left font-bold";
+            });
+
+            document.getElementById('tab-content-' + tabId).classList.remove('hidden');
+            document.getElementById('tab-content-' + tabId).classList.add('flex');
+            
+            const activeBtn = document.getElementById('tab-btn-' + tabId);
+            activeBtn.className = "flex items-center gap-3 px-4 py-3.5 rounded-xl bg-primary-container text-on-primary-container font-bold transition-all text-left shadow-sm";
+        }
+
+        // Theme Logic
+        function initTheme() {
+            const currentTheme = localStorage.getItem('rb_theme') || 'light';
+            updateThemeUI(currentTheme);
+        }
+
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('rb_theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('rb_theme', 'light');
+            }
+            updateThemeUI(theme);
+        }
+
+        function updateThemeUI(theme) {
+            const btnLight = document.getElementById('theme-btn-light');
+            const btnDark = document.getElementById('theme-btn-dark');
+
+            if (theme === 'dark') {
+                btnDark.className = "cursor-pointer border-2 border-primary bg-on-background rounded-2xl p-4 flex flex-col items-center gap-2 transition-colors select-none";
+                btnLight.className = "cursor-pointer border-2 border-outline-variant rounded-2xl p-4 flex flex-col items-center gap-2 hover:bg-surface-container-low transition-colors select-none";
+            } else {
+                btnLight.className = "cursor-pointer border-2 border-primary bg-surface-container-low rounded-2xl p-4 flex flex-col items-center gap-2 transition-colors select-none";
+                btnDark.className = "cursor-pointer border-2 border-outline-variant rounded-2xl p-4 flex flex-col items-center gap-2 hover:bg-surface-container-high dark:hover:bg-on-background transition-colors select-none";
+            }
+        }
+
+        // Typography Setters & Live Previews
+        let activeFontSize = 'sedang';
+        let activeFontFamily = 'sans';
+
+        function initTypographySettings() {
+            activeFontSize = localStorage.getItem('rb_font_size') || 'sedang';
+            activeFontFamily = localStorage.getItem('rb_font_family') || 'sans';
+            
+            updateTypographyUI();
+            updatePreviewBox();
+        }
+
+        function setFontSizeSetting(size) {
+            activeFontSize = size;
+            localStorage.setItem('rb_font_size', size);
+            
+            // Universal Apply instantly to document
+            if (size === 'kecil') {
+                document.documentElement.style.fontSize = '14px';
+            } else if (size === 'besar') {
+                document.documentElement.style.fontSize = '18px';
+            } else {
+                document.documentElement.style.fontSize = '16px';
+            }
+            
+            updateTypographyUI();
+            updatePreviewBox();
+        }
+
+        function setFontFamilySetting(family) {
+            activeFontFamily = family;
+            localStorage.setItem('rb_font_family', family);
+            
+            // Universal Apply instantly to document via override style element
+            let overrideStyle = document.getElementById('global-font-override');
+            if (family === 'serif') {
+                if (!overrideStyle) {
+                    overrideStyle = document.createElement('style');
+                    overrideStyle.id = 'global-font-override';
+                    document.head.appendChild(overrideStyle);
+                }
+                overrideStyle.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span, a, button, input, select, textarea { font-family: Georgia, serif !important; }`;
+            } else {
+                if (overrideStyle) {
+                    overrideStyle.remove();
+                }
+            }
+            
+            updateTypographyUI();
+            updatePreviewBox();
+        }
+
+        function updateTypographyUI() {
+            const sizes = ['kecil', 'sedang', 'besar'];
+            sizes.forEach(s => {
+                const btn = document.getElementById('font-size-btn-' + s);
+                if (s === activeFontSize) {
+                    btn.className = "px-4 py-2 border-2 border-primary bg-primary/10 text-primary rounded-lg font-bold text-xs transition-colors";
+                } else {
+                    btn.className = "px-4 py-2 border border-outline-variant text-on-surface dark:text-on-primary-container rounded-lg font-bold text-xs hover:bg-surface-container-high transition-colors";
+                }
+            });
+
+            const families = ['sans', 'serif'];
+            families.forEach(f => {
+                const btn = document.getElementById('font-family-btn-' + f);
+                if (f === activeFontFamily) {
+                    btn.className = "px-4 py-2 border-2 border-primary bg-primary/10 text-primary rounded-lg font-bold text-xs transition-colors";
+                } else {
+                    btn.className = "px-4 py-2 border border-outline-variant text-on-surface dark:text-on-primary-container rounded-lg font-bold text-xs hover:bg-surface-container-high transition-colors";
+                }
+            });
+        }
+
+        function updatePreviewBox() {
+            const previewBox = document.getElementById('preview-text');
+            const previewTitle = document.getElementById('preview-title');
+            
+            // Apply font size preview specifically
+            if (activeFontSize === 'kecil') {
+                previewBox.style.fontSize = '12px';
+                previewTitle.style.fontSize = '14px';
+            } else if (activeFontSize === 'besar') {
+                previewBox.style.fontSize = '18px';
+                previewTitle.style.fontSize = '20px';
+            } else {
+                previewBox.style.fontSize = '14px';
+                previewTitle.style.fontSize = '16px';
+            }
+
+            // Apply font family preview specifically
+            if (activeFontFamily === 'serif') {
+                previewBox.style.fontFamily = 'Georgia, serif';
+                previewTitle.style.fontFamily = 'Georgia, serif';
+            } else {
+                previewBox.style.fontFamily = 'inherit';
+                previewTitle.style.fontFamily = 'inherit';
+            }
+        }
+
+        // Profile Logic
+        function initProfile() {
+            const savedName = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+            document.getElementById('input-nama').value = savedName;
+            
+            const savedAvatar = localStorage.getItem('rb_avatar');
+            if (savedAvatar) {
+                document.getElementById('avatar-preview').src = savedAvatar;
+                document.getElementById('avatar-showcase').src = savedAvatar;
+                document.getElementById('profile-avatar-nav').src = savedAvatar;
+                document.getElementById('input-avatar').value = savedAvatar;
+            }
+
+            const els = document.querySelectorAll('.rb-username-fill');
+            for (let i = 0; i < els.length; i++) {
+                els[i].textContent = savedName;
+            }
+        }
+
+        function updateAvatar() {
+            const avatarUrl = document.getElementById('input-avatar').value.trim();
+            if (avatarUrl) {
+                localStorage.setItem('rb_avatar', avatarUrl);
+                document.getElementById('avatar-preview').src = avatarUrl;
+                document.getElementById('avatar-showcase').src = avatarUrl;
+                document.getElementById('profile-avatar-nav').src = avatarUrl;
+                
+                // Alert Toast Feedback
+                alertFeedback('Avatar berhasil diperbarui!');
+            }
+        }
+
+        function saveProfile() {
+            const newName = document.getElementById('input-nama').value.trim();
+            if (newName) {
+                localStorage.setItem('rb_username', newName);
+                
+                const els = document.querySelectorAll('.rb-username-fill');
+                for (let i = 0; i < els.length; i++) {
+                    els[i].textContent = newName;
+                }
+                
+                const btn = document.querySelector('button[onclick="saveProfile()"]');
+                const originalText = btn.textContent;
+                btn.textContent = 'Berhasil Disimpan ✓';
+                btn.className = "px-6 py-3 bg-secondary text-on-secondary rounded-full font-bold shadow-md hover:-translate-y-0.5 transition-all";
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.className = "px-6 py-3 bg-primary text-on-primary rounded-full font-bold shadow-md hover:bg-primary-container transition-all hover:-translate-y-0.5";
+                }, 2000);
+            }
+        }
+
+        // BridgePass Premium Membership Logic
+        function initBridgePassSettings() {
+            const premiumActive = localStorage.getItem('rb_bridgepass') === 'premium';
+            const badge = document.getElementById('premium-badge');
+            const statusText = document.getElementById('bridgepass-status-text');
+            const badgeLabel = document.getElementById('bridgepass-badge-label');
+            const basicInput = document.getElementById('bridgepass-basic-input');
+            const premiumInfo = document.getElementById('bridgepass-premium-info');
+
+            if (premiumActive) {
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+                statusText.innerHTML = 'Premium 👑';
+                badgeLabel.innerHTML = 'Aktif';
+                badgeLabel.className = "text-[10px] bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-extrabold px-3 py-1 rounded-full uppercase";
+                basicInput.classList.add('hidden');
+                premiumInfo.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+                badge.classList.remove('flex');
+                statusText.innerHTML = 'Basic Member';
+                badgeLabel.innerHTML = 'Belum Aktif';
+                badgeLabel.className = "text-[10px] bg-slate-500/20 border border-slate-500/30 text-slate-400 font-extrabold px-3 py-1 rounded-full uppercase";
+                basicInput.classList.remove('hidden');
+                premiumInfo.classList.add('hidden');
+            }
+        }
+
+        function activateBridgePassSettings() {
+            const codeInput = document.getElementById('input-referral-settings').value.trim();
+            if (codeInput === 'SMNGTAFN') {
+                localStorage.setItem('rb_bridgepass', 'premium');
+                initBridgePassSettings();
+                alertFeedback('Sukses! BridgePass Premium Anda telah aktif secara universal! 👑');
+            } else {
+                alertFeedback('Oops! Kode referral tidak valid.');
+            }
+        }
+
+        function deactivatePremium() {
+            localStorage.removeItem('rb_bridgepass');
+            initBridgePassSettings();
+            alertFeedback('BridgePass Premium dinonaktifkan.');
+        }
+
+        // Interests Chips Logic
+        let selectedInterests = [];
+
+        function initInterestsChips() {
+            const savedInterests = localStorage.getItem('rb_interests');
+            if (savedInterests) {
+                selectedInterests = JSON.parse(savedInterests);
+            } else {
+                selectedInterests = ['fiksi', 'self_dev']; // default
+            }
+            updateInterestsUI();
+        }
+
+        function toggleInterestChip(interest) {
+            const idx = selectedInterests.indexOf(interest);
+            if (idx > -1) {
+                selectedInterests.splice(idx, 1);
+            } else {
+                selectedInterests.push(interest);
+            }
+            updateInterestsUI();
+        }
+
+        function updateInterestsUI() {
+            const allInterests = ['fiksi', 'komik', 'jurnal', 'pelajaran', 'self_dev'];
+            allInterests.forEach(interest => {
+                const chip = document.getElementById('chip-' + interest);
+                const isSelected = selectedInterests.includes(interest);
+                
+                if (isSelected) {
+                    chip.className = "cursor-pointer border border-primary bg-primary text-white rounded-full px-4 py-2 text-xs font-bold hover:bg-primary-container transition-all select-none flex items-center gap-1.5";
+                } else {
+                    chip.className = "cursor-pointer border border-outline-variant text-on-surface dark:text-on-primary-container rounded-full px-4 py-2 text-xs font-bold hover:bg-surface-container-high transition-all select-none flex items-center gap-1.5";
+                }
+            });
+        }
+
+        function saveInterests() {
+            localStorage.setItem('rb_interests', JSON.stringify(selectedInterests));
+            
+            const btn = document.querySelector('button[onclick="saveInterests()"]');
+            const originalText = btn.textContent;
+            btn.textContent = 'Berhasil Disimpan ✓';
+            btn.className = "px-6 py-3 bg-secondary text-on-secondary rounded-full font-bold shadow-md hover:-translate-y-0.5 transition-all";
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.className = "px-6 py-3 bg-primary text-on-primary rounded-full font-bold shadow-md hover:bg-primary-container transition-all hover:-translate-y-0.5";
+            }, 2000);
+        }
+
+        // Diagnostics Reset Logic
+        function resetApplicationData() {
+            if (confirm('Apakah Anda yakin ingin menghapus seluruh data simulasi aplikasi? Ini akan mengembalikan nama profil ke "Siswa Indonesia", menonaktifkan premium, mereset kategori minat, dan me-reload halaman ini.')) {
+                localStorage.clear();
+                window.location.reload();
+            }
+        }
+
+        // Helper Toast Feedback Alert
+        function alertFeedback(message) {
+            // Check if existing toast is visible, remove it
+            const oldToast = document.getElementById('settings-toast');
+            if (oldToast) oldToast.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'settings-toast';
+            toast.className = "fixed bottom-5 right-5 z-50 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-lg py-sm rounded-2xl shadow-xl flex items-center gap-sm text-xs font-bold border border-slate-700 transition-all transform translate-y-10 opacity-0";
+            toast.innerHTML = `<span class="material-symbols-outlined text-[18px]">info</span> ${message}`;
+            document.body.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+            }, 50);
+
+            // Trigger close
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
