@@ -377,12 +377,12 @@
 </div>
 <!-- Author Profile -->
 <div class="bg-surface-container-lowest rounded-xl p-md shadow-sm border border-outline-variant/30 flex items-start gap-md">
-<img alt="Prof. Eko Purwanto Profile" class="w-12 h-12 rounded-full object-cover border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcaKjRh43RjONFiYgEm0HomZ05DrVOCgZX8kssDCHf3TbEwiEyCNVvZe16DqSD3QApclULCZFOFkA_nxQe2NEFW7GyBWUXJIQbGHVwGRHTqO1zBUlOnFqPgx1BSCJ8kl0fMg6lsGUwPn2BSqHN9i2w_0ymyb7xBFdS1Y7yiyM6XW2XJm_z45vgiUMNkQPDSrqykc8a7iv9vvs7Y-WqmfcZf0s3YAEIs7-L2XKLepKJgmhU5IgEcvExJYcWsbnbFQU4gQ48CoMj20M"/>
+<img id="detail-author-avatar" alt="Prof. Eko Purwanto Profile" class="w-12 h-12 rounded-full object-cover border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcaKjRh43RjONFiYgEm0HomZ05DrVOCgZX8kssDCHf3TbEwiEyCNVvZe16DqSD3QApclULCZFOFkA_nxQe2NEFW7GyBWUXJIQbGHVwGRHTqO1zBUlOnFqPgx1BSCJ8kl0fMg6lsGUwPn2BSqHN9i2w_0ymyb7xBFdS1Y7yiyM6XW2XJm_z45vgiUMNkQPDSrqykc8a7iv9vvs7Y-WqmfcZf0s3YAEIs7-L2XKLepKJgmhU5IgEcvExJYcWsbnbFQU4gQ48CoMj20M"/>
 <div class="flex flex-col">
-<span class="font-title-lg text-title-lg text-on-surface">Prof. Eko Purwanto</span>
+<span id="detail-author-name" class="font-title-lg text-title-lg text-on-surface">Prof. Eko Purwanto</span>
 <div class="flex items-center gap-1 mt-1">
-<span class="material-symbols-outlined text-[16px] text-[#f59e0b]">school</span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Scholar Level</span>
+<span id="detail-author-icon" class="material-symbols-outlined text-[16px] text-[#f59e0b]">school</span>
+<span id="detail-author-role" class="font-label-sm text-label-sm text-on-surface-variant">Scholar Level</span>
 </div>
 <a class="mt-2 text-primary font-label-sm text-label-sm hover:underline" href="#">Lihat Profil Lengkap</a>
 </div>
@@ -452,7 +452,7 @@
       let diskusi = null;
 
       // Cek apakah ini post dari localStorage komunitas
-      if (rawId.startsWith('post-')) {
+      if (rawId.startsWith('post-') || rawId === 'snbt-tutor-1') {
         const stored = localStorage.getItem('readbridge_community_posts_v2');
         if (stored) {
           const posts = JSON.parse(stored);
@@ -461,11 +461,12 @@
             diskusi = {
               title: found.judul,
               author: found.username,
-              timeAgo: "Baru saja",
+              timeAgo: found.waktu || "Baru saja",
               upvotes: found.votes,
               content: found.isi,
               tags: found.tags,
-              isRichText: true // flag for innerHTML
+              isRichText: false,
+              attachment: found.attachment
             };
           }
         }
@@ -489,6 +490,70 @@
           document.getElementById('detail-content').textContent = diskusi.content;
         }
         
+        // Render attachment if exists
+        if (diskusi.attachment) {
+          const attachmentContainer = document.createElement('div');
+          attachmentContainer.className = "mt-6";
+          attachmentContainer.innerHTML = `
+            <div class="p-4 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-all cursor-pointer group" onclick="window.openAttachment('${diskusi.attachment.url}', true)">
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-red-500 text-3xl">picture_as_pdf</span>
+                <div class="text-left">
+                  <h4 class="font-bold text-on-surface text-sm group-hover:text-primary transition-colors flex items-center gap-1">
+                    ${diskusi.attachment.name}
+                    <span class="bg-green-500/10 text-green-600 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Ready to Download</span>
+                  </h4>
+                  <p class="text-xs text-on-surface-variant/80">${diskusi.attachment.size} • ${diskusi.attachment.type}</p>
+                </div>
+              </div>
+              <button onclick="event.stopPropagation(); window.openAttachment('${diskusi.attachment.url}', true)" class="flex items-center gap-1.5 px-4 py-2 bg-primary text-on-primary font-bold text-xs rounded-full hover:bg-primary/95 transition-all shadow-sm">
+                <span class="material-symbols-outlined text-[16px]">download</span> Unduh
+              </button>
+            </div>
+          `;
+          document.getElementById('detail-content').parentNode.appendChild(attachmentContainer);
+          
+          if (!window.openAttachment) {
+            window.openAttachment = function(url, autoDownload) {
+              if (autoDownload) {
+                window.open(url + '?download=1', '_blank');
+              } else {
+                window.open(url, '_blank');
+              }
+            };
+          }
+        }
+        
+        // Update sidebar author profile card
+        const avatarEl = document.getElementById('detail-author-avatar');
+        const nameEl = document.getElementById('detail-author-name');
+        const roleEl = document.getElementById('detail-author-role');
+        const iconEl = document.getElementById('detail-author-icon');
+        
+        if (nameEl) nameEl.textContent = diskusi.author;
+        if (avatarEl) {
+          if (diskusi.author === '@SiswaIndonesia') {
+            avatarEl.src = "https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4";
+          } else {
+            avatarEl.src = `https://api.dicebear.com/9.x/avataaars/svg?seed=${diskusi.author.replace('@','')}&backgroundColor=e5eeff`;
+          }
+        }
+        if (roleEl) {
+          if (diskusi.author === '@PakAgusPratama') {
+            roleEl.textContent = "Master Tutor";
+            if (iconEl) {
+              iconEl.textContent = "verified";
+              iconEl.className = "material-symbols-outlined text-[16px] text-primary font-bold";
+            }
+          } else if (diskusi.author === '@SiswaWangi' || diskusi.author === '@PejuangKampus') {
+            roleEl.textContent = "Anggota Komunitas";
+            if (iconEl) iconEl.textContent = "person";
+          } else {
+            roleEl.textContent = "Kontributor";
+            if (iconEl) iconEl.textContent = "history_edu";
+          }
+        }
+        
         // Update tags
         const tagsContainer = document.getElementById('detail-tags');
         tagsContainer.innerHTML = '';
@@ -498,7 +563,7 @@
                span.className = "px-3 py-1 border border-outline-variant rounded-full text-label-md font-label-md text-on-surface hover:bg-surface-container-low transition-colors";
                span.textContent = tag;
                tagsContainer.appendChild(span);
-            });
+             });
         }
 
         // Update breadcrumb

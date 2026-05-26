@@ -119,13 +119,58 @@ const defaultPosts = [
     isi:'Makin deket hari H malah makin males belajar dan overthinking takut ga lolos. Kalian biasanya ngapain kalau lagi di fase burnout gini?',
     tags:['#MentalHealth','#Motivasi'], votes:4200, komentar:0, destination: 'Pejuang SNBT',
     commentsList: []
+  },
+  {
+    id: 'snbt-tutor-1',
+    username: '@PakAgusPratama',
+    role: 'Master Tutor',
+    isCurrentUser: false,
+    waktu: '1 jam yang lalu',
+    judul: '🔥 [Eksklusif] Rangkuman Literasi Bahasa Indonesia & Bocoran Soal HOTS SNBT 2024',
+    isi: 'Halo para pejuang SNBT 2024! Sebagai tutor literasi kalian di ReadBridge, bapak membagikan rangkuman materi penting serta latihan soal HOTS Literasi Bahasa Indonesia yang sering keluar di tryout maupun UTBK asli. Silakan unduh PDF-nya di bawah ini untuk belajar mandiri. Tetap semangat, masa depan menanti kalian di PTN impian!',
+    tags: ['#UTBK', '#LiterasiIndo', '#TryoutSNBT'],
+    votes: 4520,
+    komentar: 3,
+    destination: 'Pejuang SNBT',
+    attachment: {
+      name: 'Rangkuman_Lit_Indo_SNBT.pdf',
+      size: '2.4 MB',
+      type: 'Dokumen PDF',
+      url: 'Rangkuman_Lit_Indo_SNBT.html'
+    },
+    commentsList: [
+      { username: '@SiswaIndonesia', text: 'Wah makasih banyak Pak Agus! Rangkumannya lengkap banget, ngebantu buat review cepat sebelum TO besok.', waktu: '30 menit yang lalu' },
+      { username: '@Ambiskuh', text: 'Keren bapak, latihan soal HOTS-nya ada pembahasannya juga! Izin unduh ya Pak.', waktu: '20 menit yang lalu' },
+      { username: '@CalonMaba', text: 'Terima kasih banyak pak, semoga jadi amal jariyah 🙏', waktu: '10 menit yang lalu' }
+    ]
   }
 ];
 
+window.openAttachment = function(url, autoDownload) {
+  if (autoDownload) {
+    window.open(url + '?download=1', '_blank');
+  } else {
+    window.open(url, '_blank');
+  }
+};
+
 function getPosts(){
   const s=localStorage.getItem(STORAGE_KEY);
-  if(s) return JSON.parse(s);
-  savePosts(defaultPosts); return defaultPosts;
+  let posts = s ? JSON.parse(s) : [...defaultPosts];
+  
+  // Membersihkan post lama yang error/buggy dari localStorage
+  posts = posts.filter(p => p.username !== '@AgusPratama');
+  
+  // Memastikan post tutor SNBT selalu ada di database
+  const hasTutorPost = posts.some(x => x.id === 'snbt-tutor-1');
+  if (!hasTutorPost) {
+    const tutorPost = defaultPosts.find(x => x.id === 'snbt-tutor-1');
+    if (tutorPost) {
+      posts.unshift(tutorPost);
+      savePosts(posts);
+    }
+  }
+  return posts;
 }
 function savePosts(p){ localStorage.setItem(STORAGE_KEY,JSON.stringify(p)); }
 function formatVotes(n){ return n>=1000?(n/1000).toFixed(1).replace('.0','')+'k':String(n); }
@@ -141,9 +186,12 @@ function getAvatarForUser(u){
 
 function renderPostCard(p){
   const tags=(p.tags||[]).map(t=>`<span onclick="window.showTrendingTopicDetail('${t}')" class="bg-surface-container-high text-on-surface px-3 py-1 rounded-md font-label-sm text-label-sm cursor-pointer hover:bg-primary hover:text-on-primary transition-colors">${t}</span>`).join('');
-  const badge=p.isCurrentUser
-    ?`<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-2 tracking-wider">Anda Author</span>`
-    :`<span class="bg-surface-container-highest text-on-surface-variant text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-2 tracking-wider">Author</span>`;
+  const badge = p.isCurrentUser
+    ? `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-2 tracking-wider">Anda Author</span>`
+    : (p.role
+        ? `<span class="bg-primary-container text-on-primary-container text-[10px] font-bold px-2.5 py-0.5 rounded-full ml-2 tracking-wider inline-flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px] font-bold">verified</span>${p.role}</span>`
+        : `<span class="bg-surface-container-highest text-on-surface-variant text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-2 tracking-wider">Author</span>`
+      );
   const trendingBadge = (window.activeFeedTab === 'Trending')
     ? `<span class="bg-amber-500/10 text-amber-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-2 tracking-wider flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px] animate-pulse">local_fire_department</span>Trending</span>`
     : '';
@@ -184,6 +232,27 @@ function renderPostCard(p){
     pollHTML += `<p class="text-on-surface-variant/60 text-[12px] ml-1 mt-1">${totalVotes} suara</p></div>`;
   }
 
+  let attachmentHTML = '';
+  if (p.attachment) {
+    attachmentHTML = `
+      <div class="mt-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30 flex items-center justify-between hover:bg-surface-container/60 transition-all cursor-pointer group" onclick="window.openAttachment('${p.attachment.url}', true)">
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-red-500 text-3xl">picture_as_pdf</span>
+          <div class="text-left">
+            <h4 class="font-bold text-on-surface text-sm group-hover:text-primary transition-colors flex items-center gap-1">
+              ${p.attachment.name}
+              <span class="bg-green-500/10 text-green-600 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Ready to Download</span>
+            </h4>
+            <p class="text-xs text-on-surface-variant/80">${p.attachment.size} • ${p.attachment.type}</p>
+          </div>
+        </div>
+        <button onclick="event.stopPropagation(); window.openAttachment('${p.attachment.url}', true)" class="flex items-center gap-1.5 px-4 py-2 bg-primary text-on-primary font-bold text-xs rounded-full hover:bg-primary/95 transition-all shadow-sm">
+          <span class="material-symbols-outlined text-[16px]">download</span> Unduh
+        </button>
+      </div>
+    `;
+  }
+
   const isTrending = (window.activeFeedTab === 'Trending');
   return`<article data-post-id="${p.id}" class="bg-surface-container-lowest rounded-2xl p-lg flex flex-col gap-md shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300 border border-outline-variant/20 hover:-translate-y-0.5 ${isTrending ? 'border-l-4 border-l-amber-500/85 bg-gradient-to-r from-amber-500/[0.01] to-transparent' : ''}">
     <div class="flex items-center justify-between">
@@ -208,6 +277,7 @@ function renderPostCard(p){
       <a href="detail-diskusi.html?id=${p.id}" class="group"><h2 class="font-title-lg text-title-lg text-on-surface font-bold leading-tight group-hover:text-primary transition-colors cursor-pointer">${p.judul}</h2></a>
       <p class="font-body-md text-body-md text-on-surface-variant line-clamp-3 leading-relaxed">${p.isi}</p>
       ${pollHTML}
+      ${attachmentHTML}
     </div>
     ${tags?`<div class="flex flex-wrap gap-2 mt-1">${tags}</div>`:''}
     <div class="flex gap-4 mt-2 pt-4 border-t border-outline-variant/30 text-on-surface-variant items-center justify-between">

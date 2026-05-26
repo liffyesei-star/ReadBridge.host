@@ -1,16 +1,10 @@
 <!DOCTYPE html>
-<!--
-  Project: ReadBridge
-  Author: Liffy Sei / Affan
-  Date: May 2026
-  Role: Lead Developer & UI/UX Designer
--->
-
 <html lang="id">
+
 <head>
     <!-- Global Preference Controller Script to prevent FOUC -->
     <script id="global-preferences-controller">
-        (function() {
+        (function () {
             // Function to apply theme
             function applyTheme(theme) {
                 if (theme === 'dark') {
@@ -19,7 +13,7 @@
                     document.documentElement.classList.remove('dark');
                 }
             }
-            
+
             // Function to apply font size
             function applyFontSize(size) {
                 if (size === 'kecil') {
@@ -30,7 +24,7 @@
                     document.documentElement.style.fontSize = '16px';
                 }
             }
-            
+
             // Function to apply font family
             function applyFontFamily(family) {
                 let style = document.getElementById('global-font-override');
@@ -52,7 +46,7 @@
             applyFontFamily(localStorage.getItem('rb_font_family') || 'sans');
 
             // Listen for storage events to sync across tabs
-            window.addEventListener('storage', function(e) {
+            window.addEventListener('storage', function (e) {
                 if (e.key === 'rb_theme') {
                     applyTheme(e.newValue);
                 } else if (e.key === 'rb_font_size') {
@@ -63,13 +57,15 @@
             });
         })();
     </script>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Klub Pecinta Fiksi - ReadBridge</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="style.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -127,398 +123,516 @@
         }
     </script>
 </head>
+
 <body class="bg-background min-h-screen flex flex-col font-body-md text-on-background">
-<!-- TopNavBar (identical to club.html) -->
-<header class="bg-surface shadow-sm docked full-width top-0 z-50">
-    <div class="flex justify-between items-center w-full px-4 md:px-margin py-sm max-w-[1280px] mx-auto">
-        <div class="flex items-center gap-lg">
-            <span class="font-headline-md text-[20px] md:text-headline-md leading-tight font-bold text-primary">ReadBridge</span>
-            <nav class="hidden md:flex gap-lg font-label-md text-label-md">
-                <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="eksplor.html">Eksplor</a>
-                <a class="text-primary font-bold border-b-2 border-primary pb-1 scale-95 transition-transform duration-150" href="komunitas.html">Komunitas</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="marketplace.html">Marketplace</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="perpustakaan.html">Perpustakaan</a>
-            </nav>
-        </div>
-        <div class="flex items-center gap-md">
-            <button class="text-on-surface-variant hover:text-primary transition-colors duration-200">
-                <span class="material-symbols-outlined">search</span>
-            </button>
-            <a href="notifikasi.html" aria-label="Notifikasi" class="relative flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications</span>
-            </a>
-            <div class="relative" id="profile-menu-container">
-                <button id="profile-avatar-btn" class="focus:outline-none flex rounded-full">
-                    <img alt="User Profile Avatar" class="w-8 h-8 rounded-full object-cover border border-outline-variant cursor-pointer hover:ring-2 hover:ring-primary transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
+    <!-- TopNavBar (identical to club.html) -->
+    <header class="bg-surface shadow-sm docked full-width top-0 z-50">
+        <div class="flex justify-between items-center w-full px-4 md:px-margin py-sm max-w-[1280px] mx-auto">
+            <div class="flex items-center gap-lg">
+                <span
+                    class="font-headline-md text-[20px] md:text-headline-md leading-tight font-bold text-primary">ReadBridge</span>
+                <nav class="hidden md:flex gap-lg font-label-md text-label-md">
+                    <a class="text-on-surface-variant hover:text-primary transition-colors duration-200"
+                        href="eksplor.html">Eksplor</a>
+                    <a class="text-primary font-bold border-b-2 border-primary pb-1 scale-95 transition-transform duration-150"
+                        href="komunitas.html">Komunitas</a>
+                    <a class="text-on-surface-variant hover:text-primary transition-colors duration-200"
+                        href="marketplace.html">Marketplace</a>
+                    <a class="text-on-surface-variant hover:text-primary transition-colors duration-200"
+                        href="perpustakaan.html">Perpustakaan</a>
+                </nav>
+            </div>
+            <div class="flex items-center gap-md">
+                <button class="text-on-surface-variant hover:text-primary transition-colors duration-200">
+                    <span class="material-symbols-outlined">search</span>
                 </button>
-                <div id="profile-dropdown" class="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50">
-                    <div class="px-4 py-3 border-b border-outline-variant/30">
-                        <p class="font-label-sm text-label-sm text-on-surface-variant">Masuk sebagai</p>
-                        <p class="font-label-md text-label-md text-on-surface font-bold truncate">Siswa Indonesia</p>
-                    </div>
-                    <a href="pengaturan.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
-                        <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
-                    </a>
-                    <a href="profile.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
-                                <span class="material-symbols-outlined text-[20px]">person</span> Detail Akun
-                    </a>
-                    <a href="login.html" class="flex items-center gap-2 px-4 py-3 hover:bg-error/10 transition-colors font-label-md text-label-md text-error border-t border-outline-variant/30 font-bold">
-                        <span class="material-symbols-outlined text-[20px]">logout</span> Log Out
-                    </a>
-                </div>
-            </div>
-            <script>
-                document.addEventListener('DOMContentLoaded', () => {
-                    const btn = document.getElementById('profile-avatar-btn');
-                    const dropdown = document.getElementById('profile-dropdown');
-                    if (btn && dropdown) {
-                        btn.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            dropdown.classList.toggle('hidden');
-                            dropdown.classList.toggle('flex');
-                        });
-                        document.addEventListener('click', (e) => {
-                            if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
-                                dropdown.classList.add('hidden');
-                                dropdown.classList.remove('flex');
-                            }
-                        });
-                    }
-                });
-            </script>
-        </div>
-    </div>
-</header>
-
-<main class="flex-grow max-w-[1280px] mx-auto w-full px-4 md:px-margin py-lg grid grid-cols-1 lg:grid-cols-12 gap-xl">
-  <!-- Left Sidebar (identical) -->
-  <aside class="hidden lg:flex lg:col-span-3 flex-col gap-xl sticky top-[80px] h-fit">
-    <!-- Redundant menu items removed -->
-    <div class="flex flex-col gap-sm">
-      <h3 class="font-label-sm text-label-sm text-on-surface-variant px-4 uppercase tracking-wider font-bold">Community Section</h3>
-      <a class="flex items-center gap-sm px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors font-label-md text-label-md" href="komunitas.html">
-        <span class="material-symbols-outlined text-[20px]">public</span> Public Feed
-      </a>
-      <div id="joined-clubs-list" class="flex flex-col gap-1"></div>
-      <button class="mt-4 w-full py-2.5 bg-surface-container border border-outline-variant/50 rounded-xl font-label-md text-label-md text-primary flex justify-center items-center gap-xs hover:bg-surface-container-high transition-all">
-        <span class="material-symbols-outlined text-[18px]">add</span> Gabung Club
-      </button>
-    </div>
-  </aside>
-
-  <!-- Main Content (same structure as club.html) -->
-  <section class="lg:col-span-6 flex flex-col gap-md">
-        <!-- Club Header Card -->
-        <div class="bg-surface rounded-xl shadow-sm border border-surface-container-high overflow-hidden">
-            <div class="h-48 relative">
-                <div class="absolute inset-0" style="background-image: url('fiksi_cover.png'); background-size: cover; background-position: center;"></div>
-            </div>
-            <div class="p-lg relative -mt-12">
-                <div class="flex justify-between items-end mb-md">
-                    <div class="bg-surface p-1 rounded-xl shadow-sm inline-block border border-surface-container-high overflow-hidden w-[72px] h-[72px]">
-                        <img src="fiksi_icon.png" alt="Club Icon" class="w-full h-full object-cover rounded-lg"/>
-                    </div>
-                    <button class="bg-white border-2 border-primary text-primary font-label-md text-label-md py-sm px-lg rounded-full font-bold hover:bg-surface-container-low transition-colors shadow-sm cursor-pointer">
-                        Joined
+                <a href="notifikasi.html" aria-label="Notifikasi"
+                    class="relative flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined"
+                        style="font-variation-settings: 'FILL' 1;">notifications</span>
+                </a>
+                <div class="relative" id="profile-menu-container">
+                    <button id="profile-avatar-btn" class="focus:outline-none flex rounded-full">
+                        <img alt="User Profile Avatar"
+                            class="w-8 h-8 rounded-full object-cover border border-outline-variant cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4" />
                     </button>
-                </div>
-                <h1 class="font-display-lg text-[32px] md:text-display-lg leading-tight text-on-surface mb-xs">Pecinta Fiksi</h1>
-                <p class="font-body-md text-body-md text-on-surface-variant mb-md max-w-2xl">
-                    Komunitas pembaca novel, cerpen, dan karya fiksi lainnya. Tempat berdiskusi, berbagi rekomendasi, dan merayakan kecintaan pada literatur imajinatif.
-                </p>
-                <div class="flex items-center gap-md font-label-sm text-label-sm text-on-surface-variant">
-                    <span class="flex items-center gap-xs">
-                        <span class="material-symbols-outlined text-lg">group</span>
-                        2,840 Members
-                    </span>
-                    <span class="flex items-center gap-xs">
-                        <span class="material-symbols-outlined text-lg">public</span>
-                        Public Club
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tabs (identical 3 tabs) -->
-        <div class="flex border-b border-outline-variant mb-md" id="club-tabs">
-            <button data-tab="diskusi" class="club-tab px-md py-sm font-label-md text-label-md font-bold text-primary border-b-2 border-primary cursor-pointer">Diskusi</button>
-            <button data-tab="rekomendasi" class="club-tab px-md py-sm font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer">Rekomendasi Buku</button>
-            <button data-tab="aktivitas" class="club-tab px-md py-sm font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer">Aktivitas</button>
-        </div>
-
-        <!-- Tab Content: Diskusi (Feed) -->
-        <div id="tab-diskusi" class="tab-content">
-            <div id="community-feed" class="flex flex-col gap-md">
-                <!-- Akan dirender oleh JS -->
-            </div>
-        </div>
-
-        <!-- Tab Content: Rekomendasi Buku -->
-        <div id="tab-rekomendasi" class="tab-content hidden">
-            <div id="book-recommendation-container" class="flex flex-col gap-md">
-                <!-- Akan dirender oleh JS secara dinamis -->
-            </div>
-        </div>
-
-        <!-- Tab Content: Aktivitas -->
-        <div id="tab-aktivitas" class="tab-content hidden">
-            <div id="activity-feed" class="flex flex-col gap-md">
-                <!-- Akan dirender oleh JS -->
-            </div>
-        </div>
-  </section>
-
-  <!-- Right Sidebar (Magical purple theme, enhanced layout) -->
-  <aside class="hidden lg:flex lg:col-span-3 flex-col gap-lg sticky top-[80px] h-fit">
-        <!-- About Club Widget -->
-        <div class="bg-surface rounded-xl shadow-sm border border-primary/10 p-md hover:scale-[1.01] hover:shadow-[0_8px_30px_rgba(99,102,241,0.08)] transition-all duration-300 relative overflow-hidden group">
-            <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary via-secondary to-tertiary"></div>
-            <h3 class="font-title-lg text-title-lg text-on-surface border-b border-surface-container-high pb-sm mb-sm flex items-center gap-xs font-bold">
-                <span class="material-symbols-outlined text-primary">info</span>
-                Tentang Klub
-            </h3>
-            <p class="font-body-md text-body-md text-on-surface-variant/80 text-sm mb-md leading-relaxed">
-                Klub resmi untuk para pecinta karya fiksi di ReadBridge. Tempat berkumpul, berdiskusi, dan berbagi kecintaan pada novel, cerita pendek, dan literatur imajinatif lainnya.
-            </p>
-            <div class="flex flex-wrap gap-2">
-                <span class="bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded-full font-label-sm text-label-sm cursor-pointer hover:bg-primary/20 hover:scale-95 transition-all duration-200">Sastra</span>
-                <span class="bg-secondary/10 text-secondary border border-secondary/20 px-3 py-1 rounded-full font-label-sm text-label-sm cursor-pointer hover:bg-secondary/20 hover:scale-95 transition-all duration-200">Novel</span>
-                <span class="bg-tertiary/10 text-tertiary border border-tertiary/20 px-3 py-1 rounded-full font-label-sm text-label-sm cursor-pointer hover:bg-tertiary/20 hover:scale-95 transition-all duration-200">Diskusi Fiksi</span>
-            </div>
-        </div>
-
-        <!-- Trending Topics Widget -->
-        <div class="bg-surface rounded-xl shadow-sm border border-primary/10 p-md hover:scale-[1.01] hover:shadow-[0_8px_30px_rgba(99,102,241,0.08)] transition-all duration-300 relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-secondary to-primary"></div>
-            <h3 class="font-title-lg text-title-lg text-on-surface border-b border-surface-container-high pb-sm mb-sm flex items-center gap-xs font-bold">
-                <span class="material-symbols-outlined text-secondary">trending_up</span>
-                Topik Hangat
-            </h3>
-            <ul class="flex flex-col gap-sm">
-                <li class="hover:bg-surface-container-low p-1.5 rounded-lg transition-colors duration-200">
-                    <a class="group flex flex-col cursor-pointer" href="#">
-                        <span class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors flex items-center font-semibold">
-                            <span class="text-secondary font-bold mr-1">#</span>NovelPopuler
-                        </span>
-                        <span class="font-label-sm text-label-sm text-on-surface-variant/60 ml-3">1.2k diskusi minggu ini</span>
-                    </a>
-                </li>
-                <li class="hover:bg-surface-container-low p-1.5 rounded-lg transition-colors duration-200">
-                    <a class="group flex flex-col cursor-pointer" href="#">
-                        <span class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors flex items-center font-semibold">
-                            <span class="text-secondary font-bold mr-1">#</span>RekomendasiFiksi
-                        </span>
-                        <span class="font-label-sm text-label-sm text-on-surface-variant/60 ml-3">856 diskusi minggu ini</span>
-                    </a>
-                </li>
-                <li class="hover:bg-surface-container-low p-1.5 rounded-lg transition-colors duration-200">
-                    <a class="group flex flex-col cursor-pointer" href="#">
-                        <span class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors flex items-center font-semibold">
-                            <span class="text-secondary font-bold mr-1">#</span>PlotTwist
-                        </span>
-                        <span class="font-label-sm text-label-sm text-on-surface-variant/60 ml-3">432 diskusi minggu ini</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Member List Widget (Moved above suggested books) -->
-        <div class="bg-surface rounded-xl shadow-sm border border-primary/10 p-md hover:scale-[1.01] hover:shadow-[0_8px_30px_rgba(99,102,241,0.08)] transition-all duration-300 relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary to-tertiary"></div>
-            <h3 class="font-title-lg text-title-lg text-on-surface border-b border-surface-container-high pb-sm mb-sm flex justify-between items-center font-bold">
-                <span class="flex items-center gap-xs">
-                    <span class="material-symbols-outlined text-primary">groups</span>
-                    Daftar Anggota
-                </span>
-                <span class="bg-primary/10 text-primary px-2.5 py-0.5 rounded-full text-[12px] font-bold border border-primary/20">2.8k</span>
-            </h3>
-            
-            <div class="flex flex-col mt-sm">
-                <p class="font-label-sm text-label-sm text-primary uppercase tracking-wider mb-2 font-bold text-[11px] flex items-center gap-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                    Sedang Aktif (3)
-                </p>
-                <div class="flex flex-col gap-2 mb-4">
-                    <div class="flex items-center gap-3 hover:bg-surface-container-low p-2 rounded-lg cursor-pointer transition-colors group">
-                        <div class="relative">
-                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4" class="w-8 h-8 rounded-full object-cover group-hover:scale-105 transition-transform duration-200">
-                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-surface rounded-full shadow-[0_0_8px_#22c55e]"></div>
+                    <div id="profile-dropdown"
+                        class="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50">
+                        <div class="px-4 py-3 border-b border-outline-variant/30">
+                            <p class="font-label-sm text-label-sm text-on-surface-variant">Masuk sebagai</p>
+                            <p class="font-label-md text-label-md text-on-surface font-bold truncate">Siswa Indonesia
+                            </p>
                         </div>
-                        <span class="font-label-md text-label-md text-on-surface font-medium truncate group-hover:text-primary transition-colors">Siswa Indonesia</span>
-                    </div>
-                    <div class="flex items-center gap-3 hover:bg-surface-container-low p-2 rounded-lg cursor-pointer transition-colors group">
-                        <div class="relative">
-                            <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" class="w-8 h-8 rounded-full object-cover group-hover:scale-105 transition-transform duration-200">
-                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-surface rounded-full shadow-[0_0_8px_#22c55e]"></div>
-                        </div>
-                        <span class="font-label-md text-label-md text-on-surface font-medium truncate group-hover:text-primary transition-colors">Siti Aminah</span>
-                    </div>
-                    <div class="flex items-center gap-3 hover:bg-surface-container-low p-2 rounded-lg cursor-pointer transition-colors group">
-                        <div class="relative">
-                            <img src="https://i.pravatar.cc/150?u=a04258114e29026702d" class="w-8 h-8 rounded-full object-cover group-hover:scale-105 transition-transform duration-200">
-                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-surface rounded-full shadow-[0_0_8px_#22c55e]"></div>
-                        </div>
-                        <span class="font-label-md text-label-md text-on-surface font-medium truncate group-hover:text-primary transition-colors">Joko Widodo</span>
+                        <a href="pengaturan.html"
+                            class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+                            <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
+                        </a>
+                        <a href="profile.html"
+                            class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+                            <span class="material-symbols-outlined text-[20px]">person</span> Detail Akun
+                        </a>
+                        <a href="login.html"
+                            class="flex items-center gap-2 px-4 py-3 hover:bg-error/10 transition-colors font-label-md text-label-md text-error border-t border-outline-variant/30 font-bold">
+                            <span class="material-symbols-outlined text-[20px]">logout</span> Log Out
+                        </a>
                     </div>
                 </div>
-
-                <p class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase tracking-wider mb-2 font-bold text-[11px]">Offline</p>
-                <div class="flex flex-col gap-2">
-                    <div class="flex items-center gap-3 opacity-60 hover:opacity-100 hover:bg-surface-container-low p-2 rounded-lg cursor-pointer transition-all group">
-                        <div class="relative">
-                            <img src="https://i.pravatar.cc/150?u=a042581f4e29026024d" class="w-8 h-8 rounded-full object-cover grayscale group-hover:scale-105 transition-transform duration-200">
-                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 border-2 border-surface rounded-full"></div>
-                        </div>
-                        <span class="font-label-md text-label-md text-on-surface font-medium truncate group-hover:text-primary transition-colors">Rina Sari</span>
-                    </div>
-                    <div class="flex items-center gap-3 opacity-60 hover:opacity-100 hover:bg-surface-container-low p-2 rounded-lg cursor-pointer transition-all group">
-                        <div class="relative">
-                            <img src="https://i.pravatar.cc/150?u=a042581f4e29026703d" class="w-8 h-8 rounded-full object-cover grayscale group-hover:scale-105 transition-transform duration-200">
-                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 border-2 border-surface rounded-full"></div>
-                        </div>
-                        <span class="font-label-md text-label-md text-on-surface font-medium truncate group-hover:text-primary transition-colors">Agus Pranoto</span>
-                    </div>
-                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const btn = document.getElementById('profile-avatar-btn');
+                        const dropdown = document.getElementById('profile-dropdown');
+                        if (btn && dropdown) {
+                            btn.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                dropdown.classList.toggle('hidden');
+                                dropdown.classList.toggle('flex');
+                            });
+                            document.addEventListener('click', (e) => {
+                                if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                                    dropdown.classList.add('hidden');
+                                    dropdown.classList.remove('flex');
+                                }
+                            });
+                        }
+                    });
+                </script>
             </div>
         </div>
+    </header>
 
-        <!-- Suggested Books Widget -->
-        <div class="bg-surface rounded-xl shadow-sm border border-primary/10 p-md hover:scale-[1.01] hover:shadow-[0_8px_30px_rgba(99,102,241,0.08)] transition-all duration-300 relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-tertiary to-secondary"></div>
-            <h3 class="font-title-lg text-title-lg text-on-surface border-b border-surface-container-high pb-sm mb-sm flex items-center gap-xs font-bold">
-                <span class="material-symbols-outlined text-tertiary">star</span>
-                Buku Rekomendasi
-            </h3>
-            <div class="flex flex-col gap-md mt-sm">
-                <a href="detail.html" class="flex gap-sm items-center cursor-pointer group hover:bg-surface-container-low p-2 rounded-lg transition-all duration-200 border border-transparent hover:border-primary/10">
-                    <div class="w-12 h-16 bg-surface-container-highest rounded flex items-center justify-center overflow-hidden border border-outline-variant flex-shrink-0 group-hover:scale-105 group-hover:shadow-md transition-all">
-                        <img alt="Book cover" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXUDfExqL3kiH5HpJqA3Rx-Ahaz0_lfHsDtiEc3nHqrVX6c2fI80nMaYXLD2Knjh37xVxbeEQ3hFnLzcZeXLpVpbHO7GCzSy1hnCtXo_qwqtU3sXXgAmLFifphjLqAPZyunIPpTzpmzCBEEKmtmqfRfFXNOIW7u-CcpbtT66h3zhNajQSYzZAVkWJAHX1Avd0Rs5i8KI55Hv_wzD5yJMQFwbVctiZM-mNKJweLUA3pgb4rVdnwhwQRhGP8hkS4gEyWO0l2Pqr5raY"/>
-                    </div>
-                    <div>
-                        <h4 class="font-label-md text-label-md text-on-surface line-clamp-2 group-hover:text-primary transition-colors font-semibold">Cantik Itu Luka</h4>
-                        <p class="font-label-sm text-label-sm text-secondary">Eka Kurniawan</p>
-                    </div>
+    <main
+        class="flex-grow max-w-[1280px] mx-auto w-full px-4 md:px-margin py-lg grid grid-cols-1 lg:grid-cols-12 gap-xl">
+        <!-- Left Sidebar (identical) -->
+        <aside class="hidden lg:flex lg:col-span-3 flex-col gap-xl sticky top-[80px] h-fit">
+            <div class="flex flex-col gap-sm">
+                <a class="flex items-center gap-sm px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors font-label-md text-label-md"
+                    href="eksplor.html">
+                    <span class="material-symbols-outlined text-[24px]">explore</span> Eksplor
                 </a>
-                <a href="detail.html" class="flex gap-sm items-center cursor-pointer group hover:bg-surface-container-low p-2 rounded-lg transition-all duration-200 border border-transparent hover:border-primary/10">
-                    <div class="w-12 h-16 bg-surface-container-highest rounded flex items-center justify-center overflow-hidden border border-outline-variant flex-shrink-0 group-hover:scale-105 group-hover:shadow-md transition-all">
-                        <img alt="Book cover" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBs_2IGw86OKGtH47-1Xz99vJjeMA3OIqQtK0EWVt8MJMjpIglrjV1_fA2LMf1H2pLwKOJUrzGVVx_xZo6YM3e_eWLmF80RicVWLlNfvgvSwpo4yVc6IqqAF8jQCsWREBoEDH_nC4q4pKH1kEv3c1vppEROFpnaAQOlXmZ6BrNbxr-HEJb6dW0P0EffIVbxxxlFDUzb-pIiecgvPP0a_CfKnssB6m1PzAujX_QeENvwswW5-WEgeFtxGrxgz_qXiUT-1uALtTif_I"/>
-                    </div>
-                    <div>
-                        <h4 class="font-label-md text-label-md text-on-surface line-clamp-2 group-hover:text-primary transition-colors font-semibold">Laut Bercerita</h4>
-                        <p class="font-label-sm text-label-sm text-secondary">Leila S. Chudori</p>
-                    </div>
+                <a class="flex items-center gap-sm px-4 py-3 rounded-xl bg-secondary-container text-on-secondary-container font-bold font-label-md text-label-md"
+                    href="komunitas.html">
+                    <span class="material-symbols-outlined text-[24px]">groups</span> Komunitas
                 </a>
+                <a class="flex items-center gap-sm px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors font-label-md text-label-md"
+                    href="marketplace.html">
+                    <span class="material-symbols-outlined text-[24px]">storefront</span> Marketplace
+                </a>
+                <a class="flex items-center gap-sm px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors font-label-md text-label-md"
+                    href="perpustakaan.html">
+                    <span class="material-symbols-outlined text-[24px]">menu_book</span>Perpustakaan</a>
             </div>
+            <div class="flex flex-col gap-sm">
+                <h3 class="font-label-sm text-label-sm text-on-surface-variant px-4 uppercase tracking-wider font-bold">
+                    Community Section</h3>
+                <a class="flex items-center gap-sm px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors font-label-md text-label-md"
+                    href="komunitas.html">
+                    <span class="material-symbols-outlined text-[20px]">public</span> Public Feed
+                </a>
+                <div id="joined-clubs-list" class="flex flex-col gap-1"></div>
+                <button
+                    class="mt-4 w-full py-2.5 bg-surface-container border border-outline-variant/50 rounded-xl font-label-md text-label-md text-primary flex justify-center items-center gap-xs hover:bg-surface-container-high transition-all">
+                    <span class="material-symbols-outlined text-[18px]">add</span> Gabung Club
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content (same structure as club.html) -->
+        <section class="lg:col-span-6 flex flex-col gap-md">
+            <!-- Club Header Card -->
+            <div class="bg-surface rounded-xl shadow-sm border border-surface-container-high overflow-hidden">
+                <div class="h-48 relative">
+                    <div class="absolute inset-0"
+                        style="background-image: url('fiksi_cover.png'); background-size: cover; background-position: center;">
+                    </div>
+                </div>
+                <div class="p-lg relative -mt-12">
+                    <div class="flex justify-between items-end mb-md">
+                        <div
+                            class="bg-surface p-1 rounded-xl shadow-sm inline-block border border-surface-container-high overflow-hidden w-[72px] h-[72px]">
+                            <img src="fiksi_icon.png" alt="Club Icon" class="w-full h-full object-cover rounded-lg" />
+                        </div>
+                        <button
+                            class="bg-white border-2 border-primary text-primary font-label-md text-label-md py-sm px-lg rounded-full font-bold hover:bg-surface-container-low transition-colors shadow-sm cursor-pointer">
+                            Joined
+                        </button>
+                    </div>
+                    <h1 class="font-display-lg text-[32px] md:text-display-lg leading-tight text-on-surface mb-xs">
+                        Pecinta Fiksi</h1>
+                    <p class="font-body-md text-body-md text-on-surface-variant mb-md max-w-2xl">
+                        Komunitas pembaca novel, cerpen, dan karya fiksi lainnya. Tempat berdiskusi, berbagi
+                        rekomendasi, dan merayakan kecintaan pada literatur imajinatif.
+                    </p>
+                    <div class="flex items-center gap-md font-label-sm text-label-sm text-on-surface-variant">
+                        <span class="flex items-center gap-xs">
+                            <span class="material-symbols-outlined text-lg">group</span>
+                            2,840 Members
+                        </span>
+                        <span class="flex items-center gap-xs">
+                            <span class="material-symbols-outlined text-lg">public</span>
+                            Public Club
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs (identical 3 tabs) -->
+            <div class="flex border-b border-outline-variant mb-md" id="club-tabs">
+                <button data-tab="diskusi"
+                    class="club-tab px-md py-sm font-label-md text-label-md font-bold text-primary border-b-2 border-primary cursor-pointer">Diskusi</button>
+                <button data-tab="rekomendasi"
+                    class="club-tab px-md py-sm font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer">Rekomendasi
+                    Buku</button>
+                <button data-tab="aktivitas"
+                    class="club-tab px-md py-sm font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer">Aktivitas</button>
+            </div>
+
+            <!-- Tab Content: Diskusi (Feed) -->
+            <div id="tab-diskusi" class="tab-content">
+                <div id="community-feed" class="flex flex-col gap-md">
+                    <!-- Akan dirender oleh JS -->
+                </div>
+            </div>
+
+            <!-- Tab Content: Rekomendasi Buku -->
+            <div id="tab-rekomendasi" class="tab-content hidden">
+                <div class="bg-surface-container-lowest rounded-2xl p-lg border border-outline-variant/20 shadow-sm">
+                    <p class="text-on-surface-variant font-label-md text-center py-4">Fitur Rekomendasi Buku segera
+                        hadir.</p>
+                </div>
+            </div>
+
+            <!-- Tab Content: Aktivitas -->
+            <div id="tab-aktivitas" class="tab-content hidden">
+                <div id="activity-feed" class="flex flex-col gap-md">
+                    <!-- Akan dirender oleh JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Sidebar (Magical purple theme, enhanced layout) -->
+        <aside class="hidden lg:flex lg:col-span-3 flex-col gap-lg sticky top-[80px] h-fit">
+            <!-- About Club Widget -->
+            <div
+                class="bg-surface rounded-xl shadow-sm border border-primary/10 p-md hover:scale-[1.01] hover:shadow-[0_8px_30px_rgba(99,102,241,0.08)] transition-all duration-300 relative overflow-hidden group">
+                <div
+                    class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary via-secondary to-tertiary">
+                </div>
+                <h3
+                    class="font-title-lg text-title-lg text-on-surface border-b border-surface-container-high pb-sm mb-sm flex items-center gap-xs font-bold">
+                    <span class="material-symbols-outlined text-primary">info</span>
+                    Tentang Klub
+                </h3>
+                <p class="font-body-md text-body-md text-on-surface-variant/80 text-sm mb-md leading-relaxed">
+                    Klub resmi untuk para pecinta karya fiksi di ReadBridge. Tempat berkumpul, berdiskusi, dan berbagi
+                    kecintaan pada novel, cerita pendek, dan literatur imajinatif lainnya.
+                </p>
+                <div class="flex flex-wrap gap-2">
+                    <span
+                        class="bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded-full font-label-sm text-label-sm cursor-pointer hover:bg-primary/20 hover:scale-95 transition-all duration-200">Sastra</span>
+                    <span
+                        class="bg-secondary/10 text-secondary border border-secondary/20 px-3 py-1 rounded-full font-label-sm text-label-sm cursor-pointer hover:bg-secondary/20 hover:scale-95 transition-all duration-200">Novel</span>
+                    <span
+                        class="bg-tertiary/10 text-tertiary border border-tertiary/20 px-3 py-1 rounded-full font-label-sm text-label-sm cursor-pointer hover:bg-tertiary/20 hover:scale-95 transition-all duration-200">Diskusi
+                        Fiksi</span>
+                </div>
+            </div>
+
+            <!-- Trending Topics Widget -->
+            <div
+                class="bg-surface rounded-xl shadow-sm border border-primary/10 p-md hover:scale-[1.01] hover:shadow-[0_8px_30px_rgba(99,102,241,0.08)] transition-all duration-300 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-secondary to-primary"></div>
+                <h3
+                    class="font-title-lg text-title-lg text-on-surface border-b border-surface-container-high pb-sm mb-sm flex items-center gap-xs font-bold">
+                    <span class="material-symbols-outlined text-secondary">trending_up</span>
+                    Topik Hangat
+                </h3>
+                <ul class="flex flex-col gap-sm">
+                    <li class="hover:bg-surface-container-low p-1.5 rounded-lg transition-colors duration-200">
+                        <a class="group flex flex-col cursor-pointer" href="#">
+                            <span
+                                class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors flex items-center font-semibold">
+                                <span class="text-secondary font-bold mr-1">#</span>NovelPopuler
+                            </span>
+                            <span class="font-label-sm text-label-sm text-on-surface-variant/60 ml-3">1.2k diskusi
+                                minggu ini</span>
+                        </a>
+                    </li>
+                    <li class="hover:bg-surface-container-low p-1.5 rounded-lg transition-colors duration-200">
+                        <a class="group flex flex-col cursor-pointer" href="#">
+                            <span
+                                class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors flex items-center font-semibold">
+                                <span class="text-secondary font-bold mr-1">#</span>RekomendasiFiksi
+                            </span>
+                            <span class="font-label-sm text-label-sm text-on-surface-variant/60 ml-3">856 diskusi minggu
+                                ini</span>
+                        </a>
+                    </li>
+                    <li class="hover:bg-surface-container-low p-1.5 rounded-lg transition-colors duration-200">
+                        <a class="group flex flex-col cursor-pointer" href="#">
+                            <span
+                                class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors flex items-center font-semibold">
+                                <span class="text-secondary font-bold mr-1">#</span>PlotTwist
+                            </span>
+                            <span class="font-label-sm text-label-sm text-on-surface-variant/60 ml-3">432 diskusi minggu
+                                ini</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Member List Widget (Moved above suggested books) -->
+            <div
+                class="bg-surface rounded-xl shadow-sm border border-primary/10 p-md hover:scale-[1.01] hover:shadow-[0_8px_30px_rgba(99,102,241,0.08)] transition-all duration-300 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary to-tertiary"></div>
+                <h3
+                    class="font-title-lg text-title-lg text-on-surface border-b border-surface-container-high pb-sm mb-sm flex justify-between items-center font-bold">
+                    <span class="flex items-center gap-xs">
+                        <span class="material-symbols-outlined text-primary">groups</span>
+                        Daftar Anggota
+                    </span>
+                    <span
+                        class="bg-primary/10 text-primary px-2.5 py-0.5 rounded-full text-[12px] font-bold border border-primary/20">2.8k</span>
+                </h3>
+
+                <div class="flex flex-col mt-sm">
+                    <p
+                        class="font-label-sm text-label-sm text-primary uppercase tracking-wider mb-2 font-bold text-[11px] flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                        Sedang Aktif (3)
+                    </p>
+                    <div class="flex flex-col gap-2 mb-4">
+                        <div
+                            class="flex items-center gap-3 hover:bg-surface-container-low p-2 rounded-lg cursor-pointer transition-colors group">
+                            <div class="relative">
+                                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"
+                                    class="w-8 h-8 rounded-full object-cover group-hover:scale-105 transition-transform duration-200">
+                                <div
+                                    class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-surface rounded-full shadow-[0_0_8px_#22c55e]">
+                                </div>
+                            </div>
+                            <span
+                                class="font-label-md text-label-md text-on-surface font-medium truncate group-hover:text-primary transition-colors">Siswa
+                                Indonesia</span>
+                        </div>
+                        <div
+                            class="flex items-center gap-3 hover:bg-surface-container-low p-2 rounded-lg cursor-pointer transition-colors group">
+                            <div class="relative">
+                                <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                                    class="w-8 h-8 rounded-full object-cover group-hover:scale-105 transition-transform duration-200">
+                                <div
+                                    class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-surface rounded-full shadow-[0_0_8px_#22c55e]">
+                                </div>
+                            </div>
+                            <span
+                                class="font-label-md text-label-md text-on-surface font-medium truncate group-hover:text-primary transition-colors">Siti
+                                Aminah</span>
+                        </div>
+                        <div
+                            class="flex items-center gap-3 hover:bg-surface-container-low p-2 rounded-lg cursor-pointer transition-colors group">
+                            <div class="relative">
+                                <img src="https://i.pravatar.cc/150?u=a04258114e29026702d"
+                                    class="w-8 h-8 rounded-full object-cover group-hover:scale-105 transition-transform duration-200">
+                                <div
+                                    class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-surface rounded-full shadow-[0_0_8px_#22c55e]">
+                                </div>
+                            </div>
+                            <span
+                                class="font-label-md text-label-md text-on-surface font-medium truncate group-hover:text-primary transition-colors">Joko
+                                Widodo</span>
+                        </div>
+                    </div>
+
+                    <p
+                        class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase tracking-wider mb-2 font-bold text-[11px]">
+                        Offline</p>
+                    <div class="flex flex-col gap-2">
+                        <div
+                            class="flex items-center gap-3 opacity-60 hover:opacity-100 hover:bg-surface-container-low p-2 rounded-lg cursor-pointer transition-all group">
+                            <div class="relative">
+                                <img src="https://i.pravatar.cc/150?u=a042581f4e29026024d"
+                                    class="w-8 h-8 rounded-full object-cover grayscale group-hover:scale-105 transition-transform duration-200">
+                                <div
+                                    class="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 border-2 border-surface rounded-full">
+                                </div>
+                            </div>
+                            <span
+                                class="font-label-md text-label-md text-on-surface font-medium truncate group-hover:text-primary transition-colors">Rina
+                                Sari</span>
+                        </div>
+                        <div
+                            class="flex items-center gap-3 opacity-60 hover:opacity-100 hover:bg-surface-container-low p-2 rounded-lg cursor-pointer transition-all group">
+                            <div class="relative">
+                                <img src="https://i.pravatar.cc/150?u=a042581f4e29026703d"
+                                    class="w-8 h-8 rounded-full object-cover grayscale group-hover:scale-105 transition-transform duration-200">
+                                <div
+                                    class="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 border-2 border-surface rounded-full">
+                                </div>
+                            </div>
+                            <span
+                                class="font-label-md text-label-md text-on-surface font-medium truncate group-hover:text-primary transition-colors">Agus
+                                Pranoto</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suggested Books Widget -->
+            <div
+                class="bg-surface rounded-xl shadow-sm border border-primary/10 p-md hover:scale-[1.01] hover:shadow-[0_8px_30px_rgba(99,102,241,0.08)] transition-all duration-300 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-tertiary to-secondary"></div>
+                <h3
+                    class="font-title-lg text-title-lg text-on-surface border-b border-surface-container-high pb-sm mb-sm flex items-center gap-xs font-bold">
+                    <span class="material-symbols-outlined text-tertiary">star</span>
+                    Buku Rekomendasi
+                </h3>
+                <div class="flex flex-col gap-md mt-sm">
+                    <a href="detail.html"
+                        class="flex gap-sm items-center cursor-pointer group hover:bg-surface-container-low p-2 rounded-lg transition-all duration-200 border border-transparent hover:border-primary/10">
+                        <div
+                            class="w-12 h-16 bg-surface-container-highest rounded flex items-center justify-center overflow-hidden border border-outline-variant flex-shrink-0 group-hover:scale-105 group-hover:shadow-md transition-all">
+                            <img alt="Book cover" class="w-full h-full object-cover"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXUDfExqL3kiH5HpJqA3Rx-Ahaz0_lfHsDtiEc3nHqrVX6c2fI80nMaYXLD2Knjh37xVxbeEQ3hFnLzcZeXLpVpbHO7GCzSy1hnCtXo_qwqtU3sXXgAmLFifphjLqAPZyunIPpTzpmzCBEEKmtmqfRfFXNOIW7u-CcpbtT66h3zhNajQSYzZAVkWJAHX1Avd0Rs5i8KI55Hv_wzD5yJMQFwbVctiZM-mNKJweLUA3pgb4rVdnwhwQRhGP8hkS4gEyWO0l2Pqr5raY" />
+                        </div>
+                        <div>
+                            <h4
+                                class="font-label-md text-label-md text-on-surface line-clamp-2 group-hover:text-primary transition-colors font-semibold">
+                                Cantik Itu Luka</h4>
+                            <p class="font-label-sm text-label-sm text-secondary">Eka Kurniawan</p>
+                        </div>
+                    </a>
+                    <a href="detail.html"
+                        class="flex gap-sm items-center cursor-pointer group hover:bg-surface-container-low p-2 rounded-lg transition-all duration-200 border border-transparent hover:border-primary/10">
+                        <div
+                            class="w-12 h-16 bg-surface-container-highest rounded flex items-center justify-center overflow-hidden border border-outline-variant flex-shrink-0 group-hover:scale-105 group-hover:shadow-md transition-all">
+                            <img alt="Book cover" class="w-full h-full object-cover"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBs_2IGw86OKGtH47-1Xz99vJjeMA3OIqQtK0EWVt8MJMjpIglrjV1_fA2LMf1H2pLwKOJUrzGVVx_xZo6YM3e_eWLmF80RicVWLlNfvgvSwpo4yVc6IqqAF8jQCsWREBoEDH_nC4q4pKH1kEv3c1vppEROFpnaAQOlXmZ6BrNbxr-HEJb6dW0P0EffIVbxxxlFDUzb-pIiecgvPP0a_CfKnssB6m1PzAujX_QeENvwswW5-WEgeFtxGrxgz_qXiUT-1uALtTif_I" />
+                        </div>
+                        <div>
+                            <h4
+                                class="font-label-md text-label-md text-on-surface line-clamp-2 group-hover:text-primary transition-colors font-semibold">
+                                Laut Bercerita</h4>
+                            <p class="font-label-sm text-label-sm text-secondary">Leila S. Chudori</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- FAB -->
+    <button id="fab-buat-diskusi"
+        class="fixed bottom-lg right-lg lg:bottom-xl lg:right-xl bg-primary text-on-primary shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all rounded-full px-6 py-4 flex items-center gap-sm font-label-md text-label-md font-bold z-50">
+        <span class="material-symbols-outlined text-[24px]">edit</span> Buat Diskusi
+    </button>
+
+    <!-- Footer -->
+    <footer class="bg-surface-container-highest w-full mt-auto border-t border-outline-variant">
+        <div
+            class="flex flex-col md:flex-row justify-between items-center px-4 md:px-margin py-lg max-w-[1280px] mx-auto gap-md">
+            <span class="font-title-lg text-title-lg font-black text-primary">ReadBridge</span>
+            <div class="flex gap-md font-label-sm text-label-sm">
+                <a class="text-on-surface-variant hover:underline decoration-primary underline-offset-4 focus:ring-2 ring-primary ring-offset-2"
+                    href="tentang-kami.html">Tentang Kami</a>
+                <a class="text-on-surface-variant hover:underline decoration-primary underline-offset-4 focus:ring-2 ring-primary ring-offset-2"
+                    href="#">Pusat Bantuan</a>
+                <a class="text-on-surface-variant hover:underline decoration-primary underline-offset-4 focus:ring-2 ring-primary ring-offset-2"
+                    href="#">Privasi</a>
+                <a class="text-on-surface-variant hover:underline decoration-primary underline-offset-4 focus:ring-2 ring-primary ring-offset-2"
+                    href="#">Syarat &amp; Ketentuan</a>
+            </div>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 ReadBridge Indonesia. Membangun
+                Generasi Literasi.</p>
         </div>
-  </aside>
-</main>
+    </footer>
+    <script src="main.js"></script>
+    <script src="community-modal.js"></script>
 
-<!-- FAB -->
-<button id="fab-buat-diskusi" class="fixed bottom-lg right-lg lg:bottom-xl lg:right-xl bg-primary text-on-primary shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all rounded-full px-6 py-4 flex items-center gap-sm font-label-md text-label-md font-bold z-50">
-  <span class="material-symbols-outlined text-[24px]">edit</span> Buat Diskusi
-</button>
-
-<!-- Footer -->
-<footer class="bg-surface-container-highest w-full mt-auto border-t border-outline-variant">
-    <div class="flex flex-col md:flex-row justify-between items-center px-4 md:px-margin py-lg max-w-[1280px] mx-auto gap-md">
-        <span class="font-title-lg text-title-lg font-black text-primary">ReadBridge</span>
-        <div class="flex gap-md font-label-sm text-label-sm">
-            <a class="text-on-surface-variant hover:underline decoration-primary underline-offset-4 focus:ring-2 ring-primary ring-offset-2" href="tentang-kami.html">Tentang Kami</a>
-            <a class="text-on-surface-variant hover:underline decoration-primary underline-offset-4 focus:ring-2 ring-primary ring-offset-2" href="pusat-bantuan.html">Pusat Bantuan</a>
-            <a class="text-on-surface-variant hover:underline decoration-primary underline-offset-4 focus:ring-2 ring-primary ring-offset-2" href="kebijakan-privasi.html">Kebijakan Privasi</a>
-            <a class="text-on-surface-variant hover:underline decoration-primary underline-offset-4 focus:ring-2 ring-primary ring-offset-2" href="syarat-dan-ketentuan.html">Syarat &amp; Ketentuan</a>
-        </div>
-        <p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 ReadBridge Indonesia. Membangun Generasi Literasi.</p>
-    </div>
-</footer>
-<script src="main.js"></script>
-<script src="community-modal.js"></script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const savedName = localStorage.getItem('rb_username');
-    if (savedName) {
-        const els = document.querySelectorAll('span.text-on-surface, p.text-on-surface, h1, h2, h3, h4, h5, h6');
-        for (let i = 0; i < els.length; i++) {
-            if (els[i].textContent.trim() === 'Siswa Indonesia') {
-                els[i].textContent = savedName;
-            }
-        }
-    }
-});
-</script>
-
-<script id="dynamic-logo-menu">
-document.addEventListener("DOMContentLoaded", function() {
-    // Inject Logo Menu
-    const headerOrNav = document.querySelector('header, nav');
-    if (headerOrNav && !document.getElementById('logo-menu-container')) {
-        const treeWalker = document.createTreeWalker(headerOrNav, NodeFilter.SHOW_TEXT, {
-            acceptNode: function(node) {
-                return node.nodeValue.trim() === 'ReadBridge' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const savedName = localStorage.getItem('rb_username');
+            if (savedName) {
+                const els = document.querySelectorAll('span.text-on-surface, p.text-on-surface, h1, h2, h3, h4, h5, h6');
+                for (let i = 0; i < els.length; i++) {
+                    if (els[i].textContent.trim() === 'Siswa Indonesia') {
+                        els[i].textContent = savedName;
+                    }
+                }
             }
         });
-        const logoTextNode = treeWalker.nextNode();
-        if (logoTextNode) {
-            const logoEl = logoTextNode.parentElement;
-            
-            if (logoEl.id === 'logo-btn' || logoEl.querySelector('#logo-btn')) return;
+    </script>
 
-            const wrapper = document.createElement('div');
-            wrapper.style.position = 'relative';
-            wrapper.style.display = 'inline-flex';
-            wrapper.style.alignItems = 'center';
-            wrapper.style.cursor = 'pointer';
-            wrapper.id = 'logo-menu-container';
-            
-            logoEl.parentNode.insertBefore(wrapper, logoEl);
-            wrapper.appendChild(logoEl);
-            
-            logoEl.id = 'logo-btn';
-            logoEl.style.display = 'flex';
-            logoEl.style.alignItems = 'center';
-            logoEl.style.gap = '4px';
-            logoEl.innerHTML = 'ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>';
-            
-            const dropdown = document.createElement('div');
-            dropdown.id = 'logo-dropdown';
-            dropdown.className = 'absolute left-0 top-full mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50';
-            
-            const links = [
-                { href: 'index.html', icon: 'home', text: 'Beranda' },
-                { href: 'eksplor.html', icon: 'library_books', text: 'Eksplor Koleksi' },
-                { href: 'sewa.html', icon: 'menu_book', text: 'Perpustakaan & Sewa' },
-                { href: 'marketplace.html', icon: 'storefront', text: 'Marketplace' },
-                { href: 'komunitas.html', icon: 'forum', text: 'Komunitas' },
-                { href: 'tentang-kami.html', icon: 'info', text: 'Tentang Kami' }
-            ];
-            
-            links.forEach(l => {
-                const a = document.createElement('a');
-                a.href = l.href;
-                a.className = 'px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-[14px] text-on-surface flex items-center gap-3 font-medium';
-                a.innerHTML = `<span class="material-symbols-outlined text-[20px] text-on-surface-variant">${l.icon}</span> ${l.text}`;
-                dropdown.appendChild(a);
-            });
-            
-            wrapper.appendChild(dropdown);
-            
-            logoEl.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                dropdown.classList.toggle('hidden');
-                dropdown.classList.toggle('flex');
-            });
-            document.addEventListener('click', (e) => {
-                if (!dropdown.contains(e.target) && !logoEl.contains(e.target)) {
-                    dropdown.classList.add('hidden');
-                    dropdown.classList.remove('flex');
+    <script id="dynamic-logo-menu">
+        document.addEventListener("DOMContentLoaded", function () {
+            // Inject Logo Menu
+            const headerOrNav = document.querySelector('header, nav');
+            if (headerOrNav && !document.getElementById('logo-menu-container')) {
+                const treeWalker = document.createTreeWalker(headerOrNav, NodeFilter.SHOW_TEXT, {
+                    acceptNode: function (node) {
+                        return node.nodeValue.trim() === 'ReadBridge' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+                    }
+                });
+                const logoTextNode = treeWalker.nextNode();
+                if (logoTextNode) {
+                    const logoEl = logoTextNode.parentElement;
+
+                    if (logoEl.id === 'logo-btn' || logoEl.querySelector('#logo-btn')) return;
+
+                    const wrapper = document.createElement('div');
+                    wrapper.style.position = 'relative';
+                    wrapper.style.display = 'inline-flex';
+                    wrapper.style.alignItems = 'center';
+                    wrapper.style.cursor = 'pointer';
+                    wrapper.id = 'logo-menu-container';
+
+                    logoEl.parentNode.insertBefore(wrapper, logoEl);
+                    wrapper.appendChild(logoEl);
+
+                    logoEl.id = 'logo-btn';
+                    logoEl.style.display = 'flex';
+                    logoEl.style.alignItems = 'center';
+                    logoEl.style.gap = '4px';
+                    logoEl.innerHTML = 'ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>';
+
+                    const dropdown = document.createElement('div');
+                    dropdown.id = 'logo-dropdown';
+                    dropdown.className = 'absolute left-0 top-full mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50';
+
+                    const links = [
+                        { href: 'index.html', icon: 'home', text: 'Beranda' },
+                        { href: 'eksplor.html', icon: 'library_books', text: 'Eksplor Koleksi' },
+                        { href: 'sewa.html', icon: 'menu_book', text: 'Perpustakaan & Sewa' },
+                        { href: 'marketplace.html', icon: 'storefront', text: 'Marketplace' },
+                        { href: 'komunitas.html', icon: 'forum', text: 'Komunitas' },
+                        { href: 'tentang-kami.html', icon: 'info', text: 'Tentang Kami' }
+                    ];
+
+                    links.forEach(l => {
+                        const a = document.createElement('a');
+                        a.href = l.href;
+                        a.className = 'px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-[14px] text-on-surface flex items-center gap-3 font-medium';
+                        a.innerHTML = `<span class="material-symbols-outlined text-[20px] text-on-surface-variant">${l.icon}</span> ${l.text}`;
+                        dropdown.appendChild(a);
+                    });
+
+                    wrapper.appendChild(dropdown);
+
+                    logoEl.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dropdown.classList.toggle('hidden');
+                        dropdown.classList.toggle('flex');
+                    });
+                    document.addEventListener('click', (e) => {
+                        if (!dropdown.contains(e.target) && !logoEl.contains(e.target)) {
+                            dropdown.classList.add('hidden');
+                            dropdown.classList.remove('flex');
+                        }
+                    });
                 }
-            });
-        }
-    }
-});
-</script>
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -1,9 +1,3 @@
-/*
-  Project: ReadBridge
-  Author: Liffy Sei / Affan
-  Date: May 2026
-  Role: Lead Developer & UI/UX Designer
-*/
 // main.js - Script Interaktif untuk ReadBridge
 
 // 2. Data Base (Simulasi Array Database)
@@ -89,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const searchBtn = document.getElementById("search-btn");
   const resultGrid = document.getElementById("book-grid");
   const resultMessage = document.getElementById("result-message");
-  
+
   // Tab elements
   const tabBuku = document.getElementById("tab-buku");
   const tabJurnal = document.getElementById("tab-jurnal");
@@ -189,7 +183,7 @@ document.addEventListener("DOMContentLoaded", function () {
               </div>
             </a>
           `;
-        } 
+        }
         else if (type === 'jurnal') {
           // Layout Kartu Jurnal
           cardHTML = `
@@ -215,10 +209,10 @@ document.addEventListener("DOMContentLoaded", function () {
           `;
         }
         else if (type === 'diskusi') {
-           // Layout Kartu Diskusi
-           let tagsHTML = item.tags.map(tag => `<span class="bg-surface-container-high text-on-surface px-3 py-1 rounded-md font-label-sm text-label-sm">${tag}</span>`).join('');
-           
-           cardHTML = `
+          // Layout Kartu Diskusi
+          let tagsHTML = item.tags.map(tag => `<span class="bg-surface-container-high text-on-surface px-3 py-1 rounded-md font-label-sm text-label-sm">${tag}</span>`).join('');
+
+          cardHTML = `
              <article class="bg-surface-container-lowest col-span-full rounded-2xl p-lg flex flex-col gap-md shadow-sm border border-outline-variant/20 hover:shadow-md transition-shadow">
                <div class="flex items-center justify-between">
                  <div class="flex items-center gap-sm text-on-surface-variant font-label-sm text-label-sm">
@@ -251,7 +245,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Update pesan hasil
     if (resultMessage) {
-        resultMessage.textContent = `Menampilkan ${data.length} hasil untuk ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+      resultMessage.textContent = `Menampilkan ${data.length} hasil untuk ${type.charAt(0).toUpperCase() + type.slice(1)}`;
     }
   }
 
@@ -261,11 +255,11 @@ document.addEventListener("DOMContentLoaded", function () {
   // --- Fungsi Ganti Tab ---
   function switchTab(selectedTabStr) {
     currentActiveTab = selectedTabStr;
-    
+
     // Reset style semua tab
     [tabBuku, tabJurnal, tabDiskusi, tabBukuDigital].forEach(tab => {
-       if(!tab) return;
-       tab.className = "font-title-lg text-title-lg text-on-surface-variant hover:text-primary transition-colors pb-2 px-2 shrink-0 select-none";
+      if (!tab) return;
+      tab.className = "font-title-lg text-title-lg text-on-surface-variant hover:text-primary transition-colors pb-2 px-2 shrink-0 select-none";
     });
 
     // Sembunyikan/tampilkan grid default & e-book section
@@ -288,24 +282,24 @@ document.addEventListener("DOMContentLoaded", function () {
     let dataToRender = [];
 
     if (selectedTabStr === 'buku') {
-       activeElement = tabBuku;
-       dataToRender = books;
+      activeElement = tabBuku;
+      dataToRender = books;
     } else if (selectedTabStr === 'jurnal') {
-       activeElement = tabJurnal;
-       dataToRender = journals;
+      activeElement = tabJurnal;
+      dataToRender = journals;
     } else if (selectedTabStr === 'diskusi') {
-       activeElement = tabDiskusi;
-       dataToRender = discussions;
+      activeElement = tabDiskusi;
+      dataToRender = discussions;
     } else if (selectedTabStr === 'buku-digital') {
-       activeElement = tabBukuDigital;
+      activeElement = tabBukuDigital;
     }
 
     if (activeElement) {
-       if (selectedTabStr === 'buku-digital') {
-         activeElement.className = "font-title-lg text-title-lg text-primary border-b-2 border-primary pb-2 px-2 shrink-0 select-none font-bold";
-       } else {
-         activeElement.className = "font-title-lg text-title-lg text-primary border-b-2 border-primary pb-2 px-2 transition-colors shrink-0";
-       }
+      if (selectedTabStr === 'buku-digital') {
+        activeElement.className = "font-title-lg text-title-lg text-primary border-b-2 border-primary pb-2 px-2 shrink-0 flex items-center gap-1 select-none font-bold";
+      } else {
+        activeElement.className = "font-title-lg text-title-lg text-primary border-b-2 border-primary pb-2 px-2 transition-colors shrink-0";
+      }
     }
 
     // Ganti Sidebar Filter berdasarkan tab yang aktif
@@ -313,31 +307,31 @@ document.addEventListener("DOMContentLoaded", function () {
     const filterJurnal = document.getElementById('filter-jurnal');
     const filterDiskusi = document.getElementById('filter-diskusi');
     const filterEbook = document.getElementById('filter-buku-digital');
-    
+
     if (filterBuku && filterJurnal && filterDiskusi) {
-        filterBuku.classList.add('hidden'); filterBuku.classList.remove('block');
-        filterJurnal.classList.add('hidden'); filterJurnal.classList.remove('block');
-        filterDiskusi.classList.add('hidden'); filterDiskusi.classList.remove('block');
+      filterBuku.classList.add('hidden'); filterBuku.classList.remove('block');
+      filterJurnal.classList.add('hidden'); filterJurnal.classList.remove('block');
+      filterDiskusi.classList.add('hidden'); filterDiskusi.classList.remove('block');
+      if (filterEbook) {
+        filterEbook.classList.add('hidden'); filterEbook.classList.remove('block');
+      }
+
+      if (selectedTabStr === 'buku') {
+        filterBuku.classList.remove('hidden'); filterBuku.classList.add('block');
+      } else if (selectedTabStr === 'jurnal') {
+        filterJurnal.classList.remove('hidden'); filterJurnal.classList.add('block');
+      } else if (selectedTabStr === 'diskusi') {
+        filterDiskusi.classList.remove('hidden'); filterDiskusi.classList.add('block');
+      } else if (selectedTabStr === 'buku-digital') {
         if (filterEbook) {
-          filterEbook.classList.add('hidden'); filterEbook.classList.remove('block');
+          filterEbook.classList.remove('hidden'); filterEbook.classList.add('block');
         }
-        
-        if (selectedTabStr === 'buku') {
-            filterBuku.classList.remove('hidden'); filterBuku.classList.add('block');
-        } else if (selectedTabStr === 'jurnal') {
-            filterJurnal.classList.remove('hidden'); filterJurnal.classList.add('block');
-        } else if (selectedTabStr === 'diskusi') {
-            filterDiskusi.classList.remove('hidden'); filterDiskusi.classList.add('block');
-        } else if (selectedTabStr === 'buku-digital') {
-            if (filterEbook) {
-              filterEbook.classList.remove('hidden'); filterEbook.classList.add('block');
-            }
-        }
+      }
     }
 
     // Reset isi input pencarian saat pindah tab
     if (searchInput) searchInput.value = "";
-    
+
     // Render ulang data sesuai tab
     if (selectedTabStr === 'buku-digital') {
       renderEbooks();
@@ -376,9 +370,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const filteredData = sourceData.filter((item) => {
         // Logika pencarian menyesuaikan tipe tab
         if (currentActiveTab === 'buku' || currentActiveTab === 'jurnal') {
-           return item.title.toLowerCase().includes(keyword) || item.author.toLowerCase().includes(keyword);
+          return item.title.toLowerCase().includes(keyword) || item.author.toLowerCase().includes(keyword);
         } else if (currentActiveTab === 'diskusi') {
-           return item.title.toLowerCase().includes(keyword) || item.content.toLowerCase().includes(keyword);
+          return item.title.toLowerCase().includes(keyword) || item.content.toLowerCase().includes(keyword);
         }
       });
 
@@ -399,43 +393,43 @@ document.addEventListener("DOMContentLoaded", function () {
   if (applyFilterBtn) {
     applyFilterBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      
+
       if (currentActiveTab === 'jurnal') {
         const isPendidikan = document.getElementById('filter-jurnal-cat-pendidikan')?.checked;
         const isSains = document.getElementById('filter-jurnal-cat-sains')?.checked;
         const isSoshum = document.getElementById('filter-jurnal-cat-soshum')?.checked;
-        
+
         const isAccessOpen = document.getElementById('filter-jurnal-access-open')?.checked;
         const isAccessExclusive = document.getElementById('filter-jurnal-access-exclusive')?.checked;
-        
+
         const yearFilterEl = document.querySelector('input[name="tahun_jurnal"]:checked');
         const yearVal = yearFilterEl ? yearFilterEl.value : 'all';
-        
+
         const filteredData = journals.filter(j => {
-           let passCat = false;
-           if (isPendidikan && j.category === 'Pendidikan') passCat = true;
-           if (isSains && j.category === 'Sains & Teknologi') passCat = true;
-           if (isSoshum && j.category === 'Sosial Humaniora') passCat = true;
-           
-           let passAccess = false;
-           if (isAccessOpen && j.access === 'Open Access') passAccess = true;
-           if (isAccessExclusive && j.access === 'Exclusive Access') passAccess = true;
-           
-           let passYear = false;
-           if (yearVal === 'all') passYear = true;
-           else if (yearVal === '2023-2024' && (j.publishedYear === 2023 || j.publishedYear === 2024)) passYear = true;
-           else if (yearVal === '2020-2022' && (j.publishedYear >= 2020 && j.publishedYear <= 2022)) passYear = true;
-           else if (yearVal === '2019' && j.publishedYear === 2019) passYear = true; // just to be safe for old data
-           else if (yearVal === '2020-2022' && j.publishedYear === 2019) passYear = true; // wait 2019 isn't 2020
-           
-           // If publishedYear is not caught, include it in 'all' anyway, but not in specific ranges unless it matches
-           
-           return passCat && passAccess && passYear;
+          let passCat = false;
+          if (isPendidikan && j.category === 'Pendidikan') passCat = true;
+          if (isSains && j.category === 'Sains & Teknologi') passCat = true;
+          if (isSoshum && j.category === 'Sosial Humaniora') passCat = true;
+
+          let passAccess = false;
+          if (isAccessOpen && j.access === 'Open Access') passAccess = true;
+          if (isAccessExclusive && j.access === 'Exclusive Access') passAccess = true;
+
+          let passYear = false;
+          if (yearVal === 'all') passYear = true;
+          else if (yearVal === '2023-2024' && (j.publishedYear === 2023 || j.publishedYear === 2024)) passYear = true;
+          else if (yearVal === '2020-2022' && (j.publishedYear >= 2020 && j.publishedYear <= 2022)) passYear = true;
+          else if (yearVal === '2019' && j.publishedYear === 2019) passYear = true; // just to be safe for old data
+          else if (yearVal === '2020-2022' && j.publishedYear === 2019) passYear = true; // wait 2019 isn't 2020
+
+          // If publishedYear is not caught, include it in 'all' anyway, but not in specific ranges unless it matches
+
+          return passCat && passAccess && passYear;
         });
-        
+
         renderData(filteredData, 'jurnal');
-      } else if (currentActiveTab !== 'buku-digital') {
-         alert('Filter khusus untuk tab ini akan segera hadir.');
+      } else {
+        alert('Filter khusus untuk tab ini akan segera hadir.');
       }
     });
   }
@@ -446,12 +440,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const notificationCards = document.querySelectorAll(".notification-card.unread");
 
   if (markAllReadBtn) {
-    markAllReadBtn.addEventListener("click", function() {
+    markAllReadBtn.addEventListener("click", function () {
       // Loop untuk menghapus status unread dari semua notifikasi
       notificationCards.forEach(card => {
         // Hapus class unread
         card.classList.remove("unread");
-        
+
         // Sembunyikan dot merah
         const dot = card.querySelector(".unread-dot");
         if (dot) {
@@ -477,40 +471,40 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // --- G. FITUR KLIK GLOBAL UNTUK SEMUA ELEMEN INTERAKTIF ---
   // Menangkap semua klik pada tombol, filter, hashtag, icon, dll.
-  document.addEventListener('click', function(e) {
+  document.addEventListener('click', function (e) {
     // Jangan proses jika ini klik form, select, atau dropdown profile
     if (e.target.closest('#profile-menu-container') || e.target.tagName.toLowerCase() === 'input' || e.target.tagName.toLowerCase() === 'select') return;
 
     // Cari elemen terdekat yang merupakan interaktif
     const clickable = e.target.closest('button, .cursor-pointer, a[href="#"]');
-    
+
     if (clickable) {
       // Jika itu sebuah tautan yang valid (bukan #) dan kita tidak sedang menekan button/icon spesifik di dalamnya,
       // biarkan browser berpindah halaman secara natural (contoh: klik seluruh Card untuk pergi ke detail.html)
       if (clickable.tagName.toLowerCase() === 'a' && clickable.getAttribute('href') && clickable.getAttribute('href') !== '#') {
-        return; 
+        return;
       }
 
       // Abaikan jika ada alert sendiri
       if (clickable.id === 'mark-all-read') return;
-      if (clickable.closest('#tab-buku') || clickable.closest('#tab-jurnal') || clickable.closest('#tab-diskusi') || clickable.closest('#tab-buku-digital')) return;
-      
+      if (clickable.closest('#tab-buku') || clickable.closest('#tab-jurnal') || clickable.closest('#tab-diskusi')) return;
+
       // Coba dapatkan nama ikon jika dia berupa tombol ikon
       let content = "";
       const icon = clickable.querySelector('.material-symbols-outlined');
-      
+
       // Kalau di dalam clickable cuma ada icon dan tanpa teks lain yang panjang, ambil teks ikonnya
       if (icon && clickable.innerText.trim() === icon.innerText.trim()) {
-          content = icon.innerText.trim();
+        content = icon.innerText.trim();
       } else if (!icon && clickable.innerText.trim().length < 50) {
-          content = clickable.innerText.trim();
+        content = clickable.innerText.trim();
       } else if (icon) {
-          // Jika elemen sangat besar (misal card) tapi entah kenapa tertangkap, jangan gunakan isinya semua.
-          // Coba pastikan apa target aslinya yang di klik
-          const realTargetIcon = e.target.closest('.material-symbols-outlined');
-          if (realTargetIcon) {
-              content = realTargetIcon.innerText.trim();
-          }
+        // Jika elemen sangat besar (misal card) tapi entah kenapa tertangkap, jangan gunakan isinya semua.
+        // Coba pastikan apa target aslinya yang di klik
+        const realTargetIcon = e.target.closest('.material-symbols-outlined');
+        if (realTargetIcon) {
+          content = realTargetIcon.innerText.trim();
+        }
       }
 
       // Jangan proses jika kosong
@@ -524,7 +518,7 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
         return;
       }
-      
+
       if (content === 'bookmark_added') {
         alert('Dihapus dari Koleksi Anda!');
         const iconEl = clickable.querySelector('.material-symbols-outlined') || e.target;
@@ -811,7 +805,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // B. Render Rekomendasi berdasarkan Minat Onboarding
     if (onboardingSection) {
       onboardingSection.innerHTML = "";
-      
+
       let userInterests = [];
       try {
         userInterests = JSON.parse(localStorage.getItem('rb_interests')) || ["fiksi", "self_dev"];
@@ -848,7 +842,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         matchingBooks.forEach(b => {
           const premiumBadge = b.isPremium ? `<div class="absolute top-2 right-2 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold px-2 py-1 rounded-md text-[10px] tracking-wider flex items-center gap-0.5 shadow-md z-10"><span class="material-symbols-outlined text-[12px] style='font-variation-settings: "FILL" 1;'">workspace_premium</span> PREMIUM</div>` : `<div class="absolute top-2 right-2 bg-secondary text-on-secondary font-bold px-2 py-1 rounded-md text-[10px] tracking-wider shadow-md z-10">FREE</div>`;
-          
+
           rowHTML += `
             <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-all duration-300 group cursor-pointer relative" onclick="openEbookReader(${b.id})">
               <div class="h-44 w-full bg-surface-container-high relative overflow-hidden flex items-center justify-center">
@@ -887,7 +881,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     listToRender.forEach(b => {
       const premiumBadge = b.isPremium ? `<div class="absolute top-2 right-2 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold px-2 py-1 rounded-md text-[10px] tracking-wider flex items-center gap-0.5 shadow-md z-10"><span class="material-symbols-outlined text-[12px] style='font-variation-settings: "FILL" 1;'">workspace_premium</span> PREMIUM</div>` : `<div class="absolute top-2 right-2 bg-secondary text-on-secondary font-bold px-2 py-1 rounded-md text-[10px] tracking-wider shadow-md z-10">FREE</div>`;
-      
+
       const cardHTML = `
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-all duration-300 group cursor-pointer relative" onclick="openEbookReader(${b.id})">
           <div class="h-44 w-full bg-surface-container-high relative overflow-hidden flex items-center justify-center">
@@ -923,9 +917,9 @@ document.addEventListener("DOMContentLoaded", function () {
           return;
         }
 
-        const filteredList = ebooks.filter(b => 
-          b.title.toLowerCase().includes(keyword) || 
-          b.author.toLowerCase().includes(keyword) || 
+        const filteredList = ebooks.filter(b =>
+          b.title.toLowerCase().includes(keyword) ||
+          b.author.toLowerCase().includes(keyword) ||
           b.category.toLowerCase().includes(keyword)
         );
         renderEbooks(filteredList);
@@ -1090,7 +1084,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Buka Pembaca E-Book
   let currentReadingPageIndex = 0;
-  window.openEbookReader = function(bookId) {
+  window.openEbookReader = function (bookId) {
     const book = ebooks.find(e => e.id === bookId);
     if (!book) return;
 
@@ -1111,7 +1105,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Cek Status Premium & Mulai Timer Sesi
     const isPremium = localStorage.getItem('rb_bridgepass') === 'premium';
-    
+
     // Matikan interval yang ada jika ada
     if (readingTimerInterval) {
       clearInterval(readingTimerInterval);
@@ -1172,12 +1166,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!isPremium && pageIndex >= maxFreePages) {
       // Tampilkan popup limitasi halaman
       if (readerLockedOverlay) readerLockedOverlay.classList.remove('hidden');
-      
+
       const lockTitle = document.getElementById('locked-overlay-title');
       const lockDesc = document.getElementById('locked-overlay-desc');
       if (lockTitle) lockTitle.textContent = "Batas Membaca Gratis Tercapai 👑";
       if (lockDesc) lockDesc.innerHTML = "Anda telah mencapai batas 3 halaman gratis. Aktivasi keanggotaan <strong>BridgePass Premium</strong> untuk membaca buku digital ini sepuasnya tanpa batas halaman maupun waktu!";
-      
+
       // Matikan timer saat layar terkunci halaman
       if (readingTimerInterval) {
         clearInterval(readingTimerInterval);
@@ -1204,7 +1198,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const isLocked = !isPremium && idx >= maxFreePages;
         const lockIcon = isLocked ? "<span class='material-symbols-outlined text-[16px] text-amber-500 ml-auto'>lock</span>" : "";
         const activeClass = idx === pageIndex ? "bg-primary-container text-on-primary-container font-bold border-l-4 border-primary" : "text-on-surface-variant hover:bg-surface-container-low";
-        
+
         const tocItem = document.createElement('li');
         tocItem.className = `flex items-center gap-2 px-3 py-2.5 rounded-lg text-label-md transition-colors cursor-pointer select-none ${activeClass}`;
         tocItem.innerHTML = `<span class="material-symbols-outlined text-[18px]">menu_book</span> Bab ${idx + 1} ${lockIcon}`;
@@ -1219,7 +1213,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (readerChapterTitle) {
       readerChapterTitle.textContent = pageIndex === 0 ? "Pendahuluan & Pengantar" : `Bab ${pageIndex}: ${currentReaderBook.title.split(":")[0]}`;
     }
-    
+
     if (readerChapterText) {
       readerChapterText.innerHTML = "";
       const textBlock = currentReaderBook.pages[pageIndex];
@@ -1244,7 +1238,7 @@ document.addEventListener("DOMContentLoaded", function () {
       readerPrevBtn.disabled = pageIndex === 0;
       readerPrevBtn.style.opacity = pageIndex === 0 ? 0.4 : 1;
     }
-    
+
     if (readerNextBtn) {
       readerNextBtn.disabled = pageIndex === currentReaderBook.pages.length - 1;
       readerNextBtn.style.opacity = pageIndex === currentReaderBook.pages.length - 1 ? 0.4 : 1;
@@ -1308,7 +1302,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const lockDesc = document.getElementById('locked-overlay-desc');
     if (lockTitle) lockTitle.textContent = "Waktu Membaca Gratis Habis 👑";
     if (lockDesc) lockDesc.innerHTML = "Waktu membaca gratis 60 detik Anda telah selesai. Aktivasi keanggotaan <strong>BridgePass Premium</strong> untuk membaca tanpa batasan waktu sepuasnya!";
-    
+
     if (readingTimerInterval) {
       clearInterval(readingTimerInterval);
       readingTimerInterval = null;
@@ -1337,7 +1331,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const bpSubmitReferral = document.getElementById('bp-submit-referral');
 
   // Buka Modal BridgePass dari manapun (termasuk Reader)
-  window.openBridgePassModal = function() {
+  window.openBridgePassModal = function () {
     if (bpModal) {
       bpModal.classList.remove('hidden');
       bpModal.classList.add('flex');
