@@ -154,25 +154,50 @@ window.openAttachment = function(url, autoDownload) {
   }
 };
 
-function getPosts(){
-  const s=localStorage.getItem(STORAGE_KEY);
-  let posts = s ? JSON.parse(s) : [...defaultPosts];
-  
-  // Membersihkan post lama yang error/buggy dari localStorage
-  posts = posts.filter(p => p.username !== '@AgusPratama');
-  
-  // Memastikan post tutor SNBT selalu ada di database
-  const hasTutorPost = posts.some(x => x.id === 'snbt-tutor-1');
-  if (!hasTutorPost) {
-    const tutorPost = defaultPosts.find(x => x.id === 'snbt-tutor-1');
-    if (tutorPost) {
-      posts.unshift(tutorPost);
-      savePosts(posts);
+let apiPosts = [];
+let apiPostsFetched = false;
+
+window.fetchPostsFromAPI = async function() {
+  try {
+    const token = localStorage.getItem('rb_token');
+    const headers = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    
+    // Add sorting parameter based on active tab
+    const sortParam = (window.activeFeedTab === 'Trending') ? 'terpopuler' : 'terbaru';
+    const res = await fetch(`https://readbridge-backend-2whx.onrender.com/api/community/diskusi?sort=${sortParam}`, { headers });
+    const json = await res.json();
+    if (json.success && json.data) {
+      apiPosts = json.data.map(d => ({
+        id: d.id,
+        username: d.nama_user || 'Anonim',
+        avatar: d.foto_profil,
+        isCurrentUser: d.user_id == localStorage.getItem('rb_uid') || false,
+        waktu: d.created_at,
+        judul: d.judul,
+        isi: d.konten,
+        tags: [],
+        votes: d.total_likes,
+        komentar: d.total_balasan,
+        destination: d.club_id ? 'Club' : 'Public Feed',
+        commentsList: []
+      }));
+      apiPostsFetched = true;
     }
+  } catch(e) {
+    console.error(e);
   }
-  return posts;
 }
-function savePosts(p){ localStorage.setItem(STORAGE_KEY,JSON.stringify(p)); }
+
+function getPosts(){
+  if (!apiPostsFetched) return [];
+  return apiPosts;
+}
+
+function savePosts(p){ 
+  // No longer used for saving to localStorage, but we keep it to update local cache
+  apiPosts = p;
+}
 function formatVotes(n){ return n>=1000?(n/1000).toFixed(1).replace('.0','')+'k':String(n); }
 function formatWaktu(s){
   if(!s||s.includes('jam')||s.includes('hari')) return s;
@@ -324,10 +349,15 @@ function renderPostCard(p){
   </article>`;
 }
 
-function renderAllPosts(){
+async function renderAllPosts(){
   const feed=document.getElementById('community-feed');
   if(!feed) return;
   
+  if (!apiPostsFetched) {
+     feed.innerHTML = '<p class="text-center py-8 text-on-surface-variant font-label-md animate-pulse">Memuat diskusi dari server...</p>';
+     await window.fetchPostsFromAPI();
+  }
+
   // Ambil tipe halaman (Public Feed, Pejuang SNBT, Pecinta Fiksi)
   let currentPageFilter = null;
   if (document.title.includes('Klub Pejuang SNBT')) currentPageFilter = 'Pejuang SNBT';
@@ -346,19 +376,35 @@ function renderAllPosts(){
     if (window.activeTrendingTag && window.activeTrendingTag !== 'Semua') {
       postsList = postsList.filter(p => (p.tags || []).some(t => t.toLowerCase() === window.activeTrendingTag.toLowerCase()));
     }
-    // Urutkan berdasarkan votes tertinggi
-    postsList = [...postsList].sort((a, b) => (b.votes || 0) - (a.votes || 0));
   }
 
   feed.innerHTML = postsList.length > 0 
     ? postsList.map(renderPostCard).join('') 
-    : '<p class="text-center text-on-surface-variant font-label-md py-8">Belum ada diskusi di sini.</p>';
+    : '<p class="text-center text-on-surface-variant font-label-md py-8">Belum ada diskusi di sini. Jadilah yang pertama!</p>';
 }
 
-function ubahVote(id,delta){
-  const posts=getPosts(), p=posts.find(x=>x.id===id);
-  if(p){ p.votes=Math.max(0,(p.votes||0)+delta); savePosts(posts);
-    const el=document.getElementById(`vote-${id}`); if(el)el.textContent=formatVotes(p.votes); }
+window.ubahVote = async function(id,delta){
+  const token = localStorage.getItem('rb_token');
+  if (!token) {
+    alert("Silakan login untuk memberikan like/vote");
+    window.location.href = 'login.html';
+    return;
+  }
+  try {
+    const res = await fetch(`https://readbridge-backend-2whx.onrender.com/api/community/diskusi/${id}/like`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (res.ok) {
+      const posts=getPosts(), p=posts.find(x=>x.id===id);
+      if(p){ 
+         p.votes=Math.max(0,(p.votes||0)+delta); 
+         const el=document.getElementById(`vote-${id}`); if(el)el.textContent=formatVotes(p.votes); 
+      }
+    }
+  } catch(e) {
+    console.error("Gagal like", e);
+  }
 }
 
 window.togglePostMenu = function(e, id) {
@@ -378,12 +424,8 @@ window.togglePostMenu = function(e, id) {
   }
 };
 
-window.deletePost = function(id) {
-  if(confirm("Apakah Anda yakin ingin menghapus diskusi ini?")) {
-    const posts = getPosts().filter(p => p.id !== id);
-    savePosts(posts);
-    renderAllPosts();
-  }
+window.deletePost = async function(id) {
+  alert("Penghapusan postingan belum didukung di versi ini.");
 };
 
 // Global click to close post menus
@@ -402,40 +444,63 @@ window.toggleComments = function(id) {
   else if(sec) sec.classList.remove('flex');
 };
 
-window.addComment = function(id) {
+window.addComment = async function(id) {
   const input = document.getElementById(`input-comment-${id}`);
   const text = input.value.trim();
   if(!text) return;
 
-  const posts = getPosts();
-  const p = posts.find(x => x.id === id);
-  if(p) {
-    p.commentsList = p.commentsList || [];
-    p.commentsList.push({ username: CURRENT_USER_PROFILE, text, waktu: new Date().toISOString() });
-    p.komentar = p.commentsList.length;
-    savePosts(posts);
+  const token = localStorage.getItem('rb_token');
+  if (!token) {
+    alert("Silakan login untuk membalas");
+    window.location.href = 'login.html';
+    return;
+  }
 
-    const isPostAuthor = (CURRENT_USER_PROFILE === p.username);
-    const newBadge = isPostAuthor 
-      ? `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda Author</span>` 
-      : `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda</span>`;
+  try {
+    const res = await fetch(`https://readbridge-backend-2whx.onrender.com/api/community/diskusi/${id}/balasan`, {
+      method: 'POST',
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ konten: text })
+    });
+    
+    if (res.ok) {
+      const posts = getPosts();
+      const p = posts.find(x => x.id === id);
+      if(p) {
+        p.commentsList = p.commentsList || [];
+        p.commentsList.push({ username: CURRENT_USER_PROFILE, text, waktu: new Date().toISOString() });
+        p.komentar = (p.komentar || 0) + 1;
 
-    // Update UI directly for seamless experience
-    const list = document.getElementById(`comments-list-${id}`);
-    if(list) {
-      list.insertAdjacentHTML('beforeend', `
-        <div class="flex gap-3 text-sm">
-          <img src="${getAvatarForUser(CURRENT_USER_PROFILE)}" alt="${CURRENT_USER_PROFILE}" class="w-8 h-8 rounded-full border border-outline-variant/50 bg-surface-container-high"/>
-          <div class="bg-surface-container-lowest border border-outline-variant/20 p-3 rounded-2xl rounded-tl-none flex-1 shadow-sm">
-            <div class="flex items-center gap-2 mb-1"><span class="font-bold text-on-surface text-[13px]">${CURRENT_USER_PROFILE}</span>${newBadge}<span class="text-on-surface-variant/60 text-[11px]">Baru saja</span></div>
-            <p class="text-on-surface-variant text-[14px] leading-relaxed">${text}</p>
-          </div>
-        </div>
-      `);
+        const isPostAuthor = (CURRENT_USER_PROFILE === p.username);
+        const newBadge = isPostAuthor 
+          ? `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda Author</span>` 
+          : `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda</span>`;
+
+        // Update UI directly for seamless experience
+        const list = document.getElementById(`comments-list-${id}`);
+        if(list) {
+          list.insertAdjacentHTML('beforeend', `
+            <div class="flex gap-3 text-sm">
+              <img src="${getAvatarForUser(CURRENT_USER_PROFILE)}" alt="${CURRENT_USER_PROFILE}" class="w-8 h-8 rounded-full border border-outline-variant/50 bg-surface-container-high"/>
+              <div class="bg-surface-container-lowest border border-outline-variant/20 p-3 rounded-2xl rounded-tl-none flex-1 shadow-sm">
+                <div class="flex items-center gap-2 mb-1"><span class="font-bold text-on-surface text-[13px]">${CURRENT_USER_PROFILE}</span>${newBadge}<span class="text-on-surface-variant/60 text-[11px]">Baru saja</span></div>
+                <p class="text-on-surface-variant text-[14px] leading-relaxed">${text}</p>
+              </div>
+            </div>
+          `);
+        }
+        const countEl = document.getElementById(`komentar-count-${id}`);
+        if(countEl) countEl.textContent = p.komentar;
+        input.value = '';
+      }
+    } else {
+      alert("Gagal menambahkan komentar.");
     }
-    const countEl = document.getElementById(`komentar-count-${id}`);
-    if(countEl) countEl.textContent = p.komentar;
-    input.value = '';
+  } catch(e) {
+    console.error(e);
   }
 };
 
@@ -691,8 +756,16 @@ document.addEventListener('DOMContentLoaded', () => {
   renderJoinedClubs(); // Render clubs in left sidebar
 
   // Bind Feed Tab clicks
-  document.getElementById('tab-feed-semua')?.addEventListener('click', () => window.switchFeedTab('Semua'));
-  document.getElementById('tab-feed-trending')?.addEventListener('click', () => window.switchFeedTab('Trending'));
+  document.getElementById('tab-feed-semua')?.addEventListener('click', async () => {
+    window.switchFeedTab('Semua');
+    apiPostsFetched = false;
+    await renderAllPosts();
+  });
+  document.getElementById('tab-feed-trending')?.addEventListener('click', async () => {
+    window.switchFeedTab('Trending');
+    apiPostsFetched = false;
+    await renderAllPosts();
+  });
 
   // Bind Trending Filter Pill clicks
   document.querySelectorAll('.trending-filter-pill').forEach(btn => {
@@ -853,59 +926,50 @@ function setupModalLogic() {
   });
 
   // Post submit
-  document.getElementById('btn-post-diskusi')?.addEventListener('click',()=>{
+  document.getElementById('btn-post-diskusi')?.addEventListener('click', async ()=>{
     const judul=document.getElementById('input-judul').value.trim();
     const isi=(getEditor()?.innerText||'').trim();
     const errEl=document.getElementById('form-error');
     if(!judul||!isi){ errEl.classList.remove('hidden'); return; }
     errEl.classList.add('hidden');
 
-    const activeDestEl=document.querySelector('.dest-pill.bg-primary');
-    const destLabel=activeDestEl ? activeDestEl.dataset.dest : 'Public Feed';
-
-    const pollOpts = Array.from(document.querySelectorAll('.poll-opt'))
-                          .map(inp => inp.value.trim())
-                          .filter(v => v);
-    const poll = (document.getElementById('poll-panel') && !document.getElementById('poll-panel').classList.contains('hidden') && pollOpts.length >= 2) ? 
-      pollOpts.map(opt => ({ text: opt, count: 0, votedBy: [] })) : null;
-
-    const posts=getPosts(); 
-    
-    if (window.editingPostId) {
-      const idx = posts.findIndex(px => px.id === window.editingPostId);
-      if(idx !== -1) {
-        posts[idx].judul = judul;
-        posts[idx].isi = getEditor().innerHTML;
-        posts[idx].tags = [...activeTags];
-        posts[idx].destination = destLabel;
-        if(poll) posts[idx].poll = poll; // Or preserve existing if not changed, but here we just overwrite
-        posts[idx].isEdited = true;
-      }
-      window.editingPostId = null;
-      document.getElementById('btn-post-diskusi').innerHTML = 'Posting Diskusi';
-      alert('Diskusi berhasil diupdate!');
-    } else {
-      const newPost={
-        id:'post-'+Date.now(), username:CURRENT_USER_PROFILE, isCurrentUser:true,
-        waktu:new Date().toISOString(), judul, isi: getEditor().innerHTML, tags:[...activeTags],
-        votes:0, komentar:0, destination:destLabel, poll
-      };
-      posts.unshift(newPost);
-      alert('Diskusi berhasil diposting ke ' + destLabel);
+    const token = localStorage.getItem('rb_token');
+    if (!token) {
+      alert("Silakan login untuk membuat diskusi");
+      window.location.href = 'login.html';
+      return;
     }
-    
-    savePosts(posts); 
-    renderAllPosts();
 
-    // Reset form
-    document.getElementById('input-judul').value='';
-    const ed=getEditor(); if(ed) ed.innerHTML='';
-    activeTags=[]; renderTagChips();
-    document.getElementById('poll-panel')?.classList.add('hidden');
-    
-    // Clear draft if posted
-    localStorage.removeItem(DRAFT_KEY);
-    closeModal();
+    try {
+      const res = await fetch(`https://readbridge-backend-2whx.onrender.com/api/community/diskusi`, {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ judul, konten: getEditor().innerHTML })
+      });
+      
+      if (res.ok) {
+        alert('Diskusi berhasil diposting!');
+        apiPostsFetched = false;
+        await renderAllPosts();
+        
+        // Reset form
+        document.getElementById('input-judul').value='';
+        const ed=getEditor(); if(ed) ed.innerHTML='';
+        activeTags=[]; renderTagChips();
+        document.getElementById('poll-panel')?.classList.add('hidden');
+        localStorage.removeItem(DRAFT_KEY);
+        closeModal();
+      } else {
+        const data = await res.json();
+        alert("Gagal posting: " + (data.message || "Error"));
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Gagal posting diskusi.");
+    }
   });
 }
 
