@@ -73,7 +73,7 @@ router.get("/", optionalAuth, async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Gagal mengambil data buku" });
+    res.status(500).json({ success: false, message: "Gagal mengambil data buku", error: error.message });
   }
 });
 
