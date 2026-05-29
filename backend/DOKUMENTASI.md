@@ -38,6 +38,7 @@
                         │  - users                │
                         │  - buku                 │
                         │  - jurnal               │
+                        │  - ebook                │
                         │  - perpustakaan         │
                         │  - transaksi            │
                         │  - diskusi              │
@@ -679,11 +680,10 @@ npm install
 cp .env.example .env
 # → Edit .env dengan kredensial MySQL dan Firebase Anda
 
-# 4. Buat database dan tabel
-mysql -u root -p -e "CREATE DATABASE readbridge_db;"
-mysql -u root -p readbridge_db < database/schema.sql
+# 4. Migrasikan skema database ke cloud/lokal
+node database/migrate.js
 
-# 5. Isi data awal (buku, jurnal, diskusi dari main.js)
+# 5. Isi data awal (buku, jurnal, diskusi, dan ebooks dari main.js)
 node database/seed.js
 
 # 6. Jalankan server

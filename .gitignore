@@ -1,0 +1,10 @@
+.DS_Store
+
+# Firebase Service Account Key (RAHASIA - jangan di-commit!)
+readbridge-8934c-firebase-adminsdk-fbsvc-*.json
+*firebase-adminsdk*.json
+serviceAccountKey.json
+
+# Env files
+.env
+.env.local

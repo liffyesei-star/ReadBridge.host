@@ -229,6 +229,48 @@ CREATE TABLE IF NOT EXISTS wishlist (
 );
 
 -- =============================================
+-- 12. JURNAL
+-- =============================================
+CREATE TABLE IF NOT EXISTS jurnal (
+  id            INT PRIMARY KEY AUTO_INCREMENT,
+  judul         VARCHAR(300) NOT NULL,
+  penulis_nama  VARCHAR(150) NOT NULL,
+  universitas   VARCHAR(200),
+  tahun_terbit  YEAR,
+  total_unduhan INT DEFAULT 0,
+  total_dilihat INT DEFAULT 0,
+  rating        DECIMAL(2,1) DEFAULT 0.0,
+  total_ulasan  INT DEFAULT 0,
+  kategori      VARCHAR(100),
+  akses         ENUM('Open Access', 'Exclusive Access') DEFAULT 'Open Access',
+  abstrak       TEXT,
+  file_url      VARCHAR(255),
+  aktif         TINYINT(1) DEFAULT 1,
+  created_at    DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at    DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- =============================================
+-- 13. EBOOK (BUKU DIGITAL)
+-- =============================================
+CREATE TABLE IF NOT EXISTS ebook (
+  id                 INT PRIMARY KEY AUTO_INCREMENT,
+  judul              VARCHAR(255) NOT NULL,
+  penulis_nama       VARCHAR(150) NOT NULL,
+  kategori           VARCHAR(100) NOT NULL,
+  rating             DECIMAL(2,1) DEFAULT 0.0,
+  total_ulasan       INT DEFAULT 0,
+  waktu_baca         VARCHAR(50) DEFAULT '5 menit',
+  is_premium         TINYINT(1) DEFAULT 0,
+  is_bulanan_special TINYINT(1) DEFAULT 0,
+  cover_url          VARCHAR(255) DEFAULT NULL,
+  pages              JSON DEFAULT NULL,               -- Array string berisi halaman bab
+  aktif              TINYINT(1) DEFAULT 1,
+  created_at         DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- =============================================
 -- INDEXES UNTUK PERFORMA
 -- =============================================
 CREATE INDEX idx_buku_kategori ON buku(kategori_id);
@@ -238,3 +280,6 @@ CREATE INDEX idx_transaksi_user ON transaksi(user_id, created_at DESC);
 CREATE INDEX idx_diskusi_club ON diskusi(club_id, created_at DESC);
 CREATE INDEX idx_notifikasi_user ON notifikasi(user_id, sudah_dibaca, created_at DESC);
 CREATE INDEX idx_poin_user ON poin_history(user_id, created_at DESC);
+CREATE INDEX idx_jurnal_aktif ON jurnal(aktif, created_at DESC);
+CREATE INDEX idx_ebook_aktif ON ebook(aktif, created_at DESC);
+

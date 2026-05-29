@@ -1,3 +1,9 @@
 node_modules/
 .env
 .DS_Store
+
+# Firebase Service Account Keys (RAHASIA - jangan di-commit!)
+config/serviceAccountKey.json
+*.json
+!package.json
+!package-lock.json

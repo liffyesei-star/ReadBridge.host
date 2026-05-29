@@ -30,7 +30,8 @@ readbridge-backend/
 │   └── users.js           ← /api/users
 ├── database/
 │   ├── schema.sql         ← Struktur tabel MySQL
-│   └── seed.js            ← Data awal (buku, jurnal, diskusi)
+│   ├── migrate.js         ← Utilitas migrasi otomatis
+│   └── seed.js            ← Data awal (buku, jurnal, diskusi, ebook)
 └── DOKUMENTASI.md         ← Flowchart & Pseudocode lengkap
 ```
 
@@ -51,8 +52,8 @@ npm install
 cp .env.example .env
 # Edit .env dengan kredensial Anda
 
-# 3. Setup database
-mysql -u root -p < database/schema.sql
+# 3. Setup & Migrasi database
+node database/migrate.js
 
 # 4. Seed data awal
 node database/seed.js
