@@ -46,7 +46,7 @@ router.get("/", optionalAuth, async (req, res) => {
 
     const whereClause = where.length ? `WHERE ${where.join(" AND ")}` : "";
 
-    const [books] = await db.execute(
+    const [books] = await db.query(
       `SELECT b.id, b.judul, b.slug, b.penulis_nama, b.cover_url, b.harga_beli, b.harga_sewa,
               b.bisa_beli, b.bisa_sewa, b.bisa_gratis, b.rating, b.total_ulasan,
               b.total_terjual, b.halaman, b.bahasa, b.tahun_terbit, b.tags,
@@ -59,7 +59,7 @@ router.get("/", optionalAuth, async (req, res) => {
       [...params, parseInt(limit), offset]
     );
 
-    const [[{ total }]] = await db.execute(
+    const [[{ total }]] = await db.query(
       `SELECT COUNT(*) AS total FROM buku b
        LEFT JOIN kategori k ON b.kategori_id = k.id
        ${whereClause}`,
