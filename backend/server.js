@@ -37,8 +37,8 @@ app.use(helmet());
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:5500,http://127.0.0.1:5500").split(",");
 app.use(cors({
   origin: (origin, callback) => {
-    // Mengizinkan tanpa origin (misal dari postman) atau origin dari localhost/127.0.0.1
-    if (!origin || origin.includes('localhost') || origin.includes('127.0.0.1') || allowedOrigins.includes(origin)) {
+    // Mengizinkan tanpa origin (misal dari postman) atau origin dari localhost/127.0.0.1 atau jika diset *
+    if (!origin || allowedOrigins.includes('*') || origin.includes('localhost') || origin.includes('127.0.0.1') || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("CORS tidak diizinkan untuk origin: " + origin));
