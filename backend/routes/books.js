@@ -247,7 +247,8 @@ router.post("/:id/ulasan", verifyToken, async (req, res) => {
       return res.status(400).json({ success: false, message: "Rating harus antara 1-5" });
     }
 
-    // Cek apakah user sudah punya buku
+    // Cek apakah user sudah punya buku (DINONAKTIFKAN SEMENTARA UNTUK DEMO UTS)
+    /*
     const [perp] = await db.execute(
       "SELECT id FROM perpustakaan WHERE user_id = ? AND buku_id = ? AND status = 'aktif'",
       [req.user.id, req.params.id]
@@ -255,6 +256,7 @@ router.post("/:id/ulasan", verifyToken, async (req, res) => {
     if (!perp.length) {
       return res.status(403).json({ success: false, message: "Anda harus memiliki buku ini untuk memberikan ulasan" });
     }
+    */
 
     await db.execute(
       `INSERT INTO ulasan (buku_id, user_id, rating, komentar)
