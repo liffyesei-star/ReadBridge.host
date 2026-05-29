@@ -311,6 +311,26 @@
                 const result = await signInWithPopup(auth, provider);
                 const user = result.user;
                 
+                // Get ID token from Firebase
+                const idToken = await user.getIdToken();
+                
+                // Sync with Render Backend
+                const syncResponse = await fetch('https://readbridge-backend-2whx.onrender.com/api/auth/sync', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${idToken}` }
+                });
+                
+                if (syncResponse.ok) {
+                    const syncData = await syncResponse.json();
+                    if (syncData.success && syncData.data) {
+                        // Backend sync returned successfully
+                        localStorage.setItem('rb_token', idToken); // We use the ID Token for now, or backend could send JWT. Wait, auth.js does not send token for sync, it just returns data. So we save the ID Token.
+                        localStorage.setItem('rb_is_synced', 'true');
+                    }
+                } else {
+                    console.error("Gagal sinkronisasi data dengan backend", await syncResponse.text());
+                }
+
                 // Get User Info
                 const username = user.displayName || 'Google User';
                 const email = user.email;
@@ -320,6 +340,7 @@
                 // Save to localStorage for compatibility with your existing frontend
                 localStorage.setItem('rb_username', username);
                 localStorage.setItem('rb_email', email);
+                localStorage.setItem('rb_token', idToken); // Simpan token Firebase untuk API call
                 if (photoURL) {
                     localStorage.setItem('rb_profile_pic', photoURL);
                 }
