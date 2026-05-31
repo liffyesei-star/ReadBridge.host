@@ -8,6 +8,7 @@
 
 const STORAGE_KEY = 'readbridge_community_posts_v2';
 const DRAFT_KEY   = 'readbridge_draft';
+const API_BASE    = 'https://readbridge-backend-2whx.onrender.com';
 
 window.activeFeedTab = 'Semua';
 window.activeTrendingTag = 'Semua';
@@ -176,7 +177,7 @@ window.fetchPostsFromAPI = async function() {
     
     const sortParam = (window.activeFeedTab === 'Trending') ? 'terpopuler' : 'terbaru';
     const pageClub = getCurrentPageClubFilter();
-    let url = `https://readbridge-backend-2whx.onrender.com/api/community/diskusi?sort=${sortParam}`;
+    let url = `${API_BASE}/api/community/diskusi?sort=${sortParam}`;
     if (pageClub) {
       url += `&destination=${encodeURIComponent(pageClub)}`;
     }
@@ -409,7 +410,7 @@ window.ubahVote = async function(id,delta){
     return;
   }
   try {
-    const res = await fetch(`https://readbridge-backend-2whx.onrender.com/api/community/diskusi/${id}/like`, {
+    const res = await fetch(`${API_BASE}/api/community/diskusi/${id}/like`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -455,11 +456,16 @@ document.addEventListener('click', () => {
   });
 });
 
-window.toggleComments = function(id) {
+window.toggleComments = async function(id) {
   const sec = document.getElementById(`comments-section-${id}`);
-  if(sec) sec.classList.toggle('hidden');
-  if(sec && !sec.classList.contains('hidden')) sec.classList.add('flex');
-  else if(sec) sec.classList.remove('flex');
+  if (!sec) return;
+  sec.classList.toggle('hidden');
+  if (!sec.classList.contains('hidden')) {
+    sec.classList.add('flex');
+    await fetchCommentsForPost(id);
+  } else {
+    sec.classList.remove('flex');
+  }
 };
 
 window.addComment = async function(id) {
@@ -475,7 +481,7 @@ window.addComment = async function(id) {
   }
 
   try {
-    const res = await fetch(`https://readbridge-backend-2whx.onrender.com/api/community/diskusi/${id}/balasan`, {
+    const res = await fetch(`${API_BASE}/api/community/diskusi/${id}/balasan`, {
       method: 'POST',
       headers: { 
         'Authorization': `Bearer ${token}`,
@@ -513,6 +519,10 @@ window.addComment = async function(id) {
         const countEl = document.getElementById(`komentar-count-${id}`);
         if(countEl) countEl.textContent = p.komentar;
         input.value = '';
+
+        if (window.communityBot) {
+          window.communityBot.scheduleReplyToUser(id, text, p);
+        }
       }
     } else {
       alert("Gagal menambahkan komentar.");
@@ -960,7 +970,7 @@ function setupModalLogic() {
 
     try {
       const destination = getSelectedDestination();
-      const res = await fetch(`https://readbridge-backend-2whx.onrender.com/api/community/diskusi`, {
+      const res = await fetch(`${API_BASE}/api/community/diskusi`, {
         method: 'POST',
         headers: { 
           'Authorization': `Bearer ${token}`,
@@ -1252,149 +1262,316 @@ window.filterFeedByTag = function(tagName) {
 };
 
 // ==========================================
-// COMMUNITY BOT SIMULATION
+// COMMUNITY AI BOT — engagement & smart replies
 // ==========================================
+
+function stripHtml(html) {
+  return (html || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function pickRandom(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
 
 const BOT_PROFILES = [
   '@SastraWangi', '@BookNerd', '@HujanBulanJuni', '@TokyoReader', '@PenaSenja',
   '@PejuangKampus', '@MathGenius', '@CalonMaba', '@Ambiskuh', '@TukangOverthinking',
   '@KutuBuku', '@PecintaSastra', '@AnakRajin', '@SiswaIndonesia', '@AlumniSukses',
-  '@PemimpiBesar', '@PemburuPTN', '@SastraLover', '@BukuAdalahTeman'
+  '@PemimpiBesar', '@PemburuPTN', '@SastraLover', '@BukuAdalahTeman', '@ReadBridgeAI'
 ];
 
-const BOT_COMMENTS_FIKSI = [
-  "Wah, menarik banget ulasannya kak! Bikin pengen baca.",
-  "Setuju! Bagian itu emang paling seru.",
-  "Ada yang punya rekomendasi buku lain yang mirip ini?",
-  "Bener banget, aku juga mikir gitu pas baca.",
-  "Wah, belum pernah baca. Kayaknya masuk wishlist deh.",
-  "Boleh minta pendapat tentang bab akhirnya?",
-  "Aku suka banget sama gaya bahasa penulisnya, ngalir gitu aja.",
-  "Jujur, awalnya rada bosen tapi makin ke belakang makin seru!"
-];
+const SMART_BOT = {
+  pickProfile(dest) {
+    const pools = {
+      'Pejuang SNBT': ['@ReadBridgeAI', '@PejuangKampus', '@MathGenius', '@CalonMaba', '@PemburuPTN'],
+      'Pecinta Fiksi': ['@ReadBridgeAI', '@PecintaSastra', '@KutuBuku', '@SastraWangi', '@BookNerd'],
+      'Public Feed': ['@ReadBridgeAI', '@AnakRajin', '@SiswaIndonesia', '@AlumniSukses']
+    };
+    return pickRandom(pools[dest] || pools['Public Feed']);
+  },
 
-const BOT_COMMENTS_SNBT = [
-  "Makasih tipsnya kak, bermanfaat banget buat persiapan UTBK!",
-  "Wah, soal nomor 3 itu emang agak tricky. Ada cara cepatnya ga?",
-  "Semangat pejuang PTN! Kita pasti bisa.",
-  "Sama, aku juga masih sering bingung di materi ini.",
-  "Izin save ya kak, buat bahan belajar nanti.",
-  "Menurutku yang penting banyakin latihan soal aja.",
-  "Pilihan jurusannya apa nih kalau boleh tau?",
-  "Jangan lupa istirahat juga guys, jangan diforsir belajarnya."
-];
+  commentOnPost(post, dest) {
+    const raw = `${post.judul || ''} ${stripHtml(post.isi)}`.toLowerCase();
+
+    if (dest === 'Pejuang SNBT' || /utbk|snbt|matematika|literasi|soal|ujian|ptn|jurusan|penm|pm/.test(raw)) {
+      if (/matematika|aljabar|geometri|penm|pm/.test(raw)) {
+        return pickRandom([
+          'Tips cepat: catat pola soal yang sering muncul, bukan hanya hafal rumus. 15 menit review + 10 soal latihan per hari sudah cukup konsisten.',
+          'Kalau stuck di soal PM, balik ke konsep dasarnya dulu — seringnya masalahnya di interpretasi, bukan hitungannya.',
+          'Aku biasanya kerjakan soal serupa dari 3 sumber berbeda. Hasilnya variasi polanya kebaca lebih cepat saat ujian.'
+        ]);
+      }
+      if (/literasi|bahasa|puisi|teks/.test(raw)) {
+        return pickRandom([
+          'Untuk literasi: baca paragraf pertama & terakhir dulu, baru detail. Hemat waktu dan fokus ke ide pokok.',
+          'Latihan baca cepat 10 menit sebelum tidur ngebantu banget. Besoknya langsung terasa di soal bacaan panjang.'
+        ]);
+      }
+      return pickRandom([
+        `Thread "${(post.judul || '').slice(0, 40)}" bagus! Breakdown per sub-materi + latihan soal harian = progress yang kelihatan.`,
+        'Setuju banget. Coba share juga strategi waktu kamu — banyak yang butuh referensi pacing saat UTBK.',
+        'Semangat pejuang PTN! Konsistensi kecil tiap hari lebih worth it daripada cramming seminggu sebelum ujian.'
+      ]);
+    }
+
+    if (dest === 'Pecinta Fiksi' || /review|buku|novel|fiksi|sastra|murakami|puisi|cerita|penulis/.test(raw)) {
+      if (/review|ulas|rekomendasi/.test(raw)) {
+        return pickRandom([
+          'Review-nya jujur dan helpful! Aku tambahin ke wishlist. Kalau ada buku sejenis, drop di sini ya.',
+          'Setuju — ending-nya emang yang paling memorable. Ada yang punya reading order untuk karya penulis ini?',
+          'Ulasannya detail banget. Bagian favorit kamu yang mana? Penasaran perspektif orang lain.'
+        ]);
+      }
+      return pickRandom([
+        'Temanya menarik! Buku fiksi yang bagus sering ngajarin empathy lewat karakter — diskusi kayak gini yang bikin komunitas hidup.',
+        'Belum baca, tapi dari judulnya langsung kepo. Ada spoiler-free summary singkat?',
+        'Sastra lokal punya daya tarik sendiri. Kalau suka genre ini, coba juga karya Pramoedya atau Eka Kurniawan.'
+      ]);
+    }
+
+    return pickRandom([
+      `Pembahasan "${(post.judul || 'ini').slice(0, 45)}" menarik — thanks udah buka thread-nya!`,
+      'Setuju. Komunitas ReadBridge emang paling seru kalau banyak sudut pandang berbeda.',
+      'Mantap diskusinya! Siapa pun yang punya pengalaman serupa, share juga ya — biar makin kaya.'
+    ]);
+  },
+
+  replyToUser(userText, post, dest) {
+    const t = userText.toLowerCase();
+    const topic = (post.judul || '').slice(0, 40);
+
+    if (/terima kasih|makasih|thanks|thx/.test(t)) {
+      return pickRandom([
+        'Sama-sama! Senang bisa bantu. Kalau ada follow-up, langsung tulis aja di sini.',
+        'With pleasure! Itu tujuan komunitas ini — saling support. Semangat terus!'
+      ]);
+    }
+    if (/\?/.test(t)) {
+      if (/cara|gimana|bagaimana|tips|saran/.test(t)) {
+        if (dest === 'Pejuang SNBT') {
+          return `Untuk "${topic}", mulai dari 1 subtopik fokus per hari + 5 soal latihan. Review salahnya, jangan cuma lihat kunci. Progress kecil tapi konsisten > marathon 8 jam sekali seminggu.`;
+        }
+        if (dest === 'Pecinta Fiksi') {
+          return `Kalau soal "${topic}", coba bandingkan temanya dengan 1–2 buku sejenis. Biasanya insight baru muncul dari perbandingan gaya penulis & alurnya.`;
+        }
+        return `Pertanyaan bagus! Untuk "${topic}", coba spesifikkan dulu bagian mana yang paling bikin bingung — nanti lebih gampang dapat jawaban targeted.`;
+      }
+      return pickRandom([
+        'Pertanyaan oke! Siapa pun yang punya pengalaman langsung, bantu jawab ya — thread-nya bakal lebih berguna.',
+        'Good question. Dari pengalaman komunitas, biasanya jawabannya ada di latihan rutin + diskusi hasilnya bareng.'
+      ]);
+    }
+    if (/setuju|bener|betul|iya|iyaa/.test(t)) {
+      return pickRandom([
+        'Exactly! Makin banyak perspektif, makin kaya diskusinya.',
+        'Glad we are on the same page. Ada poin lain yang mau ditambahin?'
+      ]);
+    }
+    return this.commentOnPost(post, dest);
+  }
+};
+
+function isBotUser(username) {
+  const name = username || '';
+  return name === '@ReadBridgeAI' || name.includes('ReadBridge') || BOT_PROFILES.includes(name);
+}
+
+function renderCommentItemHtml(c, postAuthor) {
+  let cBadge = '';
+  if (c.isBot || isBotUser(c.username)) {
+    cBadge = `<span class="bg-violet-500/15 text-violet-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">AI Bot</span>`;
+  } else if (c.username === postAuthor && c.username === CURRENT_USER_PROFILE) {
+    cBadge = `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda Author</span>`;
+  } else if (c.username === postAuthor) {
+    cBadge = `<span class="bg-surface-container-highest text-on-surface-variant text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Author</span>`;
+  } else if (c.username === CURRENT_USER_PROFILE) {
+    cBadge = `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda</span>`;
+  }
+
+  const isBot = c.isBot || isBotUser(c.username);
+  const bubble = isBot
+    ? 'bg-violet-500/10 border border-violet-500/25'
+    : 'bg-surface-container-lowest border border-outline-variant/20';
+
+  return `
+    <div class="flex gap-3 text-sm">
+      <img src="${c.avatar || getAvatarForUser(c.username)}" alt="${c.username}" class="w-8 h-8 rounded-full border border-outline-variant/50 bg-surface-container-high"/>
+      <div class="${bubble} p-3 rounded-2xl rounded-tl-none flex-1 shadow-sm">
+        <div class="flex items-center gap-2 mb-1 flex-wrap">
+          <span class="font-bold text-on-surface text-[13px]">${c.username}</span>${cBadge}
+          <span class="text-on-surface-variant/60 text-[11px]">${formatWaktu(c.waktu)}</span>
+        </div>
+        <p class="text-on-surface-variant text-[14px] leading-relaxed">${c.text}</p>
+      </div>
+    </div>`;
+}
+
+function appendCommentToUI(postId, comment, postAuthor) {
+  const list = document.getElementById(`comments-list-${postId}`);
+  if (list) list.insertAdjacentHTML('beforeend', renderCommentItemHtml(comment, postAuthor));
+  const countEl = document.getElementById(`komentar-count-${postId}`);
+  if (countEl) {
+    countEl.textContent = parseInt(countEl.textContent || '0', 10) + 1;
+    countEl.parentElement.classList.add('text-primary', 'bg-primary/10', 'transition-all');
+    setTimeout(() => countEl.parentElement.classList.remove('text-primary', 'bg-primary/10'), 2000);
+  }
+}
+
+async function fetchCommentsForPost(postId) {
+  try {
+    const token = localStorage.getItem('rb_token');
+    const headers = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const res = await fetch(`${API_BASE}/api/community/diskusi/${postId}`, { headers });
+    const json = await res.json();
+    if (!json.success || !json.data) return;
+
+    const posts = getPosts();
+    const p = posts.find(x => x.id == postId);
+    if (!p) return;
+
+    p.commentsList = (json.data.balasan || []).map(b => {
+      const username = b.nama_user?.startsWith('@') ? b.nama_user : `@${b.nama_user || 'Anonim'}`;
+      return {
+        username,
+        text: b.konten,
+        waktu: b.created_at,
+        avatar: b.foto_profil,
+        isBot: isBotUser(username)
+      };
+    });
+    p.komentar = p.commentsList.length;
+    savePosts(posts);
+
+    const list = document.getElementById(`comments-list-${postId}`);
+    if (list) {
+      list.innerHTML = p.commentsList.map(c => renderCommentItemHtml(c, p.username)).join('');
+    }
+    const countEl = document.getElementById(`komentar-count-${postId}`);
+    if (countEl) countEl.textContent = p.komentar;
+  } catch (e) {
+    console.error('Gagal memuat komentar:', e);
+  }
+}
+
+async function postBotComment(postId, text, botNama) {
+  const res = await fetch(`${API_BASE}/api/community/diskusi/${postId}/bot-balasan`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ konten: text, bot_nama: botNama })
+  });
+  return res.ok;
+}
 
 class CommunityBot {
   constructor() {
-    this.intervalId = null;
+    this.timerId = null;
+    this.replyTimerId = null;
     this.activeDest = null;
     if (document.title.includes('Pejuang SNBT')) this.activeDest = 'Pejuang SNBT';
     else if (document.title.includes('Pecinta Fiksi')) this.activeDest = 'Pecinta Fiksi';
+    else if (document.title.includes('Komunitas')) this.activeDest = 'Public Feed';
   }
 
   start() {
-    if (!this.activeDest) return; // Hanya jalankan di halaman komunitas spesifik
-    
-    // Set interval acak antara 20 - 40 detik
-    const runSimulation = () => {
+    if (!this.activeDest) return;
+
+    const run = () => {
       this.simulateAction();
-      const nextTime = Math.floor(Math.random() * (40000 - 20000 + 1)) + 20000;
-      this.intervalId = setTimeout(runSimulation, nextTime);
+      const next = Math.floor(Math.random() * 25000) + 25000;
+      this.timerId = setTimeout(run, next);
     };
-    
-    // Start first simulation after 10 seconds
-    this.intervalId = setTimeout(runSimulation, 10000);
+    this.timerId = setTimeout(run, 8000);
   }
 
   stop() {
-    if (this.intervalId) clearTimeout(this.intervalId);
+    if (this.timerId) clearTimeout(this.timerId);
+    if (this.replyTimerId) clearTimeout(this.replyTimerId);
+  }
+
+  getPostsForDest() {
+    const posts = getPosts();
+    if (this.activeDest === 'Public Feed') {
+      return posts.filter(p => !p.club_id && p.destination === 'Public Feed');
+    }
+    return posts.filter(p => p.destination === this.activeDest);
   }
 
   simulateAction() {
-    const posts = getPosts().filter(p => p.destination === this.activeDest);
-    if (posts.length === 0) return;
+    const posts = this.getPostsForDest();
+    if (!posts.length) return;
 
-    // Pilih aksi acak: 0 = upvote (60%), 1 = comment (40%)
-    const action = Math.random() < 0.6 ? 0 : 1;
-    
-    // Pilih post acak
-    const targetPost = posts[Math.floor(Math.random() * posts.length)];
-    const randomUser = BOT_PROFILES[Math.floor(Math.random() * BOT_PROFILES.length)];
-
-    if (action === 0) {
-      this.simulateVote(targetPost.id);
+    const target = posts[Math.floor(Math.random() * posts.length)];
+    if (Math.random() < 0.55) {
+      this.simulateVote(target.id);
     } else {
-      this.simulateComment(targetPost, randomUser);
+      this.simulateComment(target);
     }
   }
 
   simulateVote(postId) {
     const posts = getPosts();
-    const p = posts.find(x => x.id === postId);
-    if (p) {
-      p.votes = (p.votes || 0) + 1;
-      savePosts(posts);
-      
-      const el = document.getElementById(`vote-${postId}`);
-      if (el) {
-        el.textContent = formatVotes(p.votes);
-        el.parentElement.classList.add('bg-primary/20', 'scale-105', 'transition-all');
-        setTimeout(() => {
-          el.parentElement.classList.remove('bg-primary/20', 'scale-105');
-        }, 1000);
-      }
+    const p = posts.find(x => x.id == postId);
+    if (!p) return;
+    p.votes = (p.votes || 0) + 1;
+    savePosts(posts);
+    const el = document.getElementById(`vote-${postId}`);
+    if (el) {
+      el.textContent = formatVotes(p.votes);
+      el.parentElement.classList.add('bg-primary/20', 'scale-105', 'transition-all');
+      setTimeout(() => el.parentElement.classList.remove('bg-primary/20', 'scale-105'), 1000);
     }
   }
 
-  simulateComment(post, user) {
+  async simulateComment(post) {
+    const botUser = SMART_BOT.pickProfile(this.activeDest);
+    const text = SMART_BOT.commentOnPost(post, this.activeDest);
+    const ok = await postBotComment(post.id, text, botUser);
+    if (!ok) return;
+
     const posts = getPosts();
-    const p = posts.find(x => x.id === post.id);
-    if (!p) return;
-
-    const templates = this.activeDest === 'Pecinta Fiksi' ? BOT_COMMENTS_FIKSI : BOT_COMMENTS_SNBT;
-    const text = templates[Math.floor(Math.random() * templates.length)];
-
-    p.commentsList = p.commentsList || [];
-    p.commentsList.push({ username: user, text, waktu: new Date().toISOString() });
-    p.komentar = p.commentsList.length;
-    savePosts(posts);
-
-    // Update UI directly if comments section is open
-    const list = document.getElementById(`comments-list-${post.id}`);
-    if (list) {
-      list.insertAdjacentHTML('beforeend', `
-        <div class="flex gap-3 text-sm">
-          <img src="${getAvatarForUser(user)}" alt="${user}" class="w-8 h-8 rounded-full border border-outline-variant/50 bg-surface-container-high"/>
-          <div class="bg-primary/10 border border-primary/30 p-3 rounded-2xl rounded-tl-none flex-1 shadow-sm transition-all duration-1000">
-            <div class="flex items-center gap-2 mb-1"><span class="font-bold text-on-surface text-[13px]">${user}</span><span class="text-on-surface-variant/60 text-[11px]">Baru saja</span></div>
-            <p class="text-on-surface-variant text-[14px] leading-relaxed">${text}</p>
-          </div>
-        </div>
-      `);
-    }
-    const countEl = document.getElementById(`komentar-count-${post.id}`);
-    if (countEl) {
-      countEl.textContent = p.komentar;
-      countEl.parentElement.classList.add('text-primary', 'bg-primary/10', 'transition-all');
-      setTimeout(() => countEl.parentElement.classList.remove('text-primary', 'bg-primary/10'), 2000);
+    const p = posts.find(x => x.id == post.id);
+    if (p) {
+      p.commentsList = p.commentsList || [];
+      p.commentsList.push({ username: botUser, text, waktu: new Date().toISOString(), isBot: true });
+      p.komentar = (p.komentar || 0) + 1;
+      savePosts(posts);
     }
 
-    this.showToast(`💬 Diskusi baru saja dikomentari oleh ${user}`);
+    appendCommentToUI(post.id, { username: botUser, text, waktu: new Date().toISOString(), isBot: true }, post.username);
+    this.showToast(`🤖 ${botUser} baru saja membalas diskusi`);
+  }
+
+  scheduleReplyToUser(postId, userText, post) {
+    if (this.replyTimerId) clearTimeout(this.replyTimerId);
+    const delay = Math.floor(Math.random() * 4000) + 3000;
+    this.replyTimerId = setTimeout(async () => {
+      const botUser = '@ReadBridgeAI';
+      const text = SMART_BOT.replyToUser(userText, post, this.activeDest || post.destination || 'Public Feed');
+      const ok = await postBotComment(postId, text, botUser);
+      if (!ok) return;
+
+      const posts = getPosts();
+      const p = posts.find(x => x.id == postId);
+      if (p) {
+        p.commentsList = p.commentsList || [];
+        p.commentsList.push({ username: botUser, text, waktu: new Date().toISOString(), isBot: true });
+        p.komentar = (p.komentar || 0) + 1;
+        savePosts(posts);
+      }
+
+      appendCommentToUI(postId, { username: botUser, text, waktu: new Date().toISOString(), isBot: true }, post.username);
+      this.showToast(`💬 @ReadBridgeAI membalas komentarmu`);
+    }, delay);
   }
 
   showToast(message) {
     const toast = document.createElement('div');
     toast.className = 'fixed bottom-6 right-6 bg-surface-container-highest text-on-surface px-4 py-3 rounded-xl shadow-lg border border-outline-variant/30 flex items-center gap-3 z-[100] transform transition-all duration-300 translate-y-10 opacity-0';
     toast.innerHTML = `<span class="font-label-md text-label-md">${message}</span>`;
-    
     document.body.appendChild(toast);
-    
-    // Animate in
-    setTimeout(() => {
-      toast.classList.remove('translate-y-10', 'opacity-0');
-    }, 100);
-
-    // Remove after 3.5s
+    setTimeout(() => toast.classList.remove('translate-y-10', 'opacity-0'), 100);
     setTimeout(() => {
       toast.classList.add('opacity-0', 'translate-y-2');
       setTimeout(() => toast.remove(), 300);

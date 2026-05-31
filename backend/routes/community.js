@@ -30,6 +30,39 @@ async function resolveClubId({ club_id, destination }) {
   return result.insertId;
 }
 
+async function getOrCreateBotUser(botNama) {
+  const slug = botNama.replace(/^@/, "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const email = `bot.${slug}@readbridge.local`;
+  const [[existing]] = await db.execute("SELECT id FROM users WHERE email = ?", [email]);
+  if (existing) return existing.id;
+
+  const [result] = await db.execute(
+    "INSERT INTO users (nama, email, role, poin, level, bio) VALUES (?, ?, 'user', 0, 'Asisten Komunitas', ?)",
+    [botNama.startsWith("@") ? botNama : `@${botNama}`, email, "Bot AI ReadBridge — membuat diskusi lebih hidup dan interaktif."]
+  );
+  return result.insertId;
+}
+
+async function insertBotBalasan(diskusiId, konten, botNama = "@ReadBridgeAI") {
+  const userId = await getOrCreateBotUser(botNama);
+  await db.execute(
+    "INSERT INTO diskusi_balasan (diskusi_id, user_id, konten) VALUES (?, ?, ?)",
+    [diskusiId, userId, konten]
+  );
+  await db.execute("UPDATE diskusi SET total_balasan = total_balasan + 1 WHERE id = ?", [diskusiId]);
+}
+
+function buildWelcomeComment(judul, destination) {
+  const short = (judul || "diskusi ini").slice(0, 55);
+  if (destination === "Pejuang SNBT") {
+    return `Halo! Untuk "${short}...", coba pecah materinya per subtopik, kerjakan 5–10 soal latihan, lalu share hasilnya di sini. Kalau stuck, sebut nomor soalnya — nanti kita bedah bareng. Semangat pejuang PTN! 🎯`;
+  }
+  if (destination === "Pecinta Fiksi") {
+    return `Diskusi seru tentang "${short}"! Kalau mau deeper, coba bandingkan temanya dengan buku lain sejenis — biasanya perspektif baru muncul dari situ. Ada rekomendasi bacaan lanjutan? 📖`;
+  }
+  return `Selamat datang di diskusi "${short}"! Terima kasih sudah berbagi — mari kita jaga thread ini informatif dan saling support. Ada pertanyaan lanjutan? Tulis saja di sini 👋`;
+}
+
 // ============================================================
 // DISKUSI
 // ============================================================
@@ -155,9 +188,42 @@ router.post("/diskusi", verifyToken, async (req, res) => {
     );
     await db.execute("UPDATE users SET poin = poin + 15 WHERE id = ?", [req.user.id]);
 
+    insertBotBalasan(
+      result.insertId,
+      buildWelcomeComment(judul, destination || "Public Feed"),
+      "@ReadBridgeAI"
+    ).catch((err) => console.error("Bot welcome error:", err.message));
+
     res.status(201).json({ success: true, message: "Diskusi berhasil dibuat. +15 poin!", data: { id: result.insertId } });
   } catch (error) {
     res.status(500).json({ success: false, message: "Gagal membuat diskusi" });
+  }
+});
+
+/**
+ * POST /api/community/diskusi/:id/bot-balasan
+ * Komentar otomatis dari bot AI komunitas (untuk simulasi & engagement)
+ */
+router.post("/diskusi/:id/bot-balasan", async (req, res) => {
+  try {
+    const { konten, bot_nama = "@ReadBridgeAI" } = req.body;
+    if (!konten?.trim()) {
+      return res.status(400).json({ success: false, message: "Konten bot tidak boleh kosong" });
+    }
+
+    const [[diskusi]] = await db.execute("SELECT id FROM diskusi WHERE id = ?", [req.params.id]);
+    if (!diskusi) return res.status(404).json({ success: false, message: "Diskusi tidak ditemukan" });
+
+    await insertBotBalasan(req.params.id, konten.trim(), bot_nama);
+
+    res.status(201).json({
+      success: true,
+      message: "Balasan bot berhasil ditambahkan",
+      data: { bot_nama, konten: konten.trim() },
+    });
+  } catch (error) {
+    console.error("Bot balasan error:", error);
+    res.status(500).json({ success: false, message: "Gagal menambahkan balasan bot" });
   }
 });
 
