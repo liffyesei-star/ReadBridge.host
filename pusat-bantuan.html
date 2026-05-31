@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <script id="global-preferences-controller">
+        (function () {
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+
+            function applyFontSize(size) {
+                if (size === 'kecil') {
+                    document.documentElement.style.fontSize = '14px';
+                } else if (size === 'besar') {
+                    document.documentElement.style.fontSize = '18px';
+                } else {
+                    document.documentElement.style.fontSize = '16px';
+                }
+            }
+
+            function applyFontFamily(family) {
+                let style = document.getElementById('global-font-override');
+                if (family === 'serif') {
+                    if (!style) {
+                        style = document.createElement('style');
+                        style.id = 'global-font-override';
+                        style.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span, a, button, input, select, textarea { font-family: Georgia, serif !important; }`;
+                        document.head.appendChild(style);
+                    }
+                } else if (style) {
+                    style.remove();
+                }
+            }
+
+            applyTheme(localStorage.getItem('rb_theme'));
+            applyFontSize(localStorage.getItem('rb_font_size') || 'sedang');
+            applyFontFamily(localStorage.getItem('rb_font_family') || 'sans');
+
+            window.addEventListener('storage', function (e) {
+                if (e.key === 'rb_theme') applyTheme(e.newValue);
+                if (e.key === 'rb_font_size') applyFontSize(e.newValue || 'sedang');
+                if (e.key === 'rb_font_family') applyFontFamily(e.newValue || 'sans');
+            });
+        })();
+    </script>
+    <link rel="stylesheet" href="style.css" />
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Pusat Bantuan - ReadBridge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "background": "#f8f9ff",
+                        "on-background": "#0b1c30",
+                        "surface": "#f8f9ff",
+                        "surface-container": "#e5eeff",
+                        "surface-container-low": "#eff4ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#dce9ff",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-surface": "#0b1c30",
+                        "on-surface-variant": "#434655",
+                        "outline": "#737686",
+                        "outline-variant": "#c3c6d7",
+                        "primary": "#004ac6",
+                        "primary-container": "#2563eb",
+                        "on-primary": "#ffffff",
+                        "secondary": "#006c49",
+                        "secondary-container": "#6cf8bb",
+                        "on-secondary-container": "#00714d",
+                        "tertiary": "#8e3c00",
+                        "tertiary-container": "#b54e00",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    fontFamily: {
+                        sans: ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="min-h-screen bg-background text-on-background antialiased flex flex-col font-sans">
+    <header class="bg-surface-container-lowest shadow-sm sticky top-0 z-50">
+        <div class="max-w-[1280px] mx-auto px-4 md:px-6 py-3 flex items-center justify-between gap-4">
+            <a href="index.html" class="text-primary text-[22px] font-extrabold tracking-tight">ReadBridge</a>
+            <nav class="hidden md:flex items-center gap-6 text-sm font-semibold text-on-surface-variant">
+                <a class="hover:text-primary transition-colors" href="index.html">Beranda</a>
+                <a class="hover:text-primary transition-colors" href="eksplor.html">Eksplor</a>
+                <a class="hover:text-primary transition-colors" href="komunitas.html">Komunitas</a>
+                <a class="text-primary" href="pusat-bantuan.html">Pusat Bantuan</a>
+            </nav>
+            <a href="login.html" class="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-on-primary hover:bg-primary-container transition-colors">
+                <span class="material-symbols-outlined text-[18px]">login</span>
+                Masuk
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-1">
+        <section class="bg-surface-container-low border-b border-outline-variant">
+            <div class="max-w-[1120px] mx-auto px-4 md:px-6 py-12 md:py-16 grid md:grid-cols-[1.2fr_0.8fr] gap-8 items-center">
+                <div class="space-y-5">
+                    <span class="inline-flex items-center gap-2 text-sm font-bold text-primary">
+                        <span class="material-symbols-outlined text-[20px]">support_agent</span>
+                        Pusat Bantuan ReadBridge
+                    </span>
+                    <h1 class="text-[34px] md:text-[48px] leading-tight font-extrabold tracking-tight text-on-surface">
+                        Bantuan cepat untuk akun, buku, pembayaran, dan komunitas.
+                    </h1>
+                    <p class="text-base md:text-lg leading-relaxed text-on-surface-variant max-w-2xl">
+                        Temukan jawaban paling umum dan jalur bantuan yang tepat saat fitur ReadBridge tidak berjalan seperti yang diharapkan.
+                    </p>
+                </div>
+                <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm">
+                    <h2 class="text-lg font-bold text-on-surface mb-4">Akses Cepat</h2>
+                    <div class="grid gap-3">
+                        <a class="flex items-center justify-between rounded-lg border border-outline-variant bg-surface px-4 py-3 hover:border-primary hover:text-primary transition-colors" href="login.html">
+                            <span class="font-semibold">Masalah login akun</span>
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </a>
+                        <a class="flex items-center justify-between rounded-lg border border-outline-variant bg-surface px-4 py-3 hover:border-primary hover:text-primary transition-colors" href="transaksi.html">
+                            <span class="font-semibold">Cek transaksi</span>
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </a>
+                        <a class="flex items-center justify-between rounded-lg border border-outline-variant bg-surface px-4 py-3 hover:border-primary hover:text-primary transition-colors" href="perpustakaan.html">
+                            <span class="font-semibold">Lihat perpustakaan</span>
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="max-w-[1120px] mx-auto px-4 md:px-6 py-12 grid lg:grid-cols-[0.9fr_1.1fr] gap-8">
+            <aside class="space-y-4">
+                <div class="rounded-xl border border-outline-variant bg-surface-container-lowest p-5">
+                    <h2 class="text-xl font-bold text-on-surface mb-3">Hubungi Tim</h2>
+                    <p class="text-sm leading-relaxed text-on-surface-variant mb-4">
+                        Jika jawaban di bawah belum membantu, kirim detail masalah agar tim bisa menelusuri akun dan transaksi dengan lebih cepat.
+                    </p>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex gap-3">
+                            <span class="material-symbols-outlined text-primary">mail</span>
+                            <span>bantuan@readbridge.id</span>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="material-symbols-outlined text-primary">schedule</span>
+                            <span>Senin-Jumat, 09.00-17.00 WIB</span>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="material-symbols-outlined text-primary">info</span>
+                            <span>Sertakan email akun, judul buku, dan tangkapan layar error.</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="space-y-4">
+                <h2 class="text-2xl font-extrabold text-on-surface">Pertanyaan Umum</h2>
+                <details class="rounded-xl border border-outline-variant bg-surface-container-lowest p-5" open>
+                    <summary class="cursor-pointer font-bold text-on-surface">Login Google gagal sinkronisasi ke server</summary>
+                    <p class="mt-3 text-sm leading-relaxed text-on-surface-variant">
+                        Tunggu backend selesai redeploy, lalu coba login ulang. Jika masih gagal, hapus sesi lama dari browser atau gunakan mode incognito untuk memastikan token login baru dibuat.
+                    </p>
+                </details>
+                <details class="rounded-xl border border-outline-variant bg-surface-container-lowest p-5">
+                    <summary class="cursor-pointer font-bold text-on-surface">Pembayaran Midtrans tidak terbuka</summary>
+                    <p class="mt-3 text-sm leading-relaxed text-on-surface-variant">
+                        Pastikan akun sudah login, buku dipilih dari halaman detail, dan backend Render sudah memiliki konfigurasi Midtrans. Jika tombol kembali menampilkan error konfigurasi, backend perlu redeploy.
+                    </p>
+                </details>
+                <details class="rounded-xl border border-outline-variant bg-surface-container-lowest p-5">
+                    <summary class="cursor-pointer font-bold text-on-surface">Buku belum masuk perpustakaan setelah bayar</summary>
+                    <p class="mt-3 text-sm leading-relaxed text-on-surface-variant">
+                        Buku masuk setelah status pembayaran sukses diterima dari webhook Midtrans. Jika pembayaran sudah sukses tetapi koleksi belum berubah, cek kembali beberapa menit kemudian.
+                    </p>
+                </details>
+                <details class="rounded-xl border border-outline-variant bg-surface-container-lowest p-5">
+                    <summary class="cursor-pointer font-bold text-on-surface">Data profil tidak berubah di halaman lain</summary>
+                    <p class="mt-3 text-sm leading-relaxed text-on-surface-variant">
+                        Refresh halaman setelah menyimpan pengaturan. ReadBridge menyimpan beberapa preferensi tampilan di browser, jadi perubahan akan ikut terbaca di tab lain.
+                    </p>
+                </details>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-surface-container border-t border-outline-variant mt-auto">
+        <div class="max-w-[1280px] mx-auto px-4 md:px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-center md:text-left">
+                <p class="text-xl font-extrabold text-primary">ReadBridge</p>
+                <p class="text-sm text-on-surface-variant">Membangun jembatan literasi masa depan.</p>
+            </div>
+            <nav class="flex flex-wrap justify-center gap-5 text-sm font-semibold text-on-surface-variant">
+                <a class="hover:text-primary transition-colors" href="tentang-kami.html">Tentang Kami</a>
+                <a class="hover:text-primary transition-colors" href="komunitas.html">Komunitas</a>
+                <a class="hover:text-primary transition-colors" href="pengaturan.html">Pengaturan</a>
+            </nav>
+        </div>
+    </footer>
+</body>
+
+</html>
