@@ -23,16 +23,27 @@ const pool = mysql.createPool({
     : undefined
 });
 
-// Test koneksi saat startup
-pool
-  .getConnection()
-  .then((conn) => {
-    console.log("✅ MySQL terhubung ke database:", process.env.DB_NAME);
+let dbReady = false;
+
+async function testConnection(attempt = 1, maxAttempts = 5) {
+  try {
+    const conn = await pool.getConnection();
+    console.log("✅ MySQL terhubung ke database:", process.env.DB_NAME || "readbridge_db");
     conn.release();
-  })
-  .catch((err) => {
-    console.error("❌ Gagal koneksi MySQL:", err.message);
-    process.exit(1);
-  });
+    dbReady = true;
+  } catch (err) {
+    console.error(`❌ Gagal koneksi MySQL (percobaan ${attempt}/${maxAttempts}):`, err.message);
+    if (attempt < maxAttempts) {
+      const delayMs = attempt * 2000;
+      setTimeout(() => testConnection(attempt + 1, maxAttempts), delayMs);
+    } else {
+      console.error("⚠️ Server tetap berjalan — API database akan gagal sampai MySQL tersedia.");
+    }
+  }
+}
+
+testConnection();
+
+pool.isReady = () => dbReady;
 
 module.exports = pool;

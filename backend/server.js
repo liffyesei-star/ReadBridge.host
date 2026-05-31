@@ -22,6 +22,7 @@ const userRoutes = require("./routes/users");
 
 // Initialize Firebase (side effect)
 require("./config/firebase");
+const db = require("./config/db");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -89,6 +90,7 @@ app.get("/", (req, res) => {
     message: "📚 ReadBridge API berjalan",
     version: "1.0.0",
     timestamp: new Date().toISOString(),
+    database: db.isReady() ? "connected" : "connecting",
     endpoints: {
       auth: "/api/auth",
       books: "/api/books",
