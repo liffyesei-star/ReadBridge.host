@@ -5,16 +5,141 @@
   Role: Lead Developer & UI/UX Designer
 */
 const express = require("express");
+const midtransClient = require("midtrans-client");
 const router = express.Router();
 const db = require("../config/db");
 const { verifyToken } = require("../middleware/auth");
-const { v4: uuidv4 } = require("uuid");
+
+const MIDTRANS_SERVER_KEY = process.env.MIDTRANS_SERVER_KEY;
+const MIDTRANS_CLIENT_KEY = process.env.MIDTRANS_CLIENT_KEY;
+const MIDTRANS_IS_PRODUCTION = process.env.MIDTRANS_IS_PRODUCTION === "true";
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5500";
+
+const snap = new midtransClient.Snap({
+  isProduction: MIDTRANS_IS_PRODUCTION,
+  serverKey: MIDTRANS_SERVER_KEY || "MIDTRANS_SERVER_KEY_BELUM_DIISI",
+  clientKey: MIDTRANS_CLIENT_KEY || "MIDTRANS_CLIENT_KEY_BELUM_DIISI",
+});
 
 // Generate kode transaksi unik
 function generateKodeTransaksi() {
   const date = new Date().toISOString().slice(0, 10).replace(/-/g, "");
   const random = Math.random().toString(36).substring(2, 7).toUpperCase();
   return `RB-${date}-${random}`;
+}
+
+function requireMidtransConfig() {
+  if (!MIDTRANS_SERVER_KEY || !MIDTRANS_CLIENT_KEY) {
+    const err = new Error("Konfigurasi Midtrans belum lengkap. Isi MIDTRANS_SERVER_KEY dan MIDTRANS_CLIENT_KEY di .env");
+    err.status = 500;
+    throw err;
+  }
+}
+
+function httpError(status, message) {
+  const err = new Error(message);
+  err.status = status;
+  return err;
+}
+
+function toRupiahAmount(value) {
+  const amount = Math.round(Number(value || 0));
+  if (!Number.isFinite(amount) || amount < 1) {
+    throw httpError(400, "Nominal pembayaran tidak valid");
+  }
+  return amount;
+}
+
+async function createMidtransPayment({ kode, harga, buku, user }) {
+  requireMidtransConfig();
+
+  const amount = toRupiahAmount(harga);
+  const parameter = {
+    transaction_details: {
+      order_id: kode,
+      gross_amount: amount,
+    },
+    item_details: [
+      {
+        id: String(buku.id),
+        price: amount,
+        quantity: 1,
+        name: buku.judul.slice(0, 50),
+      },
+    ],
+    customer_details: {
+      first_name: user.nama,
+      email: user.email,
+    },
+    callbacks: {
+      finish: `${FRONTEND_URL}/invoice.html?kode=${kode}`,
+    },
+  };
+
+  return snap.createTransaction(parameter);
+}
+
+function isSuccessfulMidtransStatus(transactionStatus, fraudStatus) {
+  if (transactionStatus === "settlement") return true;
+  return transactionStatus === "capture" && fraudStatus === "accept";
+}
+
+function mapMidtransStatus(transactionStatus, fraudStatus) {
+  if (isSuccessfulMidtransStatus(transactionStatus, fraudStatus)) return "berhasil";
+  if (["deny", "cancel", "expire", "failure"].includes(transactionStatus)) return "gagal";
+  if (["refund", "partial_refund"].includes(transactionStatus)) return "refund";
+  return "pending";
+}
+
+async function activatePaidTransaction(conn, transaksi) {
+  if (transaksi.status === "berhasil") return;
+
+  const tanggalExpired = transaksi.tipe === "sewa" && transaksi.durasi_sewa_hari
+    ? new Date(Date.now() + Number(transaksi.durasi_sewa_hari) * 24 * 60 * 60 * 1000)
+    : null;
+
+  await conn.execute(
+    "UPDATE transaksi SET status = 'berhasil', dibayar_at = NOW() WHERE id = ?",
+    [transaksi.id]
+  );
+
+  if (transaksi.tipe === "beli") {
+    await conn.execute(
+      `INSERT INTO perpustakaan (user_id, buku_id, tipe, status, transaksi_id)
+       VALUES (?, ?, 'beli', 'aktif', ?)
+       ON DUPLICATE KEY UPDATE tipe = 'beli', status = 'aktif', tanggal_expired = NULL, transaksi_id = VALUES(transaksi_id)`,
+      [transaksi.user_id, transaksi.buku_id, transaksi.id]
+    );
+    await conn.execute("UPDATE buku SET total_terjual = total_terjual + 1 WHERE id = ?", [transaksi.buku_id]);
+    await conn.execute(
+      "INSERT INTO poin_history (user_id, poin, keterangan, tipe) VALUES (?, 20, 'Pembelian buku', 'pembelian')",
+      [transaksi.user_id]
+    );
+    await conn.execute("UPDATE users SET poin = poin + 20 WHERE id = ?", [transaksi.user_id]);
+    await conn.execute(
+      `INSERT INTO notifikasi (user_id, tipe, judul, pesan, link_url)
+       VALUES (?, 'transaksi', 'Pembelian Berhasil!', ?, ?)`,
+      [transaksi.user_id, `"${transaksi.buku_judul}" berhasil dibeli. +20 poin!`, `/invoice.html?kode=${transaksi.kode_transaksi}`]
+    );
+    return;
+  }
+
+  await conn.execute(
+    `INSERT INTO perpustakaan (user_id, buku_id, tipe, status, tanggal_expired, transaksi_id)
+     VALUES (?, ?, 'sewa', 'aktif', ?, ?)
+     ON DUPLICATE KEY UPDATE tipe = 'sewa', status = 'aktif', tanggal_expired = VALUES(tanggal_expired), transaksi_id = VALUES(transaksi_id)`,
+    [transaksi.user_id, transaksi.buku_id, tanggalExpired, transaksi.id]
+  );
+  await conn.execute("UPDATE buku SET total_disewa = total_disewa + 1 WHERE id = ?", [transaksi.buku_id]);
+  await conn.execute(
+    `INSERT INTO notifikasi (user_id, tipe, judul, pesan, link_url)
+     VALUES (?, 'transaksi', 'Sewa Buku Berhasil!', ?, ?)`,
+    [
+      transaksi.user_id,
+      `"${transaksi.buku_judul}" disewa ${transaksi.durasi_sewa_hari} hari hingga ${tanggalExpired.toLocaleDateString("id-ID")}`,
+      `/invoice.html?kode=${transaksi.kode_transaksi}`,
+    ]
+  );
 }
 
 /**
@@ -73,74 +198,63 @@ router.get("/:kode", verifyToken, async (req, res) => {
 
 /**
  * POST /api/transactions/beli
- * Membeli buku (langsung bayar simulasi)
+ * Membeli buku via Midtrans Snap
  */
 router.post("/beli", verifyToken, async (req, res) => {
   const conn = await db.getConnection();
   try {
-    await conn.beginTransaction();
-
-    const { buku_id, metode_bayar = "transfer" } = req.body;
+    const { buku_id } = req.body;
     if (!buku_id) return res.status(400).json({ success: false, message: "buku_id wajib diisi" });
+    requireMidtransConfig();
+    await conn.beginTransaction();
 
     // Cek buku
     const [[buku]] = await conn.execute(
       "SELECT id, judul, harga_beli, bisa_beli FROM buku WHERE id = ? AND aktif = 1",
       [buku_id]
     );
-    if (!buku) return res.status(404).json({ success: false, message: "Buku tidak ditemukan" });
-    if (!buku.bisa_beli) return res.status(400).json({ success: false, message: "Buku ini tidak tersedia untuk dibeli" });
+    if (!buku) throw httpError(404, "Buku tidak ditemukan");
+    if (!buku.bisa_beli) throw httpError(400, "Buku ini tidak tersedia untuk dibeli");
 
     // Cek sudah punya belum
     const [[sudahPunya]] = await conn.execute(
       "SELECT id FROM perpustakaan WHERE user_id = ? AND buku_id = ? AND tipe = 'beli'",
       [req.user.id, buku_id]
     );
-    if (sudahPunya) return res.status(400).json({ success: false, message: "Anda sudah memiliki buku ini" });
+    if (sudahPunya) throw httpError(400, "Anda sudah memiliki buku ini");
 
     const kode = generateKodeTransaksi();
 
-    // Buat transaksi
+    // Buat transaksi pending. Akses buku diberikan setelah webhook Midtrans sukses.
     const [trx] = await conn.execute(
-      `INSERT INTO transaksi (kode_transaksi, user_id, buku_id, tipe, harga, status, metode_bayar, dibayar_at)
-       VALUES (?, ?, ?, 'beli', ?, 'berhasil', ?, NOW())`,
-      [kode, req.user.id, buku_id, buku.harga_beli, metode_bayar]
+      `INSERT INTO transaksi (kode_transaksi, user_id, buku_id, tipe, harga, status, metode_bayar)
+       VALUES (?, ?, ?, 'beli', ?, 'pending', 'midtrans')`,
+      [kode, req.user.id, buku_id, buku.harga_beli]
     );
 
-    // Tambahkan ke perpustakaan
+    const payment = await createMidtransPayment({ kode, harga: buku.harga_beli, buku, user: req.user });
     await conn.execute(
-      "INSERT INTO perpustakaan (user_id, buku_id, tipe, status, transaksi_id) VALUES (?, ?, 'beli', 'aktif', ?)",
-      [req.user.id, buku_id, trx.insertId]
-    );
-
-    // Update total terjual
-    await conn.execute("UPDATE buku SET total_terjual = total_terjual + 1 WHERE id = ?", [buku_id]);
-
-    // Poin pembelian
-    await conn.execute(
-      "INSERT INTO poin_history (user_id, poin, keterangan, tipe) VALUES (?, 20, 'Pembelian buku', 'pembelian')",
-      [req.user.id]
-    );
-    await conn.execute("UPDATE users SET poin = poin + 20 WHERE id = ?", [req.user.id]);
-
-    // Notifikasi
-    await conn.execute(
-      `INSERT INTO notifikasi (user_id, tipe, judul, pesan, link_url)
-       VALUES (?, 'transaksi', 'Pembelian Berhasil!', ?, ?)`,
-      [req.user.id, `"${buku.judul}" berhasil dibeli. +20 poin!`, `/invoice.html?kode=${kode}`]
+      "UPDATE transaksi SET payment_token = ?, payment_url = ? WHERE id = ?",
+      [payment.token, payment.redirect_url, trx.insertId]
     );
 
     await conn.commit();
 
     res.status(201).json({
       success: true,
-      message: "Pembelian berhasil!",
-      data: { kode_transaksi: kode, judul: buku.judul, harga: buku.harga_beli }
+      message: "Transaksi Midtrans berhasil dibuat",
+      data: {
+        kode_transaksi: kode,
+        judul: buku.judul,
+        harga: buku.harga_beli,
+        payment_token: payment.token,
+        payment_url: payment.redirect_url,
+      }
     });
   } catch (error) {
     await conn.rollback();
     console.error(error);
-    res.status(500).json({ success: false, message: "Gagal memproses pembelian" });
+    res.status(error.status || 500).json({ success: false, message: error.message || "Gagal memproses pembelian" });
   } finally {
     conn.release();
   }
@@ -153,17 +267,17 @@ router.post("/beli", verifyToken, async (req, res) => {
 router.post("/sewa", verifyToken, async (req, res) => {
   const conn = await db.getConnection();
   try {
-    await conn.beginTransaction();
-
-    const { buku_id, durasi = 30, metode_bayar = "transfer" } = req.body;
+    const { buku_id, durasi = 30 } = req.body;
     if (!buku_id) return res.status(400).json({ success: false, message: "buku_id wajib diisi" });
+    requireMidtransConfig();
+    await conn.beginTransaction();
 
     const [[buku]] = await conn.execute(
       "SELECT id, judul, harga_sewa, bisa_sewa FROM buku WHERE id = ? AND aktif = 1",
       [buku_id]
     );
-    if (!buku) return res.status(404).json({ success: false, message: "Buku tidak ditemukan" });
-    if (!buku.bisa_sewa) return res.status(400).json({ success: false, message: "Buku ini tidak tersedia untuk disewa" });
+    if (!buku) throw httpError(404, "Buku tidak ditemukan");
+    if (!buku.bisa_sewa) throw httpError(400, "Buku ini tidak tersedia untuk disewa");
 
     // Cek sewa aktif
     const [[sewaAktif]] = await conn.execute(
@@ -171,53 +285,92 @@ router.post("/sewa", verifyToken, async (req, res) => {
       [req.user.id, buku_id]
     );
     if (sewaAktif) {
-      return res.status(400).json({
-        success: false,
-        message: `Anda masih menyewa buku ini hingga ${new Date(sewaAktif.tanggal_expired).toLocaleDateString("id-ID")}`
-      });
+      throw httpError(400, `Anda masih menyewa buku ini hingga ${new Date(sewaAktif.tanggal_expired).toLocaleDateString("id-ID")}`);
     }
 
     const durasiHari = parseInt(durasi);
+    if (!Number.isFinite(durasiHari) || durasiHari < 1) {
+      throw httpError(400, "Durasi sewa tidak valid");
+    }
     const hargaTotal = Math.ceil(buku.harga_sewa * (durasiHari / 30));
     const kode = generateKodeTransaksi();
-    const tanggalExpired = new Date(Date.now() + durasiHari * 24 * 60 * 60 * 1000);
-
     const [trx] = await conn.execute(
-      `INSERT INTO transaksi (kode_transaksi, user_id, buku_id, tipe, harga, durasi_sewa_hari, status, metode_bayar, dibayar_at)
-       VALUES (?, ?, ?, 'sewa', ?, ?, 'berhasil', ?, NOW())`,
-      [kode, req.user.id, buku_id, hargaTotal, durasiHari, metode_bayar]
+      `INSERT INTO transaksi (kode_transaksi, user_id, buku_id, tipe, harga, durasi_sewa_hari, status, metode_bayar)
+       VALUES (?, ?, ?, 'sewa', ?, ?, 'pending', 'midtrans')`,
+      [kode, req.user.id, buku_id, hargaTotal, durasiHari]
     );
 
+    const payment = await createMidtransPayment({ kode, harga: hargaTotal, buku, user: req.user });
     await conn.execute(
-      `INSERT INTO perpustakaan (user_id, buku_id, tipe, status, tanggal_expired, transaksi_id)
-       VALUES (?, ?, 'sewa', 'aktif', ?, ?)
-       ON DUPLICATE KEY UPDATE tipe='sewa', status='aktif', tanggal_expired=VALUES(tanggal_expired), transaksi_id=VALUES(transaksi_id)`,
-      [req.user.id, buku_id, tanggalExpired, trx.insertId]
-    );
-
-    await conn.execute("UPDATE buku SET total_disewa = total_disewa + 1 WHERE id = ?", [buku_id]);
-
-    await conn.execute(
-      `INSERT INTO notifikasi (user_id, tipe, judul, pesan, link_url)
-       VALUES (?, 'transaksi', 'Sewa Buku Berhasil!', ?, ?)`,
-      [
-        req.user.id,
-        `"${buku.judul}" disewa ${durasiHari} hari hingga ${tanggalExpired.toLocaleDateString("id-ID")}`,
-        `/invoice.html?kode=${kode}`
-      ]
+      "UPDATE transaksi SET payment_token = ?, payment_url = ? WHERE id = ?",
+      [payment.token, payment.redirect_url, trx.insertId]
     );
 
     await conn.commit();
 
     res.status(201).json({
       success: true,
-      message: "Sewa buku berhasil!",
-      data: { kode_transaksi: kode, judul: buku.judul, harga: hargaTotal, durasi_hari: durasiHari, expired: tanggalExpired }
+      message: "Transaksi Midtrans berhasil dibuat",
+      data: {
+        kode_transaksi: kode,
+        judul: buku.judul,
+        harga: hargaTotal,
+        durasi_hari: durasiHari,
+        payment_token: payment.token,
+        payment_url: payment.redirect_url,
+      }
     });
   } catch (error) {
     await conn.rollback();
     console.error(error);
-    res.status(500).json({ success: false, message: "Gagal memproses sewa" });
+    res.status(error.status || 500).json({ success: false, message: error.message || "Gagal memproses sewa" });
+  } finally {
+    conn.release();
+  }
+});
+
+/**
+ * POST /api/transactions/midtrans/notification
+ * Webhook Midtrans. Set URL ini di dashboard Midtrans.
+ */
+router.post("/midtrans/notification", async (req, res) => {
+  const conn = await db.getConnection();
+  try {
+    requireMidtransConfig();
+    const statusResponse = await snap.transaction.notification(req.body);
+    const orderId = statusResponse.order_id;
+    const transactionStatus = statusResponse.transaction_status;
+    const fraudStatus = statusResponse.fraud_status;
+    const nextStatus = mapMidtransStatus(transactionStatus, fraudStatus);
+
+    await conn.beginTransaction();
+
+    const [[transaksi]] = await conn.execute(
+      `SELECT t.*, b.judul AS buku_judul
+       FROM transaksi t
+       JOIN buku b ON t.buku_id = b.id
+       WHERE t.kode_transaksi = ?
+       FOR UPDATE`,
+      [orderId]
+    );
+
+    if (!transaksi) {
+      await conn.rollback();
+      return res.status(404).json({ success: false, message: "Transaksi tidak ditemukan" });
+    }
+
+    if (nextStatus === "berhasil") {
+      await activatePaidTransaction(conn, transaksi);
+    } else if (transaksi.status !== "berhasil") {
+      await conn.execute("UPDATE transaksi SET status = ? WHERE id = ?", [nextStatus, transaksi.id]);
+    }
+
+    await conn.commit();
+    res.json({ success: true, order_id: orderId, status: nextStatus });
+  } catch (error) {
+    await conn.rollback();
+    console.error("Midtrans notification error:", error);
+    res.status(error.status || 500).json({ success: false, message: error.message || "Gagal memproses notifikasi Midtrans" });
   } finally {
     conn.release();
   }

@@ -7,6 +7,7 @@ Backend REST API untuk platform literasi digital **ReadBridge**.
 - **Framework:** Express.js
 - **Database:** MySQL (via `mysql2`)
 - **Auth:** Firebase Admin SDK
+- **Payment:** Midtrans Snap
 - **Security:** Helmet, CORS, Rate Limiting
 
 ## Struktur Folder
@@ -68,6 +69,14 @@ npm start      # Production
 Lihat `.env.example` untuk daftar lengkap. Variable wajib:
 - `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`
 - `FIREBASE_PROJECT_ID`, `FIREBASE_PRIVATE_KEY`, `FIREBASE_CLIENT_EMAIL`
+- `MIDTRANS_SERVER_KEY`, `MIDTRANS_CLIENT_KEY`, `MIDTRANS_IS_PRODUCTION`
+
+Untuk development, gunakan key **Sandbox** dari dashboard Midtrans dan set `MIDTRANS_IS_PRODUCTION=false`.
+Set Notification URL di dashboard Midtrans ke:
+
+```txt
+https://domain-backend-anda.com/api/transactions/midtrans/notification
+```
 
 ## API Endpoints
 
@@ -78,8 +87,9 @@ Base URL: `http://localhost:5000`
 | `POST /api/auth/sync` | Sinkronisasi akun Firebase |
 | `GET /api/books` | Daftar buku + search/filter |
 | `GET /api/books/:id` | Detail buku |
-| `POST /api/transactions/beli` | Beli buku |
-| `POST /api/transactions/sewa` | Sewa buku |
+| `POST /api/transactions/beli` | Buat pembayaran Midtrans untuk beli buku |
+| `POST /api/transactions/sewa` | Buat pembayaran Midtrans untuk sewa buku |
+| `POST /api/transactions/midtrans/notification` | Webhook status pembayaran Midtrans |
 | `GET /api/community/diskusi` | Daftar diskusi |
 | `GET /api/users/leaderboard` | Ranking pembaca |
 | `GET /api/users/notifikasi` | Notifikasi user |

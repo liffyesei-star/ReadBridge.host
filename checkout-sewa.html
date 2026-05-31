@@ -293,33 +293,12 @@
                         Metode Pembayaran
                     </h2>
                     <div class="flex flex-col gap-2" id="payment-methods">
-                        <label class="flex items-center justify-between p-3 border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent">
+                        <label class="flex items-center justify-between p-3 border border-primary bg-primary-fixed rounded-lg cursor-pointer focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent">
                             <div class="flex items-center gap-3">
-                                <input type="radio" name="payment" value="BCA Virtual Account" class="w-4 h-4 text-primary bg-surface border-outline focus:ring-primary">
-                                <span class="text-sm font-medium text-on-surface">BCA Virtual Account</span>
+                                <input type="radio" name="payment" value="midtrans" checked class="w-4 h-4 text-primary bg-surface border-outline focus:ring-primary">
+                                <span class="text-sm font-medium text-on-surface">Midtrans Snap</span>
                             </div>
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" class="h-4 object-contain" alt="BCA">
-                        </label>
-                        <label class="flex items-center justify-between p-3 border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent">
-                            <div class="flex items-center gap-3">
-                                <input type="radio" name="payment" value="Mandiri Virtual Account" class="w-4 h-4 text-primary bg-surface border-outline focus:ring-primary">
-                                <span class="text-sm font-medium text-on-surface">Mandiri Virtual Account</span>
-                            </div>
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg" class="h-4 object-contain" alt="Mandiri">
-                        </label>
-                        <label class="flex items-center justify-between p-3 border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent">
-                            <div class="flex items-center gap-3">
-                                <input type="radio" name="payment" value="GoPay" class="w-4 h-4 text-primary bg-surface border-outline focus:ring-primary">
-                                <span class="text-sm font-medium text-on-surface">GoPay</span>
-                            </div>
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg" class="h-4 object-contain" alt="GoPay">
-                        </label>
-                        <label class="flex items-center justify-between p-3 border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent">
-                            <div class="flex items-center gap-3">
-                                <input type="radio" name="payment" value="QRIS" class="w-4 h-4 text-primary bg-surface border-outline focus:ring-primary">
-                                <span class="text-sm font-medium text-on-surface">QRIS</span>
-                            </div>
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" class="h-4 object-contain" alt="QRIS">
+                            <span class="material-symbols-outlined text-primary">verified</span>
                         </label>
                     </div>
                 </section>
@@ -348,7 +327,7 @@
                     </div>
                     <button id="btn-pay" class="w-full bg-primary hover:bg-primary/90 text-white text-sm py-4 rounded-full transition-colors mt-2 font-bold flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-[20px]">lock</span>
-                        Bayar Sekarang
+                        Lanjutkan ke Midtrans
                     </button>
                 </section>
             </div>
@@ -511,17 +490,11 @@
             updateDatesAndPrice();
 
             // Checkout Button
-            document.getElementById('btn-pay').addEventListener('click', () => {
+            document.getElementById('btn-pay').addEventListener('click', async () => {
                 const savedAddress = localStorage.getItem('rb_address');
                 if (!savedAddress) {
                     alert('Silakan isi dan simpan Alamat Pengiriman terlebih dahulu.');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
-                    return;
-                }
-
-                const selectedPayment = document.querySelector('input[name="payment"]:checked');
-                if (!selectedPayment) {
-                    alert('Silakan pilih Metode Pembayaran.');
                     return;
                 }
 
@@ -530,31 +503,45 @@
                     return;
                 }
 
-                const transaction = {
-                    id: 'TRX-SEWA-' + Date.now().toString().slice(-6),
-                    date: new Date().toISOString(),
-                    item: targetBook,
-                    address: JSON.parse(savedAddress),
-                    payment: selectedPayment.value,
-                    subtotal: totalItemPrice,
-                    shippingFee,
-                    insuranceFee: depositFee,
-                    discount: 0,
-                    total: totalItemPrice + shippingFee + depositFee,
-                    status: 'dikemas',
-                    type: 'sewa',
-                    rentDetails: {
-                        startDate: dateInput.value,
-                        durationMultiplier: currentMultiplier,
-                        durationUnit: 'hari'
+                const token = localStorage.getItem('rb_token');
+                if (!token) {
+                    alert('Silakan login terlebih dahulu untuk melanjutkan pembayaran.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const btnPay = document.getElementById('btn-pay');
+                const originalContent = btnPay.innerHTML;
+                btnPay.disabled = true;
+                btnPay.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span> Membuka Midtrans...';
+
+                try {
+                    const isLocalFrontend = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+                    const apiBaseUrl = localStorage.getItem('rb_api_base_url') || (isLocalFrontend ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+                    const response = await fetch(`${apiBaseUrl}/api/transactions/sewa`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            buku_id: targetBook.id > 200 ? targetBook.id - 200 : targetBook.id,
+                            durasi: currentMultiplier
+                        })
+                    });
+                    const data = await response.json();
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.message || 'Gagal membuat pembayaran Midtrans');
                     }
-                };
+                    window.location.href = data.data.payment_url;
+                    return;
+                } catch (error) {
+                    alert(error.message || 'Terjadi kesalahan saat membuka pembayaran Midtrans.');
+                    btnPay.disabled = false;
+                    btnPay.innerHTML = originalContent;
+                    return;
+                }
 
-                const history = JSON.parse(localStorage.getItem('rb_transactions') || '[]');
-                history.push(transaction);
-                localStorage.setItem('rb_transactions', JSON.stringify(history));
-
-                window.location.href = `transaksi.html?id=${transaction.id}`;
             });
         });
     </script>
