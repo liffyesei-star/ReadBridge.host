@@ -35,7 +35,7 @@ router.get("/diskusi", optionalAuth, async (req, res) => {
       ramai: "d.total_balasan DESC",
     };
 
-    const [rows] = await db.execute(
+    const [rows] = await db.query(
       `SELECT d.id, d.judul, d.konten, d.total_balasan, d.total_likes, d.pinned, d.created_at,
               u.id AS user_id, u.nama AS nama_user, u.foto_profil,
               b.judul AS buku_judul
@@ -48,7 +48,7 @@ router.get("/diskusi", optionalAuth, async (req, res) => {
       [...params, parseInt(limit), offset]
     );
 
-    const [[{ total }]] = await db.execute(
+    const [[{ total }]] = await db.query(
       `SELECT COUNT(*) AS total FROM diskusi d WHERE ${where.join(" AND ")}`, params
     );
 
@@ -201,7 +201,7 @@ router.get("/clubs", optionalAuth, async (req, res) => {
     let params = [];
     if (search) { where.push("(c.nama LIKE ? OR c.deskripsi LIKE ?)"); params.push(`%${search}%`, `%${search}%`); }
 
-    const [rows] = await db.execute(
+    const [rows] = await db.query(
       `SELECT c.id, c.nama, c.slug, c.deskripsi, c.foto_cover, c.kategori, c.total_anggota, c.privat,
               u.nama AS nama_kreator
        FROM club c
