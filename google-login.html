@@ -153,14 +153,37 @@
                 // Trigger Google Popup — body masih utuh sehingga popup tidak ikut terkill
                 const result = await signInWithPopup(auth, provider);
                 const user = result.user;
-                
-                // Get User Info
+
+                const idToken = await user.getIdToken();
+
+                const syncResponse = await fetch('https://readbridge-backend-2whx.onrender.com/api/auth/sync', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${idToken}` }
+                });
+
+                if (!syncResponse.ok) {
+                    const ov = document.getElementById('login-overlay');
+                    if (ov) ov.remove();
+                    console.error('Gagal sinkronisasi data dengan backend', await syncResponse.text());
+                    alert('Login gagal: tidak dapat sinkronisasi akun ke server. Coba lagi dalam beberapa detik.');
+                    return;
+                }
+
+                const syncData = await syncResponse.json();
+                if (!syncData.success) {
+                    const ov = document.getElementById('login-overlay');
+                    if (ov) ov.remove();
+                    alert(syncData.message || 'Login gagal: sinkronisasi akun tidak berhasil.');
+                    return;
+                }
+
                 const username = user.displayName || 'Google User';
                 const email = user.email;
                 const photoURL = user.photoURL;
                 const uid = user.uid;
-                
-                // Save to localStorage for compatibility with your existing frontend
+
+                localStorage.setItem('rb_token', idToken);
+                localStorage.setItem('rb_is_synced', 'true');
                 localStorage.setItem('rb_username', username);
                 localStorage.setItem('rb_email', email);
                 if (photoURL) {
@@ -168,12 +191,7 @@
                 }
                 localStorage.setItem('rb_is_logged_in', 'true');
                 localStorage.setItem('rb_uid', uid);
-                
-                // Optional: Store the Firebase token to authenticate to your Node.js backend
-                // const idToken = await user.getIdToken();
-                // localStorage.setItem('rb_token', idToken);
-                
-                // Redirect setelah login sukses
+
                 if (!localStorage.getItem('rb_interests')) {
                     window.location.href = 'minat.html';
                 } else {

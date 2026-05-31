@@ -964,6 +964,14 @@ function setupModalLogic() {
         closeModal();
       } else {
         const data = await res.json();
+        if (res.status === 401 && (data.message || '').includes('User tidak ditemukan')) {
+          localStorage.removeItem('rb_token');
+          localStorage.removeItem('rb_is_logged_in');
+          localStorage.removeItem('rb_is_synced');
+          alert('Sesi login tidak valid. Silakan login ulang.');
+          window.location.href = 'login.html';
+          return;
+        }
         alert("Gagal posting: " + (data.message || "Error"));
       }
     } catch (e) {
