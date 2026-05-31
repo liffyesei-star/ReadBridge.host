@@ -9,25 +9,53 @@ const router = express.Router();
 const db = require("../config/db");
 const { verifyToken, optionalAuth } = require("../middleware/auth");
 
+const CLUB_DESTINATIONS = ["Pejuang SNBT", "Pecinta Fiksi"];
+
+async function resolveClubId({ club_id, destination }) {
+  if (club_id) return parseInt(club_id, 10) || null;
+  if (!destination || destination === "Public Feed") return null;
+  if (!CLUB_DESTINATIONS.includes(destination)) return null;
+
+  const [[existing]] = await db.execute(
+    "SELECT id FROM club WHERE nama = ? AND aktif = 1 LIMIT 1",
+    [destination]
+  );
+  if (existing) return existing.id;
+
+  const slug = destination.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const [result] = await db.execute(
+    "INSERT INTO club (nama, slug, deskripsi, total_anggota) VALUES (?, ?, ?, 0)",
+    [destination, slug, `Komunitas ${destination}`]
+  );
+  return result.insertId;
+}
+
 // ============================================================
 // DISKUSI
 // ============================================================
 
 /**
  * GET /api/community/diskusi
- * ?search=&tag=&club_id=&sort=terbaru|terpopuler&page=1&limit=10
+ * ?search=&tag=&club_id=&destination=&sort=terbaru|terpopuler&page=1&limit=10
  */
 router.get("/diskusi", optionalAuth, async (req, res) => {
   try {
-    const { search, tag, club_id, sort = "terbaru", page = 1, limit = 10 } = req.query;
+    const { search, tag, club_id, destination, sort = "terbaru", page = 1, limit = 10 } = req.query;
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
     let where = ["1=1"];
     let params = [];
 
     if (search) { where.push("(d.judul LIKE ? OR d.konten LIKE ?)"); params.push(`%${search}%`, `%${search}%`); }
-    if (club_id) { where.push("d.club_id = ?"); params.push(club_id); }
-    else { where.push("d.club_id IS NULL"); }
+    if (club_id) {
+      where.push("d.club_id = ?");
+      params.push(club_id);
+    } else if (destination && destination !== "Public Feed") {
+      where.push("c.nama = ?");
+      params.push(destination);
+    } else {
+      where.push("d.club_id IS NULL");
+    }
 
     const orderMap = {
       terbaru: "d.created_at DESC",
@@ -35,13 +63,16 @@ router.get("/diskusi", optionalAuth, async (req, res) => {
       ramai: "d.total_balasan DESC",
     };
 
-    const [rows] = await db.query(
-      `SELECT d.id, d.judul, d.konten, d.total_balasan, d.total_likes, d.pinned, d.created_at,
-              u.id AS user_id, u.nama AS nama_user, u.foto_profil,
-              b.judul AS buku_judul
-       FROM diskusi d
+    const fromClause = `FROM diskusi d
        JOIN users u ON d.user_id = u.id
        LEFT JOIN buku b ON d.buku_id = b.id
+       LEFT JOIN club c ON d.club_id = c.id`;
+
+    const [rows] = await db.query(
+      `SELECT d.id, d.club_id, d.judul, d.konten, d.total_balasan, d.total_likes, d.pinned, d.created_at,
+              u.id AS user_id, u.nama AS nama_user, u.foto_profil,
+              b.judul AS buku_judul, c.nama AS club_nama
+       ${fromClause}
        WHERE ${where.join(" AND ")}
        ORDER BY d.pinned DESC, ${orderMap[sort] || "d.created_at DESC"}
        LIMIT ? OFFSET ?`,
@@ -49,7 +80,7 @@ router.get("/diskusi", optionalAuth, async (req, res) => {
     );
 
     const [[{ total }]] = await db.query(
-      `SELECT COUNT(*) AS total FROM diskusi d WHERE ${where.join(" AND ")}`, params
+      `SELECT COUNT(*) AS total ${fromClause} WHERE ${where.join(" AND ")}`, params
     );
 
     res.json({ success: true, data: rows, pagination: { total, page: parseInt(page), limit: parseInt(limit), totalPages: Math.ceil(total / limit) } });
@@ -107,12 +138,14 @@ router.get("/diskusi/:id", optionalAuth, async (req, res) => {
  */
 router.post("/diskusi", verifyToken, async (req, res) => {
   try {
-    const { judul, konten, buku_id, club_id } = req.body;
+    const { judul, konten, buku_id, club_id, destination } = req.body;
     if (!judul || !konten) return res.status(400).json({ success: false, message: "Judul dan konten wajib diisi" });
+
+    const resolvedClubId = await resolveClubId({ club_id, destination });
 
     const [result] = await db.execute(
       "INSERT INTO diskusi (club_id, user_id, judul, konten, buku_id) VALUES (?, ?, ?, ?, ?)",
-      [club_id || null, req.user.id, judul, konten, buku_id || null]
+      [resolvedClubId, req.user.id, judul, konten, buku_id || null]
     );
 
     // Tambah poin

@@ -157,15 +157,31 @@ window.openAttachment = function(url, autoDownload) {
 let apiPosts = [];
 let apiPostsFetched = false;
 
+function getSelectedDestination() {
+  const active = document.querySelector('.dest-pill.bg-primary');
+  return active?.dataset.dest || 'Public Feed';
+}
+
+function getCurrentPageClubFilter() {
+  if (document.title.includes('Klub Pejuang SNBT')) return 'Pejuang SNBT';
+  if (document.title.includes('Klub Pecinta Fiksi')) return 'Pecinta Fiksi';
+  return null;
+}
+
 window.fetchPostsFromAPI = async function() {
   try {
     const token = localStorage.getItem('rb_token');
     const headers = {};
     if (token) headers['Authorization'] = `Bearer ${token}`;
     
-    // Add sorting parameter based on active tab
     const sortParam = (window.activeFeedTab === 'Trending') ? 'terpopuler' : 'terbaru';
-    const res = await fetch(`https://readbridge-backend-2whx.onrender.com/api/community/diskusi?sort=${sortParam}`, { headers });
+    const pageClub = getCurrentPageClubFilter();
+    let url = `https://readbridge-backend-2whx.onrender.com/api/community/diskusi?sort=${sortParam}`;
+    if (pageClub) {
+      url += `&destination=${encodeURIComponent(pageClub)}`;
+    }
+
+    const res = await fetch(url, { headers });
     const json = await res.json();
     if (json.success && json.data) {
       apiPosts = json.data.map(d => ({
@@ -179,7 +195,8 @@ window.fetchPostsFromAPI = async function() {
         tags: [],
         votes: d.total_likes,
         komentar: d.total_balasan,
-        destination: d.club_id ? 'Club' : 'Public Feed',
+        club_id: d.club_id,
+        destination: d.club_nama || 'Public Feed',
         commentsList: []
       }));
       apiPostsFetched = true;
@@ -365,9 +382,10 @@ async function renderAllPosts(){
 
   let postsList = getPosts();
   
-  // Filter by Page/Club
   if (currentPageFilter) {
     postsList = postsList.filter(p => p.destination === currentPageFilter);
+  } else {
+    postsList = postsList.filter(p => !p.club_id && p.destination === 'Public Feed');
   }
   
   // Jika tab Trending aktif
@@ -941,13 +959,14 @@ function setupModalLogic() {
     }
 
     try {
+      const destination = getSelectedDestination();
       const res = await fetch(`https://readbridge-backend-2whx.onrender.com/api/community/diskusi`, {
         method: 'POST',
         headers: { 
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ judul, konten: getEditor().innerHTML })
+        body: JSON.stringify({ judul, konten: getEditor().innerHTML, destination })
       });
       
       if (res.ok) {
