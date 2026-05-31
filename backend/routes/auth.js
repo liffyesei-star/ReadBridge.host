@@ -108,22 +108,40 @@ router.post("/sync", async (req, res) => {
     const { uid, email, name, picture } = decoded;
     const nama = name || email?.split("@")[0] || "User";
 
-    // Cek apakah user sudah ada
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Email Google tidak ditemukan" });
+    }
+
+    // Cek apakah user sudah ada, baik dari login Google sebelumnya
+    // maupun akun lokal lama dengan email yang sama.
     const [existing] = await db.execute(
-      "SELECT id, nama, foto_profil FROM users WHERE firebase_uid = ?",
-      [uid]
+      "SELECT id, firebase_uid, nama, email, foto_profil FROM users WHERE firebase_uid = ? OR email = ? LIMIT 1",
+      [uid, email]
     );
 
     if (existing.length > 0) {
+      const user = existing[0];
+
+      if (user.firebase_uid && user.firebase_uid !== uid) {
+        return res.status(409).json({
+          success: false,
+          message: "Email sudah terhubung dengan akun Google lain",
+        });
+      }
+
       // Update last login & foto jika berubah
       await db.execute(
-        "UPDATE users SET foto_profil = COALESCE(foto_profil, ?), updated_at = NOW() WHERE firebase_uid = ?",
-        [picture || null, uid]
+        `UPDATE users
+         SET firebase_uid = COALESCE(firebase_uid, ?),
+             foto_profil = COALESCE(foto_profil, ?),
+             updated_at = NOW()
+         WHERE id = ?`,
+        [uid, picture || null, user.id]
       );
       return res.json({
         success: true,
         message: "Login berhasil",
-        data: { ...existing[0], email, firebase_uid: uid },
+        data: { ...user, email, firebase_uid: uid },
       });
     }
 
