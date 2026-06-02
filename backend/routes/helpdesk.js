@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
+const FALLBACK_REPLY = "Maaf, sistem AI sedang mengalami gangguan sementara. Untuk bantuan cepat, silakan email bantuan@readbridge.id dengan detail masalah dan tangkapan layar.";
+
 /**
  * POST /api/helpdesk/chat
  * Endpoint untuk memproses percakapan pengguna dengan AI Helpdesk.
@@ -8,6 +10,7 @@ const router = express.Router();
 router.post("/chat", async (req, res) => {
   const { message } = req.body;
   const geminiKey = process.env.GEMINI_API_KEY;
+  const geminiModel = process.env.GEMINI_MODEL || "gemini-2.0-flash";
 
   if (!message) {
     return res.status(400).json({ success: false, message: "Pesan tidak boleh kosong" });
@@ -30,7 +33,7 @@ Gunakan *asterisk* ganda untuk huruf tebal bila perlu.
 Pertanyaan Pengguna: "${message}"`;
 
   try {
-    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
+    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
@@ -39,17 +42,22 @@ Pertanyaan Pengguna: "${message}"`;
       })
     });
     const data = await resp.json();
-    console.log("Gemini HTTP Status:", resp.status);
-    console.log("Gemini Response:", JSON.stringify(data));
-    if (data.candidates && data.candidates[0].content) {
-      let reply = data.candidates[0].content.parts[0].text.trim();
-      return res.json({ success: true, reply });
-    } else {
-      return res.status(500).json({ success: false, message: "Terjadi kesalahan internal AI", geminiResponse: data });
+
+    if (!resp.ok) {
+      console.error("Gemini API error:", resp.status, JSON.stringify(data));
+      return res.json({ success: true, reply: FALLBACK_REPLY });
     }
+
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    if (reply) {
+      return res.json({ success: true, reply });
+    }
+
+    console.error("Gemini response missing reply:", JSON.stringify(data));
+    return res.json({ success: true, reply: FALLBACK_REPLY });
   } catch(e) { 
     console.error("Gemini Error:", e); 
-    return res.status(500).json({ success: false, message: "Terjadi kesalahan internal AI", error: e.toString(), stack: e.stack });
+    return res.json({ success: true, reply: FALLBACK_REPLY });
   }
 });
 
