@@ -1,4 +1,4 @@
-const CACHE_NAME = 'readbridge-pwa-cache-v2';
+const CACHE_NAME = 'readbridge-pwa-cache-v3';
 const urlsToCache = [
   './index.html',
   './style.css',
@@ -47,7 +47,7 @@ self.addEventListener('fetch', event => {
   const isApiRequest = requestUrl.pathname.includes('/api/') || requestUrl.hostname.includes('readbridge-backend');
   
   // Exclude auth-related pages dari caching (ini penting untuk PWA redirect)
-  const isAuthPage = ['google-login', 'login', 'register', 'reset-password', 'minat'].some(
+  const isAuthPage = ['google-login', 'login', 'register', 'reset-password', 'minat', 'auth-google'].some(
     page => requestUrl.pathname.includes(page)
   );
 

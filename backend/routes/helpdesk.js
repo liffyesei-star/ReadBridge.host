@@ -14,6 +14,7 @@ const DEFAULT_MODELS = [
  * Endpoint untuk memproses percakapan pengguna dengan AI Helpdesk.
  */
 router.post("/chat", async (req, res) => {
+  try {
   const { message } = req.body;
   const geminiKey = process.env.GEMINI_API_KEY;
   const configuredModels = (process.env.GEMINI_MODEL || "")
@@ -88,6 +89,10 @@ Pertanyaan Pengguna: "${message}"`;
   } catch(e) { 
     console.error("Gemini Error:", e); 
     return res.json({ success: true, reply: FALLBACK_REPLY });
+  }
+  } catch (err) {
+    console.error("Helpdesk route error:", err);
+    return res.status(200).json({ success: true, reply: FALLBACK_REPLY });
   }
 });
 

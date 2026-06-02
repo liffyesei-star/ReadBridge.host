@@ -120,7 +120,7 @@ router.post("/login", authLimiter, async (req, res) => {
  * POST /api/auth/sync
  * Sinkronisasi akun Firebase Google ke database MySQL
  */
-router.post("/sync", authLimiter, async (req, res) => {
+router.post("/sync", async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader?.startsWith("Bearer ")) {
