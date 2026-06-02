@@ -47,7 +47,7 @@ Pertanyaan Pengguna: "${message}"`;
     }
   } catch(e) { 
     console.error("Gemini Error:", e); 
-    return res.status(500).json({ success: false, message: "Terjadi kesalahan internal AI" });
+    return res.status(500).json({ success: false, message: "Terjadi kesalahan internal AI", error: e.toString(), stack: e.stack });
   }
 });
 
