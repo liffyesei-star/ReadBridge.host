@@ -8,6 +8,11 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+
+// Polyfill fetch untuk versi Node.js yang lebih lama di Render
+if (!globalThis.fetch) {
+  globalThis.fetch = require("node-fetch");
+}
 const helmet = require("helmet");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
