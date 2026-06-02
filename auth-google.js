@@ -1,11 +1,11 @@
 /*
-  ReadBridge — Google Sign-In (redirect) shared handler
-  Safari-safe: always calls getRedirectResult on load; uses localStorage only for pending flag.
+  ReadBridge — Google Sign-In (redirect + popup fallback)
 */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getAuth,
   signInWithRedirect,
+  signInWithPopup,
   getRedirectResult,
   GoogleAuthProvider,
   setPersistence,
@@ -32,6 +32,18 @@ function log(...args) {
   console.log("[ReadBridge Auth]", ...args);
 }
 
+function setAuthStatus(text) {
+  const el = document.getElementById("rb-auth-status");
+  if (el) el.textContent = text;
+  log("status:", text);
+}
+
+function isMobileOrSafari() {
+  const ua = navigator.userAgent;
+  if (/iPhone|iPad|iPod|Android/i.test(ua)) return true;
+  return /Safari/i.test(ua) && !/Chrome|Chromium|CriOS|FxiOS/i.test(ua);
+}
+
 function isLoginPending() {
   return localStorage.getItem(PENDING_KEY) === "true";
 }
@@ -44,13 +56,22 @@ function markLoginPending() {
 function clearLoginPending() {
   localStorage.removeItem(PENDING_KEY);
   localStorage.removeItem("rb_login_started_at");
-  sessionStorage.removeItem("rb_google_login_pending");
 }
 
-/** URL params/hash setelah redirect dari Firebase */
 function looksLikeOAuthReturn() {
   const blob = `${window.location.search}${window.location.hash}`;
   return /apiKey=|authType=|state=|oobCode=|mode=signIn/i.test(blob);
+}
+
+async function unregisterServiceWorkers() {
+  if (!("serviceWorker" in navigator)) return;
+  try {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map((r) => r.unregister()));
+    if (regs.length) log("Service Worker di-unregister:", regs.length);
+  } catch (e) {
+    console.warn("[ReadBridge Auth] SW unregister:", e.message);
+  }
 }
 
 export function showLoginOverlay(message = "Menyiapkan login Google...", accent = "#2563EB") {
@@ -144,6 +165,8 @@ async function persistUserSession(user, syncOk) {
  * @param {{ redirectAfterLogin?: string, redirectIfNoInterests?: string, overlayAccent?: string }} config
  */
 export async function initGoogleAuth(config = {}) {
+  setAuthStatus("Memuat modul login...");
+  await unregisterServiceWorkers();
   log("init", window.location.href);
 
   const app = initializeApp(firebaseConfig);
@@ -151,7 +174,7 @@ export async function initGoogleAuth(config = {}) {
 
   try {
     await setPersistence(auth, browserLocalPersistence);
-    log("persistence: browserLocal");
+    log("persistence OK");
   } catch (e) {
     console.warn("[ReadBridge Auth] setPersistence:", e.message);
   }
@@ -164,16 +187,17 @@ export async function initGoogleAuth(config = {}) {
   async function completeLogin(user, source = "unknown") {
     if (loginHandled || !user) return;
     loginHandled = true;
-    log("completeLogin via", source, user.email);
+    log("completeLogin", source, user.email);
+    setAuthStatus("Login berhasil: " + user.email);
 
-    showLoginOverlay("Login Google berhasil, menyelesaikan...", config.overlayAccent || "#2563EB");
+    showLoginOverlay("Login Google berhasil...", config.overlayAccent || "#2563EB");
 
     let syncOk = false;
     try {
       await syncFirebaseUser(await user.getIdToken());
       syncOk = true;
     } catch (err) {
-      console.warn("[ReadBridge Auth] sync gagal, lanjut dengan token Firebase:", err.message);
+      console.warn("[ReadBridge Auth] sync gagal (login tetap jalan):", err.message);
     }
 
     await persistUserSession(user, syncOk);
@@ -187,23 +211,62 @@ export async function initGoogleAuth(config = {}) {
       try {
         const result = await getRedirectResult(auth);
         if (result?.user) {
-          log("getRedirectResult OK attempt", attempt);
+          log("getRedirectResult OK #" + attempt);
           return result.user;
         }
+        log("getRedirectResult null #" + attempt);
       } catch (err) {
-        console.warn(`[ReadBridge Auth] getRedirectResult #${attempt}:`, err.code || err.message);
+        console.warn("[ReadBridge Auth] getRedirectResult:", err.code || err.message);
         if (err.code === "auth/unauthorized-domain") {
           alert(
-            "Domain tidak diizinkan Firebase.\n\nTambahkan di Firebase Console → Authentication → Authorized domains:\nliffyesei-star.github.io"
+            "Domain tidak diizinkan di Firebase.\n\nBuka Firebase Console → Authentication → Authorized domains\n→ tambahkan: liffyesei-star.github.io"
           );
           clearLoginPending();
           hideLoginOverlay();
+          setAuthStatus("Error: unauthorized-domain");
           throw err;
         }
       }
-      if (attempt < 8) await wait(350);
+      if (attempt < 8) await wait(400);
     }
     return null;
+  }
+
+  async function loginWithPopup() {
+    loginHandled = false;
+    markLoginPending();
+    setAuthStatus("Membuka popup Google...");
+    showLoginOverlay("Membuka popup Google...", config.overlayAccent || "#2563EB");
+    try {
+      const result = await signInWithPopup(auth, provider);
+      clearLoginPending();
+      await completeLogin(result.user, "popup");
+    } catch (err) {
+      hideLoginOverlay();
+      clearLoginPending();
+      if (err.code === "auth/popup-closed-by-user" || err.code === "auth/cancelled-popup-request") {
+        setAuthStatus("Popup ditutup");
+        return;
+      }
+      if (err.code === "auth/popup-blocked") {
+        setAuthStatus("Popup diblokir — coba redirect");
+        alert("Popup diblokir browser. Mencoba metode redirect...");
+        return loginWithRedirect();
+      }
+      console.error("[ReadBridge Auth] popup error:", err);
+      setAuthStatus("Popup gagal: " + (err.code || err.message));
+      alert("Login popup gagal: " + (err.message || err.code) + "\n\nMencoba redirect...");
+      return loginWithRedirect();
+    }
+  }
+
+  async function loginWithRedirect() {
+    loginHandled = false;
+    markLoginPending();
+    setAuthStatus("Redirect ke Google...");
+    showLoginOverlay("Membuka halaman Google...", config.overlayAccent || "#2563EB");
+    log("signInWithRedirect");
+    return signInWithRedirect(auth, provider);
   }
 
   async function handleReturnFromGoogle() {
@@ -211,29 +274,30 @@ export async function initGoogleAuth(config = {}) {
     const oauthReturn = looksLikeOAuthReturn();
     const alreadyIn = localStorage.getItem("rb_is_logged_in") === "true" && localStorage.getItem("rb_token");
 
+    log("handleReturn", { pending, oauthReturn, alreadyIn, currentUser: !!auth.currentUser });
+
     if (alreadyIn && !pending && !oauthReturn) {
-      log("sudah login, redirect");
+      setAuthStatus("Sudah login, mengalihkan...");
       window.location.replace(getRedirectTarget(config));
       return;
     }
 
     if (pending || oauthReturn) {
       showLoginOverlay("Melanjutkan login Google...", config.overlayAccent || "#2563EB");
+      setAuthStatus("Memproses balasan dari Google...");
+    } else {
+      setAuthStatus("Siap — klik Masuk dengan Google");
     }
 
-    log("handleReturn pending=", pending, "oauthReturn=", oauthReturn);
-
-    // SELALU panggil getRedirectResult (tidak bergantung flag — Safari sering hapus sessionStorage)
     const userFromRedirect = await tryGetRedirectResult();
     if (userFromRedirect) {
-      await completeLogin(userFromRedirect, "getRedirectResult");
+      await completeLogin(userFromRedirect, "redirect");
       return;
     }
 
-    // Tunggu Firebase restore session dari IndexedDB
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 8; i++) {
       if (auth.currentUser) {
-        log("currentUser ready attempt", i + 1);
+        log("currentUser attempt", i + 1, auth.currentUser.email);
         await completeLogin(auth.currentUser, "currentUser");
         return;
       }
@@ -243,34 +307,47 @@ export async function initGoogleAuth(config = {}) {
     if (pending || oauthReturn) {
       hideLoginOverlay();
       clearLoginPending();
-      log("login pending tapi tidak ada user — kemungkinan redirect dibatalkan");
+      setAuthStatus("Gagal: sesi Google tidak ditemukan setelah redirect");
+      log("SILENT FAIL — pending was true but no firebase user");
+      alert(
+        "Login Google tidak selesai (tanpa error teknis).\n\n" +
+          "Coba:\n" +
+          "1. Pastikan domain liffyesei-star.github.io ada di Firebase → Authorized domains\n" +
+          "2. Clear cache situs ini\n" +
+          "3. Klik tombol lagi — di Chrome/PC akan pakai popup (lebih stabil)"
+      );
     }
   }
 
   auth.onAuthStateChanged((user) => {
     if (!user || loginHandled) return;
-    const shouldFinish = isLoginPending() || looksLikeOAuthReturn();
-    if (!shouldFinish) return;
+    if (!isLoginPending() && !looksLikeOAuthReturn()) return;
     log("onAuthStateChanged", user.email);
     setTimeout(() => {
-      if (!loginHandled) completeLogin(user, "onAuthStateChanged");
-    }, 800);
+      if (!loginHandled) completeLogin(user, "authState");
+    }, 600);
   });
 
+  // Desktop Chrome/Edge: popup lebih andal daripada redirect
   window.realGoogleLogin = function () {
-    loginHandled = false;
-    log("realGoogleLogin click");
-    showLoginOverlay("Membuka akun Google...", config.overlayAccent || "#2563EB");
-    markLoginPending();
-    signInWithRedirect(auth, provider).catch((err) => {
+    log("realGoogleLogin", { mobileSafari: isMobileOrSafari() });
+    if (isMobileOrSafari()) {
+      loginWithRedirect().catch((err) => {
+        hideLoginOverlay();
+        clearLoginPending();
+        console.error("[ReadBridge Auth] redirect:", err);
+        alert("Gagal login Google: " + (err.message || err.code));
+      });
+    } else {
+      loginWithPopup();
+    }
+  };
+
+  window.realGoogleLoginRedirect = function () {
+    loginWithRedirect().catch((err) => {
       hideLoginOverlay();
       clearLoginPending();
-      console.error("[ReadBridge Auth] signInWithRedirect:", err);
-      const hint =
-        err.code === "auth/unauthorized-domain"
-          ? "\n\nTambahkan liffyesei-star.github.io di Firebase → Authorized domains."
-          : "";
-      alert("Gagal membuka login Google: " + (err.message || err.code) + hint);
+      alert("Gagal redirect: " + (err.message || err.code));
     });
   };
 

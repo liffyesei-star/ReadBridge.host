@@ -126,11 +126,14 @@
     </div>
 
     <script type="module">
-        import { initGoogleAuth } from './auth-google.js?v=3';
+        import { initGoogleAuth } from './auth-google.js?v=4';
         initGoogleAuth({
             redirectAfterLogin: 'index.html',
             redirectIfNoInterests: 'minat.html',
             overlayAccent: '#4285F4'
+        }).catch((err) => {
+            console.error('[ReadBridge Auth] GAGAL INIT:', err);
+            alert('Modul login gagal: ' + err.message);
         });
     </script>
 
