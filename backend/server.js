@@ -36,11 +36,11 @@ const PORT = process.env.PORT || 5000;
 app.use(helmet());
 
 // CORS - izinkan frontend mengakses
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:5500,http://127.0.0.1:5500").split(",");
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:5500,http://127.0.0.1:5500,https://liffyesei-star.github.io").split(",");
 app.use(cors({
   origin: (origin, callback) => {
-    // Mengizinkan tanpa origin (misal dari postman) atau origin dari localhost/127.0.0.1 atau jika diset *
-    if (!origin || allowedOrigins.includes('*') || origin.includes('localhost') || origin.includes('127.0.0.1') || allowedOrigins.includes(origin)) {
+    // Mengizinkan tanpa origin, localhost, github.io, atau origin spesifik
+    if (!origin || allowedOrigins.includes('*') || origin.includes('localhost') || origin.includes('127.0.0.1') || origin.includes('github.io') || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("CORS tidak diizinkan untuk origin: " + origin));
