@@ -235,7 +235,7 @@
     </script>
 
     <!-- AI Helpdesk Floating Widget -->
-    <div id="ai-helpdesk-container" class="fixed bottom-6 right-6 z-[100] flex flex-col items-end pointer-events-none">
+    <div id="ai-helpdesk-container" class="fixed bottom-6 right-6 z-[100] flex flex-col items-end">
         <!-- Chat Window -->
         <div id="ai-chat-window" class="bg-surface-container-lowest border border-outline-variant/30 shadow-2xl rounded-2xl w-[350px] max-h-[500px] flex flex-col overflow-hidden transition-all duration-300 origin-bottom-right scale-0 opacity-0 mb-4 pointer-events-auto">
             <!-- Header -->
@@ -277,9 +277,8 @@
         </div>
 
         <!-- Floating Button -->
-        <button id="ai-chat-button" onclick="toggleHelpdeskChat()" class="bg-primary hover:bg-primary-container text-on-primary w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105 active:scale-95 pointer-events-auto group">
-            <span class="material-symbols-outlined text-[28px] group-hover:hidden">chat</span>
-            <span class="material-symbols-outlined text-[28px] hidden group-hover:block">smart_toy</span>
+        <button id="ai-chat-button" onclick="toggleHelpdeskChat()" class="bg-primary hover:bg-primary-container text-on-primary w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105 active:scale-95 cursor-pointer">
+            <span class="material-symbols-outlined text-[28px]">chat</span>
         </button>
     </div>
 
