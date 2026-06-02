@@ -524,6 +524,28 @@
 
                 <!-- Tab: Sistem & Diagnostik -->
                 <section id="tab-content-sistem" class="hidden bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl p-lg shadow-sm border border-outline-variant/30 flex-col gap-lg transition-opacity duration-300">
+                    <!-- PWA Installation Block -->
+                    <div class="border-b border-outline-variant/20 pb-lg mb-md">
+                        <h2 class="font-title-lg text-title-lg font-extrabold text-on-surface dark:text-on-primary-container border-b border-outline-variant/20 pb-2 mb-md">Aplikasi PWA (Progressive Web App)</h2>
+                        <p class="text-xs text-on-surface-variant dark:text-outline-variant leading-relaxed mb-md">Instal ReadBridge langsung ke layar beranda HP atau Desktop Anda untuk mendapatkan akses cepat, pengalaman layar penuh, dan performa yang lebih lancar.</p>
+                        
+                        <div class="bg-surface-container-low dark:bg-slate-900/50 border border-outline-variant/30 rounded-2xl p-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-md">
+                            <div class="flex items-center gap-sm">
+                                <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-[28px]" id="pwa-status-icon">install_mobile</span>
+                                </div>
+                                <div>
+                                    <p class="text-[11px] font-extrabold text-primary tracking-wider uppercase">PWA STATUS</p>
+                                    <h3 class="font-title-lg text-title-lg font-black text-on-surface dark:text-on-primary-container" id="pwa-status-text">Mendeteksi...</h3>
+                                </div>
+                            </div>
+                            
+                            <button id="pwa-install-btn" class="px-5 py-2.5 bg-primary hover:bg-primary-container text-on-primary font-bold text-xs rounded-xl transition-all shadow-sm shrink-0 w-full sm:w-auto text-center" style="display: none;">
+                                Pasang Aplikasi
+                            </button>
+                        </div>
+                    </div>
+
                     <div>
                         <h2 class="font-title-lg text-title-lg font-extrabold text-on-surface dark:text-on-primary-container border-b border-outline-variant/20 pb-2 mb-md">Diagnostik & Simulasi Data</h2>
                         <p class="text-xs text-on-surface-variant dark:text-outline-variant leading-relaxed mb-md">Kami menggunakan cache browser lokal (localStorage) untuk menyimpan simulasi profil, status keanggotaan BridgePass, ulasan stoik, bot interaktif, dan data lainnya.</p>
@@ -580,6 +602,7 @@
             initBridgePassSettings();
             initInterestsChips();
             initTypographySettings();
+            initPwaSettings();
         });
 
         // Tabs Logic
@@ -913,7 +936,142 @@
                 setTimeout(() => toast.remove(), 400);
             }, 3000);
         }
+
+        // PWA Installation Controller
+        let deferredPrompt = null;
+        
+        function initPwaSettings() {
+            const statusText = document.getElementById('pwa-status-text');
+            const statusIcon = document.getElementById('pwa-status-icon');
+            const installBtn = document.getElementById('pwa-install-btn');
+            
+            if (!statusText || !installBtn) return;
+            
+            // Check standalone mode (installed)
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            
+            if (isStandalone) {
+                statusText.innerHTML = 'Terpasang (App Mode) 📱';
+                statusText.className = "font-title-lg text-title-lg font-black text-emerald-500 dark:text-emerald-400";
+                statusIcon.innerHTML = 'phonelink_setup';
+                statusIcon.parentElement.className = "w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0";
+                installBtn.style.display = 'none';
+                return;
+            }
+            
+            // Detect iOS Safari
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            
+            if (isIOS) {
+                statusText.innerHTML = 'Tersedia di iOS Safari';
+                statusIcon.innerHTML = 'apple';
+                statusIcon.parentElement.className = "w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0";
+                installBtn.innerHTML = 'Petunjuk Pasang';
+                installBtn.className = "px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-xl transition-all shadow-sm shrink-0 w-full sm:w-auto text-center cursor-pointer";
+                installBtn.style.display = 'block';
+                installBtn.onclick = function() {
+                    toggleIosPwaModal(true);
+                };
+                return;
+            }
+            
+            // Android / Desktop Chrome with Prompt
+            if (deferredPrompt) {
+                statusText.innerHTML = 'Siap Dipasang ✨';
+                statusIcon.innerHTML = 'install_mobile';
+                statusIcon.parentElement.className = "w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0";
+                installBtn.innerHTML = 'Pasang Sekarang';
+                installBtn.className = "px-5 py-2.5 bg-primary hover:bg-primary-container text-on-primary font-bold text-xs rounded-xl transition-all shadow-sm shrink-0 w-full sm:w-auto text-center cursor-pointer";
+                installBtn.style.display = 'block';
+                installBtn.onclick = function() {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            alertFeedback('Terima kasih telah memasang ReadBridge! 🎉');
+                            statusText.innerHTML = 'Memasang...';
+                            installBtn.style.display = 'none';
+                        }
+                        deferredPrompt = null;
+                    });
+                };
+            } else {
+                statusText.innerHTML = 'Dapat Diinstal';
+                statusIcon.innerHTML = 'check_circle';
+                statusIcon.parentElement.className = "w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0";
+                installBtn.innerHTML = 'Pasang Aplikasi';
+                installBtn.className = "px-5 py-2.5 bg-primary hover:bg-primary-container text-on-primary font-bold text-xs rounded-xl transition-all shadow-sm shrink-0 w-full sm:w-auto text-center cursor-pointer";
+                installBtn.style.display = 'block';
+                installBtn.onclick = function() {
+                    alertFeedback('Gunakan menu browser Anda (titik tiga -> "Install app" atau "Add to Home Screen") jika tombol tidak merespons.');
+                };
+            }
+        }
+        
+        function toggleIosPwaModal(show) {
+            const modal = document.getElementById('ios-pwa-modal');
+            if (!modal) return;
+            if (show) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } else {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later.
+            deferredPrompt = e;
+            // Update UI notify the user they can install the PWA
+            initPwaSettings();
+        });
     </script>
+
+    <!-- iOS PWA Installation Modal -->
+    <div id="ios-pwa-modal" class="fixed inset-0 z-50 flex items-center justify-center p-md bg-slate-900/60 backdrop-blur-sm hidden animate-fadeIn" style="background-color: rgba(15, 23, 42, 0.6);">
+        <div class="bg-surface-container-lowest dark:bg-inverse-surface border border-outline-variant/30 rounded-3xl p-lg shadow-2xl max-w-sm w-full relative animate-scaleIn select-none">
+            <button onclick="toggleIosPwaModal(false)" class="absolute top-4 right-4 text-on-surface-variant dark:text-outline-variant hover:text-primary transition-colors focus:outline-none cursor-pointer">
+                <span class="material-symbols-outlined text-[24px]">close</span>
+            </button>
+            
+            <div class="flex flex-col items-center text-center gap-md">
+                <div class="w-16 h-16 rounded-3xl bg-amber-500/10 text-amber-500 flex items-center justify-center shadow-sm">
+                    <span class="material-symbols-outlined text-[36px]" style="font-variation-settings: 'FILL' 1;">apple</span>
+                </div>
+                <div>
+                    <h3 class="font-headline-md text-headline-md font-extrabold text-on-surface dark:text-on-primary-container">Petunjuk Instalasi iOS</h3>
+                    <p class="text-xs text-on-surface-variant dark:text-outline-variant mt-1">iOS Safari mewajibkan instalasi manual melalui tombol Bagi (Share).</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-col gap-md mt-lg border-t border-outline-variant/20 pt-lg text-left">
+                <div class="flex gap-sm items-start">
+                    <div class="w-7 h-7 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center shrink-0">1</div>
+                    <p class="text-xs text-on-surface dark:text-on-primary-container leading-relaxed">
+                        Klik tombol <strong>Bagi (Share)</strong> <span class="inline-flex align-middle text-primary"><span class="material-symbols-outlined text-[18px]">share</span></span> di bilah navigasi Safari bagian bawah.
+                    </p>
+                </div>
+                <div class="flex gap-sm items-start">
+                    <div class="w-7 h-7 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center shrink-0">2</div>
+                    <p class="text-xs text-on-surface dark:text-on-primary-container leading-relaxed">
+                        Gulir menu ke bawah lalu pilih opsi <strong>"Tambahkan ke Layar Utama"</strong> (Add to Home Screen) <span class="inline-flex align-middle text-primary"><span class="material-symbols-outlined text-[18px]">add_to_home_screen</span></span>.
+                    </p>
+                </div>
+                <div class="flex gap-sm items-start">
+                    <div class="w-7 h-7 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center shrink-0">3</div>
+                    <p class="text-xs text-on-surface dark:text-on-primary-container leading-relaxed">
+                        Klik tombol <strong>Tambah (Add)</strong> di pojok kanan atas layar Safari Anda untuk memasang aplikasi.
+                    </p>
+                </div>
+            </div>
+            
+            <button onclick="toggleIosPwaModal(false)" class="mt-lg w-full py-3 bg-primary hover:bg-primary-container text-on-primary rounded-full font-bold transition-all text-xs shadow-md cursor-pointer">
+                Saya Mengerti
+            </button>
+        </div>
+    </div>
 
     <!-- PWA Service Worker Registration -->
     <script>

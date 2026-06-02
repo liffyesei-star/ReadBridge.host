@@ -623,6 +623,141 @@
         });
     </script>
 
+    <!-- Floating Button to Toggle Mobile Widgets Drawer (Right Sidebar Content) -->
+    <button id="mobile-widgets-toggle" class="fixed bottom-[88px] right-lg lg:hidden bg-secondary text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all rounded-full p-4 flex items-center justify-center z-40 cursor-pointer" onclick="toggleMobileWidgets(true)">
+      <span class="material-symbols-outlined text-[24px]">widgets</span>
+    </button>
+
+    <!-- Mobile Widgets Drawer -->
+    <div id="mobile-widgets-drawer" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm justify-end transition-opacity duration-300" style="background-color: rgba(15, 23, 42, 0.6);">
+      <!-- Backdrop close click handler -->
+      <div class="absolute inset-0 cursor-pointer" onclick="toggleMobileWidgets(false)"></div>
+      
+      <!-- Drawer Content -->
+      <aside id="mobile-widgets-container" class="relative w-80 max-w-[85vw] bg-surface dark:bg-inverse-surface h-full shadow-2xl p-lg flex flex-col gap-lg overflow-y-auto transform translate-x-full transition-transform duration-300 select-none">
+        <!-- Header / Close button -->
+        <div class="flex justify-between items-center border-b border-outline-variant/30 pb-sm mb-xs">
+          <h2 class="font-title-lg text-title-lg text-on-surface dark:text-on-primary-container font-black">Info & Topik</h2>
+          <button onclick="toggleMobileWidgets(false)" class="text-on-surface-variant dark:text-outline-variant hover:text-primary transition-colors focus:outline-none cursor-pointer">
+            <span class="material-symbols-outlined text-[24px]">close</span>
+          </button>
+        </div>
+
+        <!-- Tentang Klub Widget -->
+        <div class="bg-surface rounded-xl border border-primary/10 p-md relative overflow-hidden group">
+          <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary via-secondary to-tertiary"></div>
+          <h3 class="font-title-lg text-[16px] text-on-surface dark:text-on-primary-container border-b border-surface-container-high pb-sm mb-sm flex items-center gap-xs font-bold">
+            <span class="material-symbols-outlined text-primary">info</span> Tentang Klub
+          </h3>
+          <p class="font-body-md text-xs text-on-surface-variant dark:text-outline-variant/80 leading-relaxed mb-md">
+            Klub resmi untuk para pecinta karya fiksi di ReadBridge. Tempat berkumpul, berdiskusi, dan berbagi kecintaan pada novel, cerita pendek, dan literatur imajinatif lainnya.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <span class="bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded-full font-label-sm text-[11px] cursor-pointer hover:bg-primary/20 transition-all duration-200">Sastra</span>
+            <span class="bg-secondary/10 text-secondary border border-secondary/20 px-3 py-1 rounded-full font-label-sm text-[11px] cursor-pointer hover:bg-secondary/20 transition-all duration-200">Novel</span>
+          </div>
+        </div>
+
+        <!-- Topik Hangat Widget -->
+        <div class="bg-surface rounded-xl border border-primary/10 p-md relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-secondary to-primary"></div>
+          <h3 class="font-title-lg text-[16px] text-on-surface dark:text-on-primary-container border-b border-surface-container-high pb-sm mb-sm flex items-center gap-xs font-bold">
+            <span class="material-symbols-outlined text-secondary">trending_up</span> Topik Hangat
+          </h3>
+          <ul class="flex flex-col gap-sm">
+            <li class="hover:bg-surface-container-low dark:hover:bg-slate-800 p-1.5 rounded-lg transition-all duration-200">
+              <a class="group flex flex-col cursor-pointer" href="#" onclick="toggleMobileWidgets(false)">
+                <span class="font-label-md text-xs text-on-surface dark:text-on-primary-container group-hover:text-primary transition-colors flex items-center font-semibold">
+                  <span class="text-secondary font-bold mr-1">#</span>NovelPopuler
+                </span>
+                <span class="font-label-sm text-[10px] text-on-surface-variant dark:text-outline-variant/60 ml-3">1.2k diskusi</span>
+              </a>
+            </li>
+            <li class="hover:bg-surface-container-low dark:hover:bg-slate-800 p-1.5 rounded-lg transition-all duration-200">
+              <a class="group flex flex-col cursor-pointer" href="#" onclick="toggleMobileWidgets(false)">
+                <span class="font-label-md text-xs text-on-surface dark:text-on-primary-container group-hover:text-primary transition-colors flex items-center font-semibold">
+                  <span class="text-secondary font-bold mr-1">#</span>RekomendasiFiksi
+                </span>
+                <span class="font-label-sm text-[10px] text-on-surface-variant dark:text-outline-variant/60 ml-3">856 diskusi</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Daftar Anggota Widget -->
+        <div class="bg-surface rounded-xl border border-primary/10 p-md relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary to-tertiary"></div>
+          <h3 class="font-title-lg text-[16px] text-on-surface dark:text-on-primary-container border-b border-surface-container-high pb-sm mb-sm flex justify-between items-center font-bold">
+            <span class="flex items-center gap-xs">
+              <span class="material-symbols-outlined text-primary">groups</span> Anggota
+            </span>
+            <span class="bg-primary/10 text-primary px-2.5 py-0.5 rounded-full text-[11px] font-bold border border-primary/20">2.8k</span>
+          </h3>
+
+          <div class="flex flex-col mt-sm gap-2">
+            <div class="flex items-center gap-3 hover:bg-surface-container-low dark:hover:bg-slate-800 p-1.5 rounded-lg cursor-pointer transition-colors group">
+              <div class="relative">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4" class="w-7 h-7 rounded-full object-cover group-hover:scale-105 transition-transform duration-200 shrink-0">
+                <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-surface rounded-full"></div>
+              </div>
+              <span class="font-label-md text-xs text-on-surface dark:text-on-primary-container font-medium truncate group-hover:text-primary transition-colors">Siswa Indonesia</span>
+            </div>
+            <div class="flex items-center gap-3 hover:bg-surface-container-low dark:hover:bg-slate-800 p-1.5 rounded-lg cursor-pointer transition-colors group">
+              <div class="relative">
+                <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" class="w-7 h-7 rounded-full object-cover group-hover:scale-105 transition-transform duration-200 shrink-0">
+                <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-surface rounded-full"></div>
+              </div>
+              <span class="font-label-md text-xs text-on-surface dark:text-on-primary-container font-medium truncate group-hover:text-primary transition-colors">Siti Aminah</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buku Rekomendasi Widget -->
+        <div class="bg-surface rounded-xl border border-primary/10 p-md relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-tertiary to-secondary"></div>
+          <h3 class="font-title-lg text-[16px] text-on-surface dark:text-on-primary-container border-b border-surface-container-high pb-sm mb-sm flex items-center gap-xs font-bold">
+            <span class="material-symbols-outlined text-tertiary">star</span> Buku Rekomendasi
+          </h3>
+          <div class="flex flex-col gap-md mt-sm">
+            <a href="detail.html" class="flex gap-sm items-center cursor-pointer group hover:bg-surface-container-low dark:hover:bg-slate-800 p-1.5 rounded-lg transition-all duration-200 border border-transparent hover:border-primary/10 shrink-0">
+              <div class="w-10 h-14 bg-surface-container-highest rounded flex items-center justify-center overflow-hidden border border-outline-variant flex-shrink-0 group-hover:scale-105 transition-all">
+                <img alt="Book cover" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXUDfExqL3kiH5HpJqA3Rx-Ahaz0_lfHsDtiEc3nHqrVX6c2fI80nMaYXLD2Knjh37xVxbeEQ3hFnLzcZeXLpVpbHO7GCzSy1hnCtXo_qwqtU3sXXgAmLFifphjLqAPZyunIPpTzpmzCBEEKmtmqfRfFXNOIW7u-CcpbtT66h3zhNajQSYzZAVkWJAHX1Avd0Rs5i8KI55Hv_wzD5yJMQFwbVctiZM-mNKJweLUA3pgb4rVdnwhwQRhGP8hkS4gEyWO0l2Pqr5raY" />
+              </div>
+              <div>
+                <h4 class="font-label-md text-xs text-on-surface dark:text-on-primary-container line-clamp-2 group-hover:text-primary transition-colors font-semibold">Cantik Itu Luka</h4>
+                <p class="font-label-sm text-[10px] text-secondary">Eka Kurniawan</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Toggle Mobile Widgets Logic -->
+    <script>
+      function toggleMobileWidgets(show) {
+        const drawer = document.getElementById('mobile-widgets-drawer');
+        const container = document.getElementById('mobile-widgets-container');
+        if (!drawer || !container) return;
+        
+        if (show) {
+          drawer.classList.remove('hidden');
+          drawer.classList.add('flex');
+          setTimeout(() => {
+            container.classList.remove('translate-x-full');
+            container.classList.add('translate-x-0');
+          }, 50);
+        } else {
+          container.classList.remove('translate-x-0');
+          container.classList.add('translate-x-full');
+          setTimeout(() => {
+            drawer.classList.add('hidden');
+            drawer.classList.remove('flex');
+          }, 300);
+        }
+      }
+    </script>
+
     <!-- PWA Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {
