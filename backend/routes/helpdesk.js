@@ -2,6 +2,12 @@ const express = require("express");
 const router = express.Router();
 
 const FALLBACK_REPLY = "Maaf, sistem AI sedang mengalami gangguan sementara. Untuk bantuan cepat, silakan email bantuan@readbridge.id dengan detail masalah dan tangkapan layar.";
+const DEFAULT_MODELS = [
+  "gemini-2.5-flash-lite",
+  "gemini-flash-lite-latest",
+  "gemini-3.1-flash-lite",
+  "gemini-2.5-flash",
+];
 
 /**
  * POST /api/helpdesk/chat
@@ -10,7 +16,11 @@ const FALLBACK_REPLY = "Maaf, sistem AI sedang mengalami gangguan sementara. Unt
 router.post("/chat", async (req, res) => {
   const { message } = req.body;
   const geminiKey = process.env.GEMINI_API_KEY;
-  const geminiModel = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+  const configuredModels = (process.env.GEMINI_MODEL || "")
+    .split(",")
+    .map((model) => model.trim())
+    .filter(Boolean);
+  const geminiModels = [...new Set([...configuredModels, ...DEFAULT_MODELS])];
 
   if (!message) {
     return res.status(400).json({ success: false, message: "Pesan tidak boleh kosong" });
@@ -33,27 +43,47 @@ Gunakan *asterisk* ganda untuk huruf tebal bila perlu.
 Pertanyaan Pengguna: "${message}"`;
 
   try {
-    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        contents: [{ parts: [{ text: systemPrompt }] }], 
-        generationConfig: { temperature: 0.7, maxOutputTokens: 250 } 
-      })
-    });
-    const data = await resp.json();
+    for (const model of geminiModels) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 12000);
+      let resp;
+      let data;
 
-    if (!resp.ok) {
-      console.error("Gemini API error:", resp.status, JSON.stringify(data));
-      return res.json({ success: true, reply: FALLBACK_REPLY });
+      try {
+        resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: systemPrompt }] }],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 400,
+              thinkingConfig: { thinkingBudget: 0 },
+            },
+          }),
+        });
+        data = await resp.json();
+      } finally {
+        clearTimeout(timeout);
+      }
+
+      if (!resp.ok) {
+        console.error("Gemini API error:", model, resp.status, JSON.stringify(data));
+        continue;
+      }
+
+      const reply = data.candidates?.[0]?.content?.parts
+        ?.map((part) => part.text || "")
+        .join("")
+        .trim();
+      if (reply) {
+        return res.json({ success: true, reply });
+      }
+
+      console.error("Gemini response missing reply:", model, JSON.stringify(data));
     }
 
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-    if (reply) {
-      return res.json({ success: true, reply });
-    }
-
-    console.error("Gemini response missing reply:", JSON.stringify(data));
     return res.json({ success: true, reply: FALLBACK_REPLY });
   } catch(e) { 
     console.error("Gemini Error:", e); 
