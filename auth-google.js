@@ -1,5 +1,5 @@
 /*
-  ReadBridge — Google Sign-In (redirect + popup fallback)
+  ReadBridge — Google Sign-In (redirect-first, logout-aware)
 */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
@@ -10,6 +10,7 @@ import {
   GoogleAuthProvider,
   setPersistence,
   browserLocalPersistence,
+  signOut,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -23,8 +24,22 @@ const firebaseConfig = {
 };
 
 const API_BASE = "https://readbridge-backend-2whx.onrender.com";
-const SYNC_RETRY_DELAYS = [0, 1500, 3000, 6000];
+const SYNC_RETRY_DELAYS = [0, 1500, 3000];
 const PENDING_KEY = "rb_login_in_progress";
+export const LOGOUT_KEY = "rb_explicit_logout";
+
+const RB_AUTH_KEYS = [
+  "rb_token",
+  "rb_is_logged_in",
+  "rb_is_synced",
+  "rb_username",
+  "rb_email",
+  "rb_uid",
+  "rb_profile_pic",
+  "rb_user_email",
+];
+
+let sharedAuth = null;
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -38,17 +53,12 @@ function setAuthStatus(text) {
   log("status:", text);
 }
 
-function isMobileOrSafari() {
-  const ua = navigator.userAgent;
-  if (/iPhone|iPad|iPod|Android/i.test(ua)) return true;
-  return /Safari/i.test(ua) && !/Chrome|Chromium|CriOS|FxiOS/i.test(ua);
-}
-
 function isLoginPending() {
   return localStorage.getItem(PENDING_KEY) === "true";
 }
 
 function markLoginPending() {
+  localStorage.removeItem(LOGOUT_KEY);
   localStorage.setItem(PENDING_KEY, "true");
   localStorage.setItem("rb_login_started_at", String(Date.now()));
 }
@@ -58,9 +68,37 @@ function clearLoginPending() {
   localStorage.removeItem("rb_login_started_at");
 }
 
+function isExplicitLogout() {
+  return localStorage.getItem(LOGOUT_KEY) === "true";
+}
+
 function looksLikeOAuthReturn() {
   const blob = `${window.location.search}${window.location.hash}`;
   return /apiKey=|authType=|state=|oobCode=|mode=signIn/i.test(blob);
+}
+
+function stripOAuthParamsFromUrl() {
+  if (!looksLikeOAuthReturn() || !window.history.replaceState) return;
+  const clean = window.location.pathname + window.location.search.replace(/[?&](apiKey|authType|state|mode)=[^&]*/g, "").replace(/^\?$/, "");
+  window.history.replaceState({}, document.title, clean || window.location.pathname);
+}
+
+export function clearLocalAuthSession() {
+  RB_AUTH_KEYS.forEach((k) => localStorage.removeItem(k));
+  clearLoginPending();
+}
+
+export async function logoutReadBridge() {
+  localStorage.setItem(LOGOUT_KEY, "true");
+  clearLocalAuthSession();
+  if (sharedAuth) {
+    try {
+      await signOut(sharedAuth);
+      log("Firebase signOut OK");
+    } catch (e) {
+      console.warn("[ReadBridge Auth] signOut:", e.message);
+    }
+  }
 }
 
 async function unregisterServiceWorkers() {
@@ -97,7 +135,7 @@ export function hideLoginOverlay() {
   document.getElementById("login-overlay")?.remove();
 }
 
-async function fetchWithTimeout(url, options = {}, timeoutMs = 30000) {
+async function fetchWithTimeout(url, options = {}, timeoutMs = 25000) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -112,7 +150,7 @@ async function syncFirebaseUser(idToken) {
   for (let i = 0; i < SYNC_RETRY_DELAYS.length; i++) {
     if (SYNC_RETRY_DELAYS[i] > 0) await wait(SYNC_RETRY_DELAYS[i]);
     showLoginOverlay(
-      i === 0 ? "Menyinkronkan akun ke server..." : `Server menyiapkan akun (${i + 1}/${SYNC_RETRY_DELAYS.length})...`
+      i === 0 ? "Menyinkronkan akun ke server..." : `Menyinkronkan (${i + 1}/${SYNC_RETRY_DELAYS.length})...`
     );
     try {
       const response = await fetchWithTimeout(
@@ -121,7 +159,7 @@ async function syncFirebaseUser(idToken) {
           method: "POST",
           headers: { Authorization: `Bearer ${idToken}`, "Content-Type": "application/json" },
         },
-        25000
+        20000
       );
       const raw = await response.text();
       let data = {};
@@ -148,6 +186,10 @@ function getRedirectTarget(config) {
   return config.redirectAfterLogin || "index.html";
 }
 
+function hasLocalAppSession() {
+  return localStorage.getItem("rb_is_logged_in") === "true" && !!localStorage.getItem("rb_token");
+}
+
 async function persistUserSession(user, syncOk) {
   const idToken = await user.getIdToken();
   localStorage.setItem("rb_token", idToken);
@@ -157,6 +199,7 @@ async function persistUserSession(user, syncOk) {
   localStorage.setItem("rb_uid", user.uid);
   if (user.photoURL) localStorage.setItem("rb_profile_pic", user.photoURL);
   if (syncOk) localStorage.setItem("rb_is_synced", "true");
+  localStorage.removeItem(LOGOUT_KEY);
   clearLoginPending();
   return idToken;
 }
@@ -171,6 +214,7 @@ export async function initGoogleAuth(config = {}) {
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  sharedAuth = auth;
 
   try {
     await setPersistence(auth, browserLocalPersistence);
@@ -183,9 +227,14 @@ export async function initGoogleAuth(config = {}) {
   provider.setCustomParameters({ prompt: "select_account" });
 
   let loginHandled = false;
+  let userInitiatedLogin = false;
 
   async function completeLogin(user, source = "unknown") {
     if (loginHandled || !user) return;
+    if (!userInitiatedLogin && !isLoginPending() && !looksLikeOAuthReturn()) {
+      log("skip completeLogin — bukan login aktif:", source);
+      return;
+    }
     loginHandled = true;
     log("completeLogin", source, user.email);
     setAuthStatus("Login berhasil: " + user.email);
@@ -201,13 +250,14 @@ export async function initGoogleAuth(config = {}) {
     }
 
     await persistUserSession(user, syncOk);
+    stripOAuthParamsFromUrl();
     showLoginOverlay("Mengalihkan...");
     await wait(300);
     window.location.replace(getRedirectTarget(config));
   }
 
   async function tryGetRedirectResult() {
-    for (let attempt = 1; attempt <= 8; attempt++) {
+    for (let attempt = 1; attempt <= 10; attempt++) {
       try {
         const result = await getRedirectResult(auth);
         if (result?.user) {
@@ -227,12 +277,13 @@ export async function initGoogleAuth(config = {}) {
           throw err;
         }
       }
-      if (attempt < 8) await wait(400);
+      if (attempt < 10) await wait(350);
     }
     return null;
   }
 
   async function loginWithPopup() {
+    userInitiatedLogin = true;
     loginHandled = false;
     markLoginPending();
     setAuthStatus("Membuka popup Google...");
@@ -244,23 +295,25 @@ export async function initGoogleAuth(config = {}) {
     } catch (err) {
       hideLoginOverlay();
       clearLoginPending();
+      userInitiatedLogin = false;
       if (err.code === "auth/popup-closed-by-user" || err.code === "auth/cancelled-popup-request") {
         setAuthStatus("Popup ditutup");
         return;
       }
       if (err.code === "auth/popup-blocked") {
-        setAuthStatus("Popup diblokir — coba redirect");
-        alert("Popup diblokir browser. Mencoba metode redirect...");
+        setAuthStatus("Popup diblokir — pakai redirect");
+        alert("Popup diblokir. Mencoba redirect...");
         return loginWithRedirect();
       }
       console.error("[ReadBridge Auth] popup error:", err);
-      setAuthStatus("Popup gagal: " + (err.code || err.message));
-      alert("Login popup gagal: " + (err.message || err.code) + "\n\nMencoba redirect...");
+      setAuthStatus("Popup gagal — pakai redirect");
+      alert("Popup gagal: " + (err.message || err.code) + "\n\nMencoba redirect...");
       return loginWithRedirect();
     }
   }
 
   async function loginWithRedirect() {
+    userInitiatedLogin = true;
     loginHandled = false;
     markLoginPending();
     setAuthStatus("Redirect ke Google...");
@@ -269,14 +322,33 @@ export async function initGoogleAuth(config = {}) {
     return signInWithRedirect(auth, provider);
   }
 
+  async function ensureLoggedOutState() {
+    if (!isExplicitLogout()) return false;
+    setAuthStatus("Keluar dari akun Google...");
+    if (auth.currentUser) {
+      try {
+        await signOut(auth);
+        log("signed out after explicit logout");
+      } catch (e) {
+        console.warn("[ReadBridge Auth] signOut on login page:", e.message);
+      }
+    }
+    clearLocalAuthSession();
+    hideLoginOverlay();
+    setAuthStatus("Silakan masuk dengan Google");
+    return true;
+  }
+
   async function handleReturnFromGoogle() {
+    if (await ensureLoggedOutState()) return;
+
     const pending = isLoginPending();
     const oauthReturn = looksLikeOAuthReturn();
-    const alreadyIn = localStorage.getItem("rb_is_logged_in") === "true" && localStorage.getItem("rb_token");
+    const alreadyIn = hasLocalAppSession();
 
     log("handleReturn", { pending, oauthReturn, alreadyIn, currentUser: !!auth.currentUser });
 
-    if (alreadyIn && !pending && !oauthReturn) {
+    if (alreadyIn && !pending && !oauthReturn && !isExplicitLogout()) {
       setAuthStatus("Sudah login, mengalihkan...");
       window.location.replace(getRedirectTarget(config));
       return;
@@ -285,8 +357,10 @@ export async function initGoogleAuth(config = {}) {
     if (pending || oauthReturn) {
       showLoginOverlay("Melanjutkan login Google...", config.overlayAccent || "#2563EB");
       setAuthStatus("Memproses balasan dari Google...");
+      userInitiatedLogin = true;
     } else {
       setAuthStatus("Siap — klik Masuk dengan Google");
+      return;
     }
 
     const userFromRedirect = await tryGetRedirectResult();
@@ -295,26 +369,24 @@ export async function initGoogleAuth(config = {}) {
       return;
     }
 
-    for (let i = 0; i < 8; i++) {
-      if (auth.currentUser) {
-        log("currentUser attempt", i + 1, auth.currentUser.email);
-        await completeLogin(auth.currentUser, "currentUser");
-        return;
-      }
-      await wait(500);
+    if (auth.currentUser && (pending || oauthReturn)) {
+      await completeLogin(auth.currentUser, "currentUser-after-oauth");
+      return;
     }
 
     if (pending || oauthReturn) {
       hideLoginOverlay();
       clearLoginPending();
+      userInitiatedLogin = false;
+      stripOAuthParamsFromUrl();
       setAuthStatus("Gagal: sesi Google tidak ditemukan setelah redirect");
-      log("SILENT FAIL — pending was true but no firebase user");
+      log("redirect finished without firebase user");
       alert(
-        "Login Google tidak selesai (tanpa error teknis).\n\n" +
+        "Login Google tidak selesai.\n\n" +
           "Coba:\n" +
-          "1. Pastikan domain liffyesei-star.github.io ada di Firebase → Authorized domains\n" +
-          "2. Clear cache situs ini\n" +
-          "3. Klik tombol lagi — di Chrome/PC akan pakai popup (lebih stabil)"
+          "1. Domain liffyesei-star.github.io di Firebase → Authorized domains\n" +
+          "2. Hapus data situs / Incognito\n" +
+          "3. Tutup PWA, buka lewat Safari/Chrome biasa dulu"
       );
     }
   }
@@ -324,32 +396,30 @@ export async function initGoogleAuth(config = {}) {
     if (!isLoginPending() && !looksLikeOAuthReturn()) return;
     log("onAuthStateChanged", user.email);
     setTimeout(() => {
-      if (!loginHandled) completeLogin(user, "authState");
-    }, 600);
+      if (!loginHandled && (isLoginPending() || looksLikeOAuthReturn())) {
+        completeLogin(user, "authState");
+      }
+    }, 400);
   });
 
-  // Desktop Chrome/Edge: popup lebih andal daripada redirect
+  // Redirect = metode yang jalan di Safari; dipakai default untuk semua browser/PWA
   window.realGoogleLogin = function () {
-    log("realGoogleLogin", { mobileSafari: isMobileOrSafari() });
-    if (isMobileOrSafari()) {
-      loginWithRedirect().catch((err) => {
-        hideLoginOverlay();
-        clearLoginPending();
-        console.error("[ReadBridge Auth] redirect:", err);
-        alert("Gagal login Google: " + (err.message || err.code));
-      });
-    } else {
-      loginWithPopup();
-    }
-  };
-
-  window.realGoogleLoginRedirect = function () {
+    log("realGoogleLogin → redirect");
     loginWithRedirect().catch((err) => {
       hideLoginOverlay();
       clearLoginPending();
-      alert("Gagal redirect: " + (err.message || err.code));
+      userInitiatedLogin = false;
+      console.error("[ReadBridge Auth] redirect:", err);
+      alert("Gagal login Google: " + (err.message || err.code));
     });
   };
+
+  window.realGoogleLoginPopup = function () {
+    log("realGoogleLoginPopup");
+    loginWithPopup();
+  };
+
+  window.realGoogleLoginRedirect = window.realGoogleLogin;
 
   await handleReturnFromGoogle();
 }
