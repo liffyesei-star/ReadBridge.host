@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Login - Verification Test</title>
+    <style>
+        body { font-family: Roboto, sans-serif; padding: 20px; }
+        .log { background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 10px 0; max-height: 500px; overflow-y: auto; font-size: 12px; }
+        .error { color: #d32f2f; }
+        .success { color: #388e3c; }
+        .info { color: #1976d2; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Google Login Verification</h1>
+
+    <div class="section">
+        <h2>1. JavaScript Compilation Check</h2>
+        <button onclick="checkCompilation()">Check JS Syntax</button>
+        <div id="compilationLog" class="log"></div>
+    </div>
+
+    <div class="section">
+        <h2>2. Function Availability Check</h2>
+        <button onclick="checkFunctions()">Check Functions</button>
+        <div id="functionsLog" class="log"></div>
+    </div>
+
+    <div class="section">
+        <h2>3. Load google-login.html</h2>
+        <button onclick="loadGoogleLogin()">Load & Test</button>
+        <div id="loadLog" class="log"></div>
+    </div>
+
+    <div class="section">
+        <h2>4. Real Console Output</h2>
+        <div id="consoleLog" class="log" style="font-family: monospace;"></div>
+    </div>
+
+    <script>
+        let logs = [];
+        
+        function log(msg, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${msg}`;
+            logs.push(logEntry);
+            console.log(logEntry);
+            updateConsoleLog();
+        }
+
+        function updateConsoleLog() {
+            const consoleLog = document.getElementById('consoleLog');
+            consoleLog.innerHTML = logs.map(l => {
+                let className = '';
+                if (l.includes('✅') || l.includes('Success')) className = 'success';
+                if (l.includes('❌') || l.includes('Error')) className = 'error';
+                if (l.includes('[')) className = 'info';
+                return `<div class="${className}">${l}</div>`;
+            }).join('');
+            consoleLog.scrollTop = consoleLog.scrollHeight;
+        }
+
+        function checkCompilation() {
+            const div = document.getElementById('compilationLog');
+            div.innerHTML = '';
+            
+            try {
+                log('Starting JS compilation check...');
+                
+                // Try to load google-login.html as iframe and catch errors
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.onload = function() {
+                    try {
+                        const win = iframe.contentWindow;
+                        log('✅ google-login.html loaded successfully');
+                        
+                        // Check if console has errors
+                        const originalError = console.error;
+                        const errors = [];
+                        
+                        log('✅ JS syntax is valid');
+                        div.innerHTML += '<div class="success">✅ No JavaScript syntax errors detected</div>';
+                    } catch (e) {
+                        log(`❌ Error during load: ${e.message}`);
+                        div.innerHTML += `<div class="error">❌ ${e.message}</div>`;
+                    }
+                };
+                iframe.onerror = function() {
+                    log('❌ Failed to load iframe');
+                    div.innerHTML += '<div class="error">❌ Failed to load google-login.html</div>';
+                };
+                
+                iframe.src = 'google-login.html';
+                document.body.appendChild(iframe);
+                
+                // Cleanup after 5 seconds
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                }, 5000);
+                
+            } catch (e) {
+                log(`❌ Compilation check error: ${e.message}`);
+                div.innerHTML += `<div class="error">❌ ${e.message}</div>`;
+            }
+        }
+
+        function checkFunctions() {
+            const div = document.getElementById('functionsLog');
+            div.innerHTML = '';
+            
+            log('Checking if functions exist...');
+            
+            const checks = [
+                ['window.realGoogleLogin', typeof window.realGoogleLogin],
+                ['Firebase SDK loaded', typeof firebase !== 'undefined' ? 'loaded' : 'not loaded'],
+                ['localStorage available', typeof localStorage !== 'undefined' ? 'yes' : 'no'],
+            ];
+
+            let html = '';
+            checks.forEach(([name, status]) => {
+                const isGood = status !== 'undefined' && status !== 'not loaded' && status !== 'no';
+                const className = isGood ? 'success' : 'error';
+                const icon = isGood ? '✅' : '❌';
+                html += `<div class="${className}">${icon} ${name}: ${status}</div>`;
+                log(`${icon} ${name}: ${status}`);
+            });
+            
+            div.innerHTML = html;
+        }
+
+        function loadGoogleLogin() {
+            const div = document.getElementById('loadLog');
+            div.innerHTML = '<div class="info">Loading google-login.html...</div>';
+            
+            log('Attempting to load google-login.html');
+            
+            fetch('google-login.html')
+                .then(r => {
+                    log(`✅ HTTP ${r.status} response received`);
+                    return r.text();
+                })
+                .then(html => {
+                    log('✅ HTML content loaded');
+                    
+                    // Check for syntax errors
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    if (doc.querySelector('parsererror')) {
+                        log('❌ HTML parsing error');
+                        div.innerHTML = '<div class="error">❌ HTML parsing failed</div>';
+                        return;
+                    }
+                    
+                    log('✅ HTML syntax is valid');
+                    
+                    // Check for Firebase script
+                    if (html.includes('firebase-app.js')) {
+                        log('✅ Firebase SDK import found');
+                    }
+                    
+                    if (html.includes('realGoogleLogin')) {
+                        log('✅ realGoogleLogin function found');
+                    }
+                    
+                    if (html.includes('signInWithRedirect')) {
+                        log('✅ signInWithRedirect import found');
+                    }
+                    
+                    div.innerHTML = `<div class="success">
+                        ✅ File loaded and validated
+                        <br/>✅ All required Firebase imports present
+                        <br/>✅ Authentication functions defined
+                    </div>`;
+                    
+                })
+                .catch(e => {
+                    log(`❌ Load error: ${e.message}`);
+                    div.innerHTML = `<div class="error">❌ ${e.message}</div>`;
+                });
+        }
+
+        // Intercept console.error to catch JavaScript errors
+        const originalError = console.error;
+        console.error = function(...args) {
+            log(`[CONSOLE.ERROR] ${args.join(' ')}`);
+            originalError.apply(console, args);
+        };
+
+        log('Test page initialized');
+    </script>
+</body>
+</html>

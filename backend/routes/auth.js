@@ -12,11 +12,29 @@ const { verifyToken } = require("../middleware/auth");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const rateLimit = require("express-rate-limit");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   message: { success: false, message: "Terlalu banyak percobaan login." },
+});
+
+// Email transporter configuration (menggunakan environment variables)
+const emailTransporter = nodemailer.createTransport({
+  service: process.env.EMAIL_SERVICE || 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
+
+// Rate limiter khusus untuk forgot-password (lebih ketat)
+const forgotPasswordLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 jam
+  max: 3,
+  message: { success: false, message: "Terlalu banyak percobaan reset password. Coba lagi 1 jam lagi." },
 });
 
 /**
@@ -206,6 +224,171 @@ router.post("/logout", verifyToken, async (req, res) => {
   } catch (error) {
     // Tidak perlu error jika revoke gagal, frontend tetap hapus token lokal
     res.json({ success: true, message: "Logout berhasil" });
+  }
+});
+
+/**
+ * POST /api/auth/forgot-password
+ * Kirim link reset password ke email yang terdaftar di MySQL
+ */
+router.post("/forgot-password", forgotPasswordLimiter, async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Email harus diisi" });
+    }
+
+    // Cek apakah email terdaftar di database MySQL
+    const [users] = await db.execute(
+      "SELECT id, nama, email FROM users WHERE email = ? AND password IS NOT NULL LIMIT 1",
+      [email.toLowerCase()]
+    );
+
+    if (users.length === 0) {
+      // Untuk keamanan, jangan beritahu apakah email terdaftar atau tidak
+      // Tapi untuk testing, kita lihat saja
+      return res.status(404).json({ success: false, message: "Email tidak terdaftar atau akun ini login via Google" });
+    }
+
+    const user = users[0];
+
+    // Generate reset token (random 32 byte hex)
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    
+    // Token expired dalam 1 jam
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+    // Simpan token ke database
+    await db.execute(
+      "UPDATE users SET reset_password_token = ?, reset_password_expires = ? WHERE id = ?",
+      [hashedToken, expiresAt, user.id]
+    );
+
+    // Kirim email dengan link reset
+    const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password.html?token=${resetToken}`;
+    
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Reset Kata Sandi ReadBridge - Tautan berlaku 1 jam',
+      html: `
+        <h2>Halo ${user.nama},</h2>
+        <p>Anda telah meminta untuk mengatur ulang kata sandi akun ReadBridge Anda.</p>
+        <p>Klik tombol di bawah untuk mengatur ulang kata sandi Anda:</p>
+        <p>
+          <a href="${resetLink}" style="background-color: #2563EB; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600;">
+            Atur Ulang Kata Sandi
+          </a>
+        </p>
+        <p>Atau salin tautan ini ke browser: <br/> ${resetLink}</p>
+        <p><strong>⏰ Tautan ini hanya berlaku selama 1 jam.</strong></p>
+        <p style="color: #666; font-size: 14px;">Jika Anda tidak meminta reset password, abaikan email ini. Akun Anda aman.</p>
+        <hr/>
+        <p style="color: #999; font-size: 12px;">© 2024 ReadBridge. Semua hak dilindungi.</p>
+      `
+    };
+
+    // Kirim email (async, jangan tunggu)
+    emailTransporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.error("Email send error:", err);
+      } else {
+        console.log("Reset password email sent to:", email);
+      }
+    });
+
+    return res.json({
+      success: true,
+      message: "Jika email terdaftar, tautan reset password akan dikirim. Periksa kotak masuk Anda."
+    });
+
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    return res.status(500).json({ success: false, message: "Gagal memproses permintaan reset password" });
+  }
+});
+
+/**
+ * POST /api/auth/reset-password
+ * Reset password menggunakan token yang dikirim via email
+ */
+router.post("/reset-password", async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ success: false, message: "Token dan password baru harus diisi" });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ success: false, message: "Password minimal 6 karakter" });
+    }
+
+    // Hash token untuk mencari di database
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    // Cari user dengan token yang belum expired
+    const [users] = await db.execute(
+      `SELECT id, email FROM users 
+       WHERE reset_password_token = ? 
+       AND reset_password_expires > NOW()
+       LIMIT 1`,
+      [hashedToken]
+    );
+
+    if (users.length === 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Token tidak valid atau sudah expired. Coba request reset password lagi." 
+      });
+    }
+
+    const user = users[0];
+
+    // Hash password baru
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update password dan clear token
+    await db.execute(
+      `UPDATE users 
+       SET password = ?, 
+           reset_password_token = NULL, 
+           reset_password_expires = NULL 
+       WHERE id = ?`,
+      [hashedPassword, user.id]
+    );
+
+    // Opsional: Kirim email konfirmasi bahwa password sudah direset
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: 'Kata Sandi ReadBridge Berhasil Diatur Ulang',
+      html: `
+        <h2>Halo,</h2>
+        <p>Kata sandi akun ReadBridge Anda berhasil diatur ulang.</p>
+        <p>Anda sekarang dapat login menggunakan kata sandi baru Anda.</p>
+        <p><a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/login.html" style="background-color: #2563EB; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600;">
+          Login ke ReadBridge
+        </a></p>
+        <p style="color: #999; font-size: 12px;">© 2024 ReadBridge. Semua hak dilindungi.</p>
+      `
+    };
+
+    emailTransporter.sendMail(mailOptions, (err) => {
+      if (err) console.error("Confirmation email error:", err);
+    });
+
+    return res.json({
+      success: true,
+      message: "Kata sandi berhasil diatur ulang. Silakan login dengan kata sandi baru Anda."
+    });
+
+  } catch (error) {
+    console.error("Reset password error:", error);
+    return res.status(500).json({ success: false, message: "Gagal mengatur ulang kata sandi" });
   }
 });
 

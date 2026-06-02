@@ -45,16 +45,24 @@ self.addEventListener('fetch', event => {
   const requestUrl = new URL(event.request.url);
   const isSameOrigin = requestUrl.origin === self.location.origin;
   const isApiRequest = requestUrl.pathname.includes('/api/') || requestUrl.hostname.includes('readbridge-backend');
+  
+  // Exclude auth-related pages dari caching (ini penting untuk PWA redirect)
+  const isAuthPage = ['google-login', 'login', 'register', 'reset-password', 'minat'].some(
+    page => requestUrl.pathname.includes(page)
+  );
 
-  // Jangan sentuh request auth/API/CDN eksternal. Di mode PWA mobile, fallback cache
-  // untuk navigasi eksternal bisa membuat proses login Google terlihat gagal.
-  if (!isSameOrigin || isApiRequest) return;
+  // Jangan sentuh request auth/API/CDN eksternal
+  if (!isSameOrigin || isApiRequest || isAuthPage) {
+    console.log('[SW] Skipping cache for:', requestUrl.pathname);
+    return;
+  }
   
   event.respondWith(
     caches.match(event.request)
       .then(response => {
         // Jika file ada di cache, gunakan file tersebut (offline support)
         if (response) {
+          console.log('[SW] Serving from cache:', requestUrl.pathname);
           return response;
         }
         
