@@ -96,6 +96,11 @@
             }
         }
     </script>
+
+    <!-- PWA Tags -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#004ac6" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
 </head>
 
 <body class="min-h-screen bg-background text-on-background antialiased flex flex-col font-sans">
@@ -217,6 +222,17 @@
             </nav>
         </div>
     </footer>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker terdaftar!', reg.scope))
+            .catch(err => console.log('Service Worker gagal terdaftar', err));
+        });
+      }
+    </script>
 </body>
 
 </html>

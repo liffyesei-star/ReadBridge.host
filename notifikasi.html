@@ -123,6 +123,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
+
+    <!-- PWA Tags -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#004ac6" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
 </head>
 <body class="font-body-md text-body-md min-h-screen flex flex-col bg-background text-on-background">
 <!-- TopAppBar -->
@@ -406,6 +411,17 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 </script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker terdaftar!', reg.scope))
+            .catch(err => console.log('Service Worker gagal terdaftar', err));
+        });
+      }
+    </script>
 </body>
 
 </html>
