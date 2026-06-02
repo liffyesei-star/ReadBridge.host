@@ -14,6 +14,7 @@ function clearLocalAuthFallback() {
     "rb_user_email",
     "rb_login_in_progress",
   ].forEach((k) => localStorage.removeItem(k));
+  sessionStorage.removeItem("rb_google_busy");
 }
 
 window.rbLogout = async function rbLogout(event) {

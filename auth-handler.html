@@ -24,17 +24,39 @@
       animation: spin 0.75s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    a { color: #2563eb; }
+    a, button.link {
+      color: #2563eb;
+      background: none;
+      border: none;
+      font: inherit;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 12px 24px;
+      background: #2563eb;
+      color: #fff;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+    }
     .err { color: #dc2626; font-size: 13px; margin-top: 12px; }
   </style>
 </head>
 <body>
   <div class="box">
-    <div class="spin" aria-hidden="true"></div>
-    <p id="rb-auth-status">Menghubungkan ke Google...</p>
+    <div class="spin" id="spin"></div>
+    <p id="rb-auth-status">Memuat...</p>
     <p class="err" id="rb-auth-error" hidden></p>
+    <div id="rb-done" hidden>
+      <a class="btn" id="rb-continue-btn" href="eksplor.html">Lanjut ke ReadBridge</a>
+    </div>
     <p style="font-size:12px;margin-top:20px">
       <a href="login.html">← Kembali ke login</a>
+      ·
+      <button type="button" class="link" onclick="location.href='login.html'">Pakai popup (Chrome)</button>
     </p>
   </div>
 
@@ -43,6 +65,8 @@
   <script>
     (function () {
       var API = "https://readbridge-backend-2whx.onrender.com";
+      var BUSY_KEY = "rb_google_busy";
+      var COOLDOWN_MS = 8000;
 
       firebase.initializeApp({
         apiKey: "AIzaSyDUfiy2BHYhHh1wql6uM5UvsF6hpNTVvhY",
@@ -54,26 +78,12 @@
       });
 
       var auth = firebase.auth();
-      auth.useDeviceLanguage();
-
       var params = new URLSearchParams(location.search);
       var shouldStart = params.get("go") === "1";
-      var forcePopup = params.get("popup") === "1";
-
-      var ua = navigator.userAgent;
-      var isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
-      var isSafari = /Safari/i.test(ua) && !/Chrome|CriOS|Edg|OPR/i.test(ua);
-      var usePopup = forcePopup || (!isMobile && !isSafari);
 
       function status(msg) {
         document.getElementById("rb-auth-status").textContent = msg;
-        console.log("[ReadBridge Auth]", msg);
-      }
-
-      function showError(msg) {
-        var el = document.getElementById("rb-auth-error");
-        el.hidden = false;
-        el.textContent = msg;
+        console.log("[ReadBridge Redirect]", msg);
       }
 
       function isOAuthReturn() {
@@ -81,145 +91,99 @@
         return /apiKey=|authType=|state=|mode=signIn/i.test(blob);
       }
 
-      function destination() {
+      function dest() {
         return localStorage.getItem("rb_interests") ? "eksplor.html" : "minat.html";
       }
 
-      function saveSession(user, token) {
-        localStorage.removeItem("rb_explicit_logout");
-        localStorage.setItem("rb_is_logged_in", "true");
-        localStorage.setItem("rb_token", token);
-        localStorage.setItem("rb_username", user.displayName || "Google User");
-        localStorage.setItem("rb_email", user.email || "");
-        localStorage.setItem("rb_uid", user.uid);
-        if (user.photoURL) localStorage.setItem("rb_profile_pic", user.photoURL);
+      function isBusy() {
+        var t = sessionStorage.getItem(BUSY_KEY);
+        return t && Date.now() - parseInt(t, 10) < COOLDOWN_MS;
       }
 
-      function syncBackend(token) {
-        return fetch(API + "/api/auth/sync", {
-          method: "POST",
-          headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
-        }).then(function (r) {
-          return r.json().catch(function () {
-            return {};
-          });
-        });
+      function showDone(user) {
+        document.getElementById("spin").style.display = "none";
+        document.getElementById("rb-done").hidden = false;
+        document.getElementById("rb-continue-btn").href = dest();
+        status("Halo, " + (user.displayName || "pengguna") + "! Klik tombol untuk lanjut.");
+        if (window.history.replaceState) {
+          window.history.replaceState({}, "", location.pathname);
+        }
       }
 
-      function finishWithUser(user) {
+      function saveAndFinish(user) {
+        sessionStorage.removeItem(BUSY_KEY);
         status("Menyimpan sesi...");
         return user.getIdToken().then(function (token) {
-          return syncBackend(token)
-            .catch(function () {
-              return {};
-            })
+          return fetch(API + "/api/auth/sync", {
+            method: "POST",
+            headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
+          })
+            .catch(function () {})
             .then(function () {
-              saveSession(user, token);
-              status("Berhasil! Mengalihkan...");
-              location.replace(destination());
+              localStorage.removeItem("rb_explicit_logout");
+              localStorage.setItem("rb_is_logged_in", "true");
+              localStorage.setItem("rb_token", token);
+              localStorage.setItem("rb_username", user.displayName || "Google User");
+              localStorage.setItem("rb_email", user.email || "");
+              localStorage.setItem("rb_uid", user.uid);
+              if (user.photoURL) localStorage.setItem("rb_profile_pic", user.photoURL);
+              showDone(user);
             });
         });
       }
 
-      function fail(human, technical) {
-        status("Login gagal");
-        showError(human);
-        console.error("[ReadBridge Auth]", technical || human);
-        setTimeout(function () {
-          alert(
-            human +
-              "\n\nCek Firebase → Authorized domains → liffyesei-star.github.io\n" +
-              "Lalu Clear site data di browser."
-          );
-          location.replace("login.html");
-        }, 400);
+      function fail(msg) {
+        sessionStorage.removeItem(BUSY_KEY);
+        document.getElementById("spin").style.display = "none";
+        document.getElementById("rb-auth-error").hidden = false;
+        document.getElementById("rb-auth-error").textContent = msg;
+        status("Gagal");
       }
 
-      function googleProvider() {
-        var p = new firebase.auth.GoogleAuthProvider();
-        p.setCustomParameters({ prompt: "select_account" });
-        return p;
+      // Sudah login — jangan redirect otomatis
+      if (
+        !isOAuthReturn() &&
+        !shouldStart &&
+        localStorage.getItem("rb_is_logged_in") === "true" &&
+        localStorage.getItem("rb_token")
+      ) {
+        document.getElementById("spin").style.display = "none";
+        document.getElementById("rb-done").hidden = false;
+        document.getElementById("rb-continue-btn").href = dest();
+        status("Sudah masuk. Lanjutkan manual.");
+        return;
       }
 
-      function startSignIn() {
-        status(usePopup ? "Membuka popup Google..." : "Mengalihkan ke Google...");
-        var provider = googleProvider();
-        if (usePopup) {
-          return auth
-            .signInWithPopup(provider)
-            .then(function (cred) {
-              return finishWithUser(cred.user);
-            })
-            .catch(function (err) {
-              console.warn("popup:", err.code, err.message);
-              if (err.code === "auth/popup-closed-by-user") {
-                location.replace("login.html");
-                return;
-              }
-              status("Popup gagal, mencoba redirect...");
-              return auth.signInWithRedirect(provider);
-            });
-        }
-        return auth.signInWithRedirect(provider);
-      }
-
-      function waitForUser(maxMs) {
-        return new Promise(function (resolve) {
-          if (auth.currentUser) {
-            resolve(auth.currentUser);
-            return;
-          }
-          var done = false;
-          var unsub = auth.onAuthStateChanged(function (u) {
-            if (u && !done) {
-              done = true;
-              unsub();
-              resolve(u);
-            }
+      if (isOAuthReturn()) {
+        status("Menyelesaikan login...");
+        auth
+          .getRedirectResult()
+          .then(function (result) {
+            var user = (result && result.user) || auth.currentUser;
+            if (user) return saveAndFinish(user);
+            fail("Sesi Google tidak ditemukan. Coba login popup di halaman login.");
+          })
+          .catch(function (err) {
+            fail(err.message || "Login gagal");
           });
-          setTimeout(function () {
-            if (!done) {
-              done = true;
-              unsub();
-              resolve(auth.currentUser || null);
-            }
-          }, maxMs || 4000);
-        });
+        return;
       }
 
-      // ——— Alur utama ———
-      status("Memuat Firebase...");
+      if (shouldStart) {
+        if (isBusy()) {
+          status("Tunggu ~8 detik sebelum coba lagi (mencegah loop).");
+          document.getElementById("spin").style.display = "none";
+          return;
+        }
+        sessionStorage.setItem(BUSY_KEY, String(Date.now()));
+        status("Mengalihkan ke Google...");
+        var provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: "select_account" });
+        auth.signInWithRedirect(provider);
+        return;
+      }
 
-      auth
-        .getRedirectResult()
-        .then(function (result) {
-          if (result && result.user) {
-            return finishWithUser(result.user);
-          }
-          if (shouldStart) {
-            return startSignIn();
-          }
-          if (isOAuthReturn() || auth.currentUser) {
-            status("Menyelesaikan login...");
-            return waitForUser(5000).then(function (user) {
-              if (user) return finishWithUser(user);
-              fail(
-                "Sesi Google tidak ditemukan setelah redirect.",
-                "getRedirectResult null, no currentUser"
-              );
-            });
-          }
-          location.replace("login.html");
-        })
-        .catch(function (err) {
-          console.error(err);
-          if (err.code === "auth/unauthorized-domain") {
-            fail("Domain tidak diizinkan di Firebase.", err.code);
-            return;
-          }
-          if (shouldStart) return startSignIn();
-          fail(err.message || "Login gagal", err.code);
-        });
+      location.replace("login.html");
     })();
   </script>
 </body>

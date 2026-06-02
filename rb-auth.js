@@ -45,6 +45,7 @@ export function clearLocalAuthSession() {
 export async function logoutReadBridge() {
   localStorage.setItem(LOGOUT_KEY, "true");
   clearLocalAuthSession();
+  sessionStorage.removeItem("rb_google_busy");
   try {
     await signOut(getAuthInstance());
   } catch (e) {

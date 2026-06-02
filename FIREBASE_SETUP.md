@@ -41,20 +41,18 @@ Login tetap jalan meski sync gagal; posting komunitas butuh backend hidup.
 
 1. Chrome → **Clear site data** untuk `github.io`  
 2. Buka: `https://liffyesei-star.github.io/ReadBridge.host/login.html`  
-3. Klik **Masuk dengan Google** → URL harus ke `auth-handler.html?go=1`  
-4. Pilih akun Google → harus masuk `eksplor.html` atau `minat.html`  
+3. Klik **Masuk dengan Google** → **popup** Google (tetap di halaman login)  
+4. Setelah berhasil → klik **Lanjut ke ReadBridge** (tidak auto-redirect)  
 
-**Chrome PC gagal?** Klik link **Coba dengan popup**.
+**Safari / iPhone:** klik link **Pakai metode redirect**.
 
-**Jangan pakai PWA** untuk tes pertama — pakai tab browser biasa.
+Tunggu **8 detik** antar percobaan login (cooldown anti-loop).
 
-## 5. Alur kode (setelah rebuild)
+## 5. Alur kode
 
 | File | Fungsi |
 |------|--------|
-| `login.html` | Tombol → `auth-handler.html?go=1` |
-| `auth-handler.html` | Satu-satunya halaman OAuth (Firebase compat) |
-| `rb-auth.js` | Logout + hapus sesi |
-| `auth-logout.js` | Menu Log Out di seluruh situs |
-
-`auth-google.js` lama tidak dipakai untuk login lagi.
+| `login.html` + `rb-google-login.js` | Popup Google (Chrome/Android Chrome) |
+| `auth-handler.html` | Redirect saja (Safari/iPhone) |
+| `rb-auth.js` | Logout |
+| `auth-logout.js` | Menu Log Out |
