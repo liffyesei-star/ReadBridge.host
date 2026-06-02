@@ -10,6 +10,138 @@ const STORAGE_KEY = 'readbridge_community_posts_v2';
 const DRAFT_KEY   = 'readbridge_draft';
 const API_BASE    = 'https://readbridge-backend-2whx.onrender.com';
 
+// 7 Daftar Klub Belajar & Diskusi ReadBridge
+const ALL_CLUBS = {
+  'pejuang-snbt': {
+    id: 'pejuang-snbt',
+    name: 'Pejuang SNBT',
+    icon: 'school',
+    iconText: 'P',
+    iconBg: 'bg-error-container text-on-error-container',
+    cover: 'snbt_cover.png',
+    avatar: 'snbt_icon.png',
+    link: 'club.html',
+    desc: 'Komunitas belajar intensif untuk persiapan Seleksi Nasional Berdasarkan Tes (SNBT). Kami berdiskusi soal, berbagi materi, dan saling menyemangati untuk mencapai kampus impian.',
+    members: '1,245',
+    membersCount: 1245
+  },
+  'pecinta-fiksi': {
+    id: 'pecinta-fiksi',
+    name: 'Pecinta Fiksi',
+    icon: 'menu_book',
+    iconText: 'F',
+    iconBg: 'bg-primary-container text-on-primary-container',
+    cover: 'fiksi_cover.png',
+    avatar: 'fiksi_icon.png',
+    link: 'club-pecinta-fiksi.html',
+    desc: 'Grup diskusi santai untuk pencinta novel, cerpen, fiksi ilmiah, fantasi, hingga sastra klasik. Tempat terbaik berbagi review buku fiksi.',
+    members: '2,810',
+    membersCount: 2810
+  },
+  'webdev': {
+    id: 'webdev',
+    name: 'Web Dev & Coding',
+    icon: 'code',
+    iconText: 'W',
+    iconBg: 'bg-secondary-container text-on-secondary-container',
+    cover: 'https://images.unsplash.com/photo-1607799279861-4dd421887fb3?auto=format&fit=crop&w=800&q=80',
+    avatar: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&w=150&q=80',
+    link: 'club.html?id=webdev',
+    desc: 'Komunitas belajar pemrograman web modern. Berdiskusi tentang HTML/CSS, JavaScript, React, Node.js, PHP, database, dan arsitektur web.',
+    members: '412',
+    membersCount: 412
+  },
+  'uiux': {
+    id: 'uiux',
+    name: 'UI/UX Designer ID',
+    icon: 'palette',
+    iconText: 'U',
+    iconBg: 'bg-tertiary-container text-on-tertiary-container',
+    cover: 'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?auto=format&fit=crop&w=800&q=80',
+    avatar: 'https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?auto=format&fit=crop&w=150&q=80',
+    link: 'club.html?id=uiux',
+    desc: 'Tempat bertukar ide bagi desainer antarmuka dan pengalaman pengguna. Bagikan portofolio, tren desain terkini, feedback Figma, dan kiat karier.',
+    members: '305',
+    membersCount: 305
+  },
+  'selfdev': {
+    id: 'selfdev',
+    name: 'Habit Builders',
+    icon: 'self_improvement',
+    iconText: 'H',
+    iconBg: 'bg-surface-variant text-on-surface-variant',
+    cover: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80',
+    avatar: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=150&q=80',
+    link: 'club.html?id=selfdev',
+    desc: 'Komunitas yang berfokus pada pengembangan diri, manajemen waktu, produktivitas harian, mindfulness, dan membangun kebiasaan baik setiap hari.',
+    members: '2,150',
+    membersCount: 2150
+  },
+  'manga': {
+    id: 'manga',
+    name: 'Manga & Webtoon ID',
+    icon: 'menu_book',
+    iconText: 'M',
+    iconBg: 'bg-primary-container text-on-primary-container',
+    cover: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=800&q=80',
+    avatar: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=150&q=80',
+    link: 'club.html?id=manga',
+    desc: 'Grup penggemar komik Jepang (Manga), manhwa Korea, manhua, dan komik lokal Indonesia. Bagikan rekomendasi dan diskusikan chapter terbaru.',
+    members: '8,420',
+    membersCount: 8420
+  },
+  'jurnal': {
+    id: 'jurnal',
+    name: 'Peneliti Muda',
+    icon: 'science',
+    iconText: 'P',
+    iconBg: 'bg-tertiary-container text-on-tertiary-container',
+    cover: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80',
+    avatar: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=150&q=80',
+    link: 'club.html?id=jurnal',
+    desc: 'Wadah bagi siswa dan akademisi muda yang tertarik pada publikasi jurnal ilmiah, karya tulis ilmiah (KTI), penelitian sosial, sains, dan sains data.',
+    members: '430',
+    membersCount: 430
+  }
+};
+
+// Data Pool Anggota Decoy untuk visualisasi real-time
+const DECOY_MEMBERS = [
+  { username: '@AhmadFauzi', name: 'Ahmad Fauzi', avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704d', online: true },
+  { username: '@DewiLestari', name: 'Dewi Lestari', avatar: 'https://i.pravatar.cc/150?u=a04258114e29026702d', online: true },
+  { username: '@SitiAminah', name: 'Siti Aminah', avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026703d', online: false },
+  { username: '@JokoWidodo', name: 'Joko Widodo', avatar: 'https://i.pravatar.cc/150?u=a04258114e29026705d', online: false },
+  { username: '@RinaSari', name: 'Rina Sari', avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026024d', online: false },
+  { username: '@BudiSantoso', name: 'Budi Santoso', avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026025d', online: false },
+  { username: '@LutfiSei', name: 'Lutfi Sei', avatar: 'https://i.pravatar.cc/150?u=luffy', online: true }
+];
+
+// Helper State Management Klub
+function getJoinedClubs() {
+  const stored = localStorage.getItem('rb_joined_clubs');
+  if (stored) {
+    try { return JSON.parse(stored); } catch (e) { console.error(e); }
+  }
+  return []; // default: belum join klub mana pun
+}
+
+function getActiveClub() {
+  const path = window.location.pathname;
+  const searchParams = new URLSearchParams(window.location.search);
+  const id = searchParams.get('id');
+  
+  if (path.includes('club-pecinta-fiksi.html') || id === 'pecinta-fiksi') {
+    return ALL_CLUBS['pecinta-fiksi'];
+  }
+  if (id && ALL_CLUBS[id]) {
+    return ALL_CLUBS[id];
+  }
+  if (path.includes('club.html')) {
+    return ALL_CLUBS['pejuang-snbt'];
+  }
+  return null;
+}
+
 window.activeFeedTab = 'Semua';
 window.activeTrendingTag = 'Semua';
 
@@ -46,7 +178,7 @@ const TOPIC_DETAILS = {
   }
 };
 
-// Seed data
+// Seed data - Populated with extensive decoy comments for lively active look!
 const defaultPosts = [
   // PECINTA FIKSI POSTS
   { id:'fiksi-1', username:'@SastraWangi', isCurrentUser:false, waktu:'2 jam yang lalu',
@@ -69,20 +201,29 @@ const defaultPosts = [
   { id:'fiksi-3', username:'@HujanBulanJuni', isCurrentUser:false, waktu:'1 hari yang lalu',
     judul:'Diskusi: Kenapa ending novel "Hujan" karya Tere Liye bikin nyesek?',
     isi:'Udah baca Hujan berkali-kali tapi tetep aja mewek di akhir. Menurut kalian keputusan Lail buat hapus ingatan itu egois ga sih?',
-    tags:['#TereLiye','#DiskusiFiksi'], votes:2100, komentar:0, destination: 'Pecinta Fiksi',
-    commentsList: []
+    tags:['#TereLiye','#DiskusiFiksi'], votes:2100, komentar:2, destination: 'Pecinta Fiksi',
+    commentsList: [
+      { username: '@SastraWangi', text: 'Iya nyesek banget kak, tapi itu akhir terbaik buat Lail & Esok.', waktu: '12 jam yang lalu' },
+      { username: '@NovelLovers', text: 'Tere Liye emang juaranya bikin pembaca nangis di akhir bab.', waktu: '10 jam yang lalu' }
+    ]
   },
   { id:'fiksi-4', username:'@TokyoReader', isCurrentUser:false, waktu:'2 hari yang lalu',
     judul:'Nyari teman baca bareng (buddy read) buku-buku Haruki Murakami',
     isi:'Lagi pengen maraton baca Norwegian Wood sama Kafka on the Shore. Ada yang mau join buddy read biar bisa diskusi bareng tiap minggunya?',
-    tags:['#BuddyRead','#Murakami'], votes:450, komentar:0, destination: 'Pecinta Fiksi',
-    commentsList: []
+    tags:['#BuddyRead','#Murakami'], votes:450, komentar:2, destination: 'Pecinta Fiksi',
+    commentsList: [
+      { username: '@TokyoReader', text: 'Wah aku mau ikutan kak! Norwegian Wood udah di rak nih.', waktu: '1 hari yang lalu' },
+      { username: '@BookWarm', text: 'Aku juga pengen join, kabarin ya kalau grup Discord/WA-nya udah jadi!', waktu: '18 jam yang lalu' }
+    ]
   },
   { id:'fiksi-5', username:'@PenaSenja', isCurrentUser:false, waktu:'3 hari yang lalu',
     judul:'Puisi vs Prosa, kalian lebih suka baca yang mana saat lagi galau?',
     isi:'Biasanya pelarian kalau lagi sedih pada baca puisi yang singkat tapi ngena, atau tenggelam di cerita prosa yang panjang?',
-    tags:['#Puisi','#Prosa'], votes:1500, komentar:0, destination: 'Pecinta Fiksi',
-    commentsList: []
+    tags:['#Puisi','#Prosa'], votes:1500, komentar:2, destination: 'Pecinta Fiksi',
+    commentsList: [
+      { username: '@PenaSenja', text: 'Puisi sih, maknanya lebih dalam dan multi-tafsir.', waktu: '2 hari yang lalu' },
+      { username: '@Melodrama', text: 'Kalau aku lebih milih prosa, biar bisa hanyut sama plotnya.', waktu: '1 hari yang lalu' }
+    ]
   },
 
   // PEJUANG SNBT POSTS
@@ -97,8 +238,11 @@ const defaultPosts = [
   { id:'snbt-2', username:'@MathGenius', isCurrentUser:false, waktu:'6 jam yang lalu',
     judul:'Soal PK (Pengetahuan Kuantitatif) tahun lalu susah banget, ada bocoran materi yang sering keluar?',
     isi:'Aku denger-denger matriks sama peluang selalu keluar tiap tahun. Bener ga sih? Ada yang punya rekapan materi PK yang wajib dikuasain?',
-    tags:['#PK','#Matematika'], votes:1120, komentar:0, destination: 'Pejuang SNBT',
-    commentsList: []
+    tags:['#PK','#Matematika'], votes:1120, komentar:2, destination: 'Pejuang SNBT',
+    commentsList: [
+      { username: '@MathGenius', text: 'Matriks sama peluang emang sering keluar, tapi pelajari juga statistika dasar ya!', waktu: '4 jam yang lalu' },
+      { username: '@PejuangKampus', text: 'Jangan lupa sistem persamaan linear kak, tahun lalu keluar dua soal.', waktu: '3 jam yang lalu' }
+    ]
   },
   { id:'snbt-3', username:'@CalonMaba', isCurrentUser:false, waktu:'12 jam yang lalu',
     judul:'Strategi memilih jurusan di SNBT 2024 biar ga salah langkah',
@@ -112,14 +256,20 @@ const defaultPosts = [
   { id:'snbt-4', username:'@Ambiskuh', isCurrentUser:false, waktu:'1 hari yang lalu',
     judul:'Minta rekomendasi channel YouTube buat belajar Penalaran Matematika dong',
     isi:'Lagi butuh banget referensi buat belajar PM dari nol. Kadang ngerasa basic math-nya masih kurang kuat. Kasih tau channel favorit kalian!',
-    tags:['#Rekomendasi','#PM'], votes:670, komentar:0, destination: 'Pejuang SNBT',
-    commentsList: []
+    tags:['#Rekomendasi','#PM'], votes:670, komentar:2, destination: 'Pejuang SNBT',
+    commentsList: [
+      { username: '@CalonMaba', text: 'Coba tonton channel "Hujan Duit Math" atau "Privat Al-Faiz" kak, jelas banget pembahasannya.', waktu: '20 jam yang lalu' },
+      { username: '@Ambiskuh', text: 'Belajar bareng Kak Fandi di YT juga recommended banget!', waktu: '18 jam yang lalu' }
+    ]
   },
   { id:'snbt-5', username:'@TukangOverthinking', isCurrentUser:false, waktu:'2 hari yang lalu',
     judul:'H-30 UTBK, mental mulai down. Gimana cara kalian jaga motivasi belajar?',
     isi:'Makin deket hari H malah makin males belajar dan overthinking takut ga lolos. Kalian biasanya ngapain kalau lagi di fase burnout gini?',
-    tags:['#MentalHealth','#Motivasi'], votes:4200, komentar:0, destination: 'Pejuang SNBT',
-    commentsList: []
+    tags:['#MentalHealth','#Motivasi'], votes:4200, komentar:2, destination: 'Pejuang SNBT',
+    commentsList: [
+      { username: '@AlumniSukses', text: 'Fase wajar kak. Kurangi belajar malam, tidur yang cukup, dan lakuin meditasi kecil.', waktu: '1 hari yang lalu' },
+      { username: '@PejuangMasaDepan', text: 'Sama kak, tapi kita harus inget perjuangan ortu kita. Yuk semangat lagi!', waktu: '16 jam yang lalu' }
+    ]
   },
   {
     id: 'snbt-tutor-1',
@@ -185,9 +335,9 @@ window.fetchPostsFromAPI = async function() {
     const res = await fetch(url, { headers });
     const json = await res.json();
     if (json.success && json.data) {
-      apiPosts = json.data.map(d => ({
+      const fetched = json.data.map(d => ({
         id: d.id,
-        username: d.nama_user || 'Anonim',
+        username: d.nama_user?.startsWith('@') ? d.nama_user : `@${d.nama_user || 'Anonim'}`,
         avatar: d.foto_profil,
         isCurrentUser: d.user_id == localStorage.getItem('rb_uid') || false,
         waktu: d.created_at,
@@ -200,10 +350,16 @@ window.fetchPostsFromAPI = async function() {
         destination: d.club_nama || 'Public Feed',
         commentsList: []
       }));
+      apiPosts = [...fetched, ...defaultPosts];
+      apiPostsFetched = true;
+    } else {
+      apiPosts = defaultPosts;
       apiPostsFetched = true;
     }
   } catch(e) {
     console.error(e);
+    apiPosts = defaultPosts;
+    apiPostsFetched = true;
   }
 }
 
@@ -376,14 +532,38 @@ async function renderAllPosts(){
      await window.fetchPostsFromAPI();
   }
 
-  // Ambil tipe halaman (Public Feed, Pejuang SNBT, Pecinta Fiksi)
+  // Ambil tipe halaman (Public Feed, Pejuang SNBT, Pecinta Fiksi, or dynamic 5 new clubs)
   let currentPageFilter = null;
-  if (document.title.includes('Klub Pejuang SNBT')) currentPageFilter = 'Pejuang SNBT';
-  else if (document.title.includes('Klub Pecinta Fiksi')) currentPageFilter = 'Pecinta Fiksi';
+  const activeClub = getActiveClub();
+  if (activeClub) {
+    currentPageFilter = activeClub.name;
+  }
 
   let postsList = getPosts();
   
-  if (currentPageFilter) {
+  if (activeClub) {
+    const joined = getJoinedClubs();
+    const isJoined = joined.includes(activeClub.id);
+    
+    if (!isJoined) {
+      // User has not joined this club! Render the lock membership CTA overlay!
+      feed.innerHTML = `
+        <div class="bg-surface-container-lowest rounded-2xl p-xl border border-outline-variant/30 text-center shadow-sm flex flex-col items-center gap-md py-xxl my-md animate-fadeIn">
+          <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined text-[36px]">lock</span>
+          </div>
+          <div>
+            <h3 class="font-title-lg text-title-lg font-bold text-on-surface">Klub Khusus Anggota</h3>
+            <p class="text-sm text-on-surface-variant/80 mt-1 max-w-sm mx-auto">Bergabunglah dengan klub ini untuk melihat diskusi, berbagi materi belajar, dan berinteraksi dengan ribuan anggota lainnya.</p>
+          </div>
+          <button onclick="window.toggleClubJoin('${activeClub.id}')" class="bg-primary text-on-primary font-bold text-sm px-6 py-3 rounded-full hover:bg-primary/95 transition-all shadow-md cursor-pointer flex items-center gap-2 mx-auto">
+            <span class="material-symbols-outlined text-[20px]">group_add</span> Gabung Sekarang
+          </button>
+        </div>
+      `;
+      return;
+    }
+    
     postsList = postsList.filter(p => p.destination === currentPageFilter);
   } else {
     postsList = postsList.filter(p => !p.club_id && p.destination === 'Public Feed');
@@ -532,21 +712,401 @@ window.addComment = async function(id) {
   }
 };
 
-const JOINED_CLUBS = [
-  { name: 'Pejuang SNBT', icon: 'school', link: 'club.html', notifications: 3 },
-  { name: 'Pecinta Fiksi', icon: 'menu_book', link: 'club-pecinta-fiksi.html', notifications: 0 }
-];
+// Toast Notification Helper
+function showToastNotification(message) {
+  let container = document.getElementById('toast-notification-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-notification-container';
+    container.className = 'fixed bottom-24 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-2 w-full max-w-sm px-4 pointer-events-none';
+    document.body.appendChild(container);
+  }
+  
+  const toast = document.createElement('div');
+  toast.className = 'bg-slate-900/95 text-white backdrop-blur-sm text-sm font-semibold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-fadeIn pointer-events-auto transform translate-y-4 transition-all duration-300 opacity-0';
+  toast.innerHTML = `
+    <span class="material-symbols-outlined text-primary text-[20px]">info</span>
+    <span class="flex-1">${message}</span>
+  `;
+  
+  container.appendChild(toast);
+  
+  // Animate in
+  setTimeout(() => {
+    toast.classList.remove('opacity-0', 'translate-y-4');
+    toast.classList.add('opacity-100', 'translate-y-0');
+  }, 10);
+  
+  // Animate out and remove
+  setTimeout(() => {
+    toast.classList.remove('opacity-100', 'translate-y-0');
+    toast.classList.add('opacity-0', 'translate-y-4');
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
 
+// Toggle Join/Unjoin Klub
+window.toggleClubJoin = function(clubId) {
+  let joined = getJoinedClubs();
+  const isJoined = joined.includes(clubId);
+  
+  if (isJoined) {
+    joined = joined.filter(id => id !== clubId);
+    localStorage.setItem('rb_joined_clubs', JSON.stringify(joined));
+    showToastNotification(`Anda telah keluar dari klub ${ALL_CLUBS[clubId].name}`);
+  } else {
+    joined.push(clubId);
+    localStorage.setItem('rb_joined_clubs', JSON.stringify(joined));
+    showToastNotification(`Selamat! Anda berhasil bergabung dengan klub ${ALL_CLUBS[clubId].name} 🎉`);
+  }
+  
+  // Refresh all UI elements dynamically
+  updateJoinButtonState();
+  renderJoinedClubs();
+  renderAllPosts();
+  renderDynamicMembersList();
+  renderRecommendedClubs();
+};
+
+// Update Join Button di Card Header
+function updateJoinButtonState() {
+  const club = getActiveClub();
+  if (!club) return;
+  
+  const joined = getJoinedClubs();
+  const isJoined = joined.includes(club.id);
+  
+  const headerCardBtn = document.querySelector('main .flex.justify-between.items-end button');
+  if (headerCardBtn) {
+    if (isJoined) {
+      headerCardBtn.textContent = 'Joined';
+      headerCardBtn.className = "bg-primary text-on-primary font-label-md text-label-md py-sm px-lg rounded-full font-bold hover:bg-red-500 hover:text-white hover:border-red-500 transition-colors shadow-sm cursor-pointer border border-transparent";
+      headerCardBtn.setAttribute('onclick', `window.toggleClubJoin('${club.id}')`);
+      headerCardBtn.onmouseover = function() { this.textContent = 'Keluar Klub'; };
+      headerCardBtn.onmouseout = function() { this.textContent = 'Joined'; };
+    } else {
+      headerCardBtn.textContent = 'Gabung Klub';
+      headerCardBtn.className = "bg-white border-2 border-primary text-primary font-label-md text-label-md py-sm px-lg rounded-full font-bold hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer";
+      headerCardBtn.setAttribute('onclick', `window.toggleClubJoin('${club.id}')`);
+      headerCardBtn.onmouseover = null;
+      headerCardBtn.onmouseout = null;
+    }
+  }
+}
+
+// Render Joined Clubs di Sidebar Kiri
 function renderJoinedClubs() {
   const container = document.getElementById('joined-clubs-list');
   if(!container) return;
-  container.innerHTML = JOINED_CLUBS.map(c => {
-    const badge = c.notifications > 0 ? `<span class="ml-auto bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center justify-center min-w-[20px]">${c.notifications}</span>` : '';
-    const isActive = document.title.includes(c.name) ? 'bg-secondary-container text-on-secondary-container font-bold' : '';
+  
+  const joinedIds = getJoinedClubs();
+  if (joinedIds.length === 0) {
+    container.innerHTML = `<p class="text-[12px] text-on-surface-variant/60 px-4 py-2 italic bg-surface-container-low/50 rounded-xl">Belum bergabung dengan klub manapun.</p>`;
+    return;
+  }
+  
+  container.innerHTML = joinedIds.map(id => {
+    const c = ALL_CLUBS[id];
+    if (!c) return '';
+    const notifCount = id === 'pejuang-snbt' ? 3 : 0;
+    const badge = notifCount > 0 ? `<span class="ml-auto bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center justify-center min-w-[20px]">${notifCount}</span>` : '';
+    
+    const activeClub = getActiveClub();
+    const isActive = activeClub && activeClub.id === id ? 'bg-secondary-container text-on-secondary-container font-bold shadow-sm' : '';
+    
     return `<a href="${c.link}" class="flex items-center gap-sm px-4 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors font-label-md text-label-md group ${isActive}">
       <span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">${c.icon}</span> ${c.name} ${badge}
     </a>`;
   }).join('');
+}
+
+// Modal Memilih / Gabung Klub Global
+window.openJoinClubsModal = function() {
+  let modal = document.getElementById('join-clubs-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'join-clubs-modal';
+    modal.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm z-[110] flex items-center justify-center p-4 animate-fadeIn';
+    document.body.appendChild(modal);
+  }
+  
+  const joined = getJoinedClubs();
+  
+  let clubsHtml = Object.values(ALL_CLUBS).map(c => {
+    const isJoined = joined.includes(c.id);
+    const btnClass = isJoined 
+      ? 'bg-slate-200 text-slate-700 hover:bg-red-100 hover:text-red-700 transition-all font-bold text-xs px-4 py-2 rounded-full cursor-pointer shrink-0'
+      : 'bg-primary text-white hover:bg-primary/95 transition-all font-bold text-xs px-4 py-2 rounded-full cursor-pointer shrink-0';
+    const btnText = isJoined ? 'Joined' : 'Gabung';
+    
+    return `
+      <div class="flex items-center gap-sm justify-between p-4 bg-surface-container-low dark:bg-slate-800/80 rounded-2xl border border-outline-variant/30 hover:bg-surface-container transition-all">
+        <div class="flex items-center gap-md">
+          <div class="w-12 h-12 rounded-2xl ${c.iconBg} flex items-center justify-center font-bold text-xl select-none shadow-sm">${c.iconText}</div>
+          <div class="text-left">
+            <h4 class="font-bold text-on-surface dark:text-white text-sm flex items-center gap-1">
+              ${c.name}
+            </h4>
+            <p class="text-xs text-on-surface-variant/80 dark:text-slate-300 line-clamp-1 max-w-[200px] sm:max-w-[300px]">${c.desc}</p>
+            <p class="text-[11px] font-bold text-primary mt-0.5">${c.members} Anggota</p>
+          </div>
+        </div>
+        <button onclick="window.toggleClubJoin('${c.id}'); window.openJoinClubsModal();" class="${btnClass}">
+          ${btnText}
+        </button>
+      </div>
+    `;
+  }).join('');
+  
+  modal.innerHTML = `
+    <div class="bg-surface-container-lowest dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-xl flex flex-col overflow-hidden max-h-[85vh]">
+      <!-- Header -->
+      <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/30">
+        <div class="flex items-center gap-2 text-primary">
+          <span class="material-symbols-outlined text-[26px]">groups</span>
+          <h2 class="font-bold text-[20px] text-on-surface dark:text-white">Gabung Klub ReadBridge</h2>
+        </div>
+        <button onclick="document.getElementById('join-clubs-modal').remove()" class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant flex items-center justify-center">
+          <span class="material-symbols-outlined text-[22px]">close</span>
+        </button>
+      </div>
+      <!-- Body (Scrollable) -->
+      <div class="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-3 custom-scrollbar">
+        <p class="text-sm text-on-surface-variant/80 dark:text-slate-300 mb-2">Temukan komunitas belajar, hobi, dan diskusi buku yang sesuai dengan minat Anda di ReadBridge.</p>
+        <div class="flex flex-col gap-3">
+          ${clubsHtml}
+        </div>
+      </div>
+      <!-- Footer -->
+      <div class="px-6 py-4 border-t border-outline-variant/30 bg-surface-container dark:bg-slate-800 flex justify-end">
+        <button onclick="document.getElementById('join-clubs-modal').remove()" class="px-5 py-2.5 rounded-full text-[13px] font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 transition-colors">
+          Selesai
+        </button>
+      </div>
+    </div>
+  `;
+  
+  modal.style.display = 'flex';
+};
+
+// Update detail halaman klub secara dinamis
+function updateClubPageDetails() {
+  const club = getActiveClub();
+  if (!club) return;
+
+  // Title di Header Card
+  const titleEl = document.querySelector('h1.font-display-lg');
+  if (titleEl) titleEl.textContent = club.name;
+
+  // Title Dokumen
+  document.title = `Klub ${club.name} - ReadBridge`;
+
+  // Deskripsi di Header Card
+  const descEl = document.querySelector('p.font-body-md.text-on-surface-variant');
+  if (descEl) descEl.textContent = club.desc;
+
+  // Cover Image
+  const coverEl = document.querySelector('.h-48.relative > div');
+  if (coverEl) {
+    coverEl.style.backgroundImage = `url('${club.cover}')`;
+  }
+
+  // Icon
+  const iconImgEl = document.querySelector('img[alt="Club Icon"]');
+  if (iconImgEl) {
+    iconImgEl.src = club.avatar;
+  }
+
+  // Total Anggota
+  const membersEls = document.querySelectorAll('span.flex.items-center.gap-xs');
+  membersEls.forEach(el => {
+    if (el.textContent.includes('Members') || el.textContent.includes('Anggota') || el.querySelector('.material-symbols-outlined')?.textContent === 'group') {
+      el.innerHTML = `<span class="material-symbols-outlined text-lg">group</span> ${club.members} Members`;
+    }
+  });
+
+  // Deskripsi Widget "Tentang Klub" di Sidebar Kanan
+  const aboutDescEl = document.querySelector('aside p.font-body-md.text-xs, aside p.font-body-md.text-sm');
+  if (aboutDescEl) aboutDescEl.textContent = club.desc;
+
+  // Tag Kategori di Widget "Tentang Klub"
+  const tagsContainer = document.querySelector('aside .flex.flex-wrap');
+  if (tagsContainer && club.id !== 'pejuang-snbt' && club.id !== 'pecinta-fiksi') {
+    let tagsHtml = '';
+    if (club.id === 'webdev') {
+      tagsHtml = `
+        <span class="bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded-full font-label-sm text-[11px]">JavaScript</span>
+        <span class="bg-secondary/10 text-secondary border border-secondary/20 px-3 py-1 rounded-full font-label-sm text-[11px]">HTML/CSS</span>
+        <span class="bg-tertiary/10 text-tertiary border border-tertiary/20 px-3 py-1 rounded-full font-label-sm text-[11px]">Coding</span>
+      `;
+    } else if (club.id === 'uiux') {
+      tagsHtml = `
+        <span class="bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded-full font-label-sm text-[11px]">Figma</span>
+        <span class="bg-secondary/10 text-secondary border border-secondary/20 px-3 py-1 rounded-full font-label-sm text-[11px]">UI Design</span>
+        <span class="bg-tertiary/10 text-tertiary border border-tertiary/20 px-3 py-1 rounded-full font-label-sm text-[11px]">UX Research</span>
+      `;
+    } else if (club.id === 'selfdev') {
+      tagsHtml = `
+        <span class="bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded-full font-label-sm text-[11px]">Productivity</span>
+        <span class="bg-secondary/10 text-secondary border border-secondary/20 px-3 py-1 rounded-full font-label-sm text-[11px]">Habits</span>
+        <span class="bg-tertiary/10 text-tertiary border border-tertiary/20 px-3 py-1 rounded-full font-label-sm text-[11px]">Mindfulness</span>
+      `;
+    } else if (club.id === 'manga') {
+      tagsHtml = `
+        <span class="bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded-full font-label-sm text-[11px]">Manga</span>
+        <span class="bg-secondary/10 text-secondary border border-secondary/20 px-3 py-1 rounded-full font-label-sm text-[11px]">Manhwa</span>
+        <span class="bg-tertiary/10 text-tertiary border border-tertiary/20 px-3 py-1 rounded-full font-label-sm text-[11px]">Anime</span>
+      `;
+    } else if (club.id === 'jurnal') {
+      tagsHtml = `
+        <span class="bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded-full font-label-sm text-[11px]">Research</span>
+        <span class="bg-secondary/10 text-secondary border border-secondary/20 px-3 py-1 rounded-full font-label-sm text-[11px]">Academic</span>
+        <span class="bg-tertiary/10 text-tertiary border border-tertiary/20 px-3 py-1 rounded-full font-label-sm text-[11px]">Science</span>
+      `;
+    }
+    tagsContainer.innerHTML = tagsHtml;
+  }
+}
+
+// Render daftar anggota dinamis real-time
+window.renderDynamicMembersList = function() {
+  const club = getActiveClub();
+  if (!club) return;
+  
+  const joined = getJoinedClubs();
+  const isJoined = joined.includes(club.id);
+  const currentUser = {
+    username: CURRENT_USER_PROFILE,
+    name: CURRENT_USER_PROFILE.replace('@', ''),
+    avatar: getAvatarForUser(CURRENT_USER_PROFILE),
+    online: true,
+    isRealUser: true
+  };
+
+  const asideCards = document.querySelectorAll('aside > div');
+  let memberCard = null;
+  asideCards.forEach(card => {
+    if (card.textContent.includes('Daftar Anggota') || card.textContent.includes('Anggota') || card.querySelector('.material-symbols-outlined')?.textContent === 'groups') {
+      memberCard = card;
+    }
+  });
+
+  if (!memberCard) return;
+
+  let clubDecoys = DECOY_MEMBERS.map((d, index) => ({
+    ...d,
+    online: (club.id.charCodeAt(0) + index) % 2 === 0
+  }));
+
+  let onlineMembers = clubDecoys.filter(d => d.online);
+  let offlineMembers = clubDecoys.filter(d => !d.online);
+
+  if (isJoined) {
+    onlineMembers.unshift(currentUser);
+  }
+
+  const totalMembers = club.membersCount + (isJoined ? 1 : 0);
+
+  memberCard.innerHTML = `
+    <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary to-secondary"></div>
+    <h3 class="font-title-lg text-title-lg text-on-surface dark:text-on-primary-container border-b border-surface-container-high pb-sm mb-sm flex justify-between items-center font-bold">
+      <span class="flex items-center gap-xs">
+        <span class="material-symbols-outlined text-primary">groups</span>
+        Daftar Anggota
+      </span>
+      <span class="bg-primary/10 text-primary px-2.5 py-0.5 rounded-full text-[12px] font-bold border border-primary/20">${totalMembers}</span>
+    </h3>
+
+    <div class="flex flex-col mt-sm select-none">
+      <p class="font-label-sm text-label-sm text-primary uppercase tracking-wider mb-2 font-bold text-[11px] flex items-center gap-1">
+        <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_#22c55e]"></span>
+        Sedang Aktif (${onlineMembers.length})
+      </p>
+      <div class="flex flex-col gap-2 mb-4" id="member-online-list">
+        ${onlineMembers.map(m => `
+          <div class="flex items-center gap-3 hover:bg-surface-container-low p-2 rounded-lg cursor-pointer transition-colors group">
+            <div class="relative shrink-0 flex">
+              <img src="${m.avatar}" class="w-8 h-8 rounded-full object-cover group-hover:scale-105 transition-transform duration-200">
+              <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-surface rounded-full shadow-[0_0_6px_#22c55e]"></div>
+            </div>
+            <span class="font-label-md text-label-md text-on-surface font-medium truncate group-hover:text-primary transition-colors flex items-center">${m.name} ${m.isRealUser ? '<span class="bg-primary/20 text-primary text-[9px] font-bold px-1.5 py-0.5 rounded ml-1.5 uppercase tracking-wider scale-90">Real</span>' : ''}</span>
+          </div>
+        `).join('')}
+      </div>
+
+      <p class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase tracking-wider mb-2 font-bold text-[11px]">
+        Offline (${offlineMembers.length})
+      </p>
+      <div class="flex flex-col gap-2" id="member-offline-list">
+        ${offlineMembers.map(m => `
+          <div class="flex items-center gap-3 opacity-60 hover:opacity-100 hover:bg-surface-container-low p-2 rounded-lg cursor-pointer transition-all group">
+            <div class="relative shrink-0 flex">
+              <img src="${m.avatar}" class="w-8 h-8 rounded-full object-cover grayscale group-hover:scale-105 transition-transform duration-200">
+              <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-gray-400 border-2 border-surface rounded-full"></div>
+            </div>
+            <span class="font-label-md text-label-md text-on-surface font-medium truncate group-hover:text-primary transition-colors">${m.name}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+};
+
+// Simulator status anggota real-time
+function startRealtimeMemberSimulation() {
+  setInterval(() => {
+    const club = getActiveClub();
+    if (!club) return;
+    
+    // Acak status decoy
+    const randomIndex = Math.floor(Math.random() * DECOY_MEMBERS.length);
+    const m = DECOY_MEMBERS[randomIndex];
+    m.online = !m.online;
+    
+    renderDynamicMembersList();
+  }, 15000); // refresh setiap 15 detik
+}
+
+// Render rekomendasi klub dinamis
+function renderRecommendedClubs() {
+  const containers = [
+    document.getElementById('recommended-clubs-container'),
+    document.getElementById('mobile-recommended-clubs-container')
+  ];
+  
+  const mobileContainer = document.querySelector('#mobile-widgets-drawer .flex.flex-col.gap-md');
+  if (mobileContainer && !document.getElementById('mobile-recommended-clubs-container')) {
+    mobileContainer.id = 'mobile-recommended-clubs-container';
+    containers[1] = mobileContainer;
+  }
+  
+  const joined = getJoinedClubs();
+  let clubsToRecommend = Object.values(ALL_CLUBS);
+  
+  containers.forEach(container => {
+    if (!container) return;
+    
+    container.innerHTML = clubsToRecommend.slice(0, 3).map(c => {
+      const isJoined = joined.includes(c.id);
+      const btnText = isJoined ? 'Joined' : 'Gabung';
+      const btnClass = isJoined 
+        ? 'bg-slate-200 text-slate-700 font-bold text-[11px] px-4 py-1.5 rounded-full cursor-pointer shrink-0'
+        : 'bg-primary-container text-on-primary-container px-4 py-1.5 rounded-full font-label-sm text-[11px] font-bold hover:bg-primary hover:text-on-primary transition-colors cursor-pointer shrink-0';
+      
+      return `
+        <div class="flex items-center gap-sm justify-between bg-surface-container-low dark:bg-slate-800/80 p-3 rounded-xl">
+          <div class="flex items-center gap-sm">
+            <div class="w-10 h-10 rounded-xl ${c.iconBg} flex items-center justify-center font-bold text-lg shrink-0">${c.iconText}</div>
+            <div class="text-left">
+              <h4 class="font-label-md text-[13px] font-bold text-on-surface dark:text-on-primary-container truncate max-w-[100px]">${c.name}</h4>
+              <p class="font-label-sm text-[11px] text-on-surface-variant dark:text-outline-variant">${c.members}</p>
+            </div>
+          </div>
+          <button onclick="window.toggleClubJoin('${c.id}')" class="${btnClass}">${btnText}</button>
+        </div>
+      `;
+    }).join('');
+  });
 }
 
 function renderActivityFeed() {
@@ -780,8 +1340,23 @@ document.addEventListener('DOMContentLoaded', () => {
   document.body.insertAdjacentHTML('beforeend', modalHTML);
   setupModalLogic();
   setupTabs(); // Initialize club tabs
+  
+  // Dynamic page adjustments
+  updateClubPageDetails();
+  updateJoinButtonState();
+  renderDynamicMembersList();
+  startRealtimeMemberSimulation();
+  renderRecommendedClubs();
+
   renderAllPosts(); // Render posts initially
   renderJoinedClubs(); // Render clubs in left sidebar
+
+  // Bind "Gabung Club" buttons dynamically to modal gabung
+  document.querySelectorAll('aside button, .lg\\:flex button, main button').forEach(btn => {
+    if (btn.textContent.includes('Gabung Club') || btn.textContent.includes('Gabung Klub') || btn.textContent.trim() === 'Gabung Club') {
+      btn.setAttribute('onclick', 'window.openJoinClubsModal()');
+    }
+  });
 
   // Bind Feed Tab clicks
   document.getElementById('tab-feed-semua')?.addEventListener('click', async () => {
@@ -1418,6 +1993,20 @@ function appendCommentToUI(postId, comment, postAuthor) {
 }
 
 async function fetchCommentsForPost(postId) {
+  // Jika postingan decoy/default, render lokal secara offline tanpa menembak server
+  if (typeof postId === 'string' && (postId.startsWith('fiksi-') || postId.startsWith('snbt-'))) {
+    const posts = getPosts();
+    const p = posts.find(x => x.id == postId);
+    if (!p) return;
+    const list = document.getElementById(`comments-list-${postId}`);
+    if (list) {
+      list.innerHTML = p.commentsList.map(c => renderCommentItemHtml(c, p.username)).join('');
+    }
+    const countEl = document.getElementById(`komentar-count-${postId}`);
+    if (countEl) countEl.textContent = p.commentsList.length;
+    return;
+  }
+
   try {
     const token = localStorage.getItem('rb_token');
     const headers = {};
