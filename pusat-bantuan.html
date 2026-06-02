@@ -352,12 +352,12 @@
 
         function appendChatMessage(text, sender) {
             const div = document.createElement('div');
-            div.className = \`flex gap-2 max-w-[85%] \${sender === 'user' ? 'self-end flex-row-reverse' : ''}\`;
+            div.className = `flex gap-2 max-w-[85%] ${sender === 'user' ? 'self-end flex-row-reverse' : ''}`;
             
             const avatar = sender === 'bot' 
-                ? \`<div class="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                ? `<div class="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
                        <span class="material-symbols-outlined text-primary text-[16px]">smart_toy</span>
-                   </div>\`
+                   </div>`
                 : '';
                 
             const bubbleBg = sender === 'user' 
@@ -365,14 +365,14 @@
                 : 'bg-surface-container border border-outline-variant/20 text-on-surface rounded-tl-none';
                 
             // Convert markdown formatting to HTML safely
-            const formattedText = text.replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>').replace(/\\n/g, '<br>');
+            const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
 
-            div.innerHTML = \`
-                \${avatar}
-                <div class="\${bubbleBg} p-3 rounded-2xl">
-                    \${formattedText}
+            div.innerHTML = `
+                ${avatar}
+                <div class="${bubbleBg} p-3 rounded-2xl">
+                    ${formattedText}
                 </div>
-            \`;
+            `;
             
             chatMessages.appendChild(div);
             chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -382,8 +382,8 @@
             const id = 'loading-' + Date.now();
             const div = document.createElement('div');
             div.id = id;
-            div.className = \`flex gap-2 max-w-[85%]\`;
-            div.innerHTML = \`
+            div.className = `flex gap-2 max-w-[85%]`;
+            div.innerHTML = `
                 <div class="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
                     <span class="material-symbols-outlined text-primary text-[16px]">smart_toy</span>
                 </div>
@@ -392,7 +392,7 @@
                     <div class="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
                     <div class="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
                 </div>
-            \`;
+            `;
             chatMessages.appendChild(div);
             chatMessages.scrollTop = chatMessages.scrollHeight;
             return id;
