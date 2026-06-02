@@ -233,6 +233,171 @@
         });
       }
     </script>
+
+    <!-- AI Helpdesk Floating Widget -->
+    <div id="ai-helpdesk-container" class="fixed bottom-6 right-6 z-[100] flex flex-col items-end pointer-events-none">
+        <!-- Chat Window -->
+        <div id="ai-chat-window" class="bg-surface-container-lowest border border-outline-variant/30 shadow-2xl rounded-2xl w-[350px] max-h-[500px] flex flex-col overflow-hidden transition-all duration-300 origin-bottom-right scale-0 opacity-0 mb-4 pointer-events-auto">
+            <!-- Header -->
+            <div class="bg-primary text-on-primary p-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-white">smart_toy</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm">ReadBridge AI</h3>
+                        <p class="text-[11px] text-white/80">Asisten Bantuan Otomatis</p>
+                    </div>
+                </div>
+                <button onclick="toggleHelpdeskChat()" class="hover:bg-white/20 p-1.5 rounded-full transition-colors flex">
+                    <span class="material-symbols-outlined text-white text-[20px]">close</span>
+                </button>
+            </div>
+            
+            <!-- Chat Area -->
+            <div id="ai-chat-messages" class="flex-1 p-4 overflow-y-auto flex flex-col gap-3 bg-surface text-sm h-[320px]">
+                <!-- Initial Message -->
+                <div class="flex gap-2 max-w-[85%]">
+                    <div class="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-primary text-[16px]">smart_toy</span>
+                    </div>
+                    <div class="bg-surface-container border border-outline-variant/20 p-3 rounded-2xl rounded-tl-none text-on-surface">
+                        Halo! Saya Asisten AI ReadBridge. Ada yang bisa saya bantu terkait akun, transaksi, atau fitur hari ini?
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-3 bg-surface-container-lowest border-t border-outline-variant/20 flex gap-2 items-center">
+                <input type="text" id="ai-chat-input" class="flex-1 bg-surface-container-low border border-outline-variant/30 rounded-full px-4 py-2 text-sm text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Ketik pesan Anda..." onkeypress="handleHelpdeskEnter(event)">
+                <button onclick="sendHelpdeskMessage()" class="bg-primary text-on-primary w-9 h-9 rounded-full flex items-center justify-center hover:bg-primary-container transition-colors shrink-0">
+                    <span class="material-symbols-outlined text-[18px]">send</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Floating Button -->
+        <button id="ai-chat-button" onclick="toggleHelpdeskChat()" class="bg-primary hover:bg-primary-container text-on-primary w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105 active:scale-95 pointer-events-auto group">
+            <span class="material-symbols-outlined text-[28px] group-hover:hidden">chat</span>
+            <span class="material-symbols-outlined text-[28px] hidden group-hover:block">smart_toy</span>
+        </button>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('ai-chat-window');
+        const chatMessages = document.getElementById('ai-chat-messages');
+        const chatInput = document.getElementById('ai-chat-input');
+        
+        let chatOpen = false;
+
+        function toggleHelpdeskChat() {
+            chatOpen = !chatOpen;
+            if (chatOpen) {
+                chatWindow.classList.remove('scale-0', 'opacity-0');
+                chatWindow.classList.add('scale-100', 'opacity-100');
+                chatInput.focus();
+            } else {
+                chatWindow.classList.add('scale-0', 'opacity-0');
+                chatWindow.classList.remove('scale-100', 'opacity-100');
+            }
+        }
+
+        function handleHelpdeskEnter(e) {
+            if (e.key === 'Enter') sendHelpdeskMessage();
+        }
+
+        async function sendHelpdeskMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            // Add user message
+            appendChatMessage(text, 'user');
+            chatInput.value = '';
+            chatInput.disabled = true;
+
+            // Add loading indicator
+            const loadingId = appendLoading();
+
+            try {
+                // Call Backend API
+                const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                                 ? 'http://localhost:5000' 
+                                 : 'https://readbridge-backend.onrender.com';
+                
+                const res = await fetch(`${API_BASE}/api/helpdesk/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                
+                const data = await res.json();
+                
+                // Remove loading indicator
+                document.getElementById(loadingId)?.remove();
+                
+                if (data.success) {
+                    appendChatMessage(data.reply, 'bot');
+                } else {
+                    appendChatMessage('Maaf, sistem AI sedang mengalami gangguan. Silakan hubungi email bantuan@readbridge.id', 'bot');
+                }
+            } catch (error) {
+                console.error("Chat Error:", error);
+                document.getElementById(loadingId)?.remove();
+                appendChatMessage('Maaf, gagal terhubung ke server. Silakan coba lagi nanti.', 'bot');
+            } finally {
+                chatInput.disabled = false;
+                chatInput.focus();
+            }
+        }
+
+        function appendChatMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = \`flex gap-2 max-w-[85%] \${sender === 'user' ? 'self-end flex-row-reverse' : ''}\`;
+            
+            const avatar = sender === 'bot' 
+                ? \`<div class="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                       <span class="material-symbols-outlined text-primary text-[16px]">smart_toy</span>
+                   </div>\`
+                : '';
+                
+            const bubbleBg = sender === 'user' 
+                ? 'bg-primary text-on-primary rounded-tr-none' 
+                : 'bg-surface-container border border-outline-variant/20 text-on-surface rounded-tl-none';
+                
+            // Convert markdown formatting to HTML safely
+            const formattedText = text.replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>').replace(/\\n/g, '<br>');
+
+            div.innerHTML = \`
+                \${avatar}
+                <div class="\${bubbleBg} p-3 rounded-2xl">
+                    \${formattedText}
+                </div>
+            \`;
+            
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function appendLoading() {
+            const id = 'loading-' + Date.now();
+            const div = document.createElement('div');
+            div.id = id;
+            div.className = \`flex gap-2 max-w-[85%]\`;
+            div.innerHTML = \`
+                <div class="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-primary text-[16px]">smart_toy</span>
+                </div>
+                <div class="bg-surface-container border border-outline-variant/20 px-4 py-3 rounded-2xl rounded-tl-none text-on-surface flex items-center gap-1">
+                    <div class="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce"></div>
+                    <div class="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                    <div class="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                </div>
+            \`;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return id;
+        }
+    </script>
 </body>
 
 </html>
