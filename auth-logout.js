@@ -1,8 +1,5 @@
-/**
- * Logout ReadBridge: hapus sesi lokal + Firebase signOut.
- * Pasang <script src="auth-logout.js?v=1"></script> di halaman yang punya menu Log Out.
- */
-const AUTH_MODULE = "./auth-google.js?v=6";
+/** Logout ReadBridge — memanggil rb-auth.js */
+const AUTH_MODULE = "./rb-auth.js?v=1";
 
 function clearLocalAuthFallback() {
   localStorage.setItem("rb_explicit_logout", "true");
@@ -16,7 +13,6 @@ function clearLocalAuthFallback() {
     "rb_profile_pic",
     "rb_user_email",
     "rb_login_in_progress",
-    "rb_login_started_at",
   ].forEach((k) => localStorage.removeItem(k));
 }
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'readbridge-pwa-cache-v4';
+const CACHE_NAME = 'readbridge-pwa-cache-v7';
 const urlsToCache = [
   './index.html',
   './style.css',
