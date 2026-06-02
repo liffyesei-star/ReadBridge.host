@@ -39,11 +39,13 @@ Pertanyaan Pengguna: "${message}"`;
       })
     });
     const data = await resp.json();
+    console.log("Gemini HTTP Status:", resp.status);
+    console.log("Gemini Response:", JSON.stringify(data));
     if (data.candidates && data.candidates[0].content) {
       let reply = data.candidates[0].content.parts[0].text.trim();
       return res.json({ success: true, reply });
     } else {
-      throw new Error("Invalid response from Gemini");
+      return res.status(500).json({ success: false, message: "Terjadi kesalahan internal AI", geminiResponse: data });
     }
   } catch(e) { 
     console.error("Gemini Error:", e); 
