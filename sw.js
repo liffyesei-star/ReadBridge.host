@@ -47,7 +47,7 @@ self.addEventListener('fetch', event => {
   const isApiRequest = requestUrl.pathname.includes('/api/') || requestUrl.hostname.includes('readbridge-backend');
   
   // Exclude auth-related pages dari caching (ini penting untuk PWA redirect)
-  const isAuthPage = ['google-login', 'login', 'register', 'reset-password', 'minat', 'auth-google'].some(
+  const isAuthPage = ['google-login', 'login', 'register', 'reset-password', 'minat', 'auth-google', 'auth-handler'].some(
     page => requestUrl.pathname.includes(page)
   );
 
