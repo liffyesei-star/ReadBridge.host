@@ -406,6 +406,9 @@
                     } else {
                         window.location.href = 'eksplor.html';
                     }
+                } else {
+                    hideLoginOverlay();
+                    sessionStorage.removeItem('rb_google_login_pending');
                 }
             } catch (error) {
                 console.error("Firebase Login Error:", error);
