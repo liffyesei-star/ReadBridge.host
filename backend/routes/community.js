@@ -405,4 +405,84 @@ router.post("/clubs/:id/gabung", verifyToken, async (req, res) => {
   }
 });
 
+/**
+ * POST /api/community/bot-simulate
+ * Endpoint untuk memicu aksi AI secara manual dari frontend (menghindari tereksposnya API Key)
+ */
+router.post("/bot-simulate", async (req, res) => {
+  const { action, destination, postId, userText } = req.body;
+  
+  // Hardcoded bot pool
+  const botPool = ['@SastraWangi', '@BookNerd', '@HujanBulanJuni', '@TokyoReader', '@PenaSenja', '@PejuangKampus', '@MathGenius', '@CalonMaba', '@Ambiskuh', '@TukangOverthinking', '@KutuBuku', '@PecintaSastra', '@AnakRajin', '@SiswaIndonesia', '@AlumniSukses', '@PemimpiBesar', '@PemburuPTN', '@ReadBridgeAI'];
+  const botUser = botPool[Math.floor(Math.random() * botPool.length)];
+  const geminiKey = process.env.GEMINI_API_KEY;
+
+  async function callGemini(prompt) {
+    if (!geminiKey || geminiKey === 'YOUR_API_KEY_HERE' || geminiKey === 'YOUR_GEMINI_API_KEY_HERE') return null;
+    try {
+      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.9, maxOutputTokens: 150 } })
+      });
+      const data = await resp.json();
+      if (data.candidates && data.candidates[0].content) {
+        return data.candidates[0].content.parts[0].text.replace(/^["']|["']$/g, '').trim();
+      }
+    } catch(e) { console.error("Gemini Error:", e); }
+    return null;
+  }
+
+  try {
+    if (action === "create_post") {
+      const prompt = `Sebagai seorang siswa SMA di Indonesia bernama ${botUser}, buat satu postingan singkat untuk forum komunitas diskusi belajar / hobi tentang topik yang relevan dengan klub "${destination || 'Public Feed'}". Buat kontennya gaul, asik. Format persis: Judul Postingan|Isi postingan singkat`;
+      
+      let judul = "Ada diskusi menarik nih hari ini?", isi = "Kira-kira topik apa yang lagi seru buat dibahas bareng?";
+      const aiResp = await callGemini(prompt);
+      if (aiResp && aiResp.includes('|')) {
+        const parts = aiResp.split('|');
+        judul = parts[0].trim(); isi = parts[1].trim();
+      } else if (destination === 'Pejuang SNBT') {
+        judul = 'Lagi bingung milih jurusan nih, ada saran?'; isi = 'Guys aku galau banget mau pilih TI atau SI ya?';
+      }
+
+      const clubId = await resolveClubId({ destination });
+      const userId = await getOrCreateBotUser(botUser);
+      const [result] = await db.execute(
+        "INSERT INTO diskusi (club_id, user_id, judul, konten) VALUES (?, ?, ?, ?)",
+        [clubId, userId, judul, isi]
+      );
+      
+      return res.json({ success: true, message: "Bot created post", data: { id: result.insertId, judul, isi, username: botUser }});
+    } 
+    else if (action === "reply_post" || action === "reply_user") {
+      if (!postId) return res.status(400).json({ success: false, message: "postId required" });
+      
+      const [[post]] = await db.execute("SELECT judul, konten FROM diskusi WHERE id = ?", [postId]);
+      if (!post) return res.status(404).json({ success: false, message: "Post not found" });
+
+      let prompt = `Sebagai siswa SMA bernama ${botUser}, berikan satu komentar gaul dan singkat (1-2 kalimat) merespons: Judul: ${post.judul}, Isi: ${post.konten}. Tanpa tanda kutip.`;
+      if (action === "reply_user") {
+        prompt = `Sebagai siswa SMA bernama @ReadBridgeAI, balas komentar user "${userText}" di post berjudul "${post.judul}". Singkat, gaul, ramah (1-2 kalimat).`;
+      }
+
+      let aiResp = await callGemini(prompt);
+      if (!aiResp) {
+        aiResp = `Pembahasan tentang diskusi ini sangat menarik — terima kasih sudah buka thread-nya!`;
+        if (action === "reply_user") aiResp = "Terima kasih atas tanggapannya! Setuju banget dengan poin kamu.";
+      }
+
+      const authorName = action === "reply_user" ? "@ReadBridgeAI" : botUser;
+      await insertBotBalasan(postId, aiResp, authorName);
+      
+      return res.json({ success: true, message: "Bot replied", data: { text: aiResp, username: authorName } });
+    }
+
+    res.status(400).json({ success: false, message: "Invalid action" });
+  } catch (err) {
+    console.error("Bot simulation error:", err);
+    res.status(500).json({ success: false, message: "Bot error" });
+  }
+});
+
 module.exports = router;

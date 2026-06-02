@@ -7,8 +7,8 @@
 // JavaScript terpusat untuk Fitur Modal Diskusi dan Feed Komunitas
 
 const STORAGE_KEY = 'readbridge_community_posts_v2';
-const DRAFT_KEY   = 'readbridge_draft';
-const API_BASE    = 'https://readbridge-backend-2whx.onrender.com';
+const DRAFT_KEY = 'readbridge_draft';
+const API_BASE = 'https://readbridge-backend-2whx.onrender.com';
 
 // 7 Daftar Klub Belajar & Diskusi ReadBridge
 const ALL_CLUBS = {
@@ -129,7 +129,7 @@ function getActiveClub() {
   const path = window.location.pathname;
   const searchParams = new URLSearchParams(window.location.search);
   const id = searchParams.get('id');
-  
+
   if (path.includes('club-pecinta-fiksi.html') || id === 'pecinta-fiksi') {
     return ALL_CLUBS['pecinta-fiksi'];
   }
@@ -181,45 +181,50 @@ const TOPIC_DETAILS = {
 // Seed data - Populated with extensive decoy comments for lively active look!
 const defaultPosts = [
   // PECINTA FIKSI POSTS
-  { id:'fiksi-1', username:'@SastraWangi', isCurrentUser:false, waktu:'2 jam yang lalu',
-    judul:'Rekomendasi novel fiksi sejarah Indonesia yang wajib dibaca sebelum lulus SMA?',
-    isi:'Halo semuanya, ada yang punya rekomendasi novel fiksi yang berlatar belakang sejarah Indonesia? Aku lagi nyari bacaan buat nambah wawasan sekaligus hiburan.',
-    tags:['#Fiksi','#Sejarah'], votes:1200, komentar:2, destination: 'Pecinta Fiksi',
+  {
+    id: 'fiksi-1', username: '@SastraWangi', isCurrentUser: false, waktu: '2 jam yang lalu',
+    judul: 'Rekomendasi novel fiksi sejarah Indonesia yang wajib dibaca sebelum lulus SMA?',
+    isi: 'Halo semuanya, ada yang punya rekomendasi novel fiksi yang berlatar belakang sejarah Indonesia? Aku lagi nyari bacaan buat nambah wawasan sekaligus hiburan.',
+    tags: ['#Fiksi', '#Sejarah'], votes: 1200, komentar: 2, destination: 'Pecinta Fiksi',
     commentsList: [
       { username: '@KutuBuku', text: 'Bumi Manusia karya Pramoedya Ananta Toer wajib banget!', waktu: '1 jam yang lalu' },
       { username: '@PecintaSastra', text: 'Laut Bercerita juga bagus banget kak.', waktu: '30 menit yang lalu' }
     ]
   },
-  { id:'fiksi-2', username:'@BookNerd', isCurrentUser:false, waktu:'4 jam yang lalu',
-    judul:'Review buku Cantik Itu Luka karya Eka Kurniawan. Ada yang udah baca?',
-    isi:'Baru selesai baca semalem dan mindblowing banget! Alurnya maju mundur tapi gak bikin bingung. Tokoh Dewi Ayu bener-bener ikonik. Ada yang mau bahas endingnya?',
-    tags:['#ReviewBuku','#Sastra'], votes:890, komentar:1, destination: 'Pecinta Fiksi',
+  {
+    id: 'fiksi-2', username: '@BookNerd', isCurrentUser: false, waktu: '4 jam yang lalu',
+    judul: 'Review buku Cantik Itu Luka karya Eka Kurniawan. Ada yang udah baca?',
+    isi: 'Baru selesai baca semalem dan mindblowing banget! Alurnya maju mundur tapi gak bikin bingung. Tokoh Dewi Ayu bener-bener ikonik. Ada yang mau bahas endingnya?',
+    tags: ['#ReviewBuku', '#Sastra'], votes: 890, komentar: 1, destination: 'Pecinta Fiksi',
     commentsList: [
       { username: '@PecintaSastra', text: 'Masterpiece sih itu! Realisme magisnya kerasa banget.', waktu: '2 jam yang lalu' }
     ]
   },
-  { id:'fiksi-3', username:'@HujanBulanJuni', isCurrentUser:false, waktu:'1 hari yang lalu',
-    judul:'Diskusi: Kenapa ending novel "Hujan" karya Tere Liye bikin nyesek?',
-    isi:'Udah baca Hujan berkali-kali tapi tetep aja mewek di akhir. Menurut kalian keputusan Lail buat hapus ingatan itu egois ga sih?',
-    tags:['#TereLiye','#DiskusiFiksi'], votes:2100, komentar:2, destination: 'Pecinta Fiksi',
+  {
+    id: 'fiksi-3', username: '@HujanBulanJuni', isCurrentUser: false, waktu: '1 hari yang lalu',
+    judul: 'Diskusi: Kenapa ending novel "Hujan" karya Tere Liye bikin nyesek?',
+    isi: 'Udah baca Hujan berkali-kali tapi tetep aja mewek di akhir. Menurut kalian keputusan Lail buat hapus ingatan itu egois ga sih?',
+    tags: ['#TereLiye', '#DiskusiFiksi'], votes: 2100, komentar: 2, destination: 'Pecinta Fiksi',
     commentsList: [
       { username: '@SastraWangi', text: 'Iya nyesek banget kak, tapi itu akhir terbaik buat Lail & Esok.', waktu: '12 jam yang lalu' },
       { username: '@NovelLovers', text: 'Tere Liye emang juaranya bikin pembaca nangis di akhir bab.', waktu: '10 jam yang lalu' }
     ]
   },
-  { id:'fiksi-4', username:'@TokyoReader', isCurrentUser:false, waktu:'2 hari yang lalu',
-    judul:'Nyari teman baca bareng (buddy read) buku-buku Haruki Murakami',
-    isi:'Lagi pengen maraton baca Norwegian Wood sama Kafka on the Shore. Ada yang mau join buddy read biar bisa diskusi bareng tiap minggunya?',
-    tags:['#BuddyRead','#Murakami'], votes:450, komentar:2, destination: 'Pecinta Fiksi',
+  {
+    id: 'fiksi-4', username: '@TokyoReader', isCurrentUser: false, waktu: '2 hari yang lalu',
+    judul: 'Nyari teman baca bareng (buddy read) buku-buku Haruki Murakami',
+    isi: 'Lagi pengen maraton baca Norwegian Wood sama Kafka on the Shore. Ada yang mau join buddy read biar bisa diskusi bareng tiap minggunya?',
+    tags: ['#BuddyRead', '#Murakami'], votes: 450, komentar: 2, destination: 'Pecinta Fiksi',
     commentsList: [
       { username: '@TokyoReader', text: 'Wah aku mau ikutan kak! Norwegian Wood udah di rak nih.', waktu: '1 hari yang lalu' },
       { username: '@BookWarm', text: 'Aku juga pengen join, kabarin ya kalau grup Discord/WA-nya udah jadi!', waktu: '18 jam yang lalu' }
     ]
   },
-  { id:'fiksi-5', username:'@PenaSenja', isCurrentUser:false, waktu:'3 hari yang lalu',
-    judul:'Puisi vs Prosa, kalian lebih suka baca yang mana saat lagi galau?',
-    isi:'Biasanya pelarian kalau lagi sedih pada baca puisi yang singkat tapi ngena, atau tenggelam di cerita prosa yang panjang?',
-    tags:['#Puisi','#Prosa'], votes:1500, komentar:2, destination: 'Pecinta Fiksi',
+  {
+    id: 'fiksi-5', username: '@PenaSenja', isCurrentUser: false, waktu: '3 hari yang lalu',
+    judul: 'Puisi vs Prosa, kalian lebih suka baca yang mana saat lagi galau?',
+    isi: 'Biasanya pelarian kalau lagi sedih pada baca puisi yang singkat tapi ngena, atau tenggelam di cerita prosa yang panjang?',
+    tags: ['#Puisi', '#Prosa'], votes: 1500, komentar: 2, destination: 'Pecinta Fiksi',
     commentsList: [
       { username: '@PenaSenja', text: 'Puisi sih, maknanya lebih dalam dan multi-tafsir.', waktu: '2 hari yang lalu' },
       { username: '@Melodrama', text: 'Kalau aku lebih milih prosa, biar bisa hanyut sama plotnya.', waktu: '1 hari yang lalu' }
@@ -227,45 +232,50 @@ const defaultPosts = [
   },
 
   // PEJUANG SNBT POSTS
-  { id:'snbt-1', username:'@PejuangKampus', isCurrentUser:false, waktu:'5 jam yang lalu',
-    judul:'Tips jitu ningkatin nilai TryOut UTBK Literasi Bahasa Indonesia!',
-    isi:'Gais, share dong tips kalian buat ngerjain soal PBM sama PPU. Nilai TO ku stuck terus di 500-an.',
-    tags:['#UTBK','#TipsBelajar'], votes:850, komentar:1, destination: 'Pejuang SNBT',
+  {
+    id: 'snbt-1', username: '@PejuangKampus', isCurrentUser: false, waktu: '5 jam yang lalu',
+    judul: 'Tips jitu ningkatin nilai TryOut UTBK Literasi Bahasa Indonesia!',
+    isi: 'Gais, share dong tips kalian buat ngerjain soal PBM sama PPU. Nilai TO ku stuck terus di 500-an.',
+    tags: ['#UTBK', '#TipsBelajar'], votes: 850, komentar: 1, destination: 'Pejuang SNBT',
     commentsList: [
       { username: '@AnakRajin', text: 'Banyakin baca artikel opini aja kak, biar terbiasa baca teks panjang.', waktu: '2 jam yang lalu' }
     ]
   },
-  { id:'snbt-2', username:'@MathGenius', isCurrentUser:false, waktu:'6 jam yang lalu',
-    judul:'Soal PK (Pengetahuan Kuantitatif) tahun lalu susah banget, ada bocoran materi yang sering keluar?',
-    isi:'Aku denger-denger matriks sama peluang selalu keluar tiap tahun. Bener ga sih? Ada yang punya rekapan materi PK yang wajib dikuasain?',
-    tags:['#PK','#Matematika'], votes:1120, komentar:2, destination: 'Pejuang SNBT',
+  {
+    id: 'snbt-2', username: '@MathGenius', isCurrentUser: false, waktu: '6 jam yang lalu',
+    judul: 'Soal PK (Pengetahuan Kuantitatif) tahun lalu susah banget, ada bocoran materi yang sering keluar?',
+    isi: 'Aku denger-denger matriks sama peluang selalu keluar tiap tahun. Bener ga sih? Ada yang punya rekapan materi PK yang wajib dikuasain?',
+    tags: ['#PK', '#Matematika'], votes: 1120, komentar: 2, destination: 'Pejuang SNBT',
     commentsList: [
       { username: '@MathGenius', text: 'Matriks sama peluang emang sering keluar, tapi pelajari juga statistika dasar ya!', waktu: '4 jam yang lalu' },
       { username: '@PejuangKampus', text: 'Jangan lupa sistem persamaan linear kak, tahun lalu keluar dua soal.', waktu: '3 jam yang lalu' }
     ]
   },
-  { id:'snbt-3', username:'@CalonMaba', isCurrentUser:false, waktu:'12 jam yang lalu',
-    judul:'Strategi memilih jurusan di SNBT 2024 biar ga salah langkah',
-    isi:'Masih bingung nentuin pilihan 1 sama pilihan 2. Lebih baik pilih jurusan impian di PTN top untuk pilihan 1, terus pilihan 2 yang realistis, atau gimana ya strateginya?',
-    tags:['#Strategi','#PilihJurusan'], votes:3400, komentar:2, destination: 'Pejuang SNBT',
+  {
+    id: 'snbt-3', username: '@CalonMaba', isCurrentUser: false, waktu: '12 jam yang lalu',
+    judul: 'Strategi memilih jurusan di SNBT 2024 biar ga salah langkah',
+    isi: 'Masih bingung nentuin pilihan 1 sama pilihan 2. Lebih baik pilih jurusan impian di PTN top untuk pilihan 1, terus pilihan 2 yang realistis, atau gimana ya strateginya?',
+    tags: ['#Strategi', '#PilihJurusan'], votes: 3400, komentar: 2, destination: 'Pejuang SNBT',
     commentsList: [
       { username: '@SiswaIndonesia', text: 'Saran aku pilihan 1 harus yang paling kamu pengen, pilihan 2 yang peluang masuknya lebih gede buat cadangan.', waktu: '10 jam yang lalu' },
       { username: '@AlumniSukses', text: 'Betul, pastikan passing grade pilihan 2 di bawah pilihan 1 ya.', waktu: '8 jam yang lalu' }
     ]
   },
-  { id:'snbt-4', username:'@Ambiskuh', isCurrentUser:false, waktu:'1 hari yang lalu',
-    judul:'Minta rekomendasi channel YouTube buat belajar Penalaran Matematika dong',
-    isi:'Lagi butuh banget referensi buat belajar PM dari nol. Kadang ngerasa basic math-nya masih kurang kuat. Kasih tau channel favorit kalian!',
-    tags:['#Rekomendasi','#PM'], votes:670, komentar:2, destination: 'Pejuang SNBT',
+  {
+    id: 'snbt-4', username: '@Ambiskuh', isCurrentUser: false, waktu: '1 hari yang lalu',
+    judul: 'Minta rekomendasi channel YouTube buat belajar Penalaran Matematika dong',
+    isi: 'Lagi butuh banget referensi buat belajar PM dari nol. Kadang ngerasa basic math-nya masih kurang kuat. Kasih tau channel favorit kalian!',
+    tags: ['#Rekomendasi', '#PM'], votes: 670, komentar: 2, destination: 'Pejuang SNBT',
     commentsList: [
       { username: '@CalonMaba', text: 'Coba tonton channel "Hujan Duit Math" atau "Privat Al-Faiz" kak, jelas banget pembahasannya.', waktu: '20 jam yang lalu' },
       { username: '@Ambiskuh', text: 'Belajar bareng Kak Fandi di YT juga recommended banget!', waktu: '18 jam yang lalu' }
     ]
   },
-  { id:'snbt-5', username:'@TukangOverthinking', isCurrentUser:false, waktu:'2 hari yang lalu',
-    judul:'H-30 UTBK, mental mulai down. Gimana cara kalian jaga motivasi belajar?',
-    isi:'Makin deket hari H malah makin males belajar dan overthinking takut ga lolos. Kalian biasanya ngapain kalau lagi di fase burnout gini?',
-    tags:['#MentalHealth','#Motivasi'], votes:4200, komentar:2, destination: 'Pejuang SNBT',
+  {
+    id: 'snbt-5', username: '@TukangOverthinking', isCurrentUser: false, waktu: '2 hari yang lalu',
+    judul: 'H-30 UTBK, mental mulai down. Gimana cara kalian jaga motivasi belajar?',
+    isi: 'Makin deket hari H malah makin males belajar dan overthinking takut ga lolos. Kalian biasanya ngapain kalau lagi di fase burnout gini?',
+    tags: ['#MentalHealth', '#Motivasi'], votes: 4200, komentar: 2, destination: 'Pejuang SNBT',
     commentsList: [
       { username: '@AlumniSukses', text: 'Fase wajar kak. Kurangi belajar malam, tidur yang cukup, dan lakuin meditasi kecil.', waktu: '1 hari yang lalu' },
       { username: '@PejuangMasaDepan', text: 'Sama kak, tapi kita harus inget perjuangan ortu kita. Yuk semangat lagi!', waktu: '16 jam yang lalu' }
@@ -297,7 +307,7 @@ const defaultPosts = [
   }
 ];
 
-window.openAttachment = function(url, autoDownload) {
+window.openAttachment = function (url, autoDownload) {
   if (autoDownload) {
     window.open(url + '?download=1', '_blank');
   } else {
@@ -319,12 +329,12 @@ function getCurrentPageClubFilter() {
   return null;
 }
 
-window.fetchPostsFromAPI = async function() {
+window.fetchPostsFromAPI = async function () {
   try {
     const token = localStorage.getItem('rb_token');
     const headers = {};
     if (token) headers['Authorization'] = `Bearer ${token}`;
-    
+
     const sortParam = (window.activeFeedTab === 'Trending') ? 'terpopuler' : 'terbaru';
     const pageClub = getCurrentPageClubFilter();
     let url = `${API_BASE}/api/community/diskusi?sort=${sortParam}`;
@@ -356,55 +366,55 @@ window.fetchPostsFromAPI = async function() {
       apiPosts = defaultPosts;
       apiPostsFetched = true;
     }
-  } catch(e) {
+  } catch (e) {
     console.error(e);
     apiPosts = defaultPosts;
     apiPostsFetched = true;
   }
 }
 
-function getPosts(){
+function getPosts() {
   if (!apiPostsFetched) return [];
   return apiPosts;
 }
 
-function savePosts(p){ 
+function savePosts(p) {
   // No longer used for saving to localStorage, but we keep it to update local cache
   apiPosts = p;
 }
-function formatVotes(n){ return n>=1000?(n/1000).toFixed(1).replace('.0','')+'k':String(n); }
-function formatWaktu(s){
-  if(!s||s.includes('jam')||s.includes('hari')) return s;
-  const d=Date.now()-new Date(s).getTime(), m=Math.floor(d/60000), h=Math.floor(d/3600000), dy=Math.floor(d/86400000);
-  if(m<1)return'Baru saja'; if(h<1)return`${m} menit yang lalu`; if(dy<1)return`${h} jam yang lalu`; return`${dy} hari yang lalu`;
+function formatVotes(n) { return n >= 1000 ? (n / 1000).toFixed(1).replace('.0', '') + 'k' : String(n); }
+function formatWaktu(s) {
+  if (!s || s.includes('jam') || s.includes('hari')) return s;
+  const d = Date.now() - new Date(s).getTime(), m = Math.floor(d / 60000), h = Math.floor(d / 3600000), dy = Math.floor(d / 86400000);
+  if (m < 1) return 'Baru saja'; if (h < 1) return `${m} menit yang lalu`; if (dy < 1) return `${h} jam yang lalu`; return `${dy} hari yang lalu`;
 }
-function getAvatarForUser(u){
-  if(u==='@SiswaIndonesia') return"https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4";
-  return`https://api.dicebear.com/9.x/avataaars/svg?seed=${u.replace('@','')}&backgroundColor=e5eeff`;
+function getAvatarForUser(u) {
+  if (u === '@SiswaIndonesia') return "https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4";
+  return `https://api.dicebear.com/9.x/avataaars/svg?seed=${u.replace('@', '')}&backgroundColor=e5eeff`;
 }
 
-function renderPostCard(p){
-  const tags=(p.tags||[]).map(t=>`<span onclick="window.showTrendingTopicDetail('${t}')" class="bg-surface-container-high text-on-surface px-3 py-1 rounded-md font-label-sm text-label-sm cursor-pointer hover:bg-primary hover:text-on-primary transition-colors">${t}</span>`).join('');
+function renderPostCard(p) {
+  const tags = (p.tags || []).map(t => `<span onclick="window.showTrendingTopicDetail('${t}')" class="bg-surface-container-high text-on-surface px-3 py-1 rounded-md font-label-sm text-label-sm cursor-pointer hover:bg-primary hover:text-on-primary transition-colors">${t}</span>`).join('');
   const badge = p.isCurrentUser
     ? `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-2 tracking-wider">Anda Author</span>`
     : (p.role
-        ? `<span class="bg-primary-container text-on-primary-container text-[10px] font-bold px-2.5 py-0.5 rounded-full ml-2 tracking-wider inline-flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px] font-bold">verified</span>${p.role}</span>`
-        : `<span class="bg-surface-container-highest text-on-surface-variant text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-2 tracking-wider">Author</span>`
-      );
+      ? `<span class="bg-primary-container text-on-primary-container text-[10px] font-bold px-2.5 py-0.5 rounded-full ml-2 tracking-wider inline-flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px] font-bold">verified</span>${p.role}</span>`
+      : `<span class="bg-surface-container-highest text-on-surface-variant text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-2 tracking-wider">Author</span>`
+    );
   const trendingBadge = (window.activeFeedTab === 'Trending')
     ? `<span class="bg-amber-500/10 text-amber-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-2 tracking-wider flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px] animate-pulse">local_fire_department</span>Trending</span>`
     : '';
-  const avatar=p.avatar||getAvatarForUser(p.username);
+  const avatar = p.avatar || getAvatarForUser(p.username);
   const destBadge = p.destination ? `<span class="text-on-surface-variant/50 mx-2">•</span><span class="text-primary font-bold text-[11px] uppercase tracking-wider">${p.destination}</span>` : '';
   const editedBadge = p.isEdited ? `<span class="text-on-surface-variant/60 text-[11px] ml-2 italic">(Telah diedit)</span>` : '';
-  
+
   let pollHTML = '';
   if (p.poll && p.poll.length > 0) {
     const isLegacy = typeof p.poll[0] === 'string';
     const pollData = isLegacy ? p.poll.map(opt => ({ text: opt, count: 0, votedBy: [] })) : p.poll;
     const hasVoted = pollData.some(opt => opt.votedBy.includes(CURRENT_USER_PROFILE));
     const totalVotes = pollData.reduce((sum, opt) => sum + opt.count, 0);
-    
+
     pollHTML = '<div class="mt-3 flex flex-col gap-2">';
     if (hasVoted) {
       pollHTML += pollData.map((opt) => {
@@ -453,7 +463,7 @@ function renderPostCard(p){
   }
 
   const isTrending = (window.activeFeedTab === 'Trending');
-  return`<article data-post-id="${p.id}" class="bg-surface-container-lowest rounded-2xl p-lg flex flex-col gap-md shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300 border border-outline-variant/20 hover:-translate-y-0.5 ${isTrending ? 'border-l-4 border-l-amber-500/85 bg-gradient-to-r from-amber-500/[0.01] to-transparent' : ''}">
+  return `<article data-post-id="${p.id}" class="bg-surface-container-lowest rounded-2xl p-lg flex flex-col gap-md shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300 border border-outline-variant/20 hover:-translate-y-0.5 ${isTrending ? 'border-l-4 border-l-amber-500/85 bg-gradient-to-r from-amber-500/[0.01] to-transparent' : ''}">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-sm text-on-surface-variant font-label-sm text-label-sm">
         <img src="${avatar}" alt="${p.username}" class="w-10 h-10 rounded-full object-cover border border-outline-variant/50 bg-surface-container-high"/>
@@ -462,13 +472,13 @@ function renderPostCard(p){
       <div class="relative">
         <button onclick="window.togglePostMenu(event, '${p.id}')" class="text-on-surface-variant hover:bg-surface-container p-2 rounded-full transition-colors"><span class="material-symbols-outlined">more_horiz</span></button>
         <div id="post-menu-${p.id}" class="hidden absolute right-0 top-full mt-1 bg-white border border-outline-variant/30 rounded-xl shadow-lg w-40 z-10 flex-col py-1 overflow-hidden">
-          ${p.isCurrentUser 
-            ? `<button class="text-left px-4 py-2 hover:bg-surface-container text-on-surface text-sm font-semibold flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">share</span> Bagikan</button>
+          ${p.isCurrentUser
+      ? `<button class="text-left px-4 py-2 hover:bg-surface-container text-on-surface text-sm font-semibold flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">share</span> Bagikan</button>
                <button onclick="window.editPost('${p.id}')" class="text-left px-4 py-2 hover:bg-surface-container text-on-surface text-sm font-semibold flex items-center gap-2 w-full"><span class="material-symbols-outlined text-[18px]">edit</span> Edit</button>
                <button onclick="window.deletePost('${p.id}')" class="text-left px-4 py-2 hover:bg-red-50 text-error text-sm font-semibold flex items-center gap-2 w-full"><span class="material-symbols-outlined text-[18px]">delete</span> Hapus</button>`
-            : `<button class="text-left px-4 py-2 hover:bg-surface-container text-on-surface text-sm font-semibold flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">share</span> Bagikan</button>
+      : `<button class="text-left px-4 py-2 hover:bg-surface-container text-on-surface text-sm font-semibold flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">share</span> Bagikan</button>
                <button class="text-left px-4 py-2 hover:bg-surface-container text-on-surface text-sm font-semibold flex items-center gap-2 w-full"><span class="material-symbols-outlined text-[18px]">flag</span> Laporkan</button>`
-          }
+    }
         </div>
       </div>
     </div>
@@ -478,7 +488,7 @@ function renderPostCard(p){
       ${pollHTML}
       ${attachmentHTML}
     </div>
-    ${tags?`<div class="flex flex-wrap gap-2 mt-1">${tags}</div>`:''}
+    ${tags ? `<div class="flex flex-wrap gap-2 mt-1">${tags}</div>` : ''}
     <div class="flex gap-4 mt-2 pt-4 border-t border-outline-variant/30 text-on-surface-variant items-center justify-between">
       <div class="flex items-center gap-1 bg-surface-container-low rounded-full px-1 py-1 border border-outline-variant/20">
         <button onclick="ubahVote('${p.id}',1)" class="hover:text-primary hover:bg-surface-container-high p-1.5 rounded-full transition-colors"><span class="material-symbols-outlined text-[20px]">arrow_upward</span></button>
@@ -494,13 +504,13 @@ function renderPostCard(p){
     <!-- Comments Section -->
     <div id="comments-section-${p.id}" class="hidden flex-col gap-4 mt-4 pt-4 border-t border-outline-variant/30">
       <div id="comments-list-${p.id}" class="flex flex-col gap-3">
-        ${(p.commentsList||[]).map(c => {
-          let cBadge = '';
-          if (c.username === p.username && c.username === CURRENT_USER_PROFILE) cBadge = `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda Author</span>`;
-          else if (c.username === p.username) cBadge = `<span class="bg-surface-container-highest text-on-surface-variant text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Author</span>`;
-          else if (c.username === CURRENT_USER_PROFILE) cBadge = `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda</span>`;
-          
-          return `
+        ${(p.commentsList || []).map(c => {
+      let cBadge = '';
+      if (c.username === p.username && c.username === CURRENT_USER_PROFILE) cBadge = `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda Author</span>`;
+      else if (c.username === p.username) cBadge = `<span class="bg-surface-container-highest text-on-surface-variant text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Author</span>`;
+      else if (c.username === CURRENT_USER_PROFILE) cBadge = `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda</span>`;
+
+      return `
           <div class="flex gap-3 text-sm">
             <img src="${c.avatar || getAvatarForUser(c.username)}" alt="${c.username}" class="w-8 h-8 rounded-full border border-outline-variant/50 bg-surface-container-high"/>
             <div class="bg-surface-container-lowest border border-outline-variant/20 p-3 rounded-2xl rounded-tl-none flex-1 shadow-sm">
@@ -523,13 +533,13 @@ function renderPostCard(p){
   </article>`;
 }
 
-async function renderAllPosts(){
-  const feed=document.getElementById('community-feed');
-  if(!feed) return;
-  
+async function renderAllPosts() {
+  const feed = document.getElementById('community-feed');
+  if (!feed) return;
+
   if (!apiPostsFetched) {
-     feed.innerHTML = '<p class="text-center py-8 text-on-surface-variant font-label-md animate-pulse">Memuat diskusi dari server...</p>';
-     await window.fetchPostsFromAPI();
+    feed.innerHTML = '<p class="text-center py-8 text-on-surface-variant font-label-md animate-pulse">Memuat diskusi dari server...</p>';
+    await window.fetchPostsFromAPI();
   }
 
   // Ambil tipe halaman (Public Feed, Pejuang SNBT, Pecinta Fiksi, or dynamic 5 new clubs)
@@ -540,11 +550,11 @@ async function renderAllPosts(){
   }
 
   let postsList = getPosts();
-  
+
   if (activeClub) {
     const joined = getJoinedClubs();
     const isJoined = joined.includes(activeClub.id);
-    
+
     if (!isJoined) {
       // User has not joined this club! Render the lock membership CTA overlay!
       feed.innerHTML = `
@@ -563,12 +573,12 @@ async function renderAllPosts(){
       `;
       return;
     }
-    
+
     postsList = postsList.filter(p => p.destination === currentPageFilter);
   } else {
     postsList = postsList.filter(p => !p.club_id && p.destination === 'Public Feed');
   }
-  
+
   // Jika tab Trending aktif
   if (window.activeFeedTab === 'Trending') {
     // Filter berdasarkan Kategori (jika ada tag terpilih)
@@ -577,12 +587,12 @@ async function renderAllPosts(){
     }
   }
 
-  feed.innerHTML = postsList.length > 0 
-    ? postsList.map(renderPostCard).join('') 
+  feed.innerHTML = postsList.length > 0
+    ? postsList.map(renderPostCard).join('')
     : '<p class="text-center text-on-surface-variant font-label-md py-8">Belum ada diskusi di sini. Jadilah yang pertama!</p>';
 }
 
-window.ubahVote = async function(id,delta){
+window.ubahVote = async function (id, delta) {
   const token = localStorage.getItem('rb_token');
   if (!token) {
     alert("Silakan login untuk memberikan like/vote");
@@ -595,18 +605,18 @@ window.ubahVote = async function(id,delta){
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (res.ok) {
-      const posts=getPosts(), p=posts.find(x=>x.id===id);
-      if(p){ 
-         p.votes=Math.max(0,(p.votes||0)+delta); 
-         const el=document.getElementById(`vote-${id}`); if(el)el.textContent=formatVotes(p.votes); 
+      const posts = getPosts(), p = posts.find(x => x.id === id);
+      if (p) {
+        p.votes = Math.max(0, (p.votes || 0) + delta);
+        const el = document.getElementById(`vote-${id}`); if (el) el.textContent = formatVotes(p.votes);
       }
     }
-  } catch(e) {
+  } catch (e) {
     console.error("Gagal like", e);
   }
 }
 
-window.togglePostMenu = function(e, id) {
+window.togglePostMenu = function (e, id) {
   e.stopPropagation();
   const menus = document.querySelectorAll('[id^="post-menu-"]');
   menus.forEach(m => {
@@ -623,7 +633,7 @@ window.togglePostMenu = function(e, id) {
   }
 };
 
-window.deletePost = async function(id) {
+window.deletePost = async function (id) {
   alert("Penghapusan postingan belum didukung di versi ini.");
 };
 
@@ -636,7 +646,7 @@ document.addEventListener('click', () => {
   });
 });
 
-window.toggleComments = async function(id) {
+window.toggleComments = async function (id) {
   const sec = document.getElementById(`comments-section-${id}`);
   if (!sec) return;
   sec.classList.toggle('hidden');
@@ -648,10 +658,10 @@ window.toggleComments = async function(id) {
   }
 };
 
-window.addComment = async function(id) {
+window.addComment = async function (id) {
   const input = document.getElementById(`input-comment-${id}`);
   const text = input.value.trim();
-  if(!text) return;
+  if (!text) return;
 
   const token = localStorage.getItem('rb_token');
   if (!token) {
@@ -663,29 +673,29 @@ window.addComment = async function(id) {
   try {
     const res = await fetch(`${API_BASE}/api/community/diskusi/${id}/balasan`, {
       method: 'POST',
-      headers: { 
+      headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ konten: text })
     });
-    
+
     if (res.ok) {
       const posts = getPosts();
       const p = posts.find(x => x.id === id);
-      if(p) {
+      if (p) {
         p.commentsList = p.commentsList || [];
         p.commentsList.push({ username: CURRENT_USER_PROFILE, text, waktu: new Date().toISOString() });
         p.komentar = (p.komentar || 0) + 1;
 
         const isPostAuthor = (CURRENT_USER_PROFILE === p.username);
-        const newBadge = isPostAuthor 
-          ? `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda Author</span>` 
+        const newBadge = isPostAuthor
+          ? `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda Author</span>`
           : `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda</span>`;
 
         // Update UI directly for seamless experience
         const list = document.getElementById(`comments-list-${id}`);
-        if(list) {
+        if (list) {
           list.insertAdjacentHTML('beforeend', `
             <div class="flex gap-3 text-sm">
               <img src="${getAvatarForUser(CURRENT_USER_PROFILE)}" alt="${CURRENT_USER_PROFILE}" class="w-8 h-8 rounded-full border border-outline-variant/50 bg-surface-container-high"/>
@@ -697,7 +707,7 @@ window.addComment = async function(id) {
           `);
         }
         const countEl = document.getElementById(`komentar-count-${id}`);
-        if(countEl) countEl.textContent = p.komentar;
+        if (countEl) countEl.textContent = p.komentar;
         input.value = '';
 
         if (window.communityBot) {
@@ -707,7 +717,7 @@ window.addComment = async function(id) {
     } else {
       alert("Gagal menambahkan komentar.");
     }
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
 };
@@ -721,22 +731,22 @@ function showToastNotification(message) {
     container.className = 'fixed bottom-24 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-2 w-full max-w-sm px-4 pointer-events-none';
     document.body.appendChild(container);
   }
-  
+
   const toast = document.createElement('div');
   toast.className = 'bg-slate-900/95 text-white backdrop-blur-sm text-sm font-semibold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-fadeIn pointer-events-auto transform translate-y-4 transition-all duration-300 opacity-0';
   toast.innerHTML = `
     <span class="material-symbols-outlined text-primary text-[20px]">info</span>
     <span class="flex-1">${message}</span>
   `;
-  
+
   container.appendChild(toast);
-  
+
   // Animate in
   setTimeout(() => {
     toast.classList.remove('opacity-0', 'translate-y-4');
     toast.classList.add('opacity-100', 'translate-y-0');
   }, 10);
-  
+
   // Animate out and remove
   setTimeout(() => {
     toast.classList.remove('opacity-100', 'translate-y-0');
@@ -746,10 +756,10 @@ function showToastNotification(message) {
 }
 
 // Toggle Join/Unjoin Klub
-window.toggleClubJoin = function(clubId) {
+window.toggleClubJoin = function (clubId) {
   let joined = getJoinedClubs();
   const isJoined = joined.includes(clubId);
-  
+
   if (isJoined) {
     joined = joined.filter(id => id !== clubId);
     localStorage.setItem('rb_joined_clubs', JSON.stringify(joined));
@@ -759,7 +769,7 @@ window.toggleClubJoin = function(clubId) {
     localStorage.setItem('rb_joined_clubs', JSON.stringify(joined));
     showToastNotification(`Selamat! Anda berhasil bergabung dengan klub ${ALL_CLUBS[clubId].name} 🎉`);
   }
-  
+
   // Refresh all UI elements dynamically
   updateJoinButtonState();
   renderJoinedClubs();
@@ -772,18 +782,18 @@ window.toggleClubJoin = function(clubId) {
 function updateJoinButtonState() {
   const club = getActiveClub();
   if (!club) return;
-  
+
   const joined = getJoinedClubs();
   const isJoined = joined.includes(club.id);
-  
+
   const headerCardBtn = document.querySelector('main .flex.justify-between.items-end button');
   if (headerCardBtn) {
     if (isJoined) {
       headerCardBtn.textContent = 'Joined';
       headerCardBtn.className = "bg-primary text-on-primary font-label-md text-label-md py-sm px-lg rounded-full font-bold hover:bg-red-500 hover:text-white hover:border-red-500 transition-colors shadow-sm cursor-pointer border border-transparent";
       headerCardBtn.setAttribute('onclick', `window.toggleClubJoin('${club.id}')`);
-      headerCardBtn.onmouseover = function() { this.textContent = 'Keluar Klub'; };
-      headerCardBtn.onmouseout = function() { this.textContent = 'Joined'; };
+      headerCardBtn.onmouseover = function () { this.textContent = 'Keluar Klub'; };
+      headerCardBtn.onmouseout = function () { this.textContent = 'Joined'; };
     } else {
       headerCardBtn.textContent = 'Gabung Klub';
       headerCardBtn.className = "bg-white border-2 border-primary text-primary font-label-md text-label-md py-sm px-lg rounded-full font-bold hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer";
@@ -797,23 +807,23 @@ function updateJoinButtonState() {
 // Render Joined Clubs di Sidebar Kiri
 function renderJoinedClubs() {
   const container = document.getElementById('joined-clubs-list');
-  if(!container) return;
-  
+  if (!container) return;
+
   const joinedIds = getJoinedClubs();
   if (joinedIds.length === 0) {
     container.innerHTML = `<p class="text-[12px] text-on-surface-variant/60 px-4 py-2 italic bg-surface-container-low/50 rounded-xl">Belum bergabung dengan klub manapun.</p>`;
     return;
   }
-  
+
   container.innerHTML = joinedIds.map(id => {
     const c = ALL_CLUBS[id];
     if (!c) return '';
     const notifCount = id === 'pejuang-snbt' ? 3 : 0;
     const badge = notifCount > 0 ? `<span class="ml-auto bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center justify-center min-w-[20px]">${notifCount}</span>` : '';
-    
+
     const activeClub = getActiveClub();
     const isActive = activeClub && activeClub.id === id ? 'bg-secondary-container text-on-secondary-container font-bold shadow-sm' : '';
-    
+
     return `<a href="${c.link}" class="flex items-center gap-sm px-4 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors font-label-md text-label-md group ${isActive}">
       <span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">${c.icon}</span> ${c.name} ${badge}
     </a>`;
@@ -821,7 +831,7 @@ function renderJoinedClubs() {
 }
 
 // Modal Memilih / Gabung Klub Global
-window.openJoinClubsModal = function() {
+window.openJoinClubsModal = function () {
   let modal = document.getElementById('join-clubs-modal');
   if (!modal) {
     modal = document.createElement('div');
@@ -829,16 +839,16 @@ window.openJoinClubsModal = function() {
     modal.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm z-[110] flex items-center justify-center p-4 animate-fadeIn';
     document.body.appendChild(modal);
   }
-  
+
   const joined = getJoinedClubs();
-  
+
   let clubsHtml = Object.values(ALL_CLUBS).map(c => {
     const isJoined = joined.includes(c.id);
-    const btnClass = isJoined 
+    const btnClass = isJoined
       ? 'bg-slate-200 text-slate-700 hover:bg-red-100 hover:text-red-700 transition-all font-bold text-xs px-4 py-2 rounded-full cursor-pointer shrink-0'
       : 'bg-primary text-white hover:bg-primary/95 transition-all font-bold text-xs px-4 py-2 rounded-full cursor-pointer shrink-0';
     const btnText = isJoined ? 'Joined' : 'Gabung';
-    
+
     return `
       <div class="flex items-center gap-sm justify-between p-4 bg-surface-container-low dark:bg-slate-800/80 rounded-2xl border border-outline-variant/30 hover:bg-surface-container transition-all">
         <div class="flex items-center gap-md">
@@ -857,7 +867,7 @@ window.openJoinClubsModal = function() {
       </div>
     `;
   }).join('');
-  
+
   modal.innerHTML = `
     <div class="bg-surface-container-lowest dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-xl flex flex-col overflow-hidden max-h-[85vh]">
       <!-- Header -->
@@ -885,7 +895,7 @@ window.openJoinClubsModal = function() {
       </div>
     </div>
   `;
-  
+
   modal.style.display = 'flex';
 };
 
@@ -969,10 +979,10 @@ function updateClubPageDetails() {
 }
 
 // Render daftar anggota dinamis real-time
-window.renderDynamicMembersList = function() {
+window.renderDynamicMembersList = function () {
   const club = getActiveClub();
   if (!club) return;
-  
+
   const joined = getJoinedClubs();
   const isJoined = joined.includes(club.id);
   const currentUser = {
@@ -1057,12 +1067,12 @@ function startRealtimeMemberSimulation() {
   setInterval(() => {
     const club = getActiveClub();
     if (!club) return;
-    
+
     // Acak status decoy
     const randomIndex = Math.floor(Math.random() * DECOY_MEMBERS.length);
     const m = DECOY_MEMBERS[randomIndex];
     m.online = !m.online;
-    
+
     renderDynamicMembersList();
   }, 15000); // refresh setiap 15 detik
 }
@@ -1073,26 +1083,26 @@ function renderRecommendedClubs() {
     document.getElementById('recommended-clubs-container'),
     document.getElementById('mobile-recommended-clubs-container')
   ];
-  
+
   const mobileContainer = document.querySelector('#mobile-widgets-drawer .flex.flex-col.gap-md');
   if (mobileContainer && !document.getElementById('mobile-recommended-clubs-container')) {
     mobileContainer.id = 'mobile-recommended-clubs-container';
     containers[1] = mobileContainer;
   }
-  
+
   const joined = getJoinedClubs();
   let clubsToRecommend = Object.values(ALL_CLUBS);
-  
+
   containers.forEach(container => {
     if (!container) return;
-    
+
     container.innerHTML = clubsToRecommend.slice(0, 3).map(c => {
       const isJoined = joined.includes(c.id);
       const btnText = isJoined ? 'Joined' : 'Gabung';
-      const btnClass = isJoined 
+      const btnClass = isJoined
         ? 'bg-slate-200 text-slate-700 font-bold text-[11px] px-4 py-1.5 rounded-full cursor-pointer shrink-0'
         : 'bg-primary-container text-on-primary-container px-4 py-1.5 rounded-full font-label-sm text-[11px] font-bold hover:bg-primary hover:text-on-primary transition-colors cursor-pointer shrink-0';
-      
+
       return `
         <div class="flex items-center gap-sm justify-between bg-surface-container-low dark:bg-slate-800/80 p-3 rounded-xl">
           <div class="flex items-center gap-sm">
@@ -1112,10 +1122,10 @@ function renderRecommendedClubs() {
 function renderActivityFeed() {
   const container = document.getElementById('activity-feed');
   if (!container) return;
-  
+
   const posts = getPosts();
   let activities = [];
-  
+
   posts.forEach(p => {
     if (p.isCurrentUser) {
       activities.push({
@@ -1158,7 +1168,7 @@ function renderActivityFeed() {
     container.innerHTML = `<div class="bg-surface-container-lowest rounded-2xl p-lg border border-outline-variant/20 shadow-sm"><p class="text-on-surface-variant font-label-md text-center py-4">Belum ada aktivitas yang terekam.</p></div>`;
     return;
   }
-  
+
   // Sort activities by reverse order to show newest (approximate)
   activities.reverse();
   container.innerHTML = activities.map(a => a.html).join('');
@@ -1175,14 +1185,14 @@ function setupTabs() {
         t.classList.add('text-on-surface-variant');
       });
       document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-      
+
       // Activate clicked
       tab.classList.remove('text-on-surface-variant');
       tab.classList.add('font-bold', 'text-primary', 'border-b-2', 'border-primary');
       const targetId = `tab-${tab.dataset.tab}`;
       const targetContent = document.getElementById(targetId);
       if (targetContent) targetContent.classList.remove('hidden');
-      
+
       // If it's aktivitas, render it
       if (tab.dataset.tab === 'aktivitas') {
         renderActivityFeed();
@@ -1340,7 +1350,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.body.insertAdjacentHTML('beforeend', modalHTML);
   setupModalLogic();
   setupTabs(); // Initialize club tabs
-  
+
   // Dynamic page adjustments
   updateClubPageDetails();
   updateJoinButtonState();
@@ -1389,12 +1399,12 @@ const CURRENT_USER_PROFILE = localStorage.getItem('rb_username') || '@SiswaIndon
 let activeTags = [];
 let isMaximized = false;
 
-function getEditor(){ return document.getElementById('editor-content'); }
+function getEditor() { return document.getElementById('editor-content'); }
 
 function setupModalLogic() {
   const modal = document.getElementById('modal-diskusi');
   const dialog = document.getElementById('modal-dialog');
-  
+
   // Set auto-destination based on current page
   function updateDestinationPill() {
     let targetDest = 'Public Feed';
@@ -1403,41 +1413,41 @@ function setupModalLogic() {
 
     document.querySelectorAll('.dest-pill').forEach(b => {
       if (b.dataset.dest === targetDest) {
-        b.classList.add('bg-primary','text-white','border-primary');
-        b.classList.remove('bg-white','text-slate-700','border-slate-200');
+        b.classList.add('bg-primary', 'text-white', 'border-primary');
+        b.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
       } else {
-        b.classList.remove('bg-primary','text-white','border-primary');
-        b.classList.add('bg-white','text-slate-700','border-slate-200');
+        b.classList.remove('bg-primary', 'text-white', 'border-primary');
+        b.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
       }
     });
   }
 
-  window.openModal = function() {
+  window.openModal = function () {
     updateDestinationPill();
     modal.classList.remove('hidden');
     checkDraftBanner();
   };
-  
-  window.closeModal = function() {
+
+  window.closeModal = function () {
     modal.classList.add('hidden');
-    if(window.editingPostId) {
+    if (window.editingPostId) {
       window.editingPostId = null;
       const submitBtn = document.getElementById('btn-post-diskusi');
-      if(submitBtn) submitBtn.innerHTML = 'Posting Diskusi';
-      document.getElementById('input-judul').value='';
-      const ed=getEditor(); if(ed) ed.innerHTML='';
-      activeTags=[]; renderTagChips();
+      if (submitBtn) submitBtn.innerHTML = 'Posting Diskusi';
+      document.getElementById('input-judul').value = '';
+      const ed = getEditor(); if (ed) ed.innerHTML = '';
+      activeTags = []; renderTagChips();
     }
   };
 
   // FAB Click
   document.getElementById('fab-buat-diskusi')?.addEventListener('click', openModal);
-  
+
   // Close buttons
   document.getElementById('modal-close-btn')?.addEventListener('click', closeModal);
   document.getElementById('modal-batal-btn')?.addEventListener('click', closeModal);
   modal.addEventListener('click', e => {
-    if(e.target === modal) closeModal();
+    if (e.target === modal) closeModal();
   });
 
   // Maximize Feature
@@ -1459,35 +1469,35 @@ function setupModalLogic() {
   });
 
   // Destination pills clicking
-  document.querySelectorAll('.dest-pill').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      document.querySelectorAll('.dest-pill').forEach(b=>{
-        b.classList.remove('bg-primary','text-white','border-primary');
-        b.classList.add('bg-white','text-slate-700','border-slate-200');
+  document.querySelectorAll('.dest-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.dest-pill').forEach(b => {
+        b.classList.remove('bg-primary', 'text-white', 'border-primary');
+        b.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
       });
-      btn.classList.add('bg-primary','text-white','border-primary');
-      btn.classList.remove('bg-white','text-slate-700','border-slate-200');
+      btn.classList.add('bg-primary', 'text-white', 'border-primary');
+      btn.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
     });
   });
 
   // Rich text toolbar
-  document.getElementById('fmt-bold')?.addEventListener('click',()=>{ document.execCommand('bold'); getEditor()?.focus(); });
-  document.getElementById('fmt-italic')?.addEventListener('click',()=>{ document.execCommand('italic'); getEditor()?.focus(); });
-  document.getElementById('fmt-ul')?.addEventListener('click',()=>{ document.execCommand('insertUnorderedList'); getEditor()?.focus(); });
-  document.getElementById('fmt-ol')?.addEventListener('click',()=>{ document.execCommand('insertOrderedList'); getEditor()?.focus(); });
-  document.getElementById('fmt-quote')?.addEventListener('click',()=>{
-    const txt=window.getSelection()?.toString()||'Kutipan teks...';
-    document.execCommand('insertHTML',false,`<blockquote style="border-left:3px solid #004ac6;padding-left:12px;color:#6b7280;margin:4px 0;">${txt}</blockquote>`);
+  document.getElementById('fmt-bold')?.addEventListener('click', () => { document.execCommand('bold'); getEditor()?.focus(); });
+  document.getElementById('fmt-italic')?.addEventListener('click', () => { document.execCommand('italic'); getEditor()?.focus(); });
+  document.getElementById('fmt-ul')?.addEventListener('click', () => { document.execCommand('insertUnorderedList'); getEditor()?.focus(); });
+  document.getElementById('fmt-ol')?.addEventListener('click', () => { document.execCommand('insertOrderedList'); getEditor()?.focus(); });
+  document.getElementById('fmt-quote')?.addEventListener('click', () => {
+    const txt = window.getSelection()?.toString() || 'Kutipan teks...';
+    document.execCommand('insertHTML', false, `<blockquote style="border-left:3px solid #004ac6;padding-left:12px;color:#6b7280;margin:4px 0;">${txt}</blockquote>`);
     getEditor()?.focus();
   });
 
   // Tag chip input
-  document.getElementById('input-tag-new')?.addEventListener('keydown',e=>{
-    if(e.key==='Enter'||e.key===' '){
+  document.getElementById('input-tag-new')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      let val=e.target.value.trim().replace(/^#/,'');
-      if(val&&!activeTags.includes('#'+val)){ activeTags.push('#'+val); renderTagChips(); }
-      e.target.value='';
+      let val = e.target.value.trim().replace(/^#/, '');
+      if (val && !activeTags.includes('#' + val)) { activeTags.push('#' + val); renderTagChips(); }
+      e.target.value = '';
     }
   });
 
@@ -1497,15 +1507,15 @@ function setupModalLogic() {
   document.getElementById('btn-delete-draft')?.addEventListener('click', deleteDraft);
 
   // Poll toggle & add option
-  document.getElementById('btn-poll')?.addEventListener('click',()=>{
+  document.getElementById('btn-poll')?.addEventListener('click', () => {
     document.getElementById('poll-panel')?.classList.toggle('hidden');
   });
-  document.getElementById('btn-add-poll-opt')?.addEventListener('click',()=>{
-    const c=document.getElementById('poll-options');
-    const count=c.querySelectorAll('.poll-opt').length+1;
-    const inp=document.createElement('input');
-    inp.type='text'; inp.placeholder=`Pilihan ${count}`;
-    inp.className='poll-opt border border-slate-200 rounded-lg px-3 py-2 text-[14px] outline-none focus:border-primary';
+  document.getElementById('btn-add-poll-opt')?.addEventListener('click', () => {
+    const c = document.getElementById('poll-options');
+    const count = c.querySelectorAll('.poll-opt').length + 1;
+    const inp = document.createElement('input');
+    inp.type = 'text'; inp.placeholder = `Pilihan ${count}`;
+    inp.className = 'poll-opt border border-slate-200 rounded-lg px-3 py-2 text-[14px] outline-none focus:border-primary';
     c.appendChild(inp);
   });
 
@@ -1515,7 +1525,7 @@ function setupModalLogic() {
     input.type = 'file';
     input.accept = 'image/*';
     input.onchange = (e) => {
-      if(e.target.files.length > 0) alert('Gambar "' + e.target.files[0].name + '" disematkan. (Simulasi)');
+      if (e.target.files.length > 0) alert('Gambar "' + e.target.files[0].name + '" disematkan. (Simulasi)');
     };
     input.click();
   });
@@ -1523,17 +1533,17 @@ function setupModalLogic() {
     const input = document.createElement('input');
     input.type = 'file';
     input.onchange = (e) => {
-      if(e.target.files.length > 0) alert('File "' + e.target.files[0].name + '" disematkan. (Simulasi)');
+      if (e.target.files.length > 0) alert('File "' + e.target.files[0].name + '" disematkan. (Simulasi)');
     };
     input.click();
   });
 
   // Post submit
-  document.getElementById('btn-post-diskusi')?.addEventListener('click', async ()=>{
-    const judul=document.getElementById('input-judul').value.trim();
-    const isi=(getEditor()?.innerText||'').trim();
-    const errEl=document.getElementById('form-error');
-    if(!judul||!isi){ errEl.classList.remove('hidden'); return; }
+  document.getElementById('btn-post-diskusi')?.addEventListener('click', async () => {
+    const judul = document.getElementById('input-judul').value.trim();
+    const isi = (getEditor()?.innerText || '').trim();
+    const errEl = document.getElementById('form-error');
+    if (!judul || !isi) { errEl.classList.remove('hidden'); return; }
     errEl.classList.add('hidden');
 
     const token = localStorage.getItem('rb_token');
@@ -1547,22 +1557,22 @@ function setupModalLogic() {
       const destination = getSelectedDestination();
       const res = await fetch(`${API_BASE}/api/community/diskusi`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ judul, konten: getEditor().innerHTML, destination })
       });
-      
+
       if (res.ok) {
         alert('Diskusi berhasil diposting!');
         apiPostsFetched = false;
         await renderAllPosts();
-        
+
         // Reset form
-        document.getElementById('input-judul').value='';
-        const ed=getEditor(); if(ed) ed.innerHTML='';
-        activeTags=[]; renderTagChips();
+        document.getElementById('input-judul').value = '';
+        const ed = getEditor(); if (ed) ed.innerHTML = '';
+        activeTags = []; renderTagChips();
         document.getElementById('poll-panel')?.classList.add('hidden');
         localStorage.removeItem(DRAFT_KEY);
         closeModal();
@@ -1585,60 +1595,60 @@ function setupModalLogic() {
   });
 }
 
-function renderTagChips(){
-  const c=document.getElementById('tag-chips');
-  if(!c) return;
-  c.innerHTML=activeTags.map((t,i)=>
+function renderTagChips() {
+  const c = document.getElementById('tag-chips');
+  if (!c) return;
+  c.innerHTML = activeTags.map((t, i) =>
     `<span class="flex items-center gap-1 bg-blue-50 text-blue-700 text-[13px] font-semibold px-2.5 py-0.5 rounded-full border border-blue-200">${t}<button onclick="window.removeTag(${i})" class="ml-0.5 hover:text-red-500 transition-colors leading-none">&times;</button></span>`
   ).join('');
 }
-window.removeTag = function(i){ activeTags.splice(i,1); renderTagChips(); }
+window.removeTag = function (i) { activeTags.splice(i, 1); renderTagChips(); }
 
 // Draft functions
-function saveDraft(){
-  const judul=document.getElementById('input-judul').value.trim();
-  const isi=getEditor()?.innerHTML||'';
-  if(!judul && !isi.trim()){ alert('Tidak ada konten yang bisa disimpan ke draft.'); return; }
-  localStorage.setItem(DRAFT_KEY, JSON.stringify({ judul, isi, tags:[...activeTags] }));
+function saveDraft() {
+  const judul = document.getElementById('input-judul').value.trim();
+  const isi = getEditor()?.innerHTML || '';
+  if (!judul && !isi.trim()) { alert('Tidak ada konten yang bisa disimpan ke draft.'); return; }
+  localStorage.setItem(DRAFT_KEY, JSON.stringify({ judul, isi, tags: [...activeTags] }));
   alert('Draft berhasil disimpan!');
   checkDraftBanner();
 }
-function loadDraft(){
-  const d=localStorage.getItem(DRAFT_KEY);
-  if(!d) return;
-  const draft=JSON.parse(d);
-  document.getElementById('input-judul').value=draft.judul||'';
-  const ed=getEditor(); if(ed) ed.innerHTML=draft.isi||'';
-  activeTags=draft.tags||[];
+function loadDraft() {
+  const d = localStorage.getItem(DRAFT_KEY);
+  if (!d) return;
+  const draft = JSON.parse(d);
+  document.getElementById('input-judul').value = draft.judul || '';
+  const ed = getEditor(); if (ed) ed.innerHTML = draft.isi || '';
+  activeTags = draft.tags || [];
   renderTagChips();
   document.getElementById('draft-banner').classList.add('hidden');
 }
-function deleteDraft(){
+function deleteDraft() {
   localStorage.removeItem(DRAFT_KEY);
   document.getElementById('draft-banner').classList.add('hidden');
 }
-function checkDraftBanner(){
-  const hasDraft=!!localStorage.getItem(DRAFT_KEY);
-  const banner=document.getElementById('draft-banner');
-  if(banner) banner.classList.toggle('hidden',!hasDraft);
+function checkDraftBanner() {
+  const hasDraft = !!localStorage.getItem(DRAFT_KEY);
+  const banner = document.getElementById('draft-banner');
+  if (banner) banner.classList.toggle('hidden', !hasDraft);
 }
 
 // Edit Post
 window.editingPostId = null;
-window.editPost = function(postId) {
+window.editPost = function (postId) {
   const posts = getPosts();
   const post = posts.find(p => p.id === postId);
-  if(!post) return;
-  
+  if (!post) return;
+
   window.editingPostId = post.id;
-  
+
   // Close menu if open
-  const menu = document.getElementById('post-menu-'+postId);
-  if(menu) menu.classList.add('hidden');
-  
+  const menu = document.getElementById('post-menu-' + postId);
+  if (menu) menu.classList.add('hidden');
+
   // Open modal
   const modal = document.getElementById('community-modal-overlay');
-  if(modal) {
+  if (modal) {
     modal.classList.remove('hidden');
   } else if (typeof window.openModal === 'function') {
     window.openModal();
@@ -1648,60 +1658,60 @@ window.editPost = function(postId) {
   setTimeout(() => {
     document.getElementById('input-judul').value = post.judul;
     const ed = getEditor();
-    if(ed) ed.innerHTML = post.isi;
-    
+    if (ed) ed.innerHTML = post.isi;
+
     // Set tags
-    activeTags = [...(post.tags||[])];
+    activeTags = [...(post.tags || [])];
     renderTagChips();
-    
+
     // Set destination pill
     document.querySelectorAll('.dest-pill').forEach(btn => btn.classList.remove('bg-primary', 'text-on-primary', 'border-primary', 'bg-surface-container-lowest', 'text-on-surface-variant', 'border-outline-variant'));
     document.querySelectorAll('.dest-pill').forEach(btn => {
-      if(btn.dataset.dest === post.destination) {
+      if (btn.dataset.dest === post.destination) {
         btn.classList.add('bg-primary', 'text-on-primary', 'border-primary');
       } else {
         btn.classList.add('bg-surface-container-lowest', 'text-on-surface-variant', 'border-outline-variant');
       }
     });
-    
+
     // Change submit button text
     const submitBtn = document.getElementById('btn-post-diskusi');
-    if(submitBtn) {
+    if (submitBtn) {
       submitBtn.innerHTML = 'Simpan Perubahan';
     }
   }, 50);
 };
 
 // Vote in poll
-window.submitPollVote = function(postId, optIdx) {
+window.submitPollVote = function (postId, optIdx) {
   const posts = getPosts();
   const post = posts.find(p => p.id === postId);
-  if(!post || !post.poll) return;
-  
+  if (!post || !post.poll) return;
+
   // Normalize legacy poll array if needed
-  if(typeof post.poll[0] === 'string') {
+  if (typeof post.poll[0] === 'string') {
     post.poll = post.poll.map(opt => ({ text: opt, count: 0, votedBy: [] }));
   }
 
   // Check if already voted
   const hasVoted = post.poll.some(opt => opt.votedBy.includes(CURRENT_USER_PROFILE));
-  if(hasVoted) return; // Prevent double vote
+  if (hasVoted) return; // Prevent double vote
 
   post.poll[optIdx].count++;
   post.poll[optIdx].votedBy.push(CURRENT_USER_PROFILE);
-  
+
   savePosts(posts);
   renderAllPosts();
 };
 
 // Tab Switching logic
-window.switchFeedTab = function(tab) {
+window.switchFeedTab = function (tab) {
   window.activeFeedTab = tab;
-  
+
   const tabSemua = document.getElementById('tab-feed-semua');
   const tabTrending = document.getElementById('tab-feed-trending');
   const filterContainer = document.getElementById('trending-filter-container');
-  
+
   if (tabSemua && tabTrending) {
     if (tab === 'Semua') {
       tabSemua.className = 'feed-tab font-label-md text-label-md font-bold text-primary border-b-2 border-primary pb-3 px-2';
@@ -1713,14 +1723,14 @@ window.switchFeedTab = function(tab) {
       filterContainer?.classList.remove('hidden');
     }
   }
-  
+
   renderAllPosts();
 };
 
 // Filter Trending by tag pill
-window.filterTrendingByCategory = function(tag) {
+window.filterTrendingByCategory = function (tag) {
   window.activeTrendingTag = tag;
-  
+
   document.querySelectorAll('.trending-filter-pill').forEach(btn => {
     if (btn.dataset.tag === tag) {
       btn.className = 'trending-filter-pill px-4 py-1.5 rounded-full text-[13px] font-semibold border bg-primary text-white border-primary transition-all duration-200';
@@ -1728,36 +1738,36 @@ window.filterTrendingByCategory = function(tag) {
       btn.className = 'trending-filter-pill px-4 py-1.5 rounded-full text-[13px] font-semibold border bg-surface-container text-on-surface border-outline-variant/30 hover:border-primary hover:text-primary transition-all duration-200';
     }
   });
-  
+
   renderAllPosts();
 };
 
 // Detailed Trending Topic Modal
-window.showTrendingTopicDetail = function(tagName) {
+window.showTrendingTopicDetail = function (tagName) {
   const modal = document.getElementById('modal-detail-trending');
   const titleEl = document.getElementById('trending-modal-title');
   const statsEl = document.getElementById('trending-modal-stats');
   const descEl = document.getElementById('trending-modal-desc');
   const postsContainer = document.getElementById('trending-modal-posts');
   const buatDiskusiBtn = document.getElementById('btn-trending-buat-diskusi');
-  
+
   if (!modal) return;
-  
+
   const detail = TOPIC_DETAILS[tagName] || {
     title: tagName,
     stats: 'Baru & Populer 🔥',
     desc: `Ruang diskusi komunitas yang berfokus pada topik hangat ${tagName}. Cari tahu apa yang dipikirkan pengguna lain.`
   };
-  
+
   titleEl.innerHTML = `<span class="text-primary font-bold">${detail.title}</span>`;
   statsEl.innerHTML = `${detail.stats}`;
   descEl.textContent = detail.desc;
-  
+
   // Find related posts
-  const relatedPosts = getPosts().filter(p => 
+  const relatedPosts = getPosts().filter(p =>
     (p.tags || []).some(t => t.toLowerCase() === tagName.toLowerCase())
   ).sort((a, b) => b.votes - a.votes);
-  
+
   if (relatedPosts.length > 0) {
     postsContainer.innerHTML = relatedPosts.map(p => `
       <div class="bg-surface-container-low border border-outline-variant/20 p-4 rounded-xl shadow-sm hover:bg-surface-container transition-all">
@@ -1772,9 +1782,9 @@ window.showTrendingTopicDetail = function(tagName) {
   } else {
     postsContainer.innerHTML = `<p class="text-on-surface-variant/80 text-[13px] italic py-4 text-center">Belum ada diskusi populer untuk tag ini. Jadilah yang pertama memulai!</p>`;
   }
-  
+
   // Buat Diskusi Button setup
-  buatDiskusiBtn.onclick = function() {
+  buatDiskusiBtn.onclick = function () {
     window.closeTrendingModal();
     // Pre-fill tag in new post modal
     activeTags = [tagName];
@@ -1784,7 +1794,7 @@ window.showTrendingTopicDetail = function(tagName) {
       window.openModal();
     }
   };
-  
+
   // Add direct filter button to footer
   let filterBtn = modal.querySelector('#btn-trending-filter-utama');
   if (!filterBtn) {
@@ -1794,43 +1804,43 @@ window.showTrendingTopicDetail = function(tagName) {
     buatDiskusiBtn.parentNode.insertBefore(filterBtn, buatDiskusiBtn);
   }
   filterBtn.textContent = `Filter Feed: ${tagName}`;
-  filterBtn.onclick = function() {
+  filterBtn.onclick = function () {
     window.filterFeedByTag(tagName);
   };
-  
+
   modal.classList.remove('hidden');
 };
 
-window.closeTrendingModal = function() {
+window.closeTrendingModal = function () {
   const modal = document.getElementById('modal-detail-trending');
   modal?.classList.add('hidden');
 };
 
-window.filterFeedByTag = function(tagName) {
+window.filterFeedByTag = function (tagName) {
   window.closeTrendingModal();
-  
+
   // Switch to Trending tab
   window.switchFeedTab('Trending');
-  
+
   // Set trending category to tag if it's one of the options
   const formattedTag = tagName.startsWith('#') ? tagName : '#' + tagName;
   const pill = document.querySelector(`.trending-filter-pill[data-tag="${formattedTag}"]`);
-  
+
   if (pill) {
     window.filterTrendingByCategory(formattedTag);
   } else {
     // If tag is not one of the predefined category buttons, let's temporarily set activeTrendingTag
     window.activeTrendingTag = formattedTag;
-    
+
     // De-activate all standard pills
     document.querySelectorAll('.trending-filter-pill').forEach(btn => {
       btn.className = 'trending-filter-pill px-4 py-1.5 rounded-full text-[13px] font-semibold border bg-surface-container text-on-surface border-outline-variant/30 hover:border-primary hover:text-primary transition-all duration-200';
     });
-    
+
     // Render with custom active tag
     renderAllPosts();
   }
-  
+
   // Scroll to community feed
   const feedEl = document.getElementById('community-feed');
   feedEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1840,170 +1850,8 @@ window.filterFeedByTag = function(tagName) {
 // COMMUNITY AI BOT — engagement & smart replies
 // ==========================================
 
-const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY_HERE';
-
-async function generateAIResponse(prompt) {
-  if (!GEMINI_API_KEY) return null;
-  try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.9, maxOutputTokens: 150 }
-      })
-    });
-    const data = await res.json();
-    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-      return data.candidates[0].content.parts[0].text.replace(/^["']|["']$/g, '').trim();
-    }
-  } catch (e) {
-    console.error("AI API Error:", e);
-  }
-  return null;
-}
-
-function stripHtml(html) {
-  return (html || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-}
-
-function pickRandom(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-const BOT_PROFILES = [
-  '@SastraWangi', '@BookNerd', '@HujanBulanJuni', '@TokyoReader', '@PenaSenja',
-  '@PejuangKampus', '@MathGenius', '@CalonMaba', '@Ambiskuh', '@TukangOverthinking',
-  '@KutuBuku', '@PecintaSastra', '@AnakRajin', '@SiswaIndonesia', '@AlumniSukses',
-  '@PemimpiBesar', '@PemburuPTN', '@SastraLover', '@BukuAdalahTeman', '@ReadBridgeAI'
-];
-
-const SMART_BOT = {
-  pickProfile(dest) {
-    const pools = {
-      'Pejuang SNBT': ['@ReadBridgeAI', '@PejuangKampus', '@MathGenius', '@CalonMaba', '@PemburuPTN'],
-      'Pecinta Fiksi': ['@ReadBridgeAI', '@PecintaSastra', '@KutuBuku', '@SastraWangi', '@BookNerd'],
-      'Public Feed': ['@ReadBridgeAI', '@AnakRajin', '@SiswaIndonesia', '@AlumniSukses']
-    };
-    return pickRandom(pools[dest] || pools['Public Feed']);
-  },
-
-  async commentOnPost(post, dest, botUser) {
-    const prompt = `Sebagai seorang siswa SMA di Indonesia bernama ${botUser}, berikan satu komentar gaul, asik, dan singkat (1-2 kalimat saja) untuk merespons postingan komunitas belajar ini. 
-Judul post: ${post.judul}
-Isi post: ${stripHtml(post.isi)}
-Jangan gunakan tanda kutip di awal atau akhir jawaban.`;
-    
-    const aiResponse = await generateAIResponse(prompt);
-    if (aiResponse) return aiResponse;
-
-    // Fallback if AI fails
-    const raw = `${post.judul || ''} ${stripHtml(post.isi)}`.toLowerCase();
-
-    if (dest === 'Pejuang SNBT' || /utbk|snbt|matematika|literasi|soal|ujian|ptn|jurusan|penm|pm/.test(raw)) {
-      if (/matematika|aljabar|geometri|penm|pm/.test(raw)) {
-        return pickRandom([
-          'Tips cepat: catat pola soal yang sering muncul, bukan hanya hafal rumus. 15 menit review + 10 soal latihan per hari sudah cukup konsisten.',
-          'Kalau stuck di soal PM, balik ke konsep dasarnya dulu — seringnya masalahnya di interpretasi, bukan hitungannya.',
-          'Aku biasanya kerjakan soal serupa dari 3 sumber berbeda. Hasilnya variasi polanya kebaca lebih cepat saat ujian.'
-        ]);
-      }
-      if (/literasi|bahasa|puisi|teks/.test(raw)) {
-        return pickRandom([
-          'Untuk literasi: baca paragraf pertama & terakhir dulu, baru detail. Hemat waktu dan fokus ke ide pokok.',
-          'Latihan baca cepat 10 menit sebelum tidur ngebantu banget. Besoknya langsung terasa di soal bacaan panjang.'
-        ]);
-      }
-      return pickRandom([
-        `Thread "${(post.judul || '').slice(0, 40)}" bagus! Breakdown per sub-materi + latihan soal harian = progress yang kelihatan.`,
-        'Setuju banget. Coba share juga strategi waktu kamu — banyak yang butuh referensi pacing saat UTBK.',
-        'Semangat pejuang PTN! Konsistensi kecil tiap hari lebih worth it daripada cramming seminggu sebelum ujian.'
-      ]);
-    }
-
-    if (dest === 'Pecinta Fiksi' || /review|buku|novel|fiksi|sastra|murakami|puisi|cerita|penulis/.test(raw)) {
-      if (/review|ulas|rekomendasi/.test(raw)) {
-        return pickRandom([
-          'Review-nya jujur dan helpful! Aku tambahin ke wishlist. Kalau ada buku sejenis, drop di sini ya.',
-          'Setuju — ending-nya emang yang paling memorable. Ada yang punya reading order untuk karya penulis ini?',
-          'Ulasannya detail banget. Bagian favorit kamu yang mana? Penasaran perspektif orang lain.'
-        ]);
-      }
-      return pickRandom([
-        'Temanya menarik! Buku fiksi yang bagus sering ngajarin empathy lewat karakter — diskusi kayak gini yang bikin komunitas hidup.',
-        'Belum baca, tapi dari judulnya langsung kepo. Ada spoiler-free summary singkat?',
-        'Sastra lokal punya daya tarik sendiri. Kalau suka genre ini, coba juga karya Pramoedya atau Eka Kurniawan.'
-      ]);
-    }
-
-    return pickRandom([
-      `Pembahasan "${(post.judul || 'ini').slice(0, 45)}" menarik — thanks udah buka thread-nya!`,
-      'Setuju. Komunitas ReadBridge emang paling seru kalau banyak sudut pandang berbeda.',
-      'Mantap diskusinya! Siapa pun yang punya pengalaman serupa, share juga ya — biar makin kaya.'
-    ]);
-  },
-
-  async replyToUser(userText, post, dest, botUser) {
-    const prompt = `Sebagai seorang siswa SMA di Indonesia bernama ${botUser}, ada pengguna yang membalas komentarmu dengan berkata: "${userText}".
-Konteks Postingan: ${post.judul}
-Berikan balasan singkat yang gaul dan ramah (1-2 kalimat). Jangan pakai tanda kutip.`;
-    
-    const aiResponse = await generateAIResponse(prompt);
-    if (aiResponse) return aiResponse;
-
-    // Fallback if AI fails
-    const t = userText.toLowerCase();
-    const topic = (post.judul || '').slice(0, 40);
-
-    if (/terima kasih|makasih|thanks|thx/.test(t)) {
-      return pickRandom([
-        'Sama-sama! Senang bisa bantu. Kalau ada follow-up, langsung tulis aja di sini.',
-        'With pleasure! Itu tujuan komunitas ini — saling support. Semangat terus!'
-      ]);
-    }
-    if (/\?/.test(t)) {
-      if (/cara|gimana|bagaimana|tips|saran/.test(t)) {
-        if (dest === 'Pejuang SNBT') {
-          return `Untuk "${topic}", mulai dari 1 subtopik fokus per hari + 5 soal latihan. Review salahnya, jangan cuma lihat kunci. Progress kecil tapi konsisten > marathon 8 jam sekali seminggu.`;
-        }
-        if (dest === 'Pecinta Fiksi') {
-          return `Kalau soal "${topic}", coba bandingkan temanya dengan 1–2 buku sejenis. Biasanya insight baru muncul dari perbandingan gaya penulis & alurnya.`;
-        }
-        return `Pertanyaan bagus! Untuk "${topic}", coba spesifikkan dulu bagian mana yang paling bikin bingung — nanti lebih gampang dapat jawaban targeted.`;
-      }
-      return pickRandom([
-        'Pertanyaan oke! Siapa pun yang punya pengalaman langsung, bantu jawab ya — thread-nya bakal lebih berguna.',
-        'Good question. Dari pengalaman komunitas, biasanya jawabannya ada di latihan rutin + diskusi hasilnya bareng.'
-      ]);
-    }
-    if (/setuju|bener|betul|iya|iyaa/.test(t)) {
-      return pickRandom([
-        'Exactly! Makin banyak perspektif, makin kaya diskusinya.',
-        'Glad we are on the same page. Ada poin lain yang mau ditambahin?'
-      ]);
-    }
-    return this.commentOnPost(post, dest, botUser);
-  },
-
-  async createNewPost(dest, botUser) {
-    const prompt = `Sebagai seorang siswa SMA di Indonesia bernama ${botUser}, buat satu postingan singkat untuk forum komunitas diskusi belajar / hobi tentang topik yang relevan dengan klub "${dest}".
-Buat kontennya gaul, asik, memancing diskusi.
-Format balasanmu persis seperti ini (tanpa tanda kutip):
-Judul Postingan|Isi postingan singkat`;
-    
-    const aiResponse = await generateAIResponse(prompt);
-    if (aiResponse && aiResponse.includes('|')) {
-      const parts = aiResponse.split('|');
-      return { judul: parts[0].trim(), isi: parts[1].trim() };
-    }
-
-    // Fallback
-    if (dest === 'Pejuang SNBT') {
-      return { judul: 'Lagi bingung milih jurusan nih, ada saran?', isi: 'Guys aku galau banget mau pilih Teknik Informatika atau Sistem Informasi ya? Sharing dong yang udah ada pengalaman.' };
-    }
-    return { judul: 'Ada rekomendasi buku bagus akhir pekan ini?', isi: 'Lagi butuh bacaan ringan nih buat ngisi waktu kosong di hari Minggu. Genre apa aja boleh!' };
-  }
-};
+// AI Bot Simulation is now securely triggered via Backend
+// API Key has been removed from frontend.
 
 function isBotUser(username) {
   const name = username || '';
@@ -2103,15 +1951,6 @@ async function fetchCommentsForPost(postId) {
   }
 }
 
-async function postBotComment(postId, text, botNama) {
-  const res = await fetch(`${API_BASE}/api/community/diskusi/${postId}/bot-balasan`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ konten: text, bot_nama: botNama })
-  });
-  return res.ok;
-}
-
 class CommunityBot {
   constructor() {
     this.timerId = null;
@@ -2148,7 +1987,7 @@ class CommunityBot {
 
   simulateAction() {
     const posts = this.getPostsForDest();
-    
+
     // Simulate either creating a new post, voting, or commenting
     const actionRand = Math.random();
     if (actionRand < 0.15) {
@@ -2163,31 +2002,22 @@ class CommunityBot {
   }
 
   async simulateNewPost() {
-    const botUser = SMART_BOT.pickProfile(this.activeDest);
-    const postData = await SMART_BOT.createNewPost(this.activeDest || 'Public Feed', botUser);
-    
-    const newId = `bot-post-${Date.now()}`;
-    const newPost = {
-      id: newId,
-      username: botUser,
-      avatar: getAvatarForUser(botUser),
-      isCurrentUser: false,
-      waktu: new Date().toISOString(),
-      judul: postData.judul,
-      isi: postData.isi,
-      tags: ['#DiskusiSeru'],
-      votes: 0,
-      komentar: 0,
-      destination: this.activeDest || 'Public Feed',
-      commentsList: []
-    };
-    
-    const posts = getPosts();
-    posts.unshift(newPost); // Add to the top of the feed
-    savePosts(posts);
-    
-    renderAllPosts();
-    this.showToast(`✨ ${botUser} baru saja membuat diskusi baru!`);
+    try {
+      const res = await fetch(`${API_BASE}/api/community/bot-simulate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'create_post', destination: this.activeDest || 'Public Feed' })
+      });
+      const data = await res.json();
+      if (data.success) {
+        // Panggil fungsi render ulang dari script utama jika tersedia
+        if (typeof window.fetchPostsFromAPI === 'function') {
+          apiPostsFetched = false;
+          await renderAllPosts();
+        }
+        this.showToast(`✨ ${data.data.username} baru saja membuat diskusi baru!`);
+      }
+    } catch (e) { console.error('Simulate post error:', e); }
   }
 
   simulateVote(postId) {
@@ -2205,44 +2035,36 @@ class CommunityBot {
   }
 
   async simulateComment(post) {
-    const botUser = SMART_BOT.pickProfile(this.activeDest);
-    const text = await SMART_BOT.commentOnPost(post, this.activeDest, botUser);
-    const ok = await postBotComment(post.id, text, botUser);
-    if (!ok) return;
-
-    const posts = getPosts();
-    const p = posts.find(x => x.id == post.id);
-    if (p) {
-      p.commentsList = p.commentsList || [];
-      p.commentsList.push({ username: botUser, text, waktu: new Date().toISOString(), isBot: true });
-      p.komentar = (p.komentar || 0) + 1;
-      savePosts(posts);
-    }
-
-    appendCommentToUI(post.id, { username: botUser, text, waktu: new Date().toISOString(), isBot: true }, post.username);
-    this.showToast(`🤖 ${botUser} baru saja membalas diskusi`);
+    try {
+      const res = await fetch(`${API_BASE}/api/community/bot-simulate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'reply_post', postId: post.id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        appendCommentToUI(post.id, { username: data.data.username, text: data.data.text, waktu: new Date().toISOString(), isBot: true }, post.username);
+        this.showToast(`🤖 ${data.data.username} baru saja membalas diskusi`);
+      }
+    } catch (e) { console.error('Simulate comment error:', e); }
   }
 
   scheduleReplyToUser(postId, userText, post) {
     if (this.replyTimerId) clearTimeout(this.replyTimerId);
     const delay = Math.floor(Math.random() * 4000) + 3000;
     this.replyTimerId = setTimeout(async () => {
-      const botUser = '@ReadBridgeAI';
-      const text = await SMART_BOT.replyToUser(userText, post, this.activeDest || post.destination || 'Public Feed', botUser);
-      const ok = await postBotComment(postId, text, botUser);
-      if (!ok) return;
-
-      const posts = getPosts();
-      const p = posts.find(x => x.id == postId);
-      if (p) {
-        p.commentsList = p.commentsList || [];
-        p.commentsList.push({ username: botUser, text, waktu: new Date().toISOString(), isBot: true });
-        p.komentar = (p.komentar || 0) + 1;
-        savePosts(posts);
-      }
-
-      appendCommentToUI(postId, { username: botUser, text, waktu: new Date().toISOString(), isBot: true }, post.username);
-      this.showToast(`💬 @ReadBridgeAI membalas komentarmu`);
+      try {
+        const res = await fetch(`${API_BASE}/api/community/bot-simulate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'reply_user', postId, userText })
+        });
+        const data = await res.json();
+        if (data.success) {
+          appendCommentToUI(postId, { username: data.data.username, text: data.data.text, waktu: new Date().toISOString(), isBot: true }, post.username);
+          this.showToast(`💬 ${data.data.username} membalas komentarmu`);
+        }
+      } catch (e) { console.error('Simulate reply error:', e); }
     }, delay);
   }
 
@@ -2437,7 +2259,7 @@ function renderBookRecommendations() {
           <div class="flex items-center gap-2">
             <span class="font-label-sm text-label-sm text-on-surface-variant font-bold">Rating Kamu:</span>
             <div class="flex items-center gap-1 text-amber-500" id="star-rating-selector">
-              ${[1,2,3,4,5].map(i => `
+              ${[1, 2, 3, 4, 5].map(i => `
                 <span onclick="window.setRecommendationRating(${i})" id="selector-star-${i}" class="material-symbols-outlined text-[26px] cursor-pointer hover:scale-115 transition-transform" style="font-variation-settings: 'FILL' 1;">star</span>
               `).join('')}
             </div>
@@ -2489,9 +2311,9 @@ function renderBookRecommendations() {
               <div class="flex items-center gap-2">
                 <div class="flex text-amber-500">
                   ${[1, 2, 3, 4, 5].map(star => {
-                    const fill = star <= Math.round(parseFloat(avgRating)) ? '1' : '0';
-                    return `<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' ${fill};">star</span>`;
-                  }).join('')}
+      const fill = star <= Math.round(parseFloat(avgRating)) ? '1' : '0';
+      return `<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' ${fill};">star</span>`;
+    }).join('')}
                 </div>
                 <span class="font-bold text-on-surface text-label-md">${avgRating}</span>
                 <span class="text-on-surface-variant/50 text-[13px]">(${totalReviews} Ulasan)</span>
@@ -2521,15 +2343,15 @@ function renderBookRecommendations() {
           <h4 class="font-label-md text-label-md font-bold text-on-surface-variant uppercase tracking-wider text-[11px] mb-1 text-left">Ulasan Pembaca Komunitas</h4>
           <div class="flex flex-col gap-md">
             ${rec.reviews.map(rev => {
-              const starsHtml = [1,2,3,4,5].map(star => {
-                const fill = star <= rev.rating ? '1' : '0';
-                return `<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' ${fill};">star</span>`;
-              }).join('');
-              
-              const isUpvoted = rev.userVoted === 'up';
-              const isDownvoted = rev.userVoted === 'down';
-              
-              return `
+      const starsHtml = [1, 2, 3, 4, 5].map(star => {
+        const fill = star <= rev.rating ? '1' : '0';
+        return `<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' ${fill};">star</span>`;
+      }).join('');
+
+      const isUpvoted = rev.userVoted === 'up';
+      const isDownvoted = rev.userVoted === 'down';
+
+      return `
                 <div class="bg-surface-container-lowest rounded-2xl p-md border border-outline-variant/20 shadow-sm flex flex-col gap-2 relative">
                   <!-- Profil Reviewer -->
                   <div class="flex items-center justify-between">
@@ -2604,7 +2426,7 @@ function renderBookRecommendations() {
                   </div>
                 </div>
               `;
-            }).join('')}
+    }).join('')}
           </div>
         </div>
       </div>
@@ -2614,7 +2436,7 @@ function renderBookRecommendations() {
   container.innerHTML = html;
 }
 
-window.setRecommendationRating = function(rating) {
+window.setRecommendationRating = function (rating) {
   document.getElementById('rec-input-rating').value = rating;
   for (let i = 1; i <= 5; i++) {
     const star = document.getElementById(`selector-star-${i}`);
@@ -2628,9 +2450,9 @@ window.setRecommendationRating = function(rating) {
   }
 };
 
-window.submitBookRecommendation = function(event) {
+window.submitBookRecommendation = function (event) {
   event.preventDefault();
-  
+
   let activeClub = null;
   if (document.title.includes('Pejuang SNBT')) activeClub = 'Pejuang SNBT';
   else if (document.title.includes('Pecinta Fiksi')) activeClub = 'Pecinta Fiksi';
@@ -2643,10 +2465,10 @@ window.submitBookRecommendation = function(event) {
   const rating = parseInt(document.getElementById('rec-input-rating').value);
 
   const recs = getBookRecommendations();
-  
+
   // Periksa apakah buku sudah ada di list rekomendasi
   let rec = recs.find(r => r.club === activeClub && r.title.toLowerCase() === title.toLowerCase());
-  
+
   const newReview = {
     id: 'rev-user-' + Date.now(),
     username: '@SiswaIndonesia',
@@ -2665,7 +2487,7 @@ window.submitBookRecommendation = function(event) {
     if (activeClub === 'Pecinta Fiksi') {
       coverUrl = 'fiksi_cover.png';
     }
-    
+
     const newRec = {
       id: 'rec-' + Date.now(),
       club: activeClub,
@@ -2684,7 +2506,7 @@ window.submitBookRecommendation = function(event) {
 
   saveBookRecommendations(recs);
   renderBookRecommendations();
-  
+
   // Tampilkan toast keberhasilan
   if (window.communityBot) {
     window.communityBot.showToast("📚 Rekomendasi buku Anda berhasil diterbitkan!");
@@ -2700,7 +2522,7 @@ window.submitBookRecommendation = function(event) {
   window.setRecommendationRating(5);
 };
 
-window.voteBookReview = function(bookId, reviewId, voteType) {
+window.voteBookReview = function (bookId, reviewId, voteType) {
   const recs = getBookRecommendations();
   const rec = recs.find(r => r.id === bookId);
   if (!rec) return;
@@ -2714,10 +2536,10 @@ window.voteBookReview = function(bookId, reviewId, voteType) {
   } else {
     if (rev.userVoted === 'up') rev.upvotes = Math.max(0, rev.upvotes - 1);
     else if (rev.userVoted === 'down') rev.downvotes = Math.max(0, rev.downvotes - 1);
-    
+
     if (voteType === 'up') rev.upvotes += 1;
     else rev.downvotes += 1;
-    
+
     rev.userVoted = voteType;
   }
 
@@ -2725,7 +2547,7 @@ window.voteBookReview = function(bookId, reviewId, voteType) {
   renderBookRecommendations();
 };
 
-window.toggleReviewCommentBox = function(reviewId) {
+window.toggleReviewCommentBox = function (reviewId) {
   const el = document.getElementById(`review-comment-box-${reviewId}`);
   if (el) {
     el.classList.toggle('hidden');
@@ -2733,7 +2555,7 @@ window.toggleReviewCommentBox = function(reviewId) {
   }
 };
 
-window.submitReviewReply = function(bookId, reviewId) {
+window.submitReviewReply = function (bookId, reviewId) {
   const input = document.getElementById(`input-review-reply-${reviewId}`);
   if (!input) return;
   const text = input.value.trim();
@@ -2755,7 +2577,7 @@ window.submitReviewReply = function(bookId, reviewId) {
   saveBookRecommendations(recs);
   input.value = '';
   renderBookRecommendations();
-  
+
   // Tetap buka kotak balasan
   const box = document.getElementById(`review-comment-box-${reviewId}`);
   if (box) {
@@ -2764,7 +2586,7 @@ window.submitReviewReply = function(bookId, reviewId) {
   }
 };
 
-window.readDigitalBookSimulator = function(bookTitle) {
+window.readDigitalBookSimulator = function (bookTitle) {
   let modal = document.getElementById('digital-reader-modal');
   if (!modal) {
     modal = document.createElement('div');
@@ -2772,7 +2594,7 @@ window.readDigitalBookSimulator = function(bookTitle) {
     modal.className = 'fixed inset-0 bg-black/85 backdrop-blur-sm z-[200] flex items-center justify-center p-4 animate-fadeIn';
     document.body.appendChild(modal);
   }
-  
+
   modal.innerHTML = `
     <div class="bg-amber-50 text-[#2c1d11] rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col overflow-hidden max-h-[90vh]">
       <!-- Header -->
@@ -2803,7 +2625,7 @@ window.readDigitalBookSimulator = function(bookTitle) {
       </div>
     </div>
   `;
-  
+
   modal.style.display = 'flex';
 };
 
@@ -2818,26 +2640,26 @@ document.addEventListener('DOMContentLoaded', () => {
     clubTabs.forEach(tab => {
       tab.addEventListener('click', (e) => {
         const targetTab = tab.dataset.tab;
-        
+
         clubTabs.forEach(t => {
           t.className = "club-tab px-md py-sm font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer";
         });
         tab.className = "club-tab px-md py-sm font-label-md text-label-md font-bold text-primary border-b-2 border-primary cursor-pointer";
-        
+
         const panels = document.querySelectorAll('.tab-content');
         panels.forEach(p => p.classList.add('hidden'));
-        
+
         const targetPanel = document.getElementById(`tab-${targetTab}`);
         if (targetPanel) {
           targetPanel.classList.remove('hidden');
         }
-        
+
         if (targetTab === 'rekomendasi') {
           renderBookRecommendations();
         }
       });
     });
-    
+
     // Auto-render rekomendasi jika tab awal aktif
     const activeTab = document.querySelector('.club-tab.font-bold');
     if (activeTab && activeTab.dataset.tab === 'rekomendasi') {
