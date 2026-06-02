@@ -45,10 +45,19 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:5500,ht
 app.use(cors({
   origin: (origin, callback) => {
     // Mengizinkan tanpa origin, file:// preview (Origin: null), localhost, github.io, atau origin spesifik
-    if (!origin || origin === 'null' || allowedOrigins.includes('*') || origin.includes('localhost') || origin.includes('127.0.0.1') || origin.includes('github.io') || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("CORS tidak diizinkan untuk origin: " + origin));
+    if (!origin || origin === 'null' || allowedOrigins.includes('*')) {
+      return callback(null, true);
+    }
+    try {
+      const url = new URL(origin);
+      const hostname = url.hostname;
+      if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.github.io') || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS tidak diizinkan untuk origin: " + origin));
+      }
+    } catch (e) {
+      callback(new Error("CORS invalid origin"));
     }
   },
   credentials: true,
@@ -72,17 +81,10 @@ app.use(rateLimit({
   message: { success: false, message: "Terlalu banyak request, coba lagi nanti." },
 }));
 
-// Rate limiter ketat untuk auth - 10 request per 15 menit
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  message: { success: false, message: "Terlalu banyak percobaan login." },
-});
-
 // =============================================
 // ROUTES
 // =============================================
-app.use("/api/auth", authLimiter, authRoutes);
+app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/journals", journalRoutes);
 app.use("/api/transactions", transactionRoutes);

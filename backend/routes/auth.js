@@ -11,12 +11,19 @@ const admin = require("../config/firebase");
 const { verifyToken } = require("../middleware/auth");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const rateLimit = require("express-rate-limit");
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { success: false, message: "Terlalu banyak percobaan login." },
+});
 
 /**
  * POST /api/auth/register
  * Registrasi user baru secara lokal
  */
-router.post("/register", async (req, res) => {
+router.post("/register", authLimiter, async (req, res) => {
   try {
     const { nama, email, password } = req.body;
     if (!nama || !email || !password) {
@@ -55,7 +62,7 @@ router.post("/register", async (req, res) => {
  * POST /api/auth/login
  * Login user secara lokal
  */
-router.post("/login", async (req, res) => {
+router.post("/login", authLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -95,7 +102,7 @@ router.post("/login", async (req, res) => {
  * POST /api/auth/sync
  * Sinkronisasi akun Firebase Google ke database MySQL
  */
-router.post("/sync", async (req, res) => {
+router.post("/sync", authLimiter, async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader?.startsWith("Bearer ")) {
@@ -192,7 +199,9 @@ router.get("/me", verifyToken, async (req, res) => {
  */
 router.post("/logout", verifyToken, async (req, res) => {
   try {
-    await admin.auth().revokeRefreshTokens(req.firebaseUser.uid);
+    if (req.firebaseUser && req.firebaseUser.uid) {
+      await admin.auth().revokeRefreshTokens(req.firebaseUser.uid);
+    }
     res.json({ success: true, message: "Logout berhasil" });
   } catch (error) {
     // Tidak perlu error jika revoke gagal, frontend tetap hapus token lokal

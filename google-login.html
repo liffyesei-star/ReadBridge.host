@@ -143,46 +143,88 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
+        const API_BASE = 'https://readbridge-backend-2whx.onrender.com';
+        const SYNC_RETRY_DELAYS = [0, 2000, 5000, 9000];
         
         // Memaksa prompt pilihan akun sehingga user bisa memilih Google account mereka
         provider.setCustomParameters({ prompt: 'select_account' });
 
-        // Handle redirect result ON LOAD
-        async function handleRedirectResult() {
+        function showLoginOverlay(message = 'Preparing Google sign in...') {
+            let overlay = document.getElementById('login-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'login-overlay';
+                overlay.style.cssText = 'position:fixed;inset:0;background:rgba(240,244,249,0.9);display:flex;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(4px);padding:24px;text-align:center;';
+                overlay.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:14px;max-width:320px;color:#202124;font:500 14px/1.5 Roboto,sans-serif;">
+                    <div style="width:36px;height:36px;border:4px solid #4285F4;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+                    <div id="login-overlay-message"></div>
+                    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+                </div>`;
+                document.body.appendChild(overlay);
+            }
+            const messageEl = document.getElementById('login-overlay-message');
+            if (messageEl) messageEl.textContent = message;
+            return overlay;
+        }
+
+        function hideLoginOverlay() {
+            document.getElementById('login-overlay')?.remove();
+            document.getElementById('login-overlay-redirect')?.remove();
+        }
+
+        const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+        async function fetchWithTimeout(url, options = {}, timeoutMs = 45000) {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), timeoutMs);
             try {
-                const result = await getRedirectResult(auth);
-                if (result) {
-                    // Show a loading OVERLAY
-                    const overlay = document.createElement('div');
-                    overlay.id = 'login-overlay';
-                    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(240,244,249,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(4px);';
-                    overlay.innerHTML = `<div style="width:36px;height:36px;border:4px solid #4285F4;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-                    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
-                    document.body.appendChild(overlay);
+                return await fetch(url, { ...options, signal: controller.signal });
+            } finally {
+                clearTimeout(timeout);
+            }
+        }
 
-                    const user = result.user;
-                    const idToken = await user.getIdToken();
+        async function syncFirebaseUser(idToken) {
+            let lastError;
+            for (let i = 0; i < SYNC_RETRY_DELAYS.length; i++) {
+                if (SYNC_RETRY_DELAYS[i] > 0) await wait(SYNC_RETRY_DELAYS[i]);
+                showLoginOverlay(i === 0 ? 'Menyinkronkan akun Google...' : `Server masih menyiapkan akun, mencoba lagi (${i + 1}/${SYNC_RETRY_DELAYS.length})...`);
 
-                    const syncResponse = await fetch('https://readbridge-backend-2whx.onrender.com/api/auth/sync', {
+                try {
+                    const response = await fetchWithTimeout(`${API_BASE}/api/auth/sync`, {
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${idToken}` }
                     });
 
-                    if (!syncResponse.ok) {
-                        const ov = document.getElementById('login-overlay');
-                        if (ov) ov.remove();
-                        console.error('Gagal sinkronisasi data dengan backend', await syncResponse.text());
-                        alert('Login gagal: tidak dapat sinkronisasi akun ke server. Coba lagi dalam beberapa detik.');
-                        return;
+                    const rawText = await response.text();
+                    const data = rawText ? JSON.parse(rawText) : {};
+
+                    if (response.ok && data.success) {
+                        return data;
                     }
 
-                    const syncData = await syncResponse.json();
-                    if (!syncData.success) {
-                        const ov = document.getElementById('login-overlay');
-                        if (ov) ov.remove();
-                        alert(syncData.message || 'Login gagal: sinkronisasi akun tidak berhasil.');
-                        return;
-                    }
+                    lastError = new Error(data.message || `Sync gagal (${response.status})`);
+                    if (response.status >= 400 && response.status < 500 && response.status !== 429) break;
+                } catch (error) {
+                    lastError = error;
+                }
+            }
+
+            throw lastError || new Error('Sinkronisasi akun gagal.');
+        }
+
+        // Handle redirect result ON LOAD
+        async function handleRedirectResult() {
+            try {
+                if (sessionStorage.getItem('rb_google_login_pending') === 'true') {
+                    showLoginOverlay('Melanjutkan login Google...');
+                }
+
+                const result = await getRedirectResult(auth);
+                if (result) {
+                    const user = result.user;
+                    const idToken = await user.getIdToken();
+                    await syncFirebaseUser(idToken);
 
                     const username = user.displayName || 'Google User';
                     const email = user.email;
@@ -198,6 +240,7 @@
                     }
                     localStorage.setItem('rb_is_logged_in', 'true');
                     localStorage.setItem('rb_uid', uid);
+                    sessionStorage.removeItem('rb_google_login_pending');
 
                     if (!localStorage.getItem('rb_interests')) {
                         window.location.href = 'minat.html';
@@ -207,7 +250,9 @@
                 }
             } catch (error) {
                 console.error("Firebase Login Error:", error);
-                alert("Login gagal: " + error.message);
+                hideLoginOverlay();
+                sessionStorage.removeItem('rb_google_login_pending');
+                alert("Login Google berhasil terautentikasi, tetapi sinkronisasi ke server belum selesai. Coba pilih akun Google lagi setelah beberapa detik. Detail: " + (error.message || 'koneksi lambat'));
             }
         }
 
@@ -216,16 +261,13 @@
 
         // Attach to window so the HTML buttons can call it
         window.realGoogleLogin = function() {
-            // Tampilkan overlay kecil (opsional) sebelum redirect
-            const overlay = document.createElement('div');
-            overlay.id = 'login-overlay-redirect';
-            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(240,244,249,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(4px);';
-            overlay.innerHTML = `<div style="width:36px;height:36px;border:4px solid #4285F4;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-            <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
-            document.body.appendChild(overlay);
-            
-            // Redirect ke browser utama via Firebase
-            signInWithRedirect(auth, provider);
+            showLoginOverlay('Membuka pilihan akun Google...');
+            sessionStorage.setItem('rb_google_login_pending', 'true');
+            signInWithRedirect(auth, provider).catch((error) => {
+                hideLoginOverlay();
+                sessionStorage.removeItem('rb_google_login_pending');
+                alert('Gagal membuka login Google: ' + error.message);
+            });
         };
     </script>
 

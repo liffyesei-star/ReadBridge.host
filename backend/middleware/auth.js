@@ -65,16 +65,29 @@ const optionalAuth = async (req, res, next) => {
       return next();
     }
 
-    const idToken = authHeader.split("Bearer ")[1];
-    const decoded = await admin.auth().verifyIdToken(idToken);
+    const token = authHeader.split("Bearer ")[1];
+    let decoded;
 
-    const [rows] = await db.execute(
-      "SELECT id, firebase_uid, nama, email, role, foto_profil, poin FROM users WHERE firebase_uid = ? AND aktif = 1",
-      [decoded.uid]
-    );
+    // Coba verifikasi sebagai JWT lokal dulu
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET || 'readbridge_secret_key');
+      const [rows] = await db.execute(
+        "SELECT id, firebase_uid, nama, email, role, foto_profil, poin FROM users WHERE id = ? AND aktif = 1",
+        [decoded.id]
+      );
+      req.user = rows.length > 0 ? rows[0] : null;
+      return next();
+    } catch (jwtErr) {
+      // Jika bukan JWT lokal, coba Firebase
+      decoded = await admin.auth().verifyIdToken(token);
+      const [rows] = await db.execute(
+        "SELECT id, firebase_uid, nama, email, role, foto_profil, poin FROM users WHERE firebase_uid = ? AND aktif = 1",
+        [decoded.uid]
+      );
 
-    req.user = rows.length > 0 ? rows[0] : null;
-    next();
+      req.user = rows.length > 0 ? rows[0] : null;
+      return next();
+    }
   } catch {
     req.user = null;
     next();

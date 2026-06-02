@@ -2003,9 +2003,13 @@ class CommunityBot {
 
   async simulateNewPost() {
     try {
+      const token = localStorage.getItem('rb_token');
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
       const res = await fetch(`${API_BASE}/api/community/bot-simulate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ action: 'create_post', destination: this.activeDest || 'Public Feed' })
       });
       const data = await res.json();
@@ -2036,9 +2040,13 @@ class CommunityBot {
 
   async simulateComment(post) {
     try {
+      const token = localStorage.getItem('rb_token');
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
       const res = await fetch(`${API_BASE}/api/community/bot-simulate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ action: 'reply_post', postId: post.id })
       });
       const data = await res.json();
@@ -2054,9 +2062,13 @@ class CommunityBot {
     const delay = Math.floor(Math.random() * 4000) + 3000;
     this.replyTimerId = setTimeout(async () => {
       try {
+        const token = localStorage.getItem('rb_token');
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
         const res = await fetch(`${API_BASE}/api/community/bot-simulate`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify({ action: 'reply_user', postId, userText })
         });
         const data = await res.json();

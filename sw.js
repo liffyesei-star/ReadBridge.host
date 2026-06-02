@@ -1,4 +1,4 @@
-const CACHE_NAME = 'readbridge-pwa-cache-v1';
+const CACHE_NAME = 'readbridge-pwa-cache-v2';
 const urlsToCache = [
   './index.html',
   './style.css',
@@ -41,6 +41,14 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   // Hanya intercept GET requests
   if (event.request.method !== 'GET') return;
+
+  const requestUrl = new URL(event.request.url);
+  const isSameOrigin = requestUrl.origin === self.location.origin;
+  const isApiRequest = requestUrl.pathname.includes('/api/') || requestUrl.hostname.includes('readbridge-backend');
+
+  // Jangan sentuh request auth/API/CDN eksternal. Di mode PWA mobile, fallback cache
+  // untuk navigasi eksternal bisa membuat proses login Google terlihat gagal.
+  if (!isSameOrigin || isApiRequest) return;
   
   event.respondWith(
     caches.match(event.request)
@@ -63,10 +71,7 @@ self.addEventListener('fetch', event => {
 
             caches.open(CACHE_NAME)
               .then(function(cache) {
-                // Jangan simpan cache untuk request API
-                if (!event.request.url.includes('/api/')) {
-                  cache.put(event.request, responseToCache);
-                }
+                cache.put(event.request, responseToCache);
               });
 
             return response;

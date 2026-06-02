@@ -59,7 +59,7 @@ Pertanyaan Pengguna: "${message}"`;
             generationConfig: {
               temperature: 0.7,
               maxOutputTokens: 400,
-              thinkingConfig: { thinkingBudget: 0 },
+
             },
           }),
         });

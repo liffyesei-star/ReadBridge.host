@@ -204,7 +204,7 @@ router.post("/diskusi", verifyToken, async (req, res) => {
  * POST /api/community/diskusi/:id/bot-balasan
  * Komentar otomatis dari bot AI komunitas (untuk simulasi & engagement)
  */
-router.post("/diskusi/:id/bot-balasan", async (req, res) => {
+router.post("/diskusi/:id/bot-balasan", verifyToken, async (req, res) => {
   try {
     const { konten, bot_nama = "@ReadBridgeAI" } = req.body;
     if (!konten?.trim()) {
@@ -407,9 +407,9 @@ router.post("/clubs/:id/gabung", verifyToken, async (req, res) => {
 
 /**
  * POST /api/community/bot-simulate
- * Endpoint untuk memicu aksi AI secara manual dari frontend (menghindari tereksposnya API Key)
+ * Endpoint untuk memproses aksi AI secara manual dari frontend (menghindari tereksposnya API Key)
  */
-router.post("/bot-simulate", async (req, res) => {
+router.post("/bot-simulate", verifyToken, async (req, res) => {
   const { action, destination, postId, userText } = req.body;
   
   // Hardcoded bot pool
