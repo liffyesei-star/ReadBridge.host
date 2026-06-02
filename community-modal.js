@@ -1840,6 +1840,29 @@ window.filterFeedByTag = function(tagName) {
 // COMMUNITY AI BOT — engagement & smart replies
 // ==========================================
 
+const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY_HERE';
+
+async function generateAIResponse(prompt) {
+  if (!GEMINI_API_KEY) return null;
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.9, maxOutputTokens: 150 }
+      })
+    });
+    const data = await res.json();
+    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+      return data.candidates[0].content.parts[0].text.replace(/^["']|["']$/g, '').trim();
+    }
+  } catch (e) {
+    console.error("AI API Error:", e);
+  }
+  return null;
+}
+
 function stripHtml(html) {
   return (html || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 }
@@ -1865,7 +1888,16 @@ const SMART_BOT = {
     return pickRandom(pools[dest] || pools['Public Feed']);
   },
 
-  commentOnPost(post, dest) {
+  async commentOnPost(post, dest, botUser) {
+    const prompt = `Sebagai seorang siswa SMA di Indonesia bernama ${botUser}, berikan satu komentar gaul, asik, dan singkat (1-2 kalimat saja) untuk merespons postingan komunitas belajar ini. 
+Judul post: ${post.judul}
+Isi post: ${stripHtml(post.isi)}
+Jangan gunakan tanda kutip di awal atau akhir jawaban.`;
+    
+    const aiResponse = await generateAIResponse(prompt);
+    if (aiResponse) return aiResponse;
+
+    // Fallback if AI fails
     const raw = `${post.judul || ''} ${stripHtml(post.isi)}`.toLowerCase();
 
     if (dest === 'Pejuang SNBT' || /utbk|snbt|matematika|literasi|soal|ujian|ptn|jurusan|penm|pm/.test(raw)) {
@@ -1911,7 +1943,15 @@ const SMART_BOT = {
     ]);
   },
 
-  replyToUser(userText, post, dest) {
+  async replyToUser(userText, post, dest, botUser) {
+    const prompt = `Sebagai seorang siswa SMA di Indonesia bernama ${botUser}, ada pengguna yang membalas komentarmu dengan berkata: "${userText}".
+Konteks Postingan: ${post.judul}
+Berikan balasan singkat yang gaul dan ramah (1-2 kalimat). Jangan pakai tanda kutip.`;
+    
+    const aiResponse = await generateAIResponse(prompt);
+    if (aiResponse) return aiResponse;
+
+    // Fallback if AI fails
     const t = userText.toLowerCase();
     const topic = (post.judul || '').slice(0, 40);
 
@@ -1942,7 +1982,26 @@ const SMART_BOT = {
         'Glad we are on the same page. Ada poin lain yang mau ditambahin?'
       ]);
     }
-    return this.commentOnPost(post, dest);
+    return this.commentOnPost(post, dest, botUser);
+  },
+
+  async createNewPost(dest, botUser) {
+    const prompt = `Sebagai seorang siswa SMA di Indonesia bernama ${botUser}, buat satu postingan singkat untuk forum komunitas diskusi belajar / hobi tentang topik yang relevan dengan klub "${dest}".
+Buat kontennya gaul, asik, memancing diskusi.
+Format balasanmu persis seperti ini (tanpa tanda kutip):
+Judul Postingan|Isi postingan singkat`;
+    
+    const aiResponse = await generateAIResponse(prompt);
+    if (aiResponse && aiResponse.includes('|')) {
+      const parts = aiResponse.split('|');
+      return { judul: parts[0].trim(), isi: parts[1].trim() };
+    }
+
+    // Fallback
+    if (dest === 'Pejuang SNBT') {
+      return { judul: 'Lagi bingung milih jurusan nih, ada saran?', isi: 'Guys aku galau banget mau pilih Teknik Informatika atau Sistem Informasi ya? Sharing dong yang udah ada pengalaman.' };
+    }
+    return { judul: 'Ada rekomendasi buku bagus akhir pekan ini?', isi: 'Lagi butuh bacaan ringan nih buat ngisi waktu kosong di hari Minggu. Genre apa aja boleh!' };
   }
 };
 
@@ -2089,14 +2148,46 @@ class CommunityBot {
 
   simulateAction() {
     const posts = this.getPostsForDest();
-    if (!posts.length) return;
-
-    const target = posts[Math.floor(Math.random() * posts.length)];
-    if (Math.random() < 0.55) {
+    
+    // Simulate either creating a new post, voting, or commenting
+    const actionRand = Math.random();
+    if (actionRand < 0.15) {
+      this.simulateNewPost();
+    } else if (actionRand < 0.55 && posts.length > 0) {
+      const target = posts[Math.floor(Math.random() * posts.length)];
       this.simulateVote(target.id);
-    } else {
+    } else if (posts.length > 0) {
+      const target = posts[Math.floor(Math.random() * posts.length)];
       this.simulateComment(target);
     }
+  }
+
+  async simulateNewPost() {
+    const botUser = SMART_BOT.pickProfile(this.activeDest);
+    const postData = await SMART_BOT.createNewPost(this.activeDest || 'Public Feed', botUser);
+    
+    const newId = `bot-post-${Date.now()}`;
+    const newPost = {
+      id: newId,
+      username: botUser,
+      avatar: getAvatarForUser(botUser),
+      isCurrentUser: false,
+      waktu: new Date().toISOString(),
+      judul: postData.judul,
+      isi: postData.isi,
+      tags: ['#DiskusiSeru'],
+      votes: 0,
+      komentar: 0,
+      destination: this.activeDest || 'Public Feed',
+      commentsList: []
+    };
+    
+    const posts = getPosts();
+    posts.unshift(newPost); // Add to the top of the feed
+    savePosts(posts);
+    
+    renderAllPosts();
+    this.showToast(`✨ ${botUser} baru saja membuat diskusi baru!`);
   }
 
   simulateVote(postId) {
@@ -2115,7 +2206,7 @@ class CommunityBot {
 
   async simulateComment(post) {
     const botUser = SMART_BOT.pickProfile(this.activeDest);
-    const text = SMART_BOT.commentOnPost(post, this.activeDest);
+    const text = await SMART_BOT.commentOnPost(post, this.activeDest, botUser);
     const ok = await postBotComment(post.id, text, botUser);
     if (!ok) return;
 
@@ -2137,7 +2228,7 @@ class CommunityBot {
     const delay = Math.floor(Math.random() * 4000) + 3000;
     this.replyTimerId = setTimeout(async () => {
       const botUser = '@ReadBridgeAI';
-      const text = SMART_BOT.replyToUser(userText, post, this.activeDest || post.destination || 'Public Feed');
+      const text = await SMART_BOT.replyToUser(userText, post, this.activeDest || post.destination || 'Public Feed', botUser);
       const ok = await postBotComment(postId, text, botUser);
       if (!ok) return;
 
