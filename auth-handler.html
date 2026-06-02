@@ -66,7 +66,7 @@
     (function () {
       var API = "https://readbridge-backend-2whx.onrender.com";
       var BUSY_KEY = "rb_google_busy";
-      var COOLDOWN_MS = 8000;
+      var COOLDOWN_MS = 2500;
 
       firebase.initializeApp({
         apiKey: "AIzaSyDUfiy2BHYhHh1wql6uM5UvsF6hpNTVvhY",
@@ -102,12 +102,13 @@
 
       function showDone(user) {
         document.getElementById("spin").style.display = "none";
-        document.getElementById("rb-done").hidden = false;
-        document.getElementById("rb-continue-btn").href = dest();
-        status("Halo, " + (user.displayName || "pengguna") + "! Klik tombol untuk lanjut.");
         if (window.history.replaceState) {
           window.history.replaceState({}, "", location.pathname);
         }
+        status("Halo, " + (user.displayName || "pengguna") + "! Mengalihkan...");
+        setTimeout(function () {
+          location.replace(dest());
+        }, 500);
       }
 
       function saveAndFinish(user) {
@@ -147,10 +148,8 @@
         localStorage.getItem("rb_is_logged_in") === "true" &&
         localStorage.getItem("rb_token")
       ) {
-        document.getElementById("spin").style.display = "none";
-        document.getElementById("rb-done").hidden = false;
-        document.getElementById("rb-continue-btn").href = dest();
-        status("Sudah masuk. Lanjutkan manual.");
+        status("Sudah masuk, mengalihkan...");
+        setTimeout(function () { location.replace(dest()); }, 350);
         return;
       }
 
@@ -171,7 +170,7 @@
 
       if (shouldStart) {
         if (isBusy()) {
-          status("Tunggu ~8 detik sebelum coba lagi (mencegah loop).");
+          status("Sebentar ya...");
           document.getElementById("spin").style.display = "none";
           return;
         }

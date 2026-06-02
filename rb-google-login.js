@@ -1,46 +1,32 @@
 /**
- * ReadBridge — Google login via POPUP (Chrome/PC/Android Chrome).
- * Tidak pakai redirect = tidak bolak-balik halaman.
+ * ReadBridge — Google login (popup, alur fluid setelah sukses).
  */
 (function () {
   var API = "https://readbridge-backend-2whx.onrender.com";
   var BUSY_KEY = "rb_google_busy";
-  var COOLDOWN_MS = 8000;
+  var COOLDOWN_MS = 2500;
 
   function status(msg) {
     var el = document.getElementById("rb-auth-status");
     if (el) el.textContent = msg;
-    console.log("[ReadBridge]", msg);
-  }
-
-  function showSuccess(name) {
-    var box = document.getElementById("rb-login-success");
-    if (box) {
-      box.hidden = false;
-      var nameEl = document.getElementById("rb-login-success-name");
-      if (nameEl) nameEl.textContent = name || "Akun Google";
-    }
-    var spin = document.querySelector(".rb-google-spin");
-    if (spin) spin.style.display = "none";
-    status("Login berhasil.");
-  }
-
-  function isBusy() {
-    var t = sessionStorage.getItem(BUSY_KEY);
-    if (!t) return false;
-    return Date.now() - parseInt(t, 10) < COOLDOWN_MS;
-  }
-
-  function setBusy() {
-    sessionStorage.setItem(BUSY_KEY, String(Date.now()));
-  }
-
-  function clearBusy() {
-    sessionStorage.removeItem(BUSY_KEY);
   }
 
   function destination() {
     return localStorage.getItem("rb_interests") ? "eksplor.html" : "minat.html";
+  }
+
+  function goApp() {
+    window.location.replace(destination());
+  }
+
+  function goAppSoon(ms) {
+    status("Login berhasil — mengalihkan...");
+    setTimeout(goApp, ms || 500);
+  }
+
+  function isBusy() {
+    var t = sessionStorage.getItem(BUSY_KEY);
+    return t && Date.now() - parseInt(t, 10) < COOLDOWN_MS;
   }
 
   function saveSession(user, token) {
@@ -85,18 +71,17 @@
       localStorage.getItem("rb_is_logged_in") === "true" &&
       localStorage.getItem("rb_token")
     ) {
-      showSuccess(localStorage.getItem("rb_username"));
-      status("Anda sudah masuk. Klik tombol di bawah untuk lanjut.");
+      goAppSoon(200);
       return;
     }
 
     if (isBusy()) {
-      status("Tunggu beberapa detik sebelum coba lagi...");
+      status("Sebentar ya...");
       return;
     }
 
-    setBusy();
-    status("Membuka jendela Google...");
+    sessionStorage.setItem(BUSY_KEY, String(Date.now()));
+    status("Membuka Google...");
 
     var auth = getAuth();
     var provider = new firebase.auth.GoogleAuthProvider();
@@ -105,60 +90,51 @@
     auth
       .signInWithPopup(provider)
       .then(function (cred) {
-        status("Menyimpan sesi...");
+        status("Menyinkronkan akun...");
         return cred.user.getIdToken().then(function (token) {
           return syncBackend(token).then(function () {
             saveSession(cred.user, token);
-            clearBusy();
-            showSuccess(cred.user.displayName);
+            sessionStorage.removeItem(BUSY_KEY);
+            goAppSoon(450);
           });
         });
       })
       .catch(function (err) {
-        clearBusy();
-        console.warn("[ReadBridge] popup", err.code, err.message);
+        sessionStorage.removeItem(BUSY_KEY);
         if (err.code === "auth/popup-closed-by-user") {
-          status("Dibatalkan. Klik tombol untuk coba lagi.");
+          status("Dibatalkan.");
           return;
         }
         if (err.code === "auth/cancelled-popup-request") {
-          status("Tunggu sebentar, lalu klik lagi.");
+          status("Coba klik lagi.");
           return;
         }
-        status("Gagal: " + (err.message || err.code));
+        status("Gagal login.");
         alert(
           "Login gagal: " + (err.message || err.code) +
-            "\n\nPastikan domain liffyesei-star.github.io ada di Firebase Authorized domains."
+            "\n\nCek Firebase Authorized domains: liffyesei-star.github.io"
         );
       });
   };
 
-  window.rbGoAfterLogin = function () {
-    window.location.href = destination();
-  };
+  window.rbGoAfterLogin = goApp;
 
   window.rbUseRedirectLogin = function () {
-    if (isBusy()) {
-      status("Tunggu beberapa detik...");
-      return;
-    }
-    setBusy();
+    sessionStorage.setItem(BUSY_KEY, String(Date.now()));
     window.location.href = "auth-handler.html?go=1";
   };
 
   window.rbCheckExistingSession = function () {
     if (localStorage.getItem("rb_explicit_logout") === "true") {
-      status("Silakan masuk dengan Google");
+      status("Masuk dengan Google");
       return;
     }
     if (
       localStorage.getItem("rb_is_logged_in") === "true" &&
       localStorage.getItem("rb_token")
     ) {
-      showSuccess(localStorage.getItem("rb_username"));
-      status("Sudah masuk. Klik «Lanjut ke ReadBridge» di bawah.");
-    } else {
-      status("Siap — klik Masuk dengan Google");
+      status("Sudah masuk, mengalihkan...");
+      goAppSoon(350);
     }
   };
 })();
