@@ -40,6 +40,8 @@ document.addEventListener(
   (event) => {
     const link = event.target.closest('a[href*="login.html"]');
     if (!link || !/log\s*out/i.test(link.textContent)) return;
+    event.preventDefault();
+    event.stopPropagation();
     if (link.getAttribute("data-rb-logout-handled") === "1") return;
     link.setAttribute("data-rb-logout-handled", "1");
     rbLogout(event);
