@@ -112,8 +112,21 @@
 
         // Fallback otomatis jika popup diblokir atau tidak didukung di webview standalone
         if (err.code === "auth/popup-blocked" || err.code === "auth/operation-not-supported-in-this-environment") {
-          status("Popup diblokir, mengalihkan...");
           sessionStorage.removeItem(BUSY_KEY);
+          
+          if (checkSafariOrIOS()) {
+            status("Masuk dengan Google (Popup) diblokir.");
+            alert(
+              "Popup Google diblokir oleh Safari/iOS.\n\n" +
+              "Solusi:\n" +
+              "1. Masuk menggunakan Email & Password di bawah (Sangat Direkomendasikan).\n" +
+              "2. Atau aktifkan popup di Pengaturan Safari Anda.\n" +
+              "3. Atau jika ingin tetap menggunakan Google login via redirect, klik tombol 'Safari/iPhone' di bawah tombol Google (Catatan: jika gagal/loop, matikan 'Cegah Pelacakan Lintas Situs' di Pengaturan Safari)."
+            );
+            return;
+          }
+
+          status("Popup diblokir, mengalihkan...");
           setTimeout(function () {
             window.rbUseRedirectLogin();
           }, 800);
@@ -127,6 +140,14 @@
         );
       });
   };
+
+  function checkSafariOrIOS() {
+    var userAgent = navigator.userAgent || "";
+    var platform = navigator.platform || "";
+    var isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
+    var isIOS = /iPad|iPhone|iPod/.test(platform) || (platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    return isSafari || isIOS;
+  }
 
   window.rbGoAfterLogin = goApp;
 
@@ -155,4 +176,11 @@
       window.rbCheckExistingSession();
     }
   });
+
+  // Pre-initialize Firebase immediately on load to prevent popup blocking on Safari/Chrome
+  try {
+    getAuth();
+  } catch (e) {
+    console.warn("[ReadBridge Auth] Pre-initialization failed:", e);
+  }
 })();

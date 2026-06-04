@@ -137,6 +137,16 @@
         sessionStorage.removeItem(BUSY_KEY);
         document.getElementById("spin").style.display = "none";
         document.getElementById("rb-auth-error").hidden = false;
+
+        var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        var isIOS = /iPad|iPhone|iPod/.test(navigator.platform) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        if (isSafari || isIOS) {
+          msg = "Masuk lewat Google (Redirect) diblokir oleh sistem privasi Safari (ITP).\n\n" +
+                "Solusi:\n" +
+                "1. Silakan masuk menggunakan Email & Password di halaman login (Sangat Direkomendasikan).\n" +
+                "2. Atau, buka pengaturan iOS/macOS -> Safari -> matikan 'Cegah Pelacakan Lintas Situs' (Prevent Cross-Site Tracking), lalu coba lagi.";
+        }
+
         document.getElementById("rb-auth-error").textContent = msg;
         status("Gagal");
       }
