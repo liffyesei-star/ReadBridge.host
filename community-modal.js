@@ -1228,17 +1228,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <!-- Kirim ke destination selector -->
         <div>
           <p class="text-slate-500 text-[13px] font-semibold mb-2">Kirim ke mana?</p>
-          <div class="flex flex-wrap gap-2" id="destination-pills">
-            <button data-dest="Public Feed" class="dest-pill flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-semibold border transition-colors bg-white text-slate-700 border-slate-200 hover:border-primary hover:text-primary">
-              <span class="material-symbols-outlined text-[16px]">public</span> Public Feed
-            </button>
-            <button data-dest="Pejuang SNBT" class="dest-pill flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-semibold border transition-colors bg-white text-slate-700 border-slate-200 hover:border-primary hover:text-primary">
-              <span class="material-symbols-outlined text-[16px]">school</span> Pejuang SNBT
-            </button>
-            <button data-dest="Pecinta Fiksi" class="dest-pill flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-semibold border transition-colors bg-white text-slate-700 border-slate-200 hover:border-primary hover:text-primary">
-              <span class="material-symbols-outlined text-[16px]">menu_book</span> Pecinta Fiksi
-            </button>
-          </div>
+          <div class="flex flex-wrap gap-2" id="destination-pills"></div>
         </div>
 
         <!-- Title input -->
@@ -1405,24 +1395,76 @@ function setupModalLogic() {
   const modal = document.getElementById('modal-diskusi');
   const dialog = document.getElementById('modal-dialog');
 
+  // Render pills dynamically based on joined clubs
+  function renderDestinationPills() {
+    const container = document.getElementById('destination-pills');
+    if (!container) return;
+
+    const joinedClubIds = getJoinedClubs();
+    let pillsHtml = `
+      <button type="button" data-dest="Public Feed" class="dest-pill flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-semibold border transition-colors bg-white text-slate-700 border-slate-200 hover:border-primary hover:text-primary">
+        <span class="material-symbols-outlined text-[16px]">public</span> Public Feed
+      </button>
+    `;
+
+    joinedClubIds.forEach(id => {
+      const c = ALL_CLUBS[id];
+      if (c) {
+        pillsHtml += `
+          <button type="button" data-dest="${c.name}" class="dest-pill flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-semibold border transition-colors bg-white text-slate-700 border-slate-200 hover:border-primary hover:text-primary">
+            <span class="material-symbols-outlined text-[16px]">${c.icon}</span> ${c.name}
+          </button>
+        `;
+      }
+    });
+
+    container.innerHTML = pillsHtml;
+
+    // Attach click events dynamically since the HTML was replaced
+    container.querySelectorAll('.dest-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        container.querySelectorAll('.dest-pill').forEach(b => {
+          b.classList.remove('bg-primary', 'text-white', 'border-primary');
+          b.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
+        });
+        btn.classList.add('bg-primary', 'text-white', 'border-primary');
+        btn.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
+      });
+    });
+  }
+
   // Set auto-destination based on current page
   function updateDestinationPill() {
     let targetDest = 'Public Feed';
-    if (document.title.includes('Pejuang SNBT')) targetDest = 'Pejuang SNBT';
-    else if (document.title.includes('Pecinta Fiksi')) targetDest = 'Pecinta Fiksi';
+    const activeClub = getActiveClub();
+    if (activeClub) {
+      targetDest = activeClub.name;
+    }
 
+    let found = false;
     document.querySelectorAll('.dest-pill').forEach(b => {
       if (b.dataset.dest === targetDest) {
         b.classList.add('bg-primary', 'text-white', 'border-primary');
         b.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
+        found = true;
       } else {
         b.classList.remove('bg-primary', 'text-white', 'border-primary');
         b.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
       }
     });
+
+    // Fallback: If current page's club is not in joined list, default to Public Feed
+    if (!found) {
+      const publicPill = document.querySelector('.dest-pill[data-dest="Public Feed"]');
+      if (publicPill) {
+        publicPill.classList.add('bg-primary', 'text-white', 'border-primary');
+        publicPill.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
+      }
+    }
   }
 
   window.openModal = function () {
+    renderDestinationPills();
     updateDestinationPill();
     modal.classList.remove('hidden');
     checkDraftBanner();
@@ -1466,18 +1508,6 @@ function setupModalLogic() {
       dialog.style.height = 'auto';
       document.getElementById('modal-maximize-btn').querySelector('span').innerText = 'fullscreen';
     }
-  });
-
-  // Destination pills clicking
-  document.querySelectorAll('.dest-pill').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.dest-pill').forEach(b => {
-        b.classList.remove('bg-primary', 'text-white', 'border-primary');
-        b.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
-      });
-      btn.classList.add('bg-primary', 'text-white', 'border-primary');
-      btn.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
-    });
   });
 
   // Rich text toolbar
