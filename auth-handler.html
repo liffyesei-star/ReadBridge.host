@@ -155,14 +155,41 @@
 
       if (isOAuthReturn()) {
         status("Menyelesaikan login...");
+        
+        var isResolved = false;
+        // Safeguard timeout 10 detik jika getRedirectResult menggantung di PWA standalone
+        setTimeout(function () {
+          if (!isResolved) {
+            console.warn("[ReadBridge Redirect] getRedirectResult timed out after 10s");
+            fail("Proses masuk memakan waktu terlalu lama. Hal ini sering terjadi pada PWA standalone karena pembatasan cookie dari sistem Android/browser.\n\nSilakan klik tombol di bawah untuk membuka alur login di browser Chrome/Safari biasa.");
+            
+            // Tampilkan tautan alternatif untuk memaksa buka di browser sistem
+            var altLink = document.createElement("a");
+            altLink.className = "btn";
+            altLink.style.background = "#006c49"; // Emerald green matching design palette
+            altLink.href = "auth-handler.html?go=1";
+            altLink.target = "_blank";
+            altLink.textContent = "Buka di Browser Sistem";
+            
+            var doneDiv = document.getElementById("rb-done");
+            if (doneDiv) {
+              doneDiv.innerHTML = "";
+              doneDiv.appendChild(altLink);
+              doneDiv.hidden = false;
+            }
+          }
+        }, 10000);
+
         auth
           .getRedirectResult()
           .then(function (result) {
+            isResolved = true;
             var user = (result && result.user) || auth.currentUser;
             if (user) return saveAndFinish(user);
             fail("Sesi Google tidak ditemukan. Coba login popup di halaman login.");
           })
           .catch(function (err) {
+            isResolved = true;
             fail(err.message || "Login gagal");
           });
         return;

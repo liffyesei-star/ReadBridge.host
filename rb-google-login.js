@@ -109,6 +109,16 @@
           status("Coba klik lagi.");
           return;
         }
+
+        // Fallback otomatis jika popup diblokir atau tidak didukung di webview standalone
+        if (err.code === "auth/popup-blocked" || err.code === "auth/operation-not-supported-in-this-environment") {
+          status("Popup diblokir, mengalihkan...");
+          setTimeout(function () {
+            window.rbUseRedirectLogin();
+          }, 800);
+          return;
+        }
+
         status("Gagal login.");
         alert(
           "Login gagal: " + (err.message || err.code) +
@@ -137,4 +147,11 @@
       goAppSoon(350);
     }
   };
+
+  // Sync sesi secara real-time saat pengguna kembali ke PWA
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible") {
+      window.rbCheckExistingSession();
+    }
+  });
 })();
