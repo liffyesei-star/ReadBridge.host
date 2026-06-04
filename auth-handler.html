@@ -196,12 +196,6 @@
       }
 
       if (shouldStart) {
-        if (isBusy()) {
-          status("Sebentar ya...");
-          document.getElementById("spin").style.display = "none";
-          return;
-        }
-        sessionStorage.setItem(BUSY_KEY, String(Date.now()));
         status("Mengalihkan ke Google...");
         var provider = new firebase.auth.GoogleAuthProvider();
         provider.setCustomParameters({ prompt: "select_account" });

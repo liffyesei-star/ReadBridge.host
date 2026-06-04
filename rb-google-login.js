@@ -113,6 +113,7 @@
         // Fallback otomatis jika popup diblokir atau tidak didukung di webview standalone
         if (err.code === "auth/popup-blocked" || err.code === "auth/operation-not-supported-in-this-environment") {
           status("Popup diblokir, mengalihkan...");
+          sessionStorage.removeItem(BUSY_KEY);
           setTimeout(function () {
             window.rbUseRedirectLogin();
           }, 800);
