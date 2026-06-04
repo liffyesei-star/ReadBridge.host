@@ -778,9 +778,24 @@ window.toggleClubJoin = function (clubId) {
   renderRecommendedClubs();
 };
 
-// Update Join Button di Card Header
+// Update Join Button di Card Header dan Sinkronisasi Tombol Buat Diskusi (FAB)
 function updateJoinButtonState() {
+  const fab = document.getElementById('fab-buat-diskusi');
   const club = getActiveClub();
+  if (fab) {
+    if (!club) {
+      fab.classList.remove('hidden');
+    } else {
+      const joined = getJoinedClubs();
+      const isJoined = joined.includes(club.id);
+      if (isJoined) {
+        fab.classList.remove('hidden');
+      } else {
+        fab.classList.add('hidden');
+      }
+    }
+  }
+
   if (!club) return;
 
   const joined = getJoinedClubs();
