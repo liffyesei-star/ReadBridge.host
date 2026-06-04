@@ -196,6 +196,14 @@
       }
 
       if (shouldStart) {
+        // Hapus parameter "go=1" dari URL segera sebelum redirect untuk mencegah loop saat kembali
+        if (window.history.replaceState) {
+          var cleanSearch = location.search.replace(/([?&])go=1(&?)/, function(match, p1, p2) {
+            return p2 ? p1 : '';
+          });
+          window.history.replaceState({}, "", location.pathname + cleanSearch + location.hash);
+        }
+
         status("Mengalihkan ke Google...");
         var provider = new firebase.auth.GoogleAuthProvider();
         provider.setCustomParameters({ prompt: "select_account" });
