@@ -16,7 +16,7 @@ const { verifyToken, optionalAuth, requireAdmin } = require("../middleware/auth"
  */
 router.get("/", optionalAuth, async (req, res) => {
   try {
-    const { search, kategori, badge, sort = "terbaru", page = 1, limit = 12 } = req.query;
+    const { search, kategori, badge, tipe_buku, sort = "terbaru", page = 1, limit = 12 } = req.query;
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
     let where = ["b.aktif = 1"];
@@ -34,6 +34,10 @@ router.get("/", optionalAuth, async (req, res) => {
       where.push("JSON_CONTAINS(b.tags, ?)");
       params.push(JSON.stringify(badge));
     }
+    if (tipe_buku) {
+      where.push("b.tipe_buku = ?");
+      params.push(tipe_buku);
+    }
 
     const orderMap = {
       rating: "b.rating DESC",
@@ -50,9 +54,12 @@ router.get("/", optionalAuth, async (req, res) => {
       `SELECT b.id, b.judul, b.slug, b.penulis_nama, b.cover_url, b.harga_beli, b.harga_sewa,
               b.bisa_beli, b.bisa_sewa, b.bisa_gratis, b.rating, b.total_ulasan,
               b.total_terjual, b.halaman, b.bahasa, b.tahun_terbit, b.tags,
-              k.nama AS kategori, k.slug AS kategori_slug
+              b.tipe_buku, b.kondisi, b.stok, b.lokasi, b.toko_id,
+              k.nama AS kategori, k.slug AS kategori_slug,
+              t.nama_toko
        FROM buku b
        LEFT JOIN kategori k ON b.kategori_id = k.id
+       LEFT JOIN toko t ON b.toko_id = t.id
        ${whereClause}
        ORDER BY ${orderBy}
        LIMIT ? OFFSET ?`,
@@ -62,6 +69,7 @@ router.get("/", optionalAuth, async (req, res) => {
     const [[{ total }]] = await db.query(
       `SELECT COUNT(*) AS total FROM buku b
        LEFT JOIN kategori k ON b.kategori_id = k.id
+       LEFT JOIN toko t ON b.toko_id = t.id
        ${whereClause}`,
       params
     );
@@ -84,9 +92,10 @@ router.get("/", optionalAuth, async (req, res) => {
 router.get("/:id", optionalAuth, async (req, res) => {
   try {
     const [rows] = await db.execute(
-      `SELECT b.*, k.nama AS kategori, k.slug AS kategori_slug
+      `SELECT b.*, k.nama AS kategori, k.slug AS kategori_slug, t.nama_toko, t.lokasi AS lokasi_toko, t.foto_toko
        FROM buku b
        LEFT JOIN kategori k ON b.kategori_id = k.id
+       LEFT JOIN toko t ON b.toko_id = t.id
        WHERE b.id = ? AND b.aktif = 1`,
       [req.params.id]
     );
@@ -139,7 +148,8 @@ router.post("/", verifyToken, async (req, res) => {
     const {
       judul, penulis_nama, kategori_id, deskripsi, cover_url, file_url,
       harga_beli, harga_sewa, bisa_beli, bisa_sewa, bisa_gratis,
-      halaman, bahasa, tahun_terbit, isbn, tags
+      halaman, bahasa, tahun_terbit, isbn, tags,
+      tipe_buku, kondisi, stok, lokasi
     } = req.body;
 
     if (!judul || !penulis_nama) {
@@ -148,25 +158,40 @@ router.post("/", verifyToken, async (req, res) => {
 
     const slug = judul.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") + "-" + Date.now();
 
+    let toko_id = null;
+    let finalLokasi = lokasi || null;
+    if (tipe_buku === "preloved" || tipe_buku === "fisik") {
+      const [toko] = await db.execute("SELECT id, lokasi FROM toko WHERE user_id = ?", [req.user.id]);
+      if (!toko.length) {
+        return res.status(400).json({ success: false, message: "Anda harus membuat toko terlebih dahulu untuk menjual buku fisik/preloved." });
+      }
+      toko_id = toko[0].id;
+      if (!finalLokasi) {
+        finalLokasi = toko[0].lokasi;
+      }
+    }
+
     const [result] = await db.execute(
       `INSERT INTO buku (judul, slug, penulis_id, penulis_nama, kategori_id, deskripsi,
         cover_url, file_url, harga_beli, harga_sewa, bisa_beli, bisa_sewa, bisa_gratis,
-        halaman, bahasa, tahun_terbit, isbn, tags)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        halaman, bahasa, tahun_terbit, isbn, tags,
+        toko_id, tipe_buku, kondisi, stok, lokasi)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         judul, slug, req.user.id, penulis_nama, kategori_id || null, deskripsi || null,
         cover_url || null, file_url || null,
         harga_beli || 0, harga_sewa || 0,
         bisa_beli ?? 1, bisa_sewa ?? 1, bisa_gratis ?? 0,
         halaman || 0, bahasa || "Indonesia", tahun_terbit || null, isbn || null,
-        tags ? JSON.stringify(tags) : null
+        tags ? JSON.stringify(tags) : null,
+        toko_id, tipe_buku || 'digital', kondisi || null, stok || 1, finalLokasi
       ]
     );
 
     res.status(201).json({ success: true, message: "Buku berhasil ditambahkan", data: { id: result.insertId, slug } });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Gagal menambahkan buku" });
+    res.status(500).json({ success: false, message: "Gagal menambahkan buku", error: error.message });
   }
 });
 
@@ -190,7 +215,8 @@ router.put("/:id", verifyToken, async (req, res) => {
     }
 
     const fields = ["judul", "penulis_nama", "kategori_id", "deskripsi", "cover_url", "file_url",
-      "harga_beli", "harga_sewa", "bisa_beli", "bisa_sewa", "bisa_gratis", "halaman", "bahasa", "tahun_terbit", "isbn", "tags"];
+      "harga_beli", "harga_sewa", "bisa_beli", "bisa_sewa", "bisa_gratis", "halaman", "bahasa", "tahun_terbit", "isbn", "tags",
+      "tipe_buku", "kondisi", "stok", "lokasi"];
     
     const updates = [];
     const values = [];

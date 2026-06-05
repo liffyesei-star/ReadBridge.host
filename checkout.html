@@ -387,19 +387,45 @@
 
     <script src="main.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             // URL Params
             const params = new URLSearchParams(window.location.search);
             const bookId = parseInt(params.get('id'));
             const source = params.get('source') || 'main'; // 'main' = buku baru, 'market' = preloved
+            const isDb = params.get('isDb') === 'true';
+
+            const isLocalFrontend = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+            const apiBaseUrl = localStorage.getItem('rb_api_base_url') || (isLocalFrontend ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
 
             // Get Data
             let targetBook = null;
-            if (window.readbridgeData) {
+            if (window.readbridgeData && !isDb) {
                 if ((source === 'market' || source === 'marketplace') && window.readbridgeData.marketplaceBooks) {
                     targetBook = window.readbridgeData.marketplaceBooks.find(b => b.id === bookId);
                 } else if (window.readbridgeData.books) {
                     targetBook = window.readbridgeData.books.find(b => b.id === bookId);
+                }
+            }
+
+            if (!targetBook) {
+                try {
+                    const response = await fetch(`${apiBaseUrl}/api/books/${bookId}`);
+                    const resData = await response.json();
+                    if (resData.success && resData.data) {
+                        const b = resData.data;
+                        targetBook = {
+                            id: b.id,
+                            title: b.judul,
+                            author: b.penulis_nama,
+                            image: b.cover_url || 'https://via.placeholder.com/150',
+                            condition: b.kondisi || 'Bagus',
+                            price: parseFloat(b.harga_beli),
+                            category: b.tipe_buku === 'preloved' ? 'PRE-LOVED' : 'BUKU BARU',
+                            isDb: true
+                        };
+                    }
+                } catch (err) {
+                    console.error("Gagal mengambil detail checkout buku:", err);
                 }
             }
 
@@ -418,7 +444,7 @@
             const itemPrice = targetBook.price || 0;
             document.getElementById('co-price').textContent = formatter.format(itemPrice) + ' (IDR)';
 
-            document.getElementById('co-category').textContent = (source === 'market' || source === 'marketplace') ? 'PRE-LOVED' : 'BUKU BARU';
+            document.getElementById('co-category').textContent = targetBook.category || ((source === 'market' || source === 'marketplace') ? 'PRE-LOVED' : 'BUKU BARU');
             document.getElementById('co-condition').textContent = targetBook.condition || 'Baru';
 
             // Address Logic
@@ -583,9 +609,7 @@
                 btnPay.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span> Membuka Midtrans...';
 
                 try {
-                    const isLocalFrontend = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-                    const apiBaseUrl = localStorage.getItem('rb_api_base_url') || (isLocalFrontend ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
-                    const bukuId = targetBook.id > 100 ? targetBook.id - 100 : targetBook.id;
+                    const bukuId = targetBook.isDb ? targetBook.id : (targetBook.id > 100 ? targetBook.id - 100 : targetBook.id);
                     const response = await fetch(`${apiBaseUrl}/api/transactions/beli`, {
                         method: 'POST',
                         headers: {

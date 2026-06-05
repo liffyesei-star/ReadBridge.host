@@ -193,7 +193,14 @@
     <!-- Sidebar Filters -->
     <aside class="w-full md:w-64 flex-shrink-0">
       <div class="bg-surface-container-lowest rounded-xl p-md border border-surface-container-highest shadow-sm sticky top-24">
-        <h2 class="font-title-lg text-title-lg text-on-surface mb-md">Filter Pencarian</h2>
+        <div class="mb-lg border-b border-outline-variant/20 pb-md flex flex-col gap-xs">
+          <h3 class="font-label-md text-label-md text-on-surface-variant font-bold">Seller Portal</h3>
+          <a href="dashboard-seller.html" class="flex items-center justify-center gap-2 w-full py-2.5 bg-primary text-on-primary rounded-xl font-label-md text-label-md hover:bg-primary/95 transition-all shadow-md font-bold">
+            <span class="material-symbols-outlined text-[18px]">storefront</span>
+            Toko Saya / Berjualan
+          </a>
+        </div>
+        <h2 class="font-title-lg text-title-lg text-on-surface mb-md font-bold">Filter Pencarian</h2>
         <div class="mb-lg">
           <h3 class="font-label-md text-label-md text-on-surface-variant mb-sm">Harga</h3>
           <div class="flex flex-col gap-xs">
@@ -280,9 +287,36 @@
 
   let selectedConditions = ['Bagus'];
   let selectedSewaCat = 'Semua';
+  let apiBooks = [];
 
   function formatPrice(p) {
     return 'Rp ' + p.toLocaleString('id-ID');
+  }
+
+  async function fetchPrelovedBooks() {
+    try {
+      const isLocalFrontend = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+      const apiBaseUrl = localStorage.getItem('rb_api_base_url') || (isLocalFrontend ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+      
+      const response = await fetch(`${apiBaseUrl}/api/books?tipe_buku=preloved`);
+      const data = await response.json();
+      if (data.success && data.data) {
+        apiBooks = data.data.map(b => ({
+          id: b.id,
+          title: b.judul,
+          author: b.penulis_nama,
+          image: b.cover_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuApdMuG3pfOyT45TKpszN-u5p7r1oX9aiBChHWVTMo8VwUuEphgMhzpdAVa4XEQpZgD9IzJG6lf6kLV-3_KyV2Y8PhhfVooBF5YOwubgF5cNUseZ3PO8xTKJhXlKUP1gy2iST0n3WfZ5Y-zSZc2N4U1MdOXpaGoEZxPol1ENCfUOSB93pADkccu3bQ9B5QiG7OOYNM2BCYhg_aSSthqVW92EJ5szvP_eH-k4fUC_PaP2UYVB7I8gYczOUTVuEZ2kmq3eKKyUT1kS0A',
+          condition: b.kondisi || 'Bagus',
+          stock: b.stok || 1,
+          location: b.lokasi || 'Indonesia',
+          price: parseFloat(b.harga_beli) || 0,
+          date: b.created_at || '2024-05-01',
+          isDb: true
+        }));
+      }
+    } catch (err) {
+      console.warn("Failed to fetch preloved books from API:", err);
+    }
   }
 
   function renderMarketplace() {
@@ -298,7 +332,8 @@
     const priceCheck3 = document.getElementById('price-filter-3')?.checked; // > 100k
     const hasPriceFilter = priceCheck1 || priceCheck2 || priceCheck3;
     
-    let filtered = marketplaceBooks.filter(b => {
+    const combinedBooks = [...apiBooks, ...marketplaceBooks];
+    let filtered = combinedBooks.filter(b => {
       if (searchVal && !b.title.toLowerCase().includes(searchVal)) return false;
       if (locVal && !b.location.toLowerCase().includes(locVal)) return false;
       
@@ -325,26 +360,29 @@
       if (b.condition === 'Bagus') condClass = 'bg-secondary text-on-secondary';
       if (b.condition === 'Lecet') condClass = 'bg-surface-variant text-on-surface';
       
-      return `<article class="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-container overflow-hidden hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-shadow duration-300 flex flex-col h-full">
-        <a href="detail.html?source=marketplace&id=${b.id}" class="relative aspect-[3/4] bg-surface-container-low group cursor-pointer block">
+      const detailUrl = b.isDb ? `detail.html?source=marketplace&id=${b.id}&isDb=true` : `detail.html?source=marketplace&id=${b.id}`;
+      const checkoutUrl = b.isDb ? `checkout.html?source=marketplace&id=${b.id}&isDb=true` : `checkout.html?source=market&id=${b.id}`;
+      
+      return `<article class="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-container overflow-hidden hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-shadow duration-300 flex flex-col h-full animate-fadeIn">
+        <a href="${detailUrl}" class="relative aspect-[3/4] bg-surface-container-low group cursor-pointer block">
           <img alt="Cover ${b.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${b.image}"/>
           <span class="absolute top-sm right-sm ${condClass} font-label-sm text-label-sm px-2 py-1 rounded-full">${b.condition}</span>
         </a>
         <div class="p-md flex flex-col flex-grow">
-          <a href="detail.html?source=marketplace&id=${b.id}" class="group"><h3 class="font-title-lg text-title-lg text-on-surface line-clamp-2 mb-xs group-hover:text-primary transition-colors cursor-pointer">${b.title}</h3></a>
+          <a href="${detailUrl}" class="group"><h3 class="font-title-lg text-title-lg text-on-surface line-clamp-2 mb-xs group-hover:text-primary transition-colors cursor-pointer font-bold">${b.title}</h3></a>
           <p class="font-label-md text-label-md text-on-surface-variant mb-xs">${b.author || 'Penulis'}</p>
           <p class="font-headline-md text-[20px] md:text-headline-md leading-tight font-bold text-primary mb-sm">${formatPrice(b.price)}</p>
           <div class="flex items-center gap-xs text-error font-label-sm text-label-sm mb-xs"><span class="material-symbols-outlined text-[16px]">alarm</span><span>Sisa ${b.stock} Buku</span></div>
           <div class="flex items-center gap-xs text-on-surface-variant mb-md mt-auto"><span class="material-symbols-outlined text-[16px]">location_on</span><span class="font-label-sm text-label-sm">${b.location}</span></div>
           <div class="flex gap-sm mt-auto">
-            <button onclick="window.location.href='checkout.html?source=market&id=${b.id}'" class="flex-grow bg-primary text-on-primary font-label-md text-label-md py-sm rounded-full hover:bg-primary-container transition-colors">Beli</button>
+            <button onclick="window.location.href='${checkoutUrl}'" class="flex-grow bg-primary text-on-primary font-label-md text-label-md py-sm rounded-full hover:bg-primary-container transition-colors font-bold">Beli</button>
             <button class="w-10 h-10 flex items-center justify-center border border-outline-variant rounded-full text-primary hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined">chat</span></button>
           </div>
         </div>
       </article>`;
     }).join('');
     
-    if(filtered.length === 0) {
+    if(combinedBooks.length > 0 && filtered.length === 0) {
       grid.innerHTML = '<p class="col-span-full text-center py-xl text-on-surface-variant font-body-lg">Tidak ada buku yang sesuai dengan filter.</p>';
     }
   }
@@ -406,7 +444,7 @@
     window.location.href = `checkout-sewa.html?id=${bookId}`;
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     // Tab Switching Logic
     const tabBeli = document.getElementById('tab-beli');
     const tabSewa = document.getElementById('tab-sewa');
@@ -472,6 +510,7 @@
       });
     });
     
+    await fetchPrelovedBooks();
     renderMarketplace();
   });
 </script>

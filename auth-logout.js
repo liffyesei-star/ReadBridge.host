@@ -250,3 +250,36 @@ document.addEventListener(
     initWarning();
   }
 })();
+
+// Dynamic injection of "Toko Saya" link into profile dropdown
+(function injectSellerLink() {
+  function initSellerLink() {
+    const dropdowns = document.querySelectorAll("#profile-dropdown, #profile-dropdown-nav");
+    dropdowns.forEach(dropdown => {
+      // Avoid duplicates
+      if (dropdown.querySelector("a[href='dashboard-seller.html']")) return;
+
+      const sellerLink = document.createElement("a");
+      sellerLink.href = "dashboard-seller.html";
+      sellerLink.className = "flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors font-label-md text-label-md text-on-surface";
+      sellerLink.innerHTML = `<span class="material-symbols-outlined text-[20px]">storefront</span> Toko Saya`;
+
+      // Find Log Out link (normally contains logout or log out text)
+      const logOutLink = Array.from(dropdown.querySelectorAll("a")).find(a => 
+        /logout/i.test(a.href) || /log\s*out/i.test(a.textContent)
+      );
+
+      if (logOutLink) {
+        dropdown.insertBefore(sellerLink, logOutLink);
+      } else {
+        dropdown.appendChild(sellerLink);
+      }
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initSellerLink);
+  } else {
+    initSellerLink();
+  }
+})();

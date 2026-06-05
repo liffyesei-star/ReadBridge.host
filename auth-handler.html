@@ -64,7 +64,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script>
     (function () {
-      var API = "https://readbridge-backend-2whx.onrender.com";
+      var isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+      var API = localStorage.getItem('rb_api_base_url') || (isLocal ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
       var BUSY_KEY = "rb_google_busy";
       var COOLDOWN_MS = 2500;
 

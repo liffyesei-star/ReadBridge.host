@@ -8,7 +8,8 @@
 
 const STORAGE_KEY = 'readbridge_community_posts_v2';
 const DRAFT_KEY = 'readbridge_draft';
-const API_BASE = 'https://readbridge-backend-2whx.onrender.com';
+const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+const API_BASE = localStorage.getItem('rb_api_base_url') || (isLocal ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
 
 // 7 Daftar Klub Belajar & Diskusi ReadBridge
 const ALL_CLUBS = {

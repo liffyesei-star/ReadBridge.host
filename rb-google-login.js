@@ -2,7 +2,8 @@
  * ReadBridge — Google login (popup, alur fluid setelah sukses).
  */
 (function () {
-  var API = "https://readbridge-backend-2whx.onrender.com";
+  var isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+  var API = localStorage.getItem('rb_api_base_url') || (isLocal ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
   var BUSY_KEY = "rb_google_busy";
   var COOLDOWN_MS = 2500;
 

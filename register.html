@@ -253,8 +253,11 @@
                         return;
                     }
 
+                    const isLocalFrontend = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+                    const apiBaseUrl = localStorage.getItem('rb_api_base_url') || (isLocalFrontend ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+
                     try {
-                        const response = await fetch('https://readbridge-backend-2whx.onrender.com/api/auth/register', {
+                        const response = await fetch(`${apiBaseUrl}/api/auth/register`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
