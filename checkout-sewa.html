@@ -248,7 +248,7 @@
                             </div>
                             <h3 id="co-title" class="text-lg font-bold text-on-surface line-clamp-2">Memuat...</h3>
                             <span id="co-author" class="text-sm text-outline"></span>
-                            <span id="co-price" class="text-[18px] font-bold text-primary mt-2">Rp0</span>
+                            <span id="co-price" class="text-[18px] font-bold text-primary mt-2">Rp0 (IDR)</span>
                         </div>
                     </div>
                 </section>
@@ -284,7 +284,7 @@
                         Ketentuan & Deposit
                     </h2>
                     <p class="text-sm text-on-surface-variant leading-relaxed">
-                        Penyewaan buku fisik ReadBridge mewajibkan adanya uang jaminan (deposit). Uang deposit sebesar <strong class="text-on-surface">Rp50.000</strong> akan dikembalikan secara utuh ke saldo Anda setelah buku dikembalikan ke ReadBridge dalam kondisi baik sesuai batas waktu.
+                        Penyewaan buku fisik ReadBridge mewajibkan adanya uang jaminan (deposit). Uang deposit sebesar <strong class="text-on-surface">Rp50.000 (IDR)</strong> akan dikembalikan secara utuh ke saldo Anda setelah buku dikembalikan ke ReadBridge dalam kondisi baik sesuai batas waktu.
                     </p>
                 </section>
             </div>
@@ -314,21 +314,21 @@
                     <div class="flex flex-col gap-2">
                         <div class="flex justify-between items-center text-on-surface-variant text-sm">
                             <span>Biaya Sewa (<span id="summary-duration"></span>)</span>
-                            <span id="summary-price">Rp0</span>
+                            <span id="summary-price">Rp0 (IDR)</span>
                         </div>
                         <div class="flex justify-between items-center text-on-surface-variant text-sm">
                             <span>Ongkos Kirim</span>
-                            <span id="summary-shipping">Rp15.000</span>
+                            <span id="summary-shipping">Rp15.000 (IDR)</span>
                         </div>
                         <div class="flex justify-between items-center text-on-surface-variant text-sm">
                             <span>Uang Jaminan (Refundable)</span>
-                            <span>Rp50.000</span>
+                            <span>Rp50.000 (IDR)</span>
                         </div>
                     </div>
                     <hr class="border-outline-variant/30">
                     <div class="flex justify-between items-center">
                         <span class="text-lg font-bold text-on-surface">Total Tagihan</span>
-                        <span id="summary-total" class="text-2xl font-bold text-primary">Rp0</span>
+                        <span id="summary-total" class="text-2xl font-bold text-primary">Rp0 (IDR)</span>
                     </div>
                     <button id="btn-pay" class="w-full bg-primary hover:bg-primary/90 text-white text-sm py-4 rounded-full transition-colors mt-2 font-bold flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-[20px]">lock</span>
@@ -366,7 +366,7 @@
             const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
             let itemPrice = targetBook.priceHarian;
 
-            document.getElementById('co-price').textContent = formatter.format(itemPrice) + " / hari";
+            document.getElementById('co-price').textContent = formatter.format(itemPrice) + " (IDR) / hari";
 
             // Address Logic
             const addrDisplay = document.getElementById('address-display');
@@ -467,11 +467,11 @@
                 if (currentMultiplier < 1) { currentMultiplier = 1; multInput.value = 1; }
 
                 totalItemPrice = itemPrice * currentMultiplier;
-                document.getElementById('co-price').textContent = formatter.format(totalItemPrice) + ` (${currentMultiplier} hari)`;
-                document.getElementById('summary-price').textContent = formatter.format(totalItemPrice);
+                document.getElementById('co-price').textContent = formatter.format(totalItemPrice) + ` (IDR) (${currentMultiplier} hari)`;
+                document.getElementById('summary-price').textContent = formatter.format(totalItemPrice) + ' (IDR)';
                 
                 const total = totalItemPrice + shippingFee + depositFee;
-                document.getElementById('summary-total').textContent = formatter.format(total);
+                document.getElementById('summary-total').textContent = formatter.format(total) + ' (IDR)';
                 
                 document.getElementById('summary-duration').textContent = `${currentMultiplier} Hari`;
 

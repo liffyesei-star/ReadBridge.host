@@ -293,7 +293,7 @@
                             </div>
                             <h3 id="co-title" class="font-title-lg text-title-lg text-on-surface font-bold line-clamp-2">Memuat...</h3>
                             <span id="co-author" class="font-label-md text-label-md text-outline"></span>
-                            <span id="co-price" class="font-title-md text-[18px] font-bold text-primary mt-2">Rp0</span>
+                            <span id="co-price" class="font-title-md text-[18px] font-bold text-primary mt-2">Rp0 (IDR)</span>
                         </div>
                     </div>
                 </section>
@@ -324,7 +324,7 @@
                                     <span class="font-body-md text-[13px] text-on-surface-variant">Melindungi barang dari kerusakan/hilang selama pengiriman</span>
                                 </div>
                             </div>
-                            <span class="font-label-md text-label-md text-on-surface font-bold">Rp2.000</span>
+                            <span class="font-label-md text-label-md text-on-surface font-bold">Rp2.000 (IDR)</span>
                         </div>
                     </div>
                 </section>
@@ -355,25 +355,25 @@
                     <div class="flex flex-col gap-sm">
                         <div class="flex justify-between items-center text-on-surface-variant font-body-md text-sm">
                             <span>Total Harga Barang</span>
-                            <span id="summary-price">Rp0</span>
+                            <span id="summary-price">Rp0 (IDR)</span>
                         </div>
                         <div class="flex justify-between items-center text-on-surface-variant font-body-md text-sm">
                             <span>Ongkos Kirim</span>
-                            <span id="summary-shipping">Rp15.000</span>
+                            <span id="summary-shipping">Rp15.000 (IDR)</span>
                         </div>
                         <div class="flex justify-between items-center text-on-surface-variant font-body-md text-sm hidden" id="summary-insurance-row">
                             <span>Asuransi Pengiriman</span>
-                            <span>Rp2.000</span>
+                            <span>Rp2.000 (IDR)</span>
                         </div>
                         <div class="flex justify-between items-center text-secondary font-body-md text-sm hidden" id="summary-discount-row">
                             <span>Diskon Voucher</span>
-                            <span id="summary-discount">-Rp0</span>
+                            <span id="summary-discount">-Rp0 (IDR)</span>
                         </div>
                     </div>
                     <hr class="border-outline-variant/30">
                     <div class="flex justify-between items-center">
                         <span class="font-title-lg text-title-lg text-on-surface">Total Tagihan</span>
-                        <span id="summary-total" class="font-headline-md text-[20px] md:text-headline-md leading-tight font-bold text-primary">Rp0</span>
+                        <span id="summary-total" class="font-headline-md text-[20px] md:text-headline-md leading-tight font-bold text-primary">Rp0 (IDR)</span>
                     </div>
                     <button id="btn-pay" class="w-full bg-primary hover:bg-primary/90 text-on-primary font-label-md text-label-md py-4 rounded-full transition-colors mt-2 font-bold flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined">lock</span>
@@ -416,7 +416,7 @@
             
             const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
             const itemPrice = targetBook.price || 0;
-            document.getElementById('co-price').textContent = formatter.format(itemPrice);
+            document.getElementById('co-price').textContent = formatter.format(itemPrice) + ' (IDR)';
 
             document.getElementById('co-category').textContent = (source === 'market' || source === 'marketplace') ? 'PRE-LOVED' : 'BUKU BARU';
             document.getElementById('co-condition').textContent = targetBook.condition || 'Baru';
@@ -510,7 +510,7 @@
             let discount = 0;
 
             function updateSummary() {
-                document.getElementById('summary-price').textContent = formatter.format(itemPrice);
+                document.getElementById('summary-price').textContent = formatter.format(itemPrice) + ' (IDR)';
                 
                 const insRow = document.getElementById('summary-insurance-row');
                 if (insuranceFee > 0) {
@@ -521,14 +521,14 @@
 
                 const discRow = document.getElementById('summary-discount-row');
                 if (discount > 0) {
-                    document.getElementById('summary-discount').textContent = '-' + formatter.format(discount);
+                    document.getElementById('summary-discount').textContent = '-' + formatter.format(discount) + ' (IDR)';
                     discRow.classList.remove('hidden');
                 } else {
                     discRow.classList.add('hidden');
                 }
 
                 const total = itemPrice + shippingFee + insuranceFee - discount;
-                document.getElementById('summary-total').textContent = formatter.format(total);
+                document.getElementById('summary-total').textContent = formatter.format(total) + ' (IDR)';
             }
 
             // Insurance Checkbox
