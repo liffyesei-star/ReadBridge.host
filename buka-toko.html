@@ -337,6 +337,7 @@
                         throw new Error(data.message || 'Gagal mendaftarkan toko');
                     }
                     
+                    localStorage.setItem('rb_has_toko', 'true');
                     alert('Selamat! Toko Anda berhasil didaftarkan.');
                     window.location.href = 'dashboard-seller.html';
                 } catch (err) {

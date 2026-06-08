@@ -25,6 +25,7 @@ const SESSION_KEYS = [
   "rb_profile_pic",
   "rb_user_email",
   "rb_login_in_progress",
+  "rb_has_toko",
 ];
 
 let authInstance = null;

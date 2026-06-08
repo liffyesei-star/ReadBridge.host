@@ -15,6 +15,7 @@ function clearLocalAuthFallback() {
     "rb_login_in_progress",
   ].forEach((k) => localStorage.removeItem(k));
   sessionStorage.removeItem("rb_google_busy");
+  localStorage.removeItem("rb_has_toko");
 }
 
 window.rbLogout = async function rbLogout(event) {
@@ -253,6 +254,98 @@ document.addEventListener(
 
 // Dynamic synchronization of header auth state, user details, and profile dropdown setup
 (function syncHeaderAndDropdown() {
+  const API_PROD = "https://readbridge-backend-2whx.onrender.com";
+
+  function getApiBaseUrl() {
+    const saved = localStorage.getItem("rb_api_base_url");
+    if (saved) return saved;
+    const h = window.location.hostname;
+    const isLocal =
+      h === "localhost" ||
+      h === "127.0.0.1" ||
+      h.startsWith("192.168.") ||
+      h.endsWith(".local");
+    return isLocal ? `http://${h}:5001` : API_PROD;
+  }
+
+  function removeSellerMenuLinks(dropdown) {
+    dropdown.querySelectorAll(".rb-seller-menu, a[href='buka-toko.html'], a[href='dashboard-seller.html']").forEach((el) => {
+      if (el.classList.contains("rb-seller-menu") || el.getAttribute("href") === "buka-toko.html" || el.getAttribute("href") === "dashboard-seller.html") {
+        el.remove();
+      }
+    });
+  }
+
+  function injectSellerMenu(dropdown, hasToko) {
+    const logOutLink = Array.from(dropdown.querySelectorAll("a")).find(
+      (a) => /login\.html/i.test(a.getAttribute("href") || "") && /log\s*out/i.test(a.textContent)
+    );
+    removeSellerMenuLinks(dropdown);
+
+    const link = document.createElement("a");
+    link.className =
+      "rb-seller-menu flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors font-label-md text-label-md text-on-surface";
+
+    if (hasToko) {
+      link.href = "dashboard-seller.html";
+      link.innerHTML = `<span class="material-symbols-outlined text-[20px]">storefront</span> Toko Saya`;
+    } else {
+      link.href = "buka-toko.html";
+      link.innerHTML = `<span class="material-symbols-outlined text-[20px]">add_business</span> Buka Toko`;
+    }
+
+    if (logOutLink) dropdown.insertBefore(link, logOutLink);
+    else dropdown.appendChild(link);
+  }
+
+  async function fetchHasToko(token) {
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/api/toko`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        const hasToko = !!data.has_toko;
+        localStorage.setItem("rb_has_toko", hasToko ? "true" : "false");
+        return hasToko;
+      }
+    } catch (err) {
+      console.warn("[ReadBridge] cek toko:", err.message);
+    }
+    return localStorage.getItem("rb_has_toko") === "true";
+  }
+
+  async function applySellerMenus(token) {
+    const cached = localStorage.getItem("rb_has_toko");
+    if (cached !== null) {
+      const hasCached = cached === "true";
+      document.querySelectorAll("#profile-dropdown, #profile-dropdown-nav").forEach((dropdown) => {
+        injectSellerMenu(dropdown, hasCached);
+      });
+      updateMarketplaceSellerPortal(hasCached);
+    }
+
+    const hasToko = await fetchHasToko(token);
+    document.querySelectorAll("#profile-dropdown, #profile-dropdown-nav").forEach((dropdown) => {
+      injectSellerMenu(dropdown, hasToko);
+    });
+    updateMarketplaceSellerPortal(hasToko);
+  }
+
+  function updateMarketplaceSellerPortal(hasToko) {
+    const portal = document.getElementById("rb-seller-portal-link");
+    if (!portal) return;
+    if (hasToko) {
+      portal.href = "dashboard-seller.html";
+      portal.innerHTML =
+        `<span class="material-symbols-outlined text-[18px]">storefront</span> Toko Saya / Berjualan`;
+    } else {
+      portal.href = "buka-toko.html";
+      portal.innerHTML =
+        `<span class="material-symbols-outlined text-[18px]">add_business</span> Buka Toko`;
+    }
+  }
+
   function initHeaderAndDropdown() {
     const isLoggedIn = localStorage.getItem("rb_is_logged_in") === "true";
     const token = localStorage.getItem("rb_token");
@@ -307,38 +400,15 @@ document.addEventListener(
       });
 
       const dropdowns = document.querySelectorAll("#profile-dropdown, #profile-dropdown-nav");
-      dropdowns.forEach(dropdown => {
+      dropdowns.forEach((dropdown) => {
         const usernameEl = dropdown.querySelector("p.text-on-surface.font-bold, p.font-bold.truncate, #nav-username");
         if (usernameEl && savedName) {
           usernameEl.textContent = savedName;
         }
-
-        const logOutLink = Array.from(dropdown.querySelectorAll("a")).find(
-          (a) => /login\.html/i.test(a.getAttribute("href") || "") && /log\s*out/i.test(a.textContent)
-        );
-
-        if (!dropdown.querySelector("a[href='buka-toko.html']")) {
-          const bukaToko = document.createElement("a");
-          bukaToko.href = "buka-toko.html";
-          bukaToko.className =
-            "flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors font-label-md text-label-md text-on-surface";
-          bukaToko.innerHTML =
-            `<span class="material-symbols-outlined text-[20px]">add_business</span> Buka Toko`;
-          if (logOutLink) dropdown.insertBefore(bukaToko, logOutLink);
-          else dropdown.appendChild(bukaToko);
-        }
-
-        if (!dropdown.querySelector("a[href='dashboard-seller.html']")) {
-          const sellerLink = document.createElement("a");
-          sellerLink.href = "dashboard-seller.html";
-          sellerLink.className =
-            "flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors font-label-md text-label-md text-on-surface";
-          sellerLink.innerHTML =
-            `<span class="material-symbols-outlined text-[20px]">storefront</span> Toko Saya`;
-          if (logOutLink) dropdown.insertBefore(sellerLink, logOutLink);
-          else dropdown.appendChild(sellerLink);
-        }
       });
+
+      // Cek database: belum punya toko → Buka Toko; sudah punya → Toko Saya (satu saja)
+      applySellerMenus(token);
     }
 
     // 3. Dropdown toggle — satu listener saja (clone tombol agar hapus handler inline per-halaman)
