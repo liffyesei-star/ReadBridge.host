@@ -313,65 +313,72 @@ document.addEventListener(
           usernameEl.textContent = savedName;
         }
 
-        // Avoid duplicate "Toko Saya" links
-        if (dropdown.querySelector("a[href='dashboard-seller.html']")) return;
-
-        const sellerLink = document.createElement("a");
-        sellerLink.href = "dashboard-seller.html";
-        sellerLink.className = "flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors font-label-md text-label-md text-on-surface";
-        sellerLink.innerHTML = `<span class="material-symbols-outlined text-[20px]">storefront</span> Toko Saya`;
-
-        // Find Log Out link (normally contains logout or log out text)
-        const logOutLink = Array.from(dropdown.querySelectorAll("a")).find(a => 
-          /logout/i.test(a.href) || /log\s*out/i.test(a.textContent)
+        const logOutLink = Array.from(dropdown.querySelectorAll("a")).find(
+          (a) => /login\.html/i.test(a.getAttribute("href") || "") && /log\s*out/i.test(a.textContent)
         );
 
-        if (logOutLink) {
-          dropdown.insertBefore(sellerLink, logOutLink);
-        } else {
-          dropdown.appendChild(sellerLink);
+        if (!dropdown.querySelector("a[href='buka-toko.html']")) {
+          const bukaToko = document.createElement("a");
+          bukaToko.href = "buka-toko.html";
+          bukaToko.className =
+            "flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors font-label-md text-label-md text-on-surface";
+          bukaToko.innerHTML =
+            `<span class="material-symbols-outlined text-[20px]">add_business</span> Buka Toko`;
+          if (logOutLink) dropdown.insertBefore(bukaToko, logOutLink);
+          else dropdown.appendChild(bukaToko);
+        }
+
+        if (!dropdown.querySelector("a[href='dashboard-seller.html']")) {
+          const sellerLink = document.createElement("a");
+          sellerLink.href = "dashboard-seller.html";
+          sellerLink.className =
+            "flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors font-label-md text-label-md text-on-surface";
+          sellerLink.innerHTML =
+            `<span class="material-symbols-outlined text-[20px]">storefront</span> Toko Saya`;
+          if (logOutLink) dropdown.insertBefore(sellerLink, logOutLink);
+          else dropdown.appendChild(sellerLink);
         }
       });
     }
 
-    // 3. Setup Dropdown Toggling Event Listeners (Universal mobile/desktop support)
-    const btn = document.querySelector("#profile-avatar-btn, #profile-avatar-btn-nav");
-    const dropdown = document.querySelector("#profile-dropdown, #profile-dropdown-nav");
-    if (btn && dropdown) {
-      if (btn.getAttribute("data-toggle-attached") !== "1") {
-        btn.setAttribute("data-toggle-attached", "1");
-        
-        // Use pointer events or click for robust mobile touch response
-        const toggleDropdown = (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const isHidden = dropdown.classList.contains("hidden");
-          if (isHidden) {
-            dropdown.classList.remove("hidden");
-            dropdown.classList.add("flex");
-          } else {
-            dropdown.classList.add("hidden");
-            dropdown.classList.remove("flex");
-          }
-        };
+    // 3. Dropdown toggle — satu listener saja (clone tombol agar hapus handler inline per-halaman)
+    setupProfileDropdown();
 
-        btn.addEventListener("click", toggleDropdown);
-      }
-    }
+    function setupProfileDropdown() {
+      const btn = document.querySelector("#profile-avatar-btn, #profile-avatar-btn-nav");
+      const dropdown = document.querySelector("#profile-dropdown, #profile-dropdown-nav");
+      if (!btn || !dropdown || btn.getAttribute("data-rb-dropdown-ready") === "1") return;
 
-    // Click outside to close active dropdowns
-    if (document.body.getAttribute("data-outside-click-attached") !== "1") {
-      document.body.setAttribute("data-outside-click-attached", "1");
-      document.addEventListener("click", (e) => {
-        const activeDropdowns = document.querySelectorAll("#profile-dropdown:not(.hidden), #profile-dropdown-nav:not(.hidden)");
-        activeDropdowns.forEach(drop => {
-          const avatarBtn = document.querySelector("#profile-avatar-btn, #profile-avatar-btn-nav");
-          if (!drop.contains(e.target) && (!avatarBtn || !avatarBtn.contains(e.target))) {
-            drop.classList.add("hidden");
-            drop.classList.remove("flex");
-          }
-        });
+      const cleanBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(cleanBtn, btn);
+      cleanBtn.setAttribute("data-rb-dropdown-ready", "1");
+
+      cleanBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isHidden = dropdown.classList.contains("hidden");
+        if (isHidden) {
+          dropdown.classList.remove("hidden");
+          dropdown.classList.add("flex");
+        } else {
+          dropdown.classList.add("hidden");
+          dropdown.classList.remove("flex");
+        }
       });
+
+      if (document.body.getAttribute("data-rb-outside-click") !== "1") {
+        document.body.setAttribute("data-rb-outside-click", "1");
+        document.addEventListener("click", (e) => {
+          document
+            .querySelectorAll("#profile-dropdown:not(.hidden), #profile-dropdown-nav:not(.hidden)")
+            .forEach((drop) => {
+              const avatar = document.querySelector("#profile-avatar-btn, #profile-avatar-btn-nav");
+              if (!drop.contains(e.target) && (!avatar || !avatar.contains(e.target))) {
+                drop.classList.add("hidden");
+                drop.classList.remove("flex");
+              }
+            });
+        });
+      }
     }
   }
 
