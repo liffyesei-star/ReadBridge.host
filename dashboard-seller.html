@@ -221,7 +221,8 @@
                 <span id="books-count" class="text-xs bg-outline-variant text-on-surface-variant font-bold px-2 py-0.5 rounded-full">0 Buku</span>
             </div>
             
-            <div class="overflow-x-auto w-full">
+            <!-- Desktop Table View -->
+            <div class="hidden md:block overflow-x-auto w-full">
                 <table class="w-full text-left border-collapse text-sm">
                     <thead>
                         <tr class="border-b border-outline-variant/20 bg-surface text-outline font-bold text-[12px] uppercase">
@@ -246,6 +247,15 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Mobile Card View -->
+            <div id="books-cards-container" class="block md:hidden flex flex-col divide-y divide-outline-variant/20">
+                <!-- Loading State Mobile -->
+                <div class="text-center py-xxl text-on-surface-variant flex items-center justify-center gap-xs">
+                    <span class="material-symbols-outlined animate-spin">progress_activity</span>
+                    <span>Mengambil katalog buku...</span>
+                </div>
             </div>
         </section>
     </main>
@@ -410,8 +420,20 @@
             }
 
             // Determine API URL
-            const isLocalFrontend = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-            const apiBaseUrl = localStorage.getItem('rb_api_base_url') || (isLocalFrontend ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+            function isLocalHost(hostname) {
+                return (
+                    hostname === 'localhost' ||
+                    hostname === '127.0.0.1' ||
+                    hostname === '0.0.0.0' ||
+                    hostname.startsWith('192.168.') ||
+                    hostname.startsWith('10.') ||
+                    /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname) ||
+                    hostname.endsWith('.local')
+                );
+            }
+            const isLocal = isLocalHost(window.location.hostname);
+            const defaultApiUrl = isLocal ? `http://${window.location.hostname}:5001` : 'https://readbridge-backend-2whx.onrender.com';
+            const apiBaseUrl = localStorage.getItem('rb_api_base_url') || defaultApiUrl;
 
             let currentToko = null;
 
@@ -452,6 +474,7 @@
             // Load Store Books Catalog
             async function loadBooks() {
                 const tbody = document.getElementById('books-table-body');
+                const cardsContainer = document.getElementById('books-cards-container');
                 try {
                     const response = await fetch(`${apiBaseUrl}/api/toko/books`, {
                         headers: { 'Authorization': `Bearer ${token}` }
@@ -477,12 +500,18 @@
                                 </td>
                             </tr>
                         `;
+                        cardsContainer.innerHTML = `
+                            <div class="text-center py-xl text-on-surface-variant font-medium px-md">
+                                Belum ada buku yang didaftarkan di toko ini. Klik "Tambah Buku Preloved" untuk memulai.
+                            </div>
+                        `;
                         return;
                     }
 
                     const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
                     const placeholderCover = 'https://lh3.googleusercontent.com/aida-public/AB6AXuApdMuG3pfOyT45TKpszN-u5p7r1oX9aiBChHWVTMo8VwUuEphgMhzpdAVa4XEQpZgD9IzJG6lf6kLV-3_KyV2Y8PhhfVooBF5YOwubgF5cNUseZ3PO8xTKJhXlKUP1gy2iST0n3WfZ5Y-zSZc2N4U1MdOXpaGoEZxPol1ENCfUOSB93pADkccu3bQ9B5QiG7OOYNM2BCYhg_aSSthqVW92EJ5szvP_eH-k4fUC_PaP2UYVB7I8gYczOUTVuEZ2kmq3eKKyUT1kS0A';
 
+                    // Render Desktop Table View
                     tbody.innerHTML = books.map(b => {
                         let condClass = 'bg-primary/10 text-primary';
                         if (b.kondisi === 'Bagus') condClass = 'bg-secondary/10 text-secondary';
@@ -516,6 +545,38 @@
                             </tr>
                         `;
                     }).join('');
+
+                    // Render Mobile Cards View
+                    cardsContainer.innerHTML = books.map(b => {
+                        let condClass = 'bg-primary/10 text-primary';
+                        if (b.kondisi === 'Bagus') condClass = 'bg-secondary/10 text-secondary';
+                        if (b.kondisi === 'Lecet') condClass = 'bg-surface-variant text-on-surface-variant border border-outline-variant/30';
+
+                        return `
+                            <div class="p-lg flex items-start gap-md hover:bg-surface-container-low transition-colors">
+                                <img src="${b.cover_url || placeholderCover}" class="w-16 h-20 object-cover rounded-xl shadow-sm border border-outline-variant/20 flex-shrink-0" alt="Cover ${b.judul}"/>
+                                <div class="flex-grow min-w-0 flex flex-col gap-xs">
+                                    <h3 class="font-bold text-on-surface truncate text-sm">${b.judul}</h3>
+                                    <p class="text-xs text-on-surface-variant truncate">${b.penulis_nama}</p>
+                                    <div class="flex flex-wrap items-center gap-sm mt-1">
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${condClass}">${b.kondisi || 'Bagus'}</span>
+                                        <span class="text-xs text-outline-variant">|</span>
+                                        <span class="text-xs text-on-surface-variant font-medium">Stok: <strong class="text-on-surface">${b.stok}</strong></span>
+                                    </div>
+                                    <p class="font-bold text-primary text-sm mt-1">${formatter.format(b.harga_beli)}</p>
+                                </div>
+                                <div class="flex flex-col gap-sm justify-between self-stretch shrink-0">
+                                    <button onclick="deleteBook(${b.id})" class="w-8 h-8 rounded-full border border-error/30 text-error hover:bg-error/10 transition-colors flex items-center justify-center" title="Hapus Buku">
+                                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                                    </button>
+                                    <a href="detail.html?id=${b.id}" class="w-8 h-8 rounded-full border border-primary/30 text-primary hover:bg-primary/10 transition-colors flex items-center justify-center" title="Lihat Detail">
+                                        <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
                 } catch (err) {
                     tbody.innerHTML = `
                         <tr>
@@ -523,6 +584,11 @@
                                 Gagal memuat daftar buku: ${err.message}
                             </td>
                         </tr>
+                    `;
+                    cardsContainer.innerHTML = `
+                        <div class="text-center py-xl text-error font-medium px-md">
+                            Gagal memuat daftar buku: ${err.message}
+                        </div>
                     `;
                 }
             }

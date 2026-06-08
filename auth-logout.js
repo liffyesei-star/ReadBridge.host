@@ -251,35 +251,134 @@ document.addEventListener(
   }
 })();
 
-// Dynamic injection of "Toko Saya" link into profile dropdown
-(function injectSellerLink() {
-  function initSellerLink() {
-    const dropdowns = document.querySelectorAll("#profile-dropdown, #profile-dropdown-nav");
-    dropdowns.forEach(dropdown => {
-      // Avoid duplicates
-      if (dropdown.querySelector("a[href='dashboard-seller.html']")) return;
+// Dynamic synchronization of header auth state, user details, and profile dropdown setup
+(function syncHeaderAndDropdown() {
+  function initHeaderAndDropdown() {
+    const isLoggedIn = localStorage.getItem("rb_is_logged_in") === "true";
+    const token = localStorage.getItem("rb_token");
+    
+    const navGuest = document.getElementById("nav-guest");
+    const navUser = document.getElementById("nav-user");
+    const profileMenuContainer = document.getElementById("profile-menu-container") || document.getElementById("profile-menu-container-nav");
 
-      const sellerLink = document.createElement("a");
-      sellerLink.href = "dashboard-seller.html";
-      sellerLink.className = "flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors font-label-md text-label-md text-on-surface";
-      sellerLink.innerHTML = `<span class="material-symbols-outlined text-[20px]">storefront</span> Toko Saya`;
-
-      // Find Log Out link (normally contains logout or log out text)
-      const logOutLink = Array.from(dropdown.querySelectorAll("a")).find(a => 
-        /logout/i.test(a.href) || /log\s*out/i.test(a.textContent)
-      );
-
-      if (logOutLink) {
-        dropdown.insertBefore(sellerLink, logOutLink);
+    // 1. Synchronize Guest / Logged In header layout
+    if (navGuest && navUser) {
+      if (isLoggedIn && token) {
+        navGuest.classList.add("hidden");
+        navUser.classList.remove("hidden");
+        navUser.classList.add("flex");
       } else {
-        dropdown.appendChild(sellerLink);
+        navGuest.classList.remove("hidden");
+        navGuest.classList.add("flex");
+        navUser.classList.add("hidden");
+        navUser.classList.remove("flex");
       }
-    });
+    } else if (profileMenuContainer) {
+      // For pages without nav-guest/nav-user containers, show/hide profile container dynamically
+      const parent = profileMenuContainer.parentElement;
+      if (isLoggedIn && token) {
+        profileMenuContainer.classList.remove("hidden");
+        const oldGuestBtn = parent.querySelector(".rb-dynamic-guest-btn");
+        if (oldGuestBtn) oldGuestBtn.remove();
+      } else {
+        profileMenuContainer.classList.add("hidden");
+        if (!parent.querySelector(".rb-dynamic-guest-btn")) {
+          const guestBtn = document.createElement("a");
+          guestBtn.href = "login.html";
+          guestBtn.className = "rb-dynamic-guest-btn bg-primary text-on-primary font-label-md text-label-md px-lg py-sm rounded-full hover:bg-surface-tint transition-colors flex items-center justify-center";
+          guestBtn.style.padding = "8px 24px";
+          guestBtn.style.borderRadius = "9999px";
+          guestBtn.textContent = "Mulai Baca";
+          parent.insertBefore(guestBtn, profileMenuContainer);
+        }
+      }
+    }
+
+    // 2. Setup Logged-In User Details (Avatar and Name)
+    if (isLoggedIn && token) {
+      const savedPic = localStorage.getItem("rb_profile_pic");
+      const savedName = localStorage.getItem("rb_username");
+      
+      const avatarImgs = document.querySelectorAll("#profile-avatar-btn img, #profile-avatar-btn-nav img, #nav-avatar");
+      avatarImgs.forEach(img => {
+        if (savedPic && img.src !== savedPic) {
+          img.src = savedPic;
+        }
+      });
+
+      const dropdowns = document.querySelectorAll("#profile-dropdown, #profile-dropdown-nav");
+      dropdowns.forEach(dropdown => {
+        const usernameEl = dropdown.querySelector("p.text-on-surface.font-bold, p.font-bold.truncate, #nav-username");
+        if (usernameEl && savedName) {
+          usernameEl.textContent = savedName;
+        }
+
+        // Avoid duplicate "Toko Saya" links
+        if (dropdown.querySelector("a[href='dashboard-seller.html']")) return;
+
+        const sellerLink = document.createElement("a");
+        sellerLink.href = "dashboard-seller.html";
+        sellerLink.className = "flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors font-label-md text-label-md text-on-surface";
+        sellerLink.innerHTML = `<span class="material-symbols-outlined text-[20px]">storefront</span> Toko Saya`;
+
+        // Find Log Out link (normally contains logout or log out text)
+        const logOutLink = Array.from(dropdown.querySelectorAll("a")).find(a => 
+          /logout/i.test(a.href) || /log\s*out/i.test(a.textContent)
+        );
+
+        if (logOutLink) {
+          dropdown.insertBefore(sellerLink, logOutLink);
+        } else {
+          dropdown.appendChild(sellerLink);
+        }
+      });
+    }
+
+    // 3. Setup Dropdown Toggling Event Listeners (Universal mobile/desktop support)
+    const btn = document.querySelector("#profile-avatar-btn, #profile-avatar-btn-nav");
+    const dropdown = document.querySelector("#profile-dropdown, #profile-dropdown-nav");
+    if (btn && dropdown) {
+      if (btn.getAttribute("data-toggle-attached") !== "1") {
+        btn.setAttribute("data-toggle-attached", "1");
+        
+        // Use pointer events or click for robust mobile touch response
+        const toggleDropdown = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const isHidden = dropdown.classList.contains("hidden");
+          if (isHidden) {
+            dropdown.classList.remove("hidden");
+            dropdown.classList.add("flex");
+          } else {
+            dropdown.classList.add("hidden");
+            dropdown.classList.remove("flex");
+          }
+        };
+
+        btn.addEventListener("click", toggleDropdown);
+      }
+    }
+
+    // Click outside to close active dropdowns
+    if (document.body.getAttribute("data-outside-click-attached") !== "1") {
+      document.body.setAttribute("data-outside-click-attached", "1");
+      document.addEventListener("click", (e) => {
+        const activeDropdowns = document.querySelectorAll("#profile-dropdown:not(.hidden), #profile-dropdown-nav:not(.hidden)");
+        activeDropdowns.forEach(drop => {
+          const avatarBtn = document.querySelector("#profile-avatar-btn, #profile-avatar-btn-nav");
+          if (!drop.contains(e.target) && (!avatarBtn || !avatarBtn.contains(e.target))) {
+            drop.classList.add("hidden");
+            drop.classList.remove("flex");
+          }
+        });
+      });
+    }
   }
 
+  // Execute on load
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initSellerLink);
+    document.addEventListener("DOMContentLoaded", initHeaderAndDropdown);
   } else {
-    initSellerLink();
+    initHeaderAndDropdown();
   }
 })();

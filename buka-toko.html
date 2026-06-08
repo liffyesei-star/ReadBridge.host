@@ -276,8 +276,20 @@
             }
 
             // Determine API URL
-            const isLocalFrontend = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-            const apiBaseUrl = localStorage.getItem('rb_api_base_url') || (isLocalFrontend ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+            function isLocalHost(hostname) {
+                return (
+                    hostname === 'localhost' ||
+                    hostname === '127.0.0.1' ||
+                    hostname === '0.0.0.0' ||
+                    hostname.startsWith('192.168.') ||
+                    hostname.startsWith('10.') ||
+                    /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname) ||
+                    hostname.endsWith('.local')
+                );
+            }
+            const isLocal = isLocalHost(window.location.hostname);
+            const defaultApiUrl = isLocal ? `http://${window.location.hostname}:5001` : 'https://readbridge-backend-2whx.onrender.com';
+            const apiBaseUrl = localStorage.getItem('rb_api_base_url') || defaultApiUrl;
 
             // Check if user already has a store
             try {
