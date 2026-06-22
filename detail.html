@@ -207,11 +207,16 @@
   <section class="flex flex-col md:flex-row gap-xl items-start">
     <div class="w-full md:w-1/3 lg:w-1/4 flex-shrink-0">
       <div class="relative w-full aspect-[2/3] rounded-xl overflow-hidden ambient-shadow border border-surface-variant bg-surface-container-lowest">
-        <img id="detail-cover" alt="Cover" class="w-full h-full object-cover" src="" onerror="this.onerror=null;this.src='';this.closest('div').innerHTML='<div class=\'w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-surface-container to-surface-container-low text-on-surface-variant\'><span class=\'material-symbols-outlined text-[56px] opacity-40\'>menu_book</span><span class=\'text-xs font-medium opacity-50\'>Tanpa Cover</span></div>';"/>
+        <img id="detail-cover" alt="Cover" class="w-full h-full object-cover hidden" src=""/>
+        <div id="detail-cover-placeholder" class="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-surface-container to-surface-container-low text-on-surface-variant">
+          <span class="material-symbols-outlined text-[56px] opacity-40">menu_book</span>
+          <span class="text-xs font-medium opacity-50">Memuat...</span>
+        </div>
         <div class="absolute top-md right-md bg-secondary text-on-secondary font-label-sm text-label-sm px-sm py-xs rounded-full flex items-center gap-xs ambient-shadow">
           <span class="material-symbols-outlined text-[14px] icon-fill">star</span> <span id="detail-rating-badge">4.8</span>
         </div>
       </div>
+
     </div>
     <div class="w-full md:w-2/3 lg:w-3/4 flex flex-col gap-lg pt-sm">
       <div class="flex flex-col gap-xs">
@@ -434,14 +439,27 @@
       
       const img = targetBook.image || targetBook.img;
       const detailCover = document.getElementById('detail-cover');
-      if (detailCover) {
+      const detailPlaceholder = document.getElementById('detail-cover-placeholder');
+      if (detailCover && detailPlaceholder) {
         if (img && img.length > 10) {
+          // Show image
           detailCover.src = img;
+          detailCover.classList.remove('hidden');
+          detailPlaceholder.classList.add('hidden');
+          // Fallback if image fails to load
+          detailCover.onerror = () => {
+            detailCover.classList.add('hidden');
+            detailPlaceholder.classList.remove('hidden');
+            detailPlaceholder.innerHTML = '<span class="material-symbols-outlined text-[56px] opacity-40">menu_book</span><span class="text-xs font-medium opacity-50">Tanpa Cover</span>';
+          };
         } else {
-          // No cover - show styled placeholder
-          detailCover.closest('div').innerHTML = '<div class="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-surface-container to-surface-container-low text-on-surface-variant"><span class="material-symbols-outlined text-[56px] opacity-40">menu_book</span><span class="text-xs font-medium opacity-50">Tanpa Cover</span></div>';
+          // No cover - show placeholder
+          detailCover.classList.add('hidden');
+          detailPlaceholder.classList.remove('hidden');
+          detailPlaceholder.innerHTML = '<span class="material-symbols-outlined text-[56px] opacity-40">menu_book</span><span class="text-xs font-medium opacity-50">Tanpa Cover</span>';
         }
       }
+
       
       const rating = targetBook.rating || 4.5;
       const reviews = targetBook.reviews || 0;
