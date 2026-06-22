@@ -289,20 +289,14 @@ const defaultPosts = [
     isCurrentUser: false,
     waktu: '1 jam yang lalu',
     judul: '🔥 [Eksklusif] Rangkuman Literasi Bahasa Indonesia & Bocoran Soal HOTS SNBT 2024',
-    isi: 'Halo para pejuang SNBT 2024! Sebagai tutor literasi kalian di ReadBridge, bapak membagikan rangkuman materi penting serta latihan soal HOTS Literasi Bahasa Indonesia yang sering keluar di tryout maupun UTBK asli. Silakan unduh PDF-nya di bawah ini untuk belajar mandiri. Tetap semangat, masa depan menanti kalian di PTN impian!',
+    isi: 'Halo para pejuang SNBT 2024! Sebagai tutor literasi kalian di ReadBridge, bapak membagikan rangkuman materi penting serta latihan soal HOTS Literasi Bahasa Indonesia yang sering keluar di tryout maupun UTBK asli. Tetap semangat, masa depan menanti kalian di PTN impian!',
     tags: ['#UTBK', '#LiterasiIndo', '#TryoutSNBT'],
     votes: 4520,
     komentar: 3,
     destination: 'Pejuang SNBT',
-    attachment: {
-      name: 'Rangkuman_Lit_Indo_SNBT.pdf',
-      size: '2.4 MB',
-      type: 'Dokumen PDF',
-      url: 'Rangkuman_Lit_Indo_SNBT.html'
-    },
     commentsList: [
       { username: '@SiswaIndonesia', text: 'Wah makasih banyak Pak Agus! Rangkumannya lengkap banget, ngebantu buat review cepat sebelum TO besok.', waktu: '30 menit yang lalu' },
-      { username: '@Ambiskuh', text: 'Keren bapak, latihan soal HOTS-nya ada pembahasannya juga! Izin unduh ya Pak.', waktu: '20 menit yang lalu' },
+      { username: '@Ambiskuh', text: 'Keren pak, latihan soal HOTS-nya ada pembahasannya juga!', waktu: '20 menit yang lalu' },
       { username: '@CalonMaba', text: 'Terima kasih banyak pak, semoga jadi amal jariyah 🙏', waktu: '10 menit yang lalu' }
     ]
   }
