@@ -71,8 +71,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Tab elements
   const tabBuku = document.getElementById("tab-buku");
-  const tabJurnal = document.getElementById("tab-jurnal");
-  const tabDiskusi = document.getElementById("tab-diskusi");
   const tabBukuDigital = document.getElementById("tab-buku-digital");
   const ebookSection = document.getElementById("ebook-section");
 
@@ -226,7 +224,7 @@ document.addEventListener("DOMContentLoaded", function () {
     currentActiveTab = selectedTabStr;
 
     // Reset style semua tab
-    [tabBuku, tabJurnal, tabDiskusi, tabBukuDigital].forEach(tab => {
+    [tabBuku, tabBukuDigital].forEach(tab => {
       if (!tab) return;
       tab.className = "font-title-lg text-title-lg text-on-surface-variant hover:text-primary transition-colors pb-2 px-2 shrink-0 select-none";
     });
@@ -253,12 +251,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (selectedTabStr === 'buku') {
       activeElement = tabBuku;
       dataToRender = books;
-    } else if (selectedTabStr === 'jurnal') {
-      activeElement = tabJurnal;
-      dataToRender = journals;
-    } else if (selectedTabStr === 'diskusi') {
-      activeElement = tabDiskusi;
-      dataToRender = discussions;
     } else if (selectedTabStr === 'buku-digital') {
       activeElement = tabBukuDigital;
     }
@@ -273,29 +265,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Ganti Sidebar Filter berdasarkan tab yang aktif
     const filterBuku = document.getElementById('filter-buku');
-    const filterJurnal = document.getElementById('filter-jurnal');
-    const filterDiskusi = document.getElementById('filter-diskusi');
     const filterEbook = document.getElementById('filter-buku-digital');
 
-    if (filterBuku && filterJurnal && filterDiskusi) {
+    if (filterBuku) {
       filterBuku.classList.add('hidden'); filterBuku.classList.remove('block');
-      filterJurnal.classList.add('hidden'); filterJurnal.classList.remove('block');
-      filterDiskusi.classList.add('hidden'); filterDiskusi.classList.remove('block');
-      if (filterEbook) {
-        filterEbook.classList.add('hidden'); filterEbook.classList.remove('block');
-      }
+    }
+    if (filterEbook) {
+      filterEbook.classList.add('hidden'); filterEbook.classList.remove('block');
+    }
 
-      if (selectedTabStr === 'buku') {
-        filterBuku.classList.remove('hidden'); filterBuku.classList.add('block');
-      } else if (selectedTabStr === 'jurnal') {
-        filterJurnal.classList.remove('hidden'); filterJurnal.classList.add('block');
-      } else if (selectedTabStr === 'diskusi') {
-        filterDiskusi.classList.remove('hidden'); filterDiskusi.classList.add('block');
-      } else if (selectedTabStr === 'buku-digital') {
-        if (filterEbook) {
-          filterEbook.classList.remove('hidden'); filterEbook.classList.add('block');
-        }
-      }
+    if (selectedTabStr === 'buku' && filterBuku) {
+      filterBuku.classList.remove('hidden'); filterBuku.classList.add('block');
+    } else if (selectedTabStr === 'buku-digital' && filterEbook) {
+      filterEbook.classList.remove('hidden'); filterEbook.classList.add('block');
     }
 
     // Reset isi input pencarian saat pindah tab
@@ -313,8 +295,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Pasang Event Listener Tab
   if (tabBuku) tabBuku.addEventListener("click", () => switchTab('buku'));
-  if (tabJurnal) tabJurnal.addEventListener("click", () => switchTab('jurnal'));
-  if (tabDiskusi) tabDiskusi.addEventListener("click", () => switchTab('diskusi'));
   if (tabBukuDigital) tabBukuDigital.addEventListener("click", () => switchTab('buku-digital'));
 
 
@@ -456,7 +436,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Abaikan jika ada alert sendiri
       if (clickable.id === 'mark-all-read') return;
-      if (clickable.closest('#tab-buku') || clickable.closest('#tab-jurnal') || clickable.closest('#tab-diskusi')) return;
+      if (clickable.closest('#tab-buku') || clickable.closest('#tab-buku-digital')) return;
 
       // Coba dapatkan nama ikon jika dia berupa tombol ikon
       let content = "";

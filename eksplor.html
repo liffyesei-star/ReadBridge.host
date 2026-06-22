@@ -133,7 +133,7 @@
     </div>
     <div class="flex items-center gap-md">
       <div class="relative hidden md:block opacity-0 pointer-events-none transition-opacity duration-300" id="nav-search-container">
-        <input class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full text-label-md focus:outline-none focus:ring-2 focus:ring-primary w-64" placeholder="Cari buku, jurnal, topik..." type="text"/>
+        <input class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full text-label-md focus:outline-none focus:ring-2 focus:ring-primary w-64" placeholder="Cari buku..." type="text"/>
         <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant">search</span>
       </div>
       <a href="notifikasi.html" class="flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors duration-200">
@@ -256,74 +256,6 @@
         </div>
       </div>
 
-      <!-- Filter Jurnal -->
-      <div id="filter-jurnal" class="filter-section hidden">
-        <div class="mb-lg">
-          <h4 class="font-label-md text-label-md text-on-surface-variant mb-sm">Rumpun Ilmu</h4>
-          <div class="flex flex-col gap-sm">
-            <label class="flex items-center gap-sm cursor-pointer"><input type="checkbox" id="filter-jurnal-cat-pendidikan" checked class="rounded text-primary focus:ring-primary border-outline-variant"/><span class="font-body-md text-body-md text-on-surface">Pendidikan</span></label>
-            <label class="flex items-center gap-sm cursor-pointer"><input type="checkbox" id="filter-jurnal-cat-sains" checked class="rounded text-primary focus:ring-primary border-outline-variant"/><span class="font-body-md text-body-md text-on-surface">Sains & Teknologi</span></label>
-            <label class="flex items-center gap-sm cursor-pointer"><input type="checkbox" id="filter-jurnal-cat-soshum" checked class="rounded text-primary focus:ring-primary border-outline-variant"/><span class="font-body-md text-body-md text-on-surface">Sosial Humaniora</span></label>
-          </div>
-        </div>
-        <div class="mb-lg">
-          <h4 class="font-label-md text-label-md text-on-surface-variant mb-sm">Tahun Terbit</h4>
-          <div class="flex flex-col gap-sm">
-            <label class="flex items-center gap-sm cursor-pointer"><input type="radio" value="all" name="tahun_jurnal" class="text-primary focus:ring-primary border-outline-variant" checked/><span class="font-body-md text-body-md text-on-surface">Semua Tahun</span></label>
-            <label class="flex items-center gap-sm cursor-pointer"><input type="radio" value="2023-2024" name="tahun_jurnal" class="text-primary focus:ring-primary border-outline-variant"/><span class="font-body-md text-body-md text-on-surface">2023 - 2024</span></label>
-            <label class="flex items-center gap-sm cursor-pointer"><input type="radio" value="2020-2022" name="tahun_jurnal" class="text-primary focus:ring-primary border-outline-variant"/><span class="font-body-md text-body-md text-on-surface">2020 - 2022</span></label>
-          </div>
-        </div>
-        <div>
-          <h4 class="font-label-md text-label-md text-on-surface-variant mb-sm">Status Akses</h4>
-          <div class="flex flex-col gap-sm">
-            <label class="flex items-center gap-sm cursor-pointer"><input type="checkbox" id="filter-jurnal-access-open" checked class="rounded text-primary focus:ring-primary border-outline-variant"/><span class="font-body-md text-body-md text-on-surface">Open Access</span></label>
-            <label class="flex items-center gap-sm cursor-pointer"><input type="checkbox" id="filter-jurnal-access-exclusive" checked class="rounded text-primary focus:ring-primary border-outline-variant"/><span class="font-body-md text-body-md text-on-surface">Exclusive Access</span></label>
-          </div>
-        </div>
-      </div>
-
-      <!-- Filter Diskusi -->
-      <div id="filter-diskusi" class="filter-section hidden">
-        <div class="mb-lg">
-          <h4 class="font-label-md text-label-md text-on-surface-variant mb-sm">Topik Diskusi</h4>
-          <div class="flex flex-col gap-sm">
-            <label class="flex items-center gap-sm cursor-pointer"><input checked class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/><span class="font-body-md text-body-md text-on-surface">SNBT & UTBK</span></label>
-            <label class="flex items-center gap-sm cursor-pointer"><input class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/><span class="font-body-md text-body-md text-on-surface">Beasiswa Luar Negeri</span></label>
-            <label class="flex items-center gap-sm cursor-pointer"><input class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/><span class="font-body-md text-body-md text-on-surface">Dunia Perkuliahan</span></label>
-          </div>
-        </div>
-        <div class="mb-lg">
-          <h4 class="font-label-md text-label-md text-on-surface-variant mb-sm">Status</h4>
-          <div class="flex flex-col gap-sm">
-            <label class="flex items-center gap-sm cursor-pointer"><input type="radio" name="status_diskusi" checked class="text-primary focus:ring-primary border-outline-variant"/><span class="font-body-md text-body-md text-on-surface">Semua Status</span></label>
-            <label class="flex items-center gap-sm cursor-pointer"><input type="radio" name="status_diskusi" class="text-primary focus:ring-primary border-outline-variant"/><span class="font-body-md text-body-md text-on-surface">Belum Terjawab</span></label>
-          </div>
-        </div>
-        <div>
-          <h4 class="font-label-md text-label-md text-on-surface-variant mb-sm">Tingkat Keaktifan</h4>
-          <div class="flex flex-col gap-sm">
-            <label class="flex items-center gap-sm cursor-pointer">
-              <input class="text-primary focus:ring-primary border-outline-variant" name="keaktifan" type="radio"/>
-              <div class="flex text-error">
-                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
-                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
-                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
-                <span class="ml-2 font-label-md text-label-md text-on-surface-variant">& Ke atas (Sangat Panas)</span>
-              </div>
-            </label>
-            <label class="flex items-center gap-sm cursor-pointer">
-              <input checked class="text-primary focus:ring-primary border-outline-variant" name="keaktifan" type="radio"/>
-              <div class="flex text-error">
-                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
-                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
-                <span class="material-symbols-outlined text-[16px] text-outline-variant">local_fire_department</span>
-                <span class="ml-2 font-label-md text-label-md text-on-surface-variant">& Ke atas (Cukup Aktif)</span>
-              </div>
-            </label>
-          </div>
-        </div>
-      </div>
 
       <!-- Filter Buku Digital -->
       <div id="filter-buku-digital" class="filter-section hidden">
@@ -366,7 +298,7 @@
     <div id="hero-search-section" class="bg-surface-container-lowest rounded-xl p-xl flex flex-col items-center justify-center border border-outline-variant/20 shadow-[0_4px_12px_rgba(0,0,0,0.02)] text-center relative overflow-hidden">
       <div class="relative z-10 w-full max-w-2xl">
         <h1 class="font-headline-lg text-[24px] md:text-headline-lg leading-tight text-on-surface mb-sm">Temukan Bacaan Berikutnya</h1>
-        <p class="font-body-lg text-body-lg text-on-surface-variant mb-lg">Jelajahi ribuan buku, jurnal akademik, dan topik diskusi menarik.</p>
+        <p class="font-body-lg text-body-lg text-on-surface-variant mb-lg">Jelajahi ribuan buku dan buku digital menarik.</p>
         <div class="relative w-full shadow-sm rounded-full">
           <span class="material-symbols-outlined absolute left-4 top-4 text-on-surface-variant text-[24px]">search</span>
           <input id="search-input" class="w-full pl-12 pr-32 py-4 bg-surface-container-lowest border-2 border-surface-variant rounded-full text-body-lg focus:outline-none focus:border-primary transition-colors" placeholder="Cari judul, penulis, atau ISBN..." type="text"/>
@@ -378,8 +310,6 @@
     <!-- Tabs -->
     <div id="explore-tabs" class="flex border-b border-outline-variant gap-lg overflow-x-auto hide-scrollbar">
       <button id="tab-buku" class="font-title-lg text-title-lg text-primary border-b-2 border-primary pb-2 px-2 transition-colors shrink-0">Buku</button>
-      <button id="tab-jurnal" class="font-title-lg text-title-lg text-on-surface-variant hover:text-primary transition-colors pb-2 px-2 shrink-0">Jurnal</button>
-      <button id="tab-diskusi" class="font-title-lg text-title-lg text-on-surface-variant hover:text-primary transition-colors pb-2 px-2 shrink-0">Diskusi</button>
       <button id="tab-buku-digital" class="font-title-lg text-title-lg text-on-surface-variant hover:text-primary transition-colors pb-2 px-2 shrink-0 select-none">Buku Digital</button>
     </div>
 
