@@ -38,8 +38,10 @@ const PORT = process.env.PORT || 5000;
 // MIDDLEWARE GLOBAL
 // =============================================
 
-// Security headers
-app.use(helmet());
+// Security headers - allow cross-origin resource policy for serving images to frontend
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 
 // CORS - izinkan frontend mengakses
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:5500,http://127.0.0.1:5500,https://liffyesei-star.github.io").split(",");
