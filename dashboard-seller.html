@@ -359,7 +359,8 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
                         <div class="flex flex-col gap-xs">
                             <label for="cover_file" class="text-[11px] text-on-surface-variant font-semibold">Unggah Berkas Gambar</label>
-                            <input type="file" id="cover_file" accept="image/*" class="p-2 bg-surface border border-outline-variant rounded-xl text-sm w-full"/>
+                            <input type="file" id="cover_file" accept="image/jpeg,image/jpg,image/png,image/webp,image/gif" class="p-2 bg-surface border border-outline-variant rounded-xl text-sm w-full"/>
+                            <span class="text-[10px] text-error/80 font-medium">⚠️ Format: JPG, PNG, WEBP saja. Jangan gunakan HEIC/HEIF (foto iPhone).</span>
                         </div>
                         <div class="flex flex-col gap-xs">
                             <label for="cover_url" class="text-[11px] text-on-surface-variant font-semibold">Atau Gunakan URL Gambar</label>
@@ -724,31 +725,20 @@
                     
                     const coverFileInput = document.getElementById('cover_file');
                     if (coverFileInput && coverFileInput.files && coverFileInput.files[0]) {
-                        btnSave.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> Mengompresi Cover...';
                         const file = coverFileInput.files[0];
-                        try {
-                            // Compress on frontend to max width 350px, quality 0.6 (small/tiny JPEG)
-                            finalCoverUrl = await compressImage(file, 350, 480, 0.6);
-                        } catch (compressErr) {
-                            console.warn("Frontend compression failed, falling back to server upload:", compressErr);
-                            btnSave.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> Mengunggah Cover...';
-                            const formData = new FormData();
-                            formData.append('file', file);
-                            
-                            const uploadResponse = await fetch(`${apiBaseUrl}/api/books/upload`, {
-                                method: 'POST',
-                                headers: {
-                                    'Authorization': `Bearer ${token}`
-                                },
-                                body: formData
-                            });
-                            const uploadData = await uploadResponse.json();
-                            if (!uploadResponse.ok || !uploadData.success) {
-                                throw new Error(uploadData.message || 'Gagal mengunggah file gambar cover');
-                            }
-                            
-                            finalCoverUrl = apiBaseUrl + uploadData.fileUrl;
+                        
+                        // Validate file type - reject HEIC/HEIF (not supported by Canvas API)
+                        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+                        const fileExt = file.name.split('.').pop().toLowerCase();
+                        const blockedExts = ['heic', 'heif'];
+                        
+                        if (!allowedTypes.includes(file.type) || blockedExts.includes(fileExt)) {
+                            throw new Error('Format gambar tidak didukung. Gunakan JPG, PNG, atau WEBP. Jika pakai iPhone, konversi dulu foto HEIC ke JPG sebelum upload.');
                         }
+                        
+                        btnSave.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> Mengompresi Cover...';
+                        // Compress on frontend to max width 350px, quality 0.6 (small/tiny JPEG)
+                        finalCoverUrl = await compressImage(file, 350, 480, 0.6);
                     }
 
                     btnSave.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> Mendaftarkan Buku...';
