@@ -1290,15 +1290,29 @@ document.addEventListener('DOMContentLoaded', () => {
         <p id="form-error" class="text-red-500 text-[13px] font-semibold hidden">Judul dan isi diskusi tidak boleh kosong!</p>
       </div>
 
+      <!-- Media Preview Panel (shown after selecting file) -->
+      <div id="media-preview-panel" class="hidden border-t border-slate-100 px-6 py-3 bg-slate-50 relative">
+        <img id="media-preview-img" class="hidden w-full max-h-48 object-cover rounded-xl" alt="Preview"/>
+        <video id="media-preview-video" class="hidden w-full max-h-48 object-contain rounded-xl bg-black" controls playsinline></video>
+        <div id="media-uploading-overlay" class="hidden absolute inset-0 bg-white/80 flex items-center justify-center gap-2 text-slate-600 text-sm font-semibold rounded">
+          <span class="material-symbols-outlined text-[20px] animate-spin">progress_activity</span> Mengupload...
+        </div>
+        <button onclick="clearModalMedia()" class="absolute top-4 right-8 w-7 h-7 bg-slate-800/70 text-white rounded-full flex items-center justify-center hover:bg-slate-900 transition-colors">
+          <span class="material-symbols-outlined text-[16px]">close</span>
+        </button>
+      </div>
+
       <!-- Bottom toolbar + actions -->
       <div class="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-white">
         <!-- Media buttons -->
         <div class="flex items-center gap-1">
-          <button id="btn-attach-image" title="Tambahkan Gambar" class="p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-500 hover:text-primary">
+          <button id="btn-attach-image" title="Tambahkan Foto" class="p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-500 hover:text-primary relative">
             <span class="material-symbols-outlined text-[22px]">image</span>
+            <input id="input-media-foto" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleModalMediaSelect(this,'image')"/>
           </button>
-          <button id="btn-attach-file" title="Lampirkan File" class="p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-500 hover:text-primary">
-            <span class="material-symbols-outlined text-[22px]">attach_file</span>
+          <button id="btn-attach-video" title="Tambahkan Video" class="p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-500 hover:text-primary relative">
+            <span class="material-symbols-outlined text-[22px]">videocam</span>
+            <input id="input-media-video" type="file" accept="video/mp4,video/quicktime,video/webm,video/avi" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleModalMediaSelect(this,'video')"/>
           </button>
           <button id="btn-poll" title="Buat Poll" class="p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-500 hover:text-primary">
             <span class="material-symbols-outlined text-[22px]">bar_chart</span>
@@ -1400,6 +1414,65 @@ let activeTags = [];
 let isMaximized = false;
 
 function getEditor() { return document.getElementById('editor-content'); }
+
+// ===== MEDIA UPLOAD STATE (panel lama) =====
+let _modalMediaUrl = null;
+let _modalMediaType = null;
+
+window.clearModalMedia = function() {
+  _modalMediaUrl = null; _modalMediaType = null;
+  const panel = document.getElementById('media-preview-panel');
+  if (panel) panel.classList.add('hidden');
+  const img = document.getElementById('media-preview-img');
+  if (img) { img.src = ''; img.classList.add('hidden'); }
+  const vid = document.getElementById('media-preview-video');
+  if (vid) { vid.src = ''; vid.classList.add('hidden'); }
+  const fi = document.getElementById('input-media-foto');
+  if (fi) fi.value = '';
+  const fv = document.getElementById('input-media-video');
+  if (fv) fv.value = '';
+};
+
+window.handleModalMediaSelect = async function(input, type) {
+  const file = input.files[0];
+  if (!file) return;
+  const token = localStorage.getItem('rb_token');
+  const panel = document.getElementById('media-preview-panel');
+  const overlay = document.getElementById('media-uploading-overlay');
+  panel.classList.remove('hidden');
+  overlay.classList.remove('hidden');
+
+  // Local preview
+  const localUrl = URL.createObjectURL(file);
+  if (type === 'image') {
+    const img = document.getElementById('media-preview-img');
+    img.src = localUrl; img.classList.remove('hidden');
+    document.getElementById('media-preview-video').classList.add('hidden');
+  } else {
+    const vid = document.getElementById('media-preview-video');
+    vid.src = localUrl; vid.classList.remove('hidden');
+    document.getElementById('media-preview-img').classList.add('hidden');
+  }
+
+  try {
+    const formData = new FormData();
+    const endpoint = type === 'image' ? 'image?folder=community/photos' : 'video';
+    formData.append(type === 'image' ? 'image' : 'video', file);
+    const res = await fetch(`${API_BASE}/api/upload/${endpoint}`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.message || 'Upload gagal');
+    _modalMediaUrl = data.url;
+    _modalMediaType = type;
+    overlay.classList.add('hidden');
+  } catch (err) {
+    alert('Gagal upload media: ' + err.message);
+    window.clearModalMedia();
+  }
+};
 
 function setupModalLogic() {
   const modal = document.getElementById('modal-diskusi');
@@ -1586,6 +1659,13 @@ function setupModalLogic() {
     if (!judul || !isi) { errEl.classList.remove('hidden'); return; }
     errEl.classList.add('hidden');
 
+    // Block if media still uploading
+    const overlay = document.getElementById('media-uploading-overlay');
+    if (overlay && !overlay.classList.contains('hidden')) {
+      errEl.textContent = 'Tunggu, media masih diupload...';
+      errEl.classList.remove('hidden'); return;
+    }
+
     const token = localStorage.getItem('rb_token');
     if (!token) {
       alert("Silakan login untuk membuat diskusi");
@@ -1595,17 +1675,20 @@ function setupModalLogic() {
 
     try {
       const destination = getSelectedDestination();
+      const payload = { judul, konten: getEditor().innerHTML, destination };
+      if (_modalMediaUrl) { payload.media_url = _modalMediaUrl; payload.media_type = _modalMediaType; }
+
       const res = await fetch(`${API_BASE}/api/community/diskusi`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ judul, konten: getEditor().innerHTML, destination })
+        body: JSON.stringify(payload)
       });
 
       if (res.ok) {
-        alert('Diskusi berhasil diposting!');
+        showToastNotification('✅ Diskusi berhasil diposting!', 'check_circle');
         apiPostsFetched = false;
         await renderAllPosts();
 
@@ -1615,6 +1698,7 @@ function setupModalLogic() {
         activeTags = []; renderTagChips();
         document.getElementById('poll-panel')?.classList.add('hidden');
         localStorage.removeItem(DRAFT_KEY);
+        window.clearModalMedia();
         closeModal();
       } else {
         const data = await res.json();
