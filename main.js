@@ -64,7 +64,7 @@ async function loadBooksFromApi() {
           rating: parseFloat(b.rating) || 4.5,
           reviews: b.total_ulasan || 0,
           price: parseFloat(b.harga_beli) || 0,
-          image: b.cover_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuApdMuG3pfOyT45TKpszN-u5p7r1oX9aiBChHWVTMo8VwUuEphgMhzpdAVa4XEQpZgD9IzJG6lf6kLV-3_KyV2Y8PhhfVooBF5YOwubgF5cNUseZ3PO8xTKJhXlKUP1gy2iST0n3WfZ5Y-zSZc2N4U1MdOXpaGoEZxPol1ENCfUOSB93pADkccu3bQ9B5QiG7OOYNM2BCYhg_aSSthqVW92EJ5szvP_eH-k4fUC_PaP2UYVB7I8gYczOUTVuEZ2kmq3eKKyUT1kS0A',
+          image: b.cover_url || null,
           badge: badge,
           reviewer: 'Pembaca Anonim',
           abstract: b.deskripsi || '',
@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Percabangan untuk merender layout yang berbeda sesuai tipe data (Buku / Jurnal / Diskusi)
         if (type === 'buku') {
           let badgeHTML = item.badge ? `<div class="absolute top-2 right-2 bg-secondary text-on-secondary px-2 py-1 rounded-md font-label-sm text-label-sm flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">local_fire_department</span> ${item.badge}</div>` : "";
-          let imageHTML = item.image ? `<img alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${item.image}"/>` : `<div class="w-full h-full flex items-center justify-center bg-surface-variant group-hover:scale-105 transition-transform duration-500"><span class="material-symbols-outlined text-[64px] text-outline-variant">menu_book</span></div>`;
+          let imageHTML = item.image ? `<img alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${item.image}" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex';"/><div style="display:none" class="w-full h-full flex items-center justify-center bg-surface-variant"><span class="material-symbols-outlined text-[64px] text-outline-variant">menu_book</span></div>` : `<div class="w-full h-full flex items-center justify-center bg-surface-variant group-hover:scale-105 transition-transform duration-500"><span class="material-symbols-outlined text-[64px] text-outline-variant">menu_book</span></div>`;
 
           cardHTML = `
             <a href="detail.html?id=${item.id}" class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0_4px_12px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300 group cursor-pointer">

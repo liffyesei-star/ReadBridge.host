@@ -307,7 +307,7 @@
           id: b.id,
           title: b.judul,
           author: b.penulis_nama,
-          image: b.cover_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuApdMuG3pfOyT45TKpszN-u5p7r1oX9aiBChHWVTMo8VwUuEphgMhzpdAVa4XEQpZgD9IzJG6lf6kLV-3_KyV2Y8PhhfVooBF5YOwubgF5cNUseZ3PO8xTKJhXlKUP1gy2iST0n3WfZ5Y-zSZc2N4U1MdOXpaGoEZxPol1ENCfUOSB93pADkccu3bQ9B5QiG7OOYNM2BCYhg_aSSthqVW92EJ5szvP_eH-k4fUC_PaP2UYVB7I8gYczOUTVuEZ2kmq3eKKyUT1kS0A',
+          image: b.cover_url || null,
           condition: b.kondisi || 'Bagus',
           stock: b.stok || 1,
           location: b.lokasi || 'Indonesia',
@@ -334,7 +334,7 @@
           id: b.id,
           title: b.judul,
           author: b.penulis_nama,
-          image: b.cover_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuApdMuG3pfOyT45TKpszN-u5p7r1oX9aiBChHWVTMo8VwUuEphgMhzpdAVa4XEQpZgD9IzJG6lf6kLV-3_KyV2Y8PhhfVooBF5YOwubgF5cNUseZ3PO8xTKJhXlKUP1gy2iST0n3WfZ5Y-zSZc2N4U1MdOXpaGoEZxPol1ENCfUOSB93pADkccu3bQ9B5QiG7OOYNM2BCYhg_aSSthqVW92EJ5szvP_eH-k4fUC_PaP2UYVB7I8gYczOUTVuEZ2kmq3eKKyUT1kS0A',
+          image: b.cover_url || null,
           category: b.kategori || 'Fiksi',
           stock: b.stok || 1,
           priceHarian: parseFloat(b.harga_sewa) || 2000,
@@ -394,7 +394,10 @@
       
       return `<article class="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-container overflow-hidden hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-shadow duration-300 flex flex-col h-full animate-fadeIn">
         <a href="${detailUrl}" class="relative aspect-[3/4] bg-surface-container-low group cursor-pointer block">
-          <img alt="Cover ${b.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${b.image}"/>
+          ${b.image 
+            ? `<img alt="Cover ${b.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${b.image}" onerror="this.onerror=null;this.style.display='none';this.parentElement.querySelector('.cover-placeholder').style.display='flex';"/><div class="cover-placeholder w-full h-full absolute inset-0 hidden flex-col items-center justify-center gap-2 bg-gradient-to-br from-surface-container to-surface-container-low text-on-surface-variant"><span class="material-symbols-outlined text-[48px] opacity-40">menu_book</span><span class="text-xs font-medium opacity-50">Tanpa Cover</span></div>`
+            : `<div class="w-full h-full flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-surface-container to-surface-container-low text-on-surface-variant"><span class="material-symbols-outlined text-[48px] opacity-40">menu_book</span><span class="text-xs font-medium opacity-50">Tanpa Cover</span></div>`
+          }
           <span class="absolute top-sm right-sm ${condClass} font-label-sm text-label-sm px-2 py-1 rounded-full">${b.condition}</span>
         </a>
         <div class="p-md flex flex-col flex-grow">
