@@ -26,6 +26,7 @@ const communityRoutes = require("./routes/community");
 const userRoutes = require("./routes/users");
 const helpdeskRoutes = require("./routes/helpdesk");
 const tokoRoutes = require("./routes/toko");
+const uploadRoutes = require("./routes/upload");
 
 // Initialize Firebase (side effect)
 require("./config/firebase");
@@ -99,6 +100,7 @@ app.use("/api/community", communityRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/helpdesk", helpdeskRoutes);
 app.use("/api/toko", tokoRoutes);
+app.use("/api/upload", uploadRoutes);
 
 // Health check
 app.get("/", (req, res) => {
