@@ -359,8 +359,8 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
                         <div class="flex flex-col gap-xs">
                             <label for="cover_file" class="text-[11px] text-on-surface-variant font-semibold">Unggah Berkas Gambar</label>
-                            <input type="file" id="cover_file" accept="image/jpeg,image/jpg,image/png,image/webp,image/gif" class="p-2 bg-surface border border-outline-variant rounded-xl text-sm w-full"/>
-                            <span class="text-[10px] text-error/80 font-medium">⚠️ Format: JPG, PNG, WEBP saja. Jangan gunakan HEIC/HEIF (foto iPhone).</span>
+                            <input type="file" id="cover_file" accept="image/*" class="p-2 bg-surface border border-outline-variant rounded-xl text-sm w-full"/>
+                            <span class="text-[10px] text-on-surface-variant font-medium">✅ Semua format didukung: JPG, PNG, WEBP, HEIC (foto iPhone). Gambar diupload ke Cloudinary CDN.</span>
                         </div>
                         <div class="flex flex-col gap-xs">
                             <label for="cover_url" class="text-[11px] text-on-surface-variant font-semibold">Atau Gunakan URL Gambar</label>
@@ -726,19 +726,24 @@
                     const coverFileInput = document.getElementById('cover_file');
                     if (coverFileInput && coverFileInput.files && coverFileInput.files[0]) {
                         const file = coverFileInput.files[0];
-                        
-                        // Validate file type - reject HEIC/HEIF (not supported by Canvas API)
-                        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
-                        const fileExt = file.name.split('.').pop().toLowerCase();
-                        const blockedExts = ['heic', 'heif'];
-                        
-                        if (!allowedTypes.includes(file.type) || blockedExts.includes(fileExt)) {
-                            throw new Error('Format gambar tidak didukung. Gunakan JPG, PNG, atau WEBP. Jika pakai iPhone, konversi dulu foto HEIC ke JPG sebelum upload.');
+                        btnSave.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> Mengunggah Cover ke Cloud...';
+
+                        // Upload ke Cloudinary via backend
+                        const formData = new FormData();
+                        formData.append('image', file);
+
+                        const uploadRes = await fetch(`${apiBaseUrl}/api/upload/image?folder=covers`, {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${token}` },
+                            body: formData
+                        });
+                        const uploadData = await uploadRes.json();
+
+                        if (!uploadRes.ok || !uploadData.success) {
+                            throw new Error(uploadData.message || 'Gagal mengunggah gambar ke cloud.');
                         }
-                        
-                        btnSave.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> Mengompresi Cover...';
-                        // Compress on frontend to max width 350px, quality 0.6 (small/tiny JPEG)
-                        finalCoverUrl = await compressImage(file, 350, 480, 0.6);
+
+                        finalCoverUrl = uploadData.url; // URL permanen Cloudinary CDN
                     }
 
                     btnSave.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> Mendaftarkan Buku...';
