@@ -115,6 +115,7 @@
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#004ac6" />
     <link rel="apple-touch-icon" href="icon-192.png" />
+    <script src="auth-logout.js?v=4"></script>
 </head>
 <body class="bg-background text-on-background min-h-screen flex flex-col">
 
@@ -213,7 +214,7 @@
           <h3 class="font-label-md text-label-md text-on-surface-variant mb-sm">Kondisi</h3>
           <div class="flex flex-wrap gap-xs">
             <button class="condition-filter px-sm py-xs rounded-full border border-outline-variant font-label-sm text-label-sm text-on-surface hover:bg-surface-container-low transition-colors" data-cond="Sempurna">Sempurna</button>
-            <button class="condition-filter px-sm py-xs rounded-full bg-primary-container text-on-primary-container border border-primary-container font-label-sm text-label-sm" data-cond="Bagus">Bagus</button>
+            <button class="condition-filter px-sm py-xs rounded-full border border-outline-variant font-label-sm text-label-sm text-on-surface hover:bg-surface-container-low transition-colors" data-cond="Bagus">Bagus</button>
             <button class="condition-filter px-sm py-xs rounded-full border border-outline-variant font-label-sm text-label-sm text-on-surface hover:bg-surface-container-low transition-colors" data-cond="Lecet">Lecet</button>
           </div>
         </div>
@@ -285,9 +286,10 @@
   <script src="main.js"></script>
 <script>
 
-  let selectedConditions = ['Bagus'];
+  let selectedConditions = [];
   let selectedSewaCat = 'Semua';
   let apiBooks = [];
+  let apiSewaBooks = [];
 
   function formatPrice(p) {
     return 'Rp ' + p.toLocaleString('id-ID');
@@ -319,6 +321,33 @@
     }
   }
 
+  async function fetchSewaBooks() {
+    try {
+      const isLocalFrontend = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+      const apiBaseUrl = localStorage.getItem('rb_api_base_url') || (isLocalFrontend ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+      
+      const response = await fetch(`${apiBaseUrl}/api/books?limit=100`);
+      const data = await response.json();
+      if (data.success && data.data) {
+        const sewaList = data.data.filter(b => b.bisa_sewa === 1 || parseFloat(b.harga_sewa) > 0);
+        apiSewaBooks = sewaList.map(b => ({
+          id: b.id,
+          title: b.judul,
+          author: b.penulis_nama,
+          image: b.cover_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuApdMuG3pfOyT45TKpszN-u5p7r1oX9aiBChHWVTMo8VwUuEphgMhzpdAVa4XEQpZgD9IzJG6lf6kLV-3_KyV2Y8PhhfVooBF5YOwubgF5cNUseZ3PO8xTKJhXlKUP1gy2iST0n3WfZ5Y-zSZc2N4U1MdOXpaGoEZxPol1ENCfUOSB93pADkccu3bQ9B5QiG7OOYNM2BCYhg_aSSthqVW92EJ5szvP_eH-k4fUC_PaP2UYVB7I8gYczOUTVuEZ2kmq3eKKyUT1kS0A',
+          category: b.kategori || 'Fiksi',
+          stock: b.stok || 1,
+          priceHarian: parseFloat(b.harga_sewa) || 2000,
+          priceMingguan: parseFloat(b.harga_sewa) * 5 || 10000,
+          priceBulanan: parseFloat(b.harga_sewa) * 20 || 35000,
+          isDb: true
+        }));
+      }
+    } catch (err) {
+      console.warn("Failed to fetch sewa books from API:", err);
+    }
+  }
+
   function renderMarketplace() {
     const grid = document.getElementById('marketplace-grid');
     if (!grid) return;
@@ -332,7 +361,7 @@
     const priceCheck3 = document.getElementById('price-filter-3')?.checked; // > 100k
     const hasPriceFilter = priceCheck1 || priceCheck2 || priceCheck3;
     
-    const combinedBooks = [...apiBooks, ...marketplaceBooks];
+    const combinedBooks = [...apiBooks];
     let filtered = combinedBooks.filter(b => {
       if (searchVal && !b.title.toLowerCase().includes(searchVal)) return false;
       if (locVal && !b.location.toLowerCase().includes(locVal)) return false;
@@ -391,7 +420,7 @@
     const grid = document.getElementById('sewa-grid');
     if(!grid) return;
     
-    let filtered = sewaBooks.filter(b => selectedSewaCat === 'Semua' || b.category === selectedSewaCat);
+    let filtered = apiSewaBooks.filter(b => selectedSewaCat === 'Semua' || b.category === selectedSewaCat);
     
     grid.innerHTML = filtered.map((b, i) => {
       const isAvailable = b.stock > 0;
@@ -409,7 +438,7 @@
               <span class="font-label-md text-label-md text-primary">Rp ${b.priceHarian.toLocaleString('id-ID')} (IDR) / hari</span>
             </div>
           </div>
-          <button onclick="checkoutSewa(${b.id})" class="w-full py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container hover:shadow-md transition-all mt-md">Sewa Sekarang</button>`
+          <button onclick="checkoutSewa(${b.id}, ${b.isDb ? 'true' : 'false'})" class="w-full py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container hover:shadow-md transition-all mt-md">Sewa Sekarang</button>`
         : `<div class="mt-auto flex flex-col gap-xs bg-surface-container p-sm rounded-lg border border-outline-variant opacity-70">
             <div class="flex justify-between items-center"><span class="font-body-md text-body-md text-outline">Harga Sewa</span><span class="font-label-md text-label-md text-outline">Rp ${b.priceHarian.toLocaleString('id-ID')} (IDR) / hari</span></div>
           </div>
@@ -419,15 +448,17 @@
         ? "bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-container overflow-hidden flex flex-col group hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300 h-full" 
         : "bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-container overflow-hidden flex flex-col opacity-80 grayscale-[20%] h-full";
       
+      const detailUrl = b.isDb ? `detail.html?source=sewa&id=${b.id}&isDb=true` : `detail.html?source=sewa&id=${b.id}`;
+
       return `<article class="${wrapperClass}">
-        <a href="detail.html?source=sewa&id=${b.id}" class="relative w-full aspect-[3/4] bg-surface-variant overflow-hidden group block cursor-pointer">
+        <a href="${detailUrl}" class="relative w-full aspect-[3/4] bg-surface-variant overflow-hidden group block cursor-pointer">
           <img alt="${b.title}" class="w-full h-full object-cover ${isAvailable?'group-hover:scale-105 transition-transform duration-500':''}" src="${b.image}"/>
           ${statusBadge}
           ${stockBadge}
         </a>
         <div class="p-md flex flex-col flex-grow">
           <div>
-            <a href="detail.html?source=sewa&id=${b.id}" class="group"><h3 class="font-title-lg text-title-lg text-on-background line-clamp-2 leading-tight group-hover:text-primary transition-colors cursor-pointer">${b.title}</h3></a>
+            <a href="${detailUrl}" class="group"><h3 class="font-title-lg text-title-lg text-on-background line-clamp-2 leading-tight group-hover:text-primary transition-colors cursor-pointer">${b.title}</h3></a>
             <p class="font-label-md text-label-md text-on-surface-variant mt-xs mb-sm">${b.author || 'Penulis'}</p>
           </div>
           ${priceOptions}
@@ -440,8 +471,8 @@
     }
   }
 
-  function checkoutSewa(bookId) {
-    window.location.href = `checkout-sewa.html?id=${bookId}`;
+  function checkoutSewa(bookId, isDb = false) {
+    window.location.href = `checkout-sewa.html?id=${bookId}${isDb ? '&isDb=true' : ''}`;
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
@@ -511,7 +542,12 @@
     });
     
     await fetchPrelovedBooks();
-    renderMarketplace();
+    await fetchSewaBooks();
+    if (window.location.hash === '#sewa') {
+      showSewa();
+    } else {
+      renderMarketplace();
+    }
   });
 </script>
 
@@ -612,7 +648,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
       }
     </script>
-    <script src="auth-logout.js?v=4"></script>
+    
 </body>
 
 </html>

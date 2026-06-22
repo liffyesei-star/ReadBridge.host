@@ -47,6 +47,113 @@ document.addEventListener(
   true
 );
 
+// JWT Parsing utility
+function parseJwt(token) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    return null;
+  }
+}
+
+// Global function to trigger automatic logout
+function triggerAutoLogout(message = "Sesi Anda telah berakhir. Silakan login kembali.") {
+  console.warn("[ReadBridge] Token expired or unauthorized. Logging out...");
+  
+  // Clear all local auth credentials immediately
+  clearLocalAuthFallback();
+  
+  // Attempt Firebase signout in background (non-blocking)
+  import(AUTH_MODULE)
+    .then((mod) => mod.logoutReadBridge())
+    .catch((err) => console.warn("[ReadBridge] Background Firebase signOut skipped/failed:", err));
+    
+  // Show alert to user
+  alert(message);
+  
+  // Redirect to login page
+  window.location.href = "login.html";
+}
+
+// Function to check token expiration and logout if expired
+function checkTokenExpiration() {
+  const path = window.location.pathname.toLowerCase();
+  const isAuthPage = path.includes("login.html") || 
+                     path.includes("register.html") || 
+                     path.includes("auth-handler.html") || 
+                     path.includes("reset-password.html") ||
+                     path.includes("debug-login.html");
+  if (isAuthPage) return;
+
+  const token = localStorage.getItem("rb_token");
+  if (!token) return;
+
+  const payload = parseJwt(token);
+  if (payload && payload.exp) {
+    const expirationTime = payload.exp * 1000;
+    if (Date.now() >= expirationTime) {
+      console.warn("[ReadBridge] Token expired. Automatic logout triggered.");
+      triggerAutoLogout();
+    }
+  }
+}
+
+// Global fetch interceptor for 401 Unauthorized or expired token messages
+(function setupFetchInterceptor() {
+  const originalFetch = window.fetch;
+  window.fetch = async function(...args) {
+    try {
+      const response = await originalFetch(...args);
+      let shouldLogout = (response.status === 401);
+
+      if (!shouldLogout) {
+        try {
+          const clonedResponse = response.clone();
+          const json = await clonedResponse.json();
+          if (json && json.success === false && 
+              (json.message === "Token expired, silakan login ulang" || 
+               json.message === "Token tidak valid" || 
+               json.message === "Token tidak ditemukan")) {
+            shouldLogout = true;
+          }
+        } catch (e) {
+          // Ignore if body is not JSON
+        }
+      }
+
+      if (shouldLogout) {
+        const path = window.location.pathname.toLowerCase();
+        const isAuthPage = path.includes("login.html") || 
+                           path.includes("register.html") || 
+                           path.includes("auth-handler.html") || 
+                           path.includes("reset-password.html") ||
+                           path.includes("debug-login.html");
+        
+        if (!isAuthPage) {
+          console.warn("[ReadBridge] Token expired or 401 returned. Logging out.");
+          triggerAutoLogout();
+        }
+      }
+      return response;
+    } catch (err) {
+      throw err;
+    }
+  };
+})();
+
+// Initialize session timer check
+document.addEventListener("DOMContentLoaded", () => {
+  // Check once on load after 1s
+  setTimeout(checkTokenExpiration, 1000);
+  // Periodically check every 10 seconds
+  setInterval(checkTokenExpiration, 10000);
+});
+
 // Dynamic Prototype & Sandbox Mode Warnings Injection
 (function injectWarning() {
   function initWarning() {

@@ -111,6 +111,7 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
     </style>
+    <script src="auth-logout.js?v=4"></script>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
     <!-- Navbar -->
@@ -342,10 +343,30 @@
                     </div>
                 </div>
 
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+                    <div class="flex flex-col gap-xs">
+                        <label for="tahun_terbit" class="text-xs font-bold text-on-surface">Tahun Terbit / Rilis <span class="text-error">*</span></label>
+                        <input type="number" id="tahun_terbit" required min="1000" max="2100" placeholder="Contoh: 2024" class="p-3 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm"/>
+                    </div>
+                    <div class="flex flex-col gap-xs">
+                        <label for="halaman" class="text-xs font-bold text-on-surface">Jumlah Halaman (Opsional)</label>
+                        <input type="number" id="halaman" min="1" placeholder="Contoh: 250" class="p-3 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm"/>
+                    </div>
+                </div>
+
                 <div class="flex flex-col gap-xs">
-                    <label for="cover_url" class="text-xs font-bold text-on-surface">Cover Buku URL (Opsional)</label>
-                    <input type="url" id="cover_url" placeholder="https://domain.com/cover-buku.png" class="p-3 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm"/>
-                    <span class="text-[10px] text-on-surface-variant">Biarkan kosong untuk menggunakan cover placeholder standard.</span>
+                    <label class="text-xs font-bold text-on-surface">Cover Buku</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+                        <div class="flex flex-col gap-xs">
+                            <label for="cover_file" class="text-[11px] text-on-surface-variant font-semibold">Unggah Berkas Gambar</label>
+                            <input type="file" id="cover_file" accept="image/*" class="p-2 bg-surface border border-outline-variant rounded-xl text-sm w-full"/>
+                        </div>
+                        <div class="flex flex-col gap-xs">
+                            <label for="cover_url" class="text-[11px] text-on-surface-variant font-semibold">Atau Gunakan URL Gambar</label>
+                            <input type="url" id="cover_url" placeholder="https://domain.com/cover-buku.png" class="p-2.5 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm"/>
+                        </div>
+                    </div>
+                    <span class="text-[10px] text-on-surface-variant">Pilih salah satu. Jika Anda mengunggah file gambar, kolom URL akan diabaikan.</span>
                 </div>
 
                 <div class="flex flex-col gap-xs">
@@ -651,12 +672,39 @@
                 const stok = parseInt(document.getElementById('stok').value);
                 const cover_url = document.getElementById('cover_url').value.trim();
                 const deskripsi = document.getElementById('deskripsi').value.trim();
+                const tahun_terbit = parseInt(document.getElementById('tahun_terbit').value) || new Date().getFullYear();
+                const halaman = parseInt(document.getElementById('halaman').value) || 0;
 
                 const originalBtnText = btnSave.innerHTML;
                 btnSave.disabled = true;
                 btnSave.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> Menyimpan...';
 
                 try {
+                    let finalCoverUrl = cover_url;
+                    
+                    const coverFileInput = document.getElementById('cover_file');
+                    if (coverFileInput && coverFileInput.files && coverFileInput.files[0]) {
+                        btnSave.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> Mengunggah Cover...';
+                        const file = coverFileInput.files[0];
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        
+                        const uploadResponse = await fetch(`${apiBaseUrl}/api/books/upload`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: formData
+                        });
+                        const uploadData = await uploadResponse.json();
+                        if (!uploadResponse.ok || !uploadData.success) {
+                            throw new Error(uploadData.message || 'Gagal mengunggah file gambar cover');
+                        }
+                        
+                        finalCoverUrl = apiBaseUrl + uploadData.fileUrl;
+                    }
+
+                    btnSave.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> Mendaftarkan Buku...';
                     const response = await fetch(`${apiBaseUrl}/api/books`, {
                         method: 'POST',
                         headers: {
@@ -668,7 +716,7 @@
                             penulis_nama,
                             kategori_id,
                             deskripsi,
-                            cover_url,
+                            cover_url: finalCoverUrl,
                             harga_beli,
                             stok,
                             kondisi,
@@ -676,9 +724,9 @@
                             bisa_beli: 1,
                             bisa_sewa: 0,
                             bisa_gratis: 0,
-                            halaman: 150, // default dummy
+                            halaman: halaman || 150,
                             bahasa: 'Indonesia',
-                            tahun_terbit: new Date().getFullYear()
+                            tahun_terbit: tahun_terbit
                         })
                     });
                     const data = await response.json();
@@ -702,6 +750,6 @@
             loadToko();
         });
     </script>
-    <script src="auth-logout.js?v=4"></script>
+    
 </body>
 </html>

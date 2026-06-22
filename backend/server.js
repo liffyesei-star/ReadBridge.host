@@ -68,6 +68,10 @@ app.use(cors({
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+// Serve uploads static folder
+const path = require("path");
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 // Logger (hanya di development)
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));

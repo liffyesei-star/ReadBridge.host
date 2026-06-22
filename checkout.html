@@ -146,6 +146,7 @@
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#004ac6" />
     <link rel="apple-touch-icon" href="icon-192.png" />
+    <script src="auth-logout.js?v=4"></script>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
     <!-- Navbar -->
@@ -616,7 +617,12 @@
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`
                         },
-                        body: JSON.stringify({ buku_id: bukuId })
+                        body: JSON.stringify({ 
+                            buku_id: bukuId,
+                            ongkir: shippingFee,
+                            asuransi: insuranceFee,
+                            diskon: discount
+                        })
                     });
                     const data = await response.json();
                     if (!response.ok || !data.success) {
@@ -728,7 +734,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
       }
     </script>
-    <script src="auth-logout.js?v=4"></script>
+    
 </body>
 
 </html>

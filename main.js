@@ -9,68 +9,53 @@ const imgBuku = [
   "https://lh3.googleusercontent.com/aida-public/AB6AXuAhnYOkX0t3qAzr0mWIbwz5yb3J-3pjarDKs9pacF9zCQ94DO-XoCcqxBiOkrG3PxYhMx_zCHTezkvWjWkc2DBIsPmGjbXwTmBxLk-SVMCzbNfIGcE3iKYP6UqSqm5QwwwSHf8Uqmf_cBHcJk_HTTkxCTfsXBlqNJ8GJ5iPcOuHEqwr2JqhHCdEEVtkkM3PeMaPXTj9L1R9ILP_P8k3x01D76RW0DKuGkQJ6PpxgAzm623v2hKOUWdzDjEQy5KfC57nxFS1lqOnAno",
   "https://lh3.googleusercontent.com/aida-public/AB6AXuD-_RYEy2W-mlbDtgm-aWh_I8at6APxU8q_BWedJb-9DvV3FnEltycsFwigAD9jsw-f0q6RYDyhGmPKlz82nIh4gBwuH8KrgnBcPWPRp886P14WiPkOWjs5qD1zydVp23FU8MwQGBwXksuGsD0Tl4-P-nbl8dWjTWP_7vtIWTxNppoufJvMR_Ij2CDGXPIL8-NapWPIKUen1_d4A3GZXPaf03R0BpHJlorBfwdLMeWgsEL_6j1MbyqsUGqJch02LrozviiYUdBWtdo"
 ];
-const books = [
-  { id: 1, type: 'book', category: 'Non-Fiksi', title: "Sejarah Nasional Indonesia Jilid 1", author: "Marwati Djoened Poesponegoro", rating: 4.8, reviews: 124, price: 85000, image: imgBuku[0], badge: "Populer", reviewer: "Aditya Pratama", abstract: "Buku sejarah nasional jilid 1." },
-  { id: 2, type: 'book', category: 'Non-Fiksi', title: "Pengantar Ilmu Sejarah", author: "Kuntowijoyo", rating: 4.6, reviews: 89, price: 65000, image: imgBuku[1], badge: null, reviewer: "Indah Permatasari", abstract: "Buku pengantar ilmu sejarah." },
-  { id: 3, type: 'book', category: 'Non-Fiksi', title: "Nusantara: Sejarah Indonesia", author: "Bernard H.M. Vlekke", rating: 4.9, reviews: 215, price: 120000, image: imgBuku[2], badge: "Edisi Terbatas", reviewer: "Satria Dewa", abstract: "Sejarah nusantara dari masa ke masa." },
-  { id: 4, type: 'book', category: 'Non-Fiksi', title: "Sapiens: Riwayat Singkat Umat Manusia", author: "Yuval Noah Harari", rating: 4.8, reviews: 532, price: 105000, image: imgBuku[3], badge: null, reviewer: "Maya Andini", abstract: "Menjelajahi sejarah umat manusia dari zaman batu hingga abad ke-21." },
-  { id: 5, type: 'book', category: 'Fiksi', title: "Bumi Manusia", author: "Pramoedya Ananta Toer", rating: 4.9, reviews: 840, price: 110000, image: imgBuku[4], badge: "Klasik", reviewer: "Doni Saputra", abstract: "Kisah Minke di masa kolonial Hindia Belanda." },
-  { id: 6, type: 'book', category: 'Pengembangan Diri', title: "Atomic Habits", author: "James Clear", rating: 4.9, reviews: 1024, price: 95000, image: imgBuku[0], badge: "Bestseller", reviewer: "Rina Marlina", abstract: "Panduan praktis membangun kebiasaan baik dan menghilangkan kebiasaan buruk." },
-  { id: 7, type: 'book', category: 'Fiksi', title: "Laskar Pelangi", author: "Andrea Hirata", rating: 4.7, reviews: 678, price: 75000, image: imgBuku[1], badge: null, reviewer: "Kurniawan Dwi", abstract: "Kisah persahabatan anak-anak Belitong." },
-  { id: 8, type: 'book', category: 'Fiksi', title: "Cantik Itu Luka", author: "Eka Kurniawan", rating: 4.8, reviews: 450, price: 90000, image: imgBuku[2], badge: "Trending", reviewer: "Lisa Damayanti", abstract: "Kisah epik keluarga Halimunda." },
-  { id: 9, type: 'book', category: 'Fiksi', title: "Laut Bercerita", author: "Leila S. Chudori", rating: 4.9, reviews: 800, price: 100000, image: imgBuku[3], badge: null, reviewer: "Hendra Kusuma", abstract: "Suara mereka yang dihilangkan pada era reformasi." },
-  { id: 10, type: 'book', category: 'Pengembangan Diri', title: "Filosofi Teras", author: "Henry Manampiring", rating: 4.8, reviews: 1200, price: 80000, image: imgBuku[4], badge: "Populer", reviewer: "Nina Oktavia", abstract: "Pengantar filsafat Stoa untuk milenial." },
-  { id: 11, type: 'book', category: 'Fiksi', title: "Pulang", author: "Leila S. Chudori", rating: 4.7, reviews: 420, price: 90000, image: imgBuku[0], badge: null, reviewer: "Fauzan Akbar", abstract: "Kisah eksil politik Indonesia di luar negeri." },
-  { id: 12, type: 'book', category: 'Non-Fiksi', title: "Kosmos", author: "Carl Sagan", rating: 4.9, reviews: 310, price: 150000, image: imgBuku[1], badge: "Edisi Terbatas", reviewer: "Tari Wulandari", abstract: "Perjalanan memahami alam semesta." }
-];
-
-// Data Jurnal
-const journals = [
-  { id: 1, type: 'journal', title: "Jurnal Sejarah: Dinamika Politik Indonesia Pasca Reformasi", author: "Dr. Anhar Gonggong", publishedYear: 2020, university: "Universitas Indonesia", downloads: 1205, rating: 4.8, reviews: 34, reviewer: "Bayu Setiawan", abstract: "Analisis komprehensif mengenai pergeseran peta kekuatan politik dan dampaknya terhadap kebijakan publik dari tahun 1998 hingga 2020.", discussionQuestion: "Bagaimana perbandingan pengaruh kebijakan sebelum dan sesudah 2010 dalam peta politik?", discussionAnswer: "Pergeseran pasca 2010 lebih menekankan desentralisasi yang memperkuat otonomi daerah, berbeda dengan awal reformasi." },
-  { id: 2, type: 'journal', title: "Studi Literatur: Pengaruh Literasi Digital di Era Society 5.0", author: "Prof. Rhenald Kasali", publishedYear: 2022, university: "Universitas Gadjah Mada", downloads: 854, rating: 4.5, reviews: 19, reviewer: "Anita Yulianti", abstract: "Mengkaji bagaimana peningkatan literasi digital berkontribusi pada kesiapan masyarakat menghadapi disrupsi teknologi di era Society 5.0.", discussionQuestion: "Apakah literasi digital ini diukur berdasarkan demografi umur tertentu?", discussionAnswer: "Ya, fokus utama studi ini adalah generasi milenial dan Gen Z sebagai pendorong utama society 5.0." },
-  { id: 3, type: 'journal', title: "Jurnal Ilmu Komputer: Implementasi AI pada Sistem Perpustakaan", author: "Dr. Romi Satria Wahono", publishedYear: 2023, university: "Institut Teknologi Bandung", downloads: 432, rating: 4.9, reviews: 52, reviewer: "Yusuf Hidayat", abstract: "Penerapan algoritma machine learning untuk rekomendasi buku dan optimasi sistem klasifikasi perpustakaan digital.", discussionQuestion: "Algoritma machine learning apa yang paling efektif dalam rekomendasi ini?", discussionAnswer: "Kami menemukan bahwa kombinasi collaborative filtering dan neural networks memberikan hasil yang paling akurat." },
-  { id: 4, type: 'journal', title: "Dampak Perubahan Iklim Terhadap Ekonomi Pertanian", author: "Dr. Emil Salim", publishedYear: 2021, university: "Institut Pertanian Bogor", downloads: 678, rating: 4.6, reviews: 27, reviewer: "Sari Purnamasari", abstract: "Kajian empiris mengenai penurunan hasil panen akibat anomali cuaca di wilayah Jawa Barat selama satu dekade terakhir.", discussionQuestion: "Apakah ada variabel jenis tanah yang diikutsertakan dalam kajian ini?", discussionAnswer: "Kajian ini berfokus pada anomali curah hujan dan suhu, namun kami merekomendasikan variabel tanah untuk studi selanjutnya." },
-  { id: 5, type: 'journal', title: "Inovasi Pembelajaran Daring Selama Pandemi", author: "Prof. Anita Lie", publishedYear: 2021, university: "Universitas Katolik Widya Mandala", downloads: 1500, rating: 4.7, reviews: 45, reviewer: "Kevin Sanjaya", abstract: "Evaluasi efektivitas berbagai platform e-learning dalam menjaga kualitas pendidikan selama masa pembatasan sosial berskala besar.", discussionQuestion: "Bagaimana dengan aspek interaktivitas siswa di daerah terpelosok?", discussionAnswer: "Aspek ini cukup krusial, studi kami mencatat adanya ketimpangan yang signifikan akibat infrastruktur jaringan." },
-  { id: 6, type: 'journal', title: "Pengembangan Vaksin Nasional: Tantangan dan Peluang", author: "Dr. Amin Soebandrio", publishedYear: 2022, university: "Lembaga Eijkman", downloads: 920, rating: 4.4, reviews: 12, reviewer: "Lia Safitri", abstract: "Tinjauan mendalam mengenai proses riset dan pengembangan vaksin Merah Putih di Indonesia.", discussionQuestion: "Apa tantangan terbesar dalam tahap uji klinis fase 3?", discussionAnswer: "Tantangan utamanya adalah mendapatkan relawan yang belum pernah divaksinasi sebelumnya di tengah program vaksinasi masal." },
-  { id: 7, type: 'journal', title: "Perkembangan Arsitektur Tropis Modern", author: "Prof. Eko Purwanto", publishedYear: 2019, university: "Universitas Tarumanagara", downloads: 345, rating: 4.8, reviews: 31, reviewer: "Dimas Anggara", abstract: "Eksplorasi desain bangunan yang responsif terhadap iklim tropis dengan pendekatan estetika modern dan material lokal.", discussionQuestion: "Material lokal apa saja yang terbukti paling efisien meredam panas?", discussionAnswer: "Bambu dan bata merah ekspos, ketika dipadukan dengan sirkulasi silang, menunjukkan penurunan suhu ruang tertinggi." },
-  { id: 8, type: 'journal', title: "Etika Artificial Intelligence dalam Layanan Kesehatan", author: "Dr. Setiawan Dalimunthe", publishedYear: 2023, university: "Fakultas Kedokteran UI", downloads: 512, rating: 4.9, reviews: 68, reviewer: "Siska Saraswati", abstract: "Diskusi mengenai batasan moral, privasi data pasien, dan tanggung jawab hukum dalam penerapan AI di rumah sakit.", discussionQuestion: "Siapa yang bertanggung jawab secara hukum jika AI membuat misdiagnosis?", discussionAnswer: "Secara etika saat ini, tanggung jawab akhir tetap berada di tangan tenaga medis profesional sebagai 'human in the loop'." }
-];
-
-// Data Diskusi
-const discussions = [
-  { id: 1, type: 'discussion', title: "Rekomendasi novel fiksi sejarah Indonesia?", author: "@SastraWangi", timeAgo: "2 jam yang lalu", upvotes: "1.2k", comments: 45, content: "Halo semuanya, ada yang punya rekomendasi novel fiksi yang berlatar belakang sejarah Indonesia? Aku lagi nyari bacaan buat nambah wawasan sekaligus hiburan.", tags: ["#Fiksi", "#Sejarah"] },
-  { id: 2, type: 'discussion', title: "Bedah Buku: Atomic Habits karya James Clear", author: "@ProduktivitasTinggi", timeAgo: "1 hari yang lalu", upvotes: "850", comments: 120, content: "Mari kita diskusikan bab 3 dari Atomic Habits. Bagaimana kalian mengimplementasikan 'Make it Obvious' dalam rutinitas harian kalian?", tags: ["#BedahBuku", "#SelfImprovement"] },
-  { id: 3, type: 'discussion', title: "Tips membaca jurnal berbahasa Inggris dengan cepat", author: "@PejuangSkripsi", timeAgo: "5 jam yang lalu", upvotes: "3.4k", comments: 210, content: "Ada yang punya teknik atau tools AI yang bagus buat bantu mereview literatur jurnal bahasa inggris ngga? Mohon infonya ya kak.", tags: ["#Skripsi", "#TipsBelajar"] },
-  { id: 4, type: 'discussion', title: "Buku fiksi sains yang mind-blowing?", author: "@SciFiNerd", timeAgo: "3 hari yang lalu", upvotes: "500", comments: 80, content: "Ada saran buku fiksi sains yang konsepnya fresh dan bikin mikir keras? Baru selesai baca Dune dan butuh sesuatu yang sejenis.", tags: ["#SciFi", "#RekomendasiBuku"] },
-  { id: 5, type: 'discussion', title: "Bagaimana cara konsisten membaca buku?", author: "@PembacaPemula", timeAgo: "1 minggu yang lalu", upvotes: "2.1k", comments: 150, content: "Saya sering beli buku tapi jarang selesai dibaca. Selalu ada saja alasan buat berhenti. Minta tips dong supaya bisa konsisten baca setiap hari.", tags: ["#TipsMembaca", "#Produktivitas"] },
-  { id: 6, type: 'discussion', title: "Diskusi Jurnal: Pengaruh AI terhadap lapangan kerja", author: "@TechEnthusiast", timeAgo: "12 jam yang lalu", upvotes: "750", comments: 95, content: "Baru saja baca jurnal terbaru dari MIT tentang otomasi. Menurut kalian, profesi apa saja yang akan paling terdampak dalam 5 tahun ke depan?", tags: ["#DiskusiJurnal", "#TechNews"] }
-];
-
-// Data Marketplace (Buku Preloved)
-// Data Marketplace (Buku Preloved) disinkronisasi dengan books
-const marketplaceBooks = books.map((b, i) => ({
-  ...b,
-  id: 100 + b.id, // Preloved id
-  condition: i % 2 === 0 ? "Bagus" : "Lecet",
-  stock: (i % 3) + 1,
-  location: ["Jakarta", "Bandung", "Surabaya", "Yogyakarta"][i % 4],
-  date: "2024-05-01",
-  price: Math.floor(b.price * 0.7) // Harga preloved 70% dari harga baru
-}));
-
-// Data Sewa Buku disinkronisasi dengan books
-const sewaBooks = books.map((b, i) => ({
-  ...b,
-  id: 200 + b.id, // Sewa id
-  stock: (i % 4) + 1,
-  priceHarian: Math.floor(b.price * 0.05),
-  priceMingguan: Math.floor(b.price * 0.25),
-  priceBulanan: Math.floor(b.price * 0.8)
-}));
-
+let books = [];
+const marketplaceBooks = [];
+const sewaBooks = [];
 window.readbridgeData = { books, journals, discussions, marketplaceBooks, sewaBooks };
 
-document.addEventListener("DOMContentLoaded", function () {
+// Fetch books from API
+const isLocalFrontend = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+const apiBaseUrl = localStorage.getItem('rb_api_base_url') || (isLocalFrontend ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+
+async function loadBooksFromApi() {
+  try {
+    const response = await fetch(`${apiBaseUrl}/api/books?limit=100`);
+    const data = await response.json();
+    if (data.success && data.data) {
+      books = data.data.map(b => {
+        let badge = null;
+        try {
+          const parsedTags = typeof b.tags === 'string' ? JSON.parse(b.tags) : b.tags;
+          if (Array.isArray(parsedTags) && parsedTags.length > 0) {
+            badge = parsedTags[0].replace(/^#/, '');
+          }
+        } catch(e) {}
+        
+        return {
+          id: b.id,
+          type: 'book',
+          category: b.kategori || 'Fiksi',
+          title: b.judul,
+          author: b.penulis_nama,
+          rating: parseFloat(b.rating) || 4.5,
+          reviews: b.total_ulasan || 0,
+          price: parseFloat(b.harga_beli) || 0,
+          image: b.cover_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuApdMuG3pfOyT45TKpszN-u5p7r1oX9aiBChHWVTMo8VwUuEphgMhzpdAVa4XEQpZgD9IzJG6lf6kLV-3_KyV2Y8PhhfVooBF5YOwubgF5cNUseZ3PO8xTKJhXlKUP1gy2iST0n3WfZ5Y-zSZc2N4U1MdOXpaGoEZxPol1ENCfUOSB93pADkccu3bQ9B5QiG7OOYNM2BCYhg_aSSthqVW92EJ5szvP_eH-k4fUC_PaP2UYVB7I8gYczOUTVuEZ2kmq3eKKyUT1kS0A',
+          badge: badge,
+          reviewer: 'Pembaca Anonim',
+          abstract: b.deskripsi || '',
+          isDb: true
+        };
+      });
+      window.readbridgeData.books = books;
+    }
+  } catch (err) {
+    console.warn("Failed to load books from backend API in main.js:", err);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", async function () {
   // --- A. RUNTUTAN (SEQUENCE) ---
   // Kode di bawah ini berjalan secara berurutan saat halaman selesai dimuat:
   // 1. Mengambil referensi elemen
@@ -95,27 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (!resultGrid) return;
 
   // Status Tab Aktif (Default: 'buku')
-  const imgBuku = [
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuApdMuG3pfOyT45TKpszN-u5p7r1oX9aiBChHWVTMo8VwUuEphgMhzpdAVa4XEQpZgD9IzJG6lf6kLV-3_KyV2Y8PhhfVooBF5YOwubgF5cNUseZ3PO8xTKJhXlKUP1gy2iST0n3WfZ5Y-zSZc2N4U1MdOXpaGoEZxPol1ENCfUOSB93pADkccu3bQ9B5QiG7OOYNM2BCYhg_aSSthqVW92EJ5szvP_eH-k4fUC_PaP2UYVB7I8gYczOUTVuEZ2kmq3eKKyUT1kS0A",
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuB20mW314sFNPWzvOF_CpCAdw90Y-mmknLvC9JBPb4pHHUZvNYmJ3F-UINSXQJtThnhYkgaP_QQGIxBna--xCuCu0CluusyF76_N8MtPIwXsZir4uO-c4IIpHxoYLGKwlQtyPP-dVZhMhY3c1RDKtMi3VAe6a75GbvBbo8ZMvLKgNwkNmruPktKKfe7ANWZeg_DU7TAPtBiHzLIhkuqz6RzQZ2dSbOO4_O4i59rXDaBIJ3MLzGhGjILnoORo94tk44T0EXa98DflJQ",
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuAg98F8GBT94G18yXH1uJ6fy4JRWjmxgKXmQhYgrtegNNTXHYW5BGOwziIRv0wfUgKRNwhklaPrqi0rvwAURNdudCZ6-R0Jo6hrZK0U-oEpB5_MRI3qAQDdZXePtT1cYpe5x1rOLbbh0vjHBJKsUiVuPSRACz9WRyCvaEZz6XFvSy-2aJAY7pIgjQ4kSmvxEFrNzc2fvsu_8Yr2fo0nmD4AMmH9cmxCwdDf707SUvQz1wY7koa43wp2OQJBOrwTWPdQudK0DeuZdFI",
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuAhnYOkX0t3qAzr0mWIbwz5yb3J-3pjarDKs9pacF9zCQ94DO-XoCcqxBiOkrG3PxYhMx_zCHTezkvWjWkc2DBIsPmGjbXwTmBxLk-SVMCzbNfIGcE3iKYP6UqSqm5QwwwSHf8Uqmf_cBHcJk_HTTkxCTfsXBlqNJ8GJ5iPcOuHEqwr2JqhHCdEEVtkkM3PeMaPXTj9L1R9ILP_P8k3x01D76RW0DKuGkQJ6PpxgAzm623v2hKOUWdzDjEQy5KfC57nxFS1lqOnAno",
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuD-_RYEy2W-mlbDtgm-aWh_I8at6APxU8q_BWedJb-9DvV3FnEltycsFwigAD9jsw-f0q6RYDyhGmPKlz82nIh4gBwuH8KrgnBcPWPRp886P14WiPkOWjs5qD1zydVp23FU8MwQGBwXksuGsD0Tl4-P-nbl8dWjTWP_7vtIWTxNppoufJvMR_Ij2CDGXPIL8-NapWPIKUen1_d4A3GZXPaf03R0BpHJlorBfwdLMeWgsEL_6j1MbyqsUGqJch02LrozviiYUdBWtdo"
-  ];
-  const books = [
-    { id: 1, type: 'book', title: "Sejarah Nasional Indonesia Jilid 1", author: "Marwati Djoened Poesponegoro", rating: 4.8, reviews: 124, price: 85000, image: imgBuku[0], badge: "Populer" },
-    { id: 2, type: 'book', title: "Pengantar Ilmu Sejarah", author: "Kuntowijoyo", rating: 4.6, reviews: 89, price: 65000, image: imgBuku[1], badge: null },
-    { id: 3, type: 'book', title: "Nusantara: Sejarah Indonesia", author: "Bernard H.M. Vlekke", rating: 4.9, reviews: 215, price: 120000, image: imgBuku[2], badge: "Edisi Terbatas" },
-    { id: 4, type: 'book', title: "Sapiens: Riwayat Singkat Umat Manusia", author: "Yuval Noah Harari", rating: 4.8, reviews: 532, price: 105000, image: imgBuku[3], badge: null },
-    { id: 5, type: 'book', title: "Bumi Manusia", author: "Pramoedya Ananta Toer", rating: 4.9, reviews: 840, price: 110000, image: imgBuku[4], badge: "Klasik" },
-    { id: 6, type: 'book', title: "Atomic Habits", author: "James Clear", rating: 4.9, reviews: 1024, price: 95000, image: imgBuku[0], badge: "Bestseller" },
-    { id: 7, type: 'book', title: "Laskar Pelangi", author: "Andrea Hirata", rating: 4.7, reviews: 678, price: 75000, image: imgBuku[1], badge: null },
-    { id: 8, type: 'book', title: "Cantik Itu Luka", author: "Eka Kurniawan", rating: 4.8, reviews: 450, price: 90000, image: imgBuku[2], badge: "Trending" },
-    { id: 9, type: 'book', title: "Laut Bercerita", author: "Leila S. Chudori", rating: 4.9, reviews: 800, price: 100000, image: imgBuku[3], badge: null },
-    { id: 10, type: 'book', title: "Filosofi Teras", author: "Henry Manampiring", rating: 4.8, reviews: 1200, price: 80000, image: imgBuku[4], badge: "Populer" },
-    { id: 11, type: 'book', title: "Pulang", author: "Leila S. Chudori", rating: 4.7, reviews: 420, price: 90000, image: imgBuku[0], badge: null },
-    { id: 12, type: 'book', title: "Kosmos", author: "Carl Sagan", rating: 4.9, reviews: 310, price: 150000, image: imgBuku[1], badge: "Edisi Terbatas" }
-  ];
+  await loadBooksFromApi();
 
   // Data Jurnal
   const journals = [

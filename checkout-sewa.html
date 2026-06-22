@@ -102,6 +102,7 @@
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#004ac6" />
     <link rel="apple-touch-icon" href="icon-192.png" />
+    <script src="auth-logout.js?v=4"></script>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
     <!-- Navbar -->
@@ -341,14 +342,40 @@
 
     <script src="main.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
             const bookId = parseInt(params.get('id'));
             const duration = params.get('duration') || 'harian';
+            const isDb = params.get('isDb') === 'true';
+
+            const isLocalFrontend = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+            const apiBaseUrl = localStorage.getItem('rb_api_base_url') || (isLocalFrontend ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
 
             let targetBook = null;
-            if (window.readbridgeData && window.readbridgeData.sewaBooks) {
+            if (window.readbridgeData && window.readbridgeData.sewaBooks && !isDb) {
                 targetBook = window.readbridgeData.sewaBooks.find(b => b.id === bookId);
+            }
+
+            if (!targetBook) {
+                try {
+                    const response = await fetch(`${apiBaseUrl}/api/books/${bookId}`);
+                    const resData = await response.json();
+                    if (resData.success && resData.data) {
+                        const b = resData.data;
+                        targetBook = {
+                            id: b.id,
+                            title: b.judul,
+                            author: b.penulis_nama,
+                            image: b.cover_url || 'https://via.placeholder.com/150',
+                            priceHarian: parseFloat(b.harga_sewa) || 2000,
+                            priceMingguan: parseFloat(b.harga_sewa) * 5 || 10000,
+                            priceBulanan: parseFloat(b.harga_sewa) * 20 || 35000,
+                            isDb: true
+                        };
+                    }
+                } catch (err) {
+                    console.error("Gagal mengambil detail checkout sewa buku:", err);
+                }
             }
 
             if (!targetBook) {
@@ -530,8 +557,10 @@
                             'Authorization': `Bearer ${token}`
                         },
                         body: JSON.stringify({
-                            buku_id: targetBook.id > 200 ? targetBook.id - 200 : targetBook.id,
-                            durasi: currentMultiplier
+                            buku_id: targetBook.isDb ? targetBook.id : (targetBook.id > 200 ? targetBook.id - 200 : targetBook.id),
+                            durasi: currentMultiplier,
+                            ongkir: shippingFee,
+                            deposit: depositFee
                         })
                     });
                     const data = await response.json();
@@ -647,7 +676,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
       }
     </script>
-    <script src="auth-logout.js?v=4"></script>
+    
 </body>
 
 </html>

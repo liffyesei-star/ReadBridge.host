@@ -50,23 +50,71 @@ function toRupiahAmount(value) {
   return amount;
 }
 
-async function createMidtransPayment({ kode, harga, buku, user }) {
+async function createMidtransPayment({ kode, hargaTotal, buku, user, ongkir = 0, asuransi = 0, diskon = 0, deposit = 0, tipe = 'beli', hargaSewaTotal = 0 }) {
   requireMidtransConfig();
 
-  const amount = toRupiahAmount(harga);
+  const totalAmount = toRupiahAmount(hargaTotal);
+  
+  // Base price for item details
+  const item_details = [];
+  if (tipe === 'sewa') {
+    item_details.push({
+      id: String(buku.id),
+      price: toRupiahAmount(hargaSewaTotal),
+      quantity: 1,
+      name: `${buku.judul.slice(0, 40)} (Sewa)`,
+    });
+  } else {
+    item_details.push({
+      id: String(buku.id),
+      price: toRupiahAmount(buku.harga_beli),
+      quantity: 1,
+      name: buku.judul.slice(0, 50),
+    });
+  }
+
+  if (Number(ongkir) > 0) {
+    item_details.push({
+      id: 'SHIPPING',
+      price: toRupiahAmount(ongkir),
+      quantity: 1,
+      name: 'Biaya Pengiriman',
+    });
+  }
+
+  if (Number(asuransi) > 0) {
+    item_details.push({
+      id: 'INSURANCE',
+      price: toRupiahAmount(asuransi),
+      quantity: 1,
+      name: 'Biaya Asuransi',
+    });
+  }
+
+  if (Number(deposit) > 0) {
+    item_details.push({
+      id: 'DEPOSIT',
+      price: toRupiahAmount(deposit),
+      quantity: 1,
+      name: 'Uang Jaminan (Deposit)',
+    });
+  }
+
+  if (Number(diskon) > 0) {
+    item_details.push({
+      id: 'DISCOUNT',
+      price: -toRupiahAmount(diskon),
+      quantity: 1,
+      name: 'Diskon Voucher',
+    });
+  }
+
   const parameter = {
     transaction_details: {
       order_id: kode,
-      gross_amount: amount,
+      gross_amount: totalAmount,
     },
-    item_details: [
-      {
-        id: String(buku.id),
-        price: amount,
-        quantity: 1,
-        name: buku.judul.slice(0, 50),
-      },
-    ],
+    item_details: item_details,
     customer_details: {
       first_name: user.nama,
       email: user.email,
@@ -203,7 +251,7 @@ router.get("/:kode", verifyToken, async (req, res) => {
 router.post("/beli", verifyToken, async (req, res) => {
   const conn = await db.getConnection();
   try {
-    const { buku_id } = req.body;
+    const { buku_id, ongkir = 0, asuransi = 0, diskon = 0 } = req.body;
     if (!buku_id) return res.status(400).json({ success: false, message: "buku_id wajib diisi" });
     requireMidtransConfig();
     await conn.beginTransaction();
@@ -224,15 +272,27 @@ router.post("/beli", verifyToken, async (req, res) => {
     if (sudahPunya) throw httpError(400, "Anda sudah memiliki buku ini");
 
     const kode = generateKodeTransaksi();
+    
+    // Hitung total harga sebenarnya
+    const hargaTotal = Number(buku.harga_beli) + Number(ongkir) + Number(asuransi) - Number(diskon);
 
     // Buat transaksi pending. Akses buku diberikan setelah webhook Midtrans sukses.
     const [trx] = await conn.execute(
       `INSERT INTO transaksi (kode_transaksi, user_id, buku_id, tipe, harga, status, metode_bayar)
        VALUES (?, ?, ?, 'beli', ?, 'pending', 'midtrans')`,
-      [kode, req.user.id, buku_id, buku.harga_beli]
+      [kode, req.user.id, buku_id, hargaTotal]
     );
 
-    const payment = await createMidtransPayment({ kode, harga: buku.harga_beli, buku, user: req.user });
+    const payment = await createMidtransPayment({
+      kode,
+      hargaTotal,
+      buku,
+      user: req.user,
+      ongkir,
+      asuransi,
+      diskon,
+      tipe: 'beli'
+    });
     await conn.execute(
       "UPDATE transaksi SET payment_token = ?, payment_url = ? WHERE id = ?",
       [payment.token, payment.redirect_url, trx.insertId]
@@ -267,7 +327,7 @@ router.post("/beli", verifyToken, async (req, res) => {
 router.post("/sewa", verifyToken, async (req, res) => {
   const conn = await db.getConnection();
   try {
-    const { buku_id, durasi = 30 } = req.body;
+    const { buku_id, durasi = 30, ongkir = 0, deposit = 0 } = req.body;
     if (!buku_id) return res.status(400).json({ success: false, message: "buku_id wajib diisi" });
     requireMidtransConfig();
     await conn.beginTransaction();
@@ -292,7 +352,9 @@ router.post("/sewa", verifyToken, async (req, res) => {
     if (!Number.isFinite(durasiHari) || durasiHari < 1) {
       throw httpError(400, "Durasi sewa tidak valid");
     }
-    const hargaTotal = Math.ceil(buku.harga_sewa * (durasiHari / 30));
+    const hargaSewaTotal = Math.ceil(buku.harga_sewa * (durasiHari / 30));
+    const hargaTotal = hargaSewaTotal + Number(ongkir) + Number(deposit);
+
     const kode = generateKodeTransaksi();
     const [trx] = await conn.execute(
       `INSERT INTO transaksi (kode_transaksi, user_id, buku_id, tipe, harga, durasi_sewa_hari, status, metode_bayar)
@@ -300,7 +362,16 @@ router.post("/sewa", verifyToken, async (req, res) => {
       [kode, req.user.id, buku_id, hargaTotal, durasiHari]
     );
 
-    const payment = await createMidtransPayment({ kode, harga: hargaTotal, buku, user: req.user });
+    const payment = await createMidtransPayment({
+      kode,
+      hargaTotal,
+      buku,
+      user: req.user,
+      ongkir,
+      deposit,
+      tipe: 'sewa',
+      hargaSewaTotal
+    });
     await conn.execute(
       "UPDATE transaksi SET payment_token = ?, payment_url = ? WHERE id = ?",
       [payment.token, payment.redirect_url, trx.insertId]
