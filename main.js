@@ -55,7 +55,7 @@ async function loadBooksFromApi() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", async function () {
+document.addEventListener("DOMContentLoaded", function () {
   // --- A. RUNTUTAN (SEQUENCE) ---
   // Kode di bawah ini berjalan secara berurutan saat halaman selesai dimuat:
   // 1. Mengambil referensi elemen
@@ -80,7 +80,11 @@ document.addEventListener("DOMContentLoaded", async function () {
   if (!resultGrid) return;
 
   // Status Tab Aktif (Default: 'buku')
-  await loadBooksFromApi();
+  loadBooksFromApi().then(() => {
+    if (currentActiveTab === 'buku') {
+      renderData(books, 'buku');
+    }
+  });
 
   // Data Jurnal
   const journals = [

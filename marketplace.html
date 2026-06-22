@@ -475,7 +475,7 @@
     window.location.href = `checkout-sewa.html?id=${bookId}${isDb ? '&isDb=true' : ''}`;
   }
 
-  document.addEventListener('DOMContentLoaded', async () => {
+  document.addEventListener('DOMContentLoaded', () => {
     // Tab Switching Logic
     const tabBeli = document.getElementById('tab-beli');
     const tabSewa = document.getElementById('tab-sewa');
@@ -541,8 +541,17 @@
       });
     });
     
-    await fetchPrelovedBooks();
-    await fetchSewaBooks();
+    fetchPrelovedBooks().then(() => {
+      if (window.location.hash !== '#sewa') {
+        renderMarketplace();
+      }
+    });
+    fetchSewaBooks().then(() => {
+      if (window.location.hash === '#sewa') {
+        renderSewa();
+      }
+    });
+
     if (window.location.hash === '#sewa') {
       showSewa();
     } else {

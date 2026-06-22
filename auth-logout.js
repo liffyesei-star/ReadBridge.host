@@ -518,45 +518,7 @@ document.addEventListener("DOMContentLoaded", () => {
       applySellerMenus(token);
     }
 
-    // 3. Dropdown toggle — satu listener saja (clone tombol agar hapus handler inline per-halaman)
-    setupProfileDropdown();
-
-    function setupProfileDropdown() {
-      const btn = document.querySelector("#profile-avatar-btn, #profile-avatar-btn-nav");
-      const dropdown = document.querySelector("#profile-dropdown, #profile-dropdown-nav");
-      if (!btn || !dropdown || btn.getAttribute("data-rb-dropdown-ready") === "1") return;
-
-      const cleanBtn = btn.cloneNode(true);
-      btn.parentNode.replaceChild(cleanBtn, btn);
-      cleanBtn.setAttribute("data-rb-dropdown-ready", "1");
-
-      cleanBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const isHidden = dropdown.classList.contains("hidden");
-        if (isHidden) {
-          dropdown.classList.remove("hidden");
-          dropdown.classList.add("flex");
-        } else {
-          dropdown.classList.add("hidden");
-          dropdown.classList.remove("flex");
-        }
-      });
-
-      if (document.body.getAttribute("data-rb-outside-click") !== "1") {
-        document.body.setAttribute("data-rb-outside-click", "1");
-        document.addEventListener("click", (e) => {
-          document
-            .querySelectorAll("#profile-dropdown:not(.hidden), #profile-dropdown-nav:not(.hidden)")
-            .forEach((drop) => {
-              const avatar = document.querySelector("#profile-avatar-btn, #profile-avatar-btn-nav");
-              if (!drop.contains(e.target) && (!avatar || !avatar.contains(e.target))) {
-                drop.classList.add("hidden");
-                drop.classList.remove("flex");
-              }
-            });
-        });
-      }
-    }
+    // Native dropdown toggle is handled in individual HTML inline scripts.
   }
 
   // Execute on load
