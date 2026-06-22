@@ -723,9 +723,8 @@ window.addComment = async function (id) {
         if (countEl) countEl.textContent = p.komentar;
         input.value = '';
 
-        if (window.communityBot) {
-          window.communityBot.scheduleReplyToUser(id, text, p);
-        }
+        // Notify user their comment was posted
+        showToastNotification('💬 Komentar berhasil ditambahkan!');
       }
     } else {
       alert("Gagal menambahkan komentar.");
@@ -735,35 +734,18 @@ window.addComment = async function (id) {
   }
 };
 
-// Toast Notification Helper
-function showToastNotification(message) {
-  let container = document.getElementById('toast-notification-container');
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'toast-notification-container';
-    container.className = 'fixed bottom-24 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-2 w-full max-w-sm px-4 pointer-events-none';
-    document.body.appendChild(container);
-  }
-
+// Toast Notification — bottom-right
+function showToastNotification(message, icon) {
   const toast = document.createElement('div');
-  toast.className = 'bg-slate-900/95 text-white backdrop-blur-sm text-sm font-semibold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-fadeIn pointer-events-auto transform translate-y-4 transition-all duration-300 opacity-0';
+  toast.className = 'fixed bottom-6 right-6 bg-surface-container-highest text-on-surface px-4 py-3 rounded-xl shadow-lg border border-outline-variant/30 flex items-center gap-3 z-[300] transform transition-all duration-300 translate-y-6 opacity-0 max-w-xs';
   toast.innerHTML = `
-    <span class="material-symbols-outlined text-primary text-[20px]">info</span>
-    <span class="flex-1">${message}</span>
+    <span class="text-primary material-symbols-outlined text-[20px]">${icon || 'notifications'}</span>
+    <span class="font-label-md text-label-md text-on-surface">${message}</span>
   `;
-
-  container.appendChild(toast);
-
-  // Animate in
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.classList.remove('translate-y-6', 'opacity-0'); }, 80);
   setTimeout(() => {
-    toast.classList.remove('opacity-0', 'translate-y-4');
-    toast.classList.add('opacity-100', 'translate-y-0');
-  }, 10);
-
-  // Animate out and remove
-  setTimeout(() => {
-    toast.classList.remove('opacity-100', 'translate-y-0');
-    toast.classList.add('opacity-0', 'translate-y-4');
+    toast.classList.add('opacity-0', 'translate-y-2');
     setTimeout(() => toast.remove(), 300);
   }, 3500);
 }
@@ -1918,9 +1900,7 @@ function isBotUser(username) {
 
 function renderCommentItemHtml(c, postAuthor) {
   let cBadge = '';
-  if (c.isBot || isBotUser(c.username)) {
-    cBadge = `<span class="bg-violet-500/15 text-violet-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">AI Bot</span>`;
-  } else if (c.username === postAuthor && c.username === CURRENT_USER_PROFILE) {
+  if (c.username === postAuthor && c.username === CURRENT_USER_PROFILE) {
     cBadge = `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda Author</span>`;
   } else if (c.username === postAuthor) {
     cBadge = `<span class="bg-surface-container-highest text-on-surface-variant text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Author</span>`;
@@ -1928,10 +1908,7 @@ function renderCommentItemHtml(c, postAuthor) {
     cBadge = `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda</span>`;
   }
 
-  const isBot = c.isBot || isBotUser(c.username);
-  const bubble = isBot
-    ? 'bg-violet-500/10 border border-violet-500/25'
-    : 'bg-surface-container-lowest border border-outline-variant/20';
+  const bubble = 'bg-surface-container-lowest border border-outline-variant/20';
 
   return `
     <div class="flex gap-3 text-sm">
@@ -1992,7 +1969,6 @@ async function fetchCommentsForPost(postId) {
         text: b.konten,
         waktu: b.created_at,
         avatar: b.foto_profil,
-        isBot: isBotUser(username)
       };
     });
     p.komentar = p.commentsList.length;
@@ -2009,147 +1985,7 @@ async function fetchCommentsForPost(postId) {
   }
 }
 
-class CommunityBot {
-  constructor() {
-    this.timerId = null;
-    this.replyTimerId = null;
-    this.activeDest = null;
-    if (document.title.includes('Pejuang SNBT')) this.activeDest = 'Pejuang SNBT';
-    else if (document.title.includes('Pecinta Fiksi')) this.activeDest = 'Pecinta Fiksi';
-    else if (document.title.includes('Komunitas')) this.activeDest = 'Public Feed';
-  }
-
-  start() {
-    if (!this.activeDest) return;
-
-    const run = () => {
-      this.simulateAction();
-      const next = Math.floor(Math.random() * 25000) + 25000;
-      this.timerId = setTimeout(run, next);
-    };
-    this.timerId = setTimeout(run, 8000);
-  }
-
-  stop() {
-    if (this.timerId) clearTimeout(this.timerId);
-    if (this.replyTimerId) clearTimeout(this.replyTimerId);
-  }
-
-  getPostsForDest() {
-    const posts = getPosts();
-    if (this.activeDest === 'Public Feed') {
-      return posts.filter(p => !p.club_id && p.destination === 'Public Feed');
-    }
-    return posts.filter(p => p.destination === this.activeDest);
-  }
-
-  simulateAction() {
-    const posts = this.getPostsForDest();
-
-    // Simulate either creating a new post, voting, or commenting
-    const actionRand = Math.random();
-    if (actionRand < 0.15) {
-      this.simulateNewPost();
-    } else if (actionRand < 0.55 && posts.length > 0) {
-      const target = posts[Math.floor(Math.random() * posts.length)];
-      this.simulateVote(target.id);
-    } else if (posts.length > 0) {
-      const target = posts[Math.floor(Math.random() * posts.length)];
-      this.simulateComment(target);
-    }
-  }
-
-  async simulateNewPost() {
-    try {
-      const token = localStorage.getItem('rb_token');
-      const headers = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-
-      const res = await fetch(`${API_BASE}/api/community/bot-simulate`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ action: 'create_post', destination: this.activeDest || 'Public Feed' })
-      });
-      const data = await res.json();
-      if (data.success) {
-        // Panggil fungsi render ulang dari script utama jika tersedia
-        if (typeof window.fetchPostsFromAPI === 'function') {
-          apiPostsFetched = false;
-          await renderAllPosts();
-        }
-        this.showToast(`✨ ${data.data.username} baru saja membuat diskusi baru!`);
-      }
-    } catch (e) { console.error('Simulate post error:', e); }
-  }
-
-  simulateVote(postId) {
-    const posts = getPosts();
-    const p = posts.find(x => x.id == postId);
-    if (!p) return;
-    p.votes = (p.votes || 0) + 1;
-    savePosts(posts);
-    const el = document.getElementById(`vote-${postId}`);
-    if (el) {
-      el.textContent = formatVotes(p.votes);
-      el.parentElement.classList.add('bg-primary/20', 'scale-105', 'transition-all');
-      setTimeout(() => el.parentElement.classList.remove('bg-primary/20', 'scale-105'), 1000);
-    }
-  }
-
-  async simulateComment(post) {
-    try {
-      const token = localStorage.getItem('rb_token');
-      const headers = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-
-      const res = await fetch(`${API_BASE}/api/community/bot-simulate`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ action: 'reply_post', postId: post.id })
-      });
-      const data = await res.json();
-      if (data.success) {
-        appendCommentToUI(post.id, { username: data.data.username, text: data.data.text, waktu: new Date().toISOString(), isBot: true }, post.username);
-        this.showToast(`🤖 ${data.data.username} baru saja membalas diskusi`);
-      }
-    } catch (e) { console.error('Simulate comment error:', e); }
-  }
-
-  scheduleReplyToUser(postId, userText, post) {
-    if (this.replyTimerId) clearTimeout(this.replyTimerId);
-    const delay = Math.floor(Math.random() * 4000) + 3000;
-    this.replyTimerId = setTimeout(async () => {
-      try {
-        const token = localStorage.getItem('rb_token');
-        const headers = { 'Content-Type': 'application/json' };
-        if (token) headers['Authorization'] = `Bearer ${token}`;
-
-        const res = await fetch(`${API_BASE}/api/community/bot-simulate`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({ action: 'reply_user', postId, userText })
-        });
-        const data = await res.json();
-        if (data.success) {
-          appendCommentToUI(postId, { username: data.data.username, text: data.data.text, waktu: new Date().toISOString(), isBot: true }, post.username);
-          this.showToast(`💬 ${data.data.username} membalas komentarmu`);
-        }
-      } catch (e) { console.error('Simulate reply error:', e); }
-    }, delay);
-  }
-
-  showToast(message) {
-    const toast = document.createElement('div');
-    toast.className = 'fixed bottom-6 right-6 bg-surface-container-highest text-on-surface px-4 py-3 rounded-xl shadow-lg border border-outline-variant/30 flex items-center gap-3 z-[100] transform transition-all duration-300 translate-y-10 opacity-0';
-    toast.innerHTML = `<span class="font-label-md text-label-md">${message}</span>`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.classList.remove('translate-y-10', 'opacity-0'), 100);
-    setTimeout(() => {
-      toast.classList.add('opacity-0', 'translate-y-2');
-      setTimeout(() => toast.remove(), 300);
-    }, 3500);
-  }
-}
+// Bot functionality removed
 
 // ==========================================
 // SYSTEM REKOMENDASI BUKU & ULASAN INTERAKTIF
@@ -2578,11 +2414,7 @@ window.submitBookRecommendation = function (event) {
   renderBookRecommendations();
 
   // Tampilkan toast keberhasilan
-  if (window.communityBot) {
-    window.communityBot.showToast("📚 Rekomendasi buku Anda berhasil diterbitkan!");
-  } else {
-    alert("📚 Rekomendasi buku Anda berhasil diterbitkan!");
-  }
+  showToastNotification('📚 Rekomendasi buku berhasil diterbitkan!', 'menu_book');
 
   // Reset input form
   document.getElementById('rec-input-judul').value = '';
@@ -2699,11 +2531,8 @@ window.readDigitalBookSimulator = function (bookTitle) {
   modal.style.display = 'flex';
 };
 
-// Inisialisasi Bot & Tab Switcher Klub
+// Tab Switcher Klub
 document.addEventListener('DOMContentLoaded', () => {
-  window.communityBot = new CommunityBot();
-  window.communityBot.start();
-
   // 1. Logika Tab Switcher Laman Klub
   const clubTabs = document.querySelectorAll('.club-tab');
   if (clubTabs.length > 0) {

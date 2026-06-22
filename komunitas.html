@@ -468,6 +468,7 @@ async function submitPost() {
     if (!res.ok || !data.success) throw new Error(data.message || 'Gagal posting');
 
     closePostModal();
+    showToastNotification('✅ Diskusi berhasil diposting!', 'check_circle');
     // Refresh feed
     if (typeof loadCommunityFeed === 'function') loadCommunityFeed();
     else location.reload();
