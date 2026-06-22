@@ -102,7 +102,7 @@ router.get("/diskusi", optionalAuth, async (req, res) => {
        LEFT JOIN club c ON d.club_id = c.id`;
 
     const [rows] = await db.query(
-      `SELECT d.id, d.club_id, d.judul, d.konten, d.total_balasan, d.total_likes, d.pinned, d.created_at,
+      `SELECT d.id, d.club_id, d.judul, d.konten, d.media_url, d.media_type, d.total_balasan, d.total_likes, d.pinned, d.created_at,
               u.id AS user_id, u.nama AS nama_user, u.foto_profil,
               b.judul AS buku_judul, c.nama AS club_nama
        ${fromClause}
@@ -140,7 +140,7 @@ router.get("/diskusi/:id", optionalAuth, async (req, res) => {
     if (!diskusi) return res.status(404).json({ success: false, message: "Diskusi tidak ditemukan" });
 
     const [balasan] = await db.execute(
-      `SELECT db.id, db.konten, db.likes, db.parent_id, db.created_at,
+      `SELECT db.id, db.konten, db.media_url, db.media_type, db.likes, db.parent_id, db.created_at,
               u.id AS user_id, u.nama AS nama_user, u.foto_profil
        FROM diskusi_balasan db
        JOIN users u ON db.user_id = u.id
@@ -171,14 +171,18 @@ router.get("/diskusi/:id", optionalAuth, async (req, res) => {
  */
 router.post("/diskusi", verifyToken, async (req, res) => {
   try {
-    const { judul, konten, buku_id, club_id, destination } = req.body;
+    const { judul, konten, buku_id, club_id, destination, media_url, media_type } = req.body;
     if (!judul || !konten) return res.status(400).json({ success: false, message: "Judul dan konten wajib diisi" });
+
+    // Validate media_type if provided
+    const validMediaType = ['image','video'].includes(media_type) ? media_type : null;
+    const safeMediaUrl = media_url && validMediaType ? media_url : null;
 
     const resolvedClubId = await resolveClubId({ club_id, destination });
 
     const [result] = await db.execute(
-      "INSERT INTO diskusi (club_id, user_id, judul, konten, buku_id) VALUES (?, ?, ?, ?, ?)",
-      [resolvedClubId, req.user.id, judul, konten, buku_id || null]
+      "INSERT INTO diskusi (club_id, user_id, judul, konten, buku_id, media_url, media_type) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [resolvedClubId, req.user.id, judul, konten, buku_id || null, safeMediaUrl, validMediaType]
     );
 
     // Tambah poin
@@ -196,6 +200,7 @@ router.post("/diskusi", verifyToken, async (req, res) => {
 
     res.status(201).json({ success: true, message: "Diskusi berhasil dibuat. +15 poin!", data: { id: result.insertId } });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false, message: "Gagal membuat diskusi" });
   }
 });
