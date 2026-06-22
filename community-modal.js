@@ -359,7 +359,9 @@ window.fetchPostsFromAPI = async function () {
         komentar: d.total_balasan,
         club_id: d.club_id,
         destination: d.club_nama || 'Public Feed',
-        commentsList: []
+        commentsList: [],
+        media_url: d.media_url || null,
+        media_type: d.media_type || null,
       }));
       apiPosts = [...fetched, ...defaultPosts];
       apiPostsFetched = true;
@@ -488,6 +490,16 @@ function renderPostCard(p) {
       <p class="font-body-md text-body-md text-on-surface-variant line-clamp-3 leading-relaxed">${p.isi}</p>
       ${pollHTML}
       ${attachmentHTML}
+      ${p.media_url ? (
+        p.media_type === 'video'
+          ? `<div class="mt-3 rounded-2xl overflow-hidden border border-outline-variant/20 bg-black shadow-sm">
+               <video src="${p.media_url}" controls playsinline class="w-full max-h-[420px] object-contain" preload="metadata"></video>
+             </div>`
+          : `<div class="mt-3 rounded-2xl overflow-hidden border border-outline-variant/20 shadow-sm cursor-pointer" onclick="window.open('${p.media_url}','_blank')">
+               <img src="${p.media_url}" alt="Media" class="w-full max-h-[420px] object-cover hover:opacity-95 transition-opacity" loading="lazy"
+                    onerror="this.closest('div').remove()"/>
+             </div>`
+      ) : ''}
     </div>
     ${tags ? `<div class="flex flex-wrap gap-2 mt-1">${tags}</div>` : ''}
     <div class="flex gap-4 mt-2 pt-4 border-t border-outline-variant/30 text-on-surface-variant items-center justify-between">
