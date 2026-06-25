@@ -1,96 +1,92 @@
-const CACHE_NAME = 'readbridge-pwa-cache-v18';
-const urlsToCache = [
-  './index.html',
-  './style.css',
-  './main.js',
+const CACHE_NAME = 'readbridge-pwa-cache-v19';
+
+// Terima perintah SKIP_WAITING dari halaman (tombol "Perbarui" di banner)
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
+
+// Aset statis yang aman di-cache lama (images, icons, fonts)
+const STATIC_ASSETS = [
   './icon-192.png',
   './icon-512.png',
-  './manifest.json'
+  './manifest.json',
 ];
 
-// Instalasi Service Worker & Cache File Dasar
+// ─── Install: cache aset statis saja ─────────────────────────────────────────
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS))
   );
+  // Langsung aktif tanpa tunggu tab lama ditutup
   self.skipWaiting();
 });
 
-// Menghapus cache lama
+// ─── Activate: hapus cache lama, ambil kontrol semua tab ────────────────────
 self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    ).then(() => {
+      self.clients.claim();
+      // Beritahu semua tab bahwa SW versi baru sudah aktif
+      self.clients.matchAll({ type: 'window' }).then(clients => {
+        clients.forEach(client => client.postMessage({ type: 'sw-updated' }));
+      });
     })
   );
-  self.clients.claim();
 });
 
-// Intercept fetch requests
+// ─── Fetch: strategi berdasarkan tipe file ───────────────────────────────────
 self.addEventListener('fetch', event => {
-  // Hanya intercept GET requests
   if (event.request.method !== 'GET') return;
 
-  const requestUrl = new URL(event.request.url);
-  const isSameOrigin = requestUrl.origin === self.location.origin;
-  const isApiRequest = requestUrl.pathname.includes('/api/') || requestUrl.hostname.includes('readbridge-backend');
-  const isAuthPage = requestUrl.pathname.includes('login.html') || 
-                     requestUrl.pathname.includes('google-login.html') || 
-                     requestUrl.pathname.includes('auth-handler.html') || 
-                     requestUrl.pathname.includes('rb-google-login.js') ||
-                     requestUrl.pathname.includes('auth-logout.js');
+  const url = new URL(event.request.url);
+  const isSameOrigin = url.origin === self.location.origin;
+  const isAPI = url.pathname.includes('/api/') || url.hostname.includes('readbridge-backend');
+  const isExternal = url.hostname.includes('cloudinary') ||
+                     url.hostname.includes('googleapis') ||
+                     url.hostname.includes('dicebear') ||
+                     url.hostname.includes('fonts.g') ||
+                     url.hostname.includes('lh3.google');
 
-  // Jangan sentuh request auth/API/CDN eksternal. Di mode PWA mobile, fallback cache
-  // untuk navigasi eksternal bisa membuat proses login Google terlihat gagal.
-  if (!isSameOrigin || isApiRequest || isAuthPage) {
-    console.log('[SW] Skipping cache for:', requestUrl.pathname);
-    return;
-  }
-  
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Jika file ada di cache, gunakan file tersebut (offline support)
-        if (response) {
-          console.log('[SW] Serving from cache:', requestUrl.pathname);
-          return response;
-        }
-        
-        // Jika tidak ada di cache, ambil dari network
-        return fetch(event.request).then(
-          function(response) {
-            // Jangan cache jika request gagal atau bukan dari origin yang sama
-            if(!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
+  // Jangan intercept API atau eksternal CDN
+  if (isAPI || isExternal || !isSameOrigin) return;
 
-            // Clone response karena response berupa stream dan hanya bisa dipakai sekali
-            const responseToCache = response.clone();
+  const isStaticAsset = /\.(png|jpg|jpeg|webp|svg|ico|woff2?|ttf)$/i.test(url.pathname);
+  const isNavigate = event.request.mode === 'navigate';
 
-            caches.open(CACHE_NAME)
-              .then(function(cache) {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
+  if (isStaticAsset) {
+    // Cache-first untuk gambar & font (jarang berubah)
+    event.respondWith(
+      caches.match(event.request).then(cached => {
+        if (cached) return cached;
+        return fetch(event.request).then(res => {
+          if (res && res.status === 200) {
+            const clone = res.clone();
+            caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
           }
-        ).catch(() => {
-          // Fallback sederhana jika offline dan tidak ada di cache
-          if (event.request.mode === 'navigate') {
-            return caches.match('./index.html');
-          }
+          return res;
         });
       })
-  );
+    );
+  } else {
+    // Network-first untuk HTML, JS, CSS — selalu ambil versi terbaru dari server
+    event.respondWith(
+      fetch(event.request)
+        .then(res => {
+          if (res && res.status === 200) {
+            const clone = res.clone();
+            caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+          }
+          return res;
+        })
+        .catch(() => {
+          // Offline fallback: sajikan dari cache
+          return caches.match(event.request).then(cached => {
+            if (cached) return cached;
+            if (isNavigate) return caches.match('./index.html');
+          });
+        })
+    );
+  }
 });
