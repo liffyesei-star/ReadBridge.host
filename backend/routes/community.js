@@ -270,6 +270,10 @@ router.get("/clubs", optionalAuth, async (req, res) => {
     if (search) { where.push("(c.nama LIKE ? OR c.deskripsi LIKE ?)"); params.push(`%${search}%`, `%${search}%`); }
     if (filter === "public")  where.push("c.privat = 0");
     if (filter === "private") where.push("c.privat = 1");
+    if (filter === "joined" && req.user) {
+      where.push("c.id IN (SELECT club_id FROM club_anggota WHERE user_id = ? AND status = 'aktif')");
+      params.push(req.user.id);
+    }
 
     const [rows] = await db.query(
       `SELECT c.id, c.nama, c.slug, c.deskripsi, c.foto_cover, c.icon_url, c.banner_url,

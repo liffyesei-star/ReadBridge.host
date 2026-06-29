@@ -113,6 +113,9 @@
       <button id="btn-open-buat-club" class="mt-4 w-full py-2.5 bg-primary text-on-primary rounded-xl font-label-md text-label-md font-bold flex justify-center items-center gap-xs hover:bg-primary/90 transition-all shadow-sm">
         <span class="material-symbols-outlined text-[18px]">add</span> Buat Club Baru
       </button>
+      <a href="club-detail.html" class="mt-2 w-full py-2.5 bg-surface-container border border-outline-variant/50 rounded-xl font-label-md text-label-md text-primary flex justify-center items-center gap-xs hover:bg-surface-container-high transition-all">
+        <span class="material-symbols-outlined text-[18px]">groups</span> Jelajahi Club
+      </a>
     </div>
   </aside>
 
@@ -153,6 +156,14 @@
       </div>
     </div>
 
+    <!-- Create Post Trigger -->
+    <div id="club-create-post-trigger" class="bg-surface rounded-2xl p-md shadow-sm border border-outline-variant/30 flex items-center gap-md mb-md">
+      <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=User&backgroundColor=e5eeff" alt="Avatar" class="w-12 h-12 rounded-full border border-outline-variant/20 shadow-sm" />
+      <button id="btn-open-modal-diskusi" class="flex-grow text-left bg-surface-container-lowest border border-outline-variant/40 rounded-full px-6 py-3.5 text-on-surface-variant font-body-md hover:bg-surface-container-low transition-colors shadow-sm cursor-text">
+        Tanyakan atau bagikan sesuatu di club ini...
+      </button>
+    </div>
+
     <!-- Tabs -->
     <div class="flex border-b border-outline-variant mb-md bg-surface p-1 rounded-xl border border-outline-variant/30" id="club-tabs">
       <button data-tab="diskusi" class="club-tab flex-1 py-2.5 rounded-lg font-label-md text-label-md font-bold text-primary bg-surface-container cursor-pointer transition-all">Diskusi</button>
@@ -162,7 +173,7 @@
 
     <!-- Feed / Tab Content -->
     <div id="community-feed" class="flex flex-col gap-md">
-      <!-- Diisi oleh community-modal.js -->
+      <!-- Diisi oleh community-modal.js?v=1.5 -->
     </div>
   </section>
 
@@ -216,7 +227,12 @@
   </div>
 </div>
 
-<script src="community-modal.js"></script>
+<!-- Floating Action Button for Create Post -->
+<button id="fab-buat-diskusi" class="fixed bottom-lg right-lg lg:bottom-xl lg:right-xl bg-primary text-on-primary shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all rounded-full px-6 py-4 flex items-center gap-sm font-label-md text-label-md font-bold z-50">
+  <span class="material-symbols-outlined text-[24px]">edit</span> Buat Diskusi
+</button>
+
+<script src="community-modal.js?v=1.5"></script>
 <script>
 document.addEventListener("DOMContentLoaded", async function() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -227,30 +243,20 @@ document.addEventListener("DOMContentLoaded", async function() {
         // Change title
         document.title = "Jelajahi Club - ReadBridge";
         
-        // Hide Left & Right Sidebar and other single club layout elements
-        document.getElementById('left-sidebar')?.classList.add('hidden');
-        document.getElementById('right-sidebar')?.classList.add('hidden');
+        // Hide only the single club layout elements (header card & tabs)
         document.getElementById('club-header-card')?.classList.add('hidden');
         document.getElementById('club-tabs')?.classList.add('hidden');
-        
-        // Make the main layout grid full width
-        const mainEl = document.querySelector('main');
-        if (mainEl) {
-            mainEl.classList.remove('lg:grid-cols-12');
-            mainEl.classList.add('lg:grid-cols-1');
-        }
+        document.getElementById('club-create-post-trigger')?.classList.add('hidden');
         
         const contentSection = document.getElementById('main-content-section');
         if (contentSection) {
-            contentSection.classList.remove('lg:col-span-6');
-            contentSection.classList.add('lg:col-span-12');
             contentSection.innerHTML = `
                 <div class="flex items-center justify-between mb-6 bg-surface p-6 rounded-2xl border border-outline-variant/30 shadow-sm">
                     <h2 class="text-xl font-bold text-on-surface flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary text-[24px]">groups</span> Semua Club Komunitas
                     </h2>
                 </div>
-                <div id="explore-clubs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div id="explore-clubs-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Loader -->
                     <div class="col-span-full py-20 text-center text-on-surface-variant">
                         <span class="material-symbols-outlined text-[48px] animate-spin mb-2 text-primary">progress_activity</span>

@@ -126,6 +126,36 @@ function getJoinedClubs() {
   return []; // default: belum join klub mana pun
 }
 
+async function fetchJoinedClubs() {
+  const listEl = document.getElementById('joined-clubs-list');
+  if (!listEl) return;
+  
+  const token = localStorage.getItem('rb_token');
+  if (!token) return;
+  
+  try {
+    const API_BASE = localStorage.getItem('rb_api_base_url') || (['localhost', '127.0.0.1'].includes(window.location.hostname) ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+    const res = await fetch(`${API_BASE}/api/community/clubs?limit=10&filter=joined`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const json = await res.json();
+    if (json.success && json.data && json.data.length > 0) {
+      listEl.innerHTML = '';
+      json.data.forEach(club => {
+        const icon = club.icon_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(club.nama)}&background=${(club.color_scheme||'e0f2fe').replace('#','')}&color=${(club.color_primary||'0284c7').replace('#','')}&size=128`;
+        listEl.innerHTML += `
+          <a href="club-detail.html?id=${club.id}" class="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-container-high transition-colors">
+            <img src="${icon}" class="w-8 h-8 rounded-md object-cover" />
+            <span class="font-label-md text-label-md text-on-surface truncate">${club.nama}</span>
+          </a>
+        `;
+      });
+    }
+  } catch(e) {
+    console.error("Gagal memuat club yang diikuti:", e);
+  }
+}
+
 window.activeClubData = null;
 
 function getActiveClub() {
@@ -390,7 +420,13 @@ window.fetchPostsFromAPI = async function () {
 
 function getPosts() {
   if (!apiPostsFetched) return [];
-  return apiPosts;
+  
+  const club = getActiveClub();
+  if (club) {
+    return apiPosts.filter(p => p.destination === club.name || p.destination === club.nama);
+  }
+  
+  return apiPosts.filter(p => !p.destination || p.destination === 'Public Feed');
 }
 
 function savePosts(p) {
@@ -578,7 +614,7 @@ async function renderAllPosts() {
 
   if (activeClub) {
     const joined = getJoinedClubs();
-    const isJoined = joined.includes(activeClub.id);
+    const isJoined = activeClub.sudahGabung || activeClub.roleAnggota || joined.includes(activeClub.id);
 
     if (!isJoined) {
       // User has not joined this club! Render the lock membership CTA overlay!
@@ -1585,8 +1621,9 @@ function setupModalLogic() {
     }
   };
 
-  // FAB Click
+  // FAB Click & Trigger Input
   document.getElementById('fab-buat-diskusi')?.addEventListener('click', openModal);
+  document.getElementById('btn-open-modal-diskusi')?.addEventListener('click', openModal);
 
   // Close buttons
   document.getElementById('modal-close-btn')?.addEventListener('click', closeModal);
@@ -2965,4 +3002,5 @@ function initInviteCodeModal() {
 document.addEventListener('DOMContentLoaded', () => {
   initBuatClubModal();
   initInviteCodeModal();
+  fetchJoinedClubs();
 });
