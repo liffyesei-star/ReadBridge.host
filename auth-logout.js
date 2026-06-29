@@ -80,15 +80,21 @@ function triggerAutoLogout(message = "Sesi Anda telah berakhir. Silakan login ke
   window.location.href = "login.html";
 }
 
+// Pages accessible without login (public pages)
+const PUBLIC_PAGES = [
+  "login.html", "register.html", "auth-handler.html", "reset-password.html",
+  "debug-login.html", "tentang-kami.html", "pusat-bantuan.html",
+  "kebijakan-privasi.html", "syarat-dan-ketentuan.html"
+];
+
+function isPublicPage(path) {
+  return PUBLIC_PAGES.some(page => path.includes(page));
+}
+
 // Function to check token expiration and logout if expired
 function checkTokenExpiration() {
   const path = window.location.pathname.toLowerCase();
-  const isAuthPage = path.includes("login.html") || 
-                     path.includes("register.html") || 
-                     path.includes("auth-handler.html") || 
-                     path.includes("reset-password.html") ||
-                     path.includes("debug-login.html");
-  if (isAuthPage) return;
+  if (isPublicPage(path)) return;
 
   const token = localStorage.getItem("rb_token");
   if (!token) return;
@@ -128,13 +134,7 @@ function checkTokenExpiration() {
 
       if (shouldLogout) {
         const path = window.location.pathname.toLowerCase();
-        const isAuthPage = path.includes("login.html") || 
-                           path.includes("register.html") || 
-                           path.includes("auth-handler.html") || 
-                           path.includes("reset-password.html") ||
-                           path.includes("debug-login.html");
-        
-        if (!isAuthPage) {
+        if (!isPublicPage(path)) {
           console.warn("[ReadBridge] Token expired or 401 returned. Logging out.");
           triggerAutoLogout();
         }

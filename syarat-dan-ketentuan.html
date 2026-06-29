@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <script id="global-preferences-controller">
+    (function() {
+      function applyTheme(t) { t==='dark'?document.documentElement.classList.add('dark'):document.documentElement.classList.remove('dark'); }
+      function applyFontSize(s) { document.documentElement.style.fontSize=s==='kecil'?'14px':s==='besar'?'18px':'16px'; }
+      applyTheme(localStorage.getItem('rb_theme'));
+      applyFontSize(localStorage.getItem('rb_font_size')||'sedang');
+    })();
+  </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Syarat &amp; Ketentuan - ReadBridge</title>
+  <meta name="description" content="Syarat dan Ketentuan penggunaan platform ReadBridge. Baca dengan seksama sebelum menggunakan layanan kami.">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#f8f9ff","surface-container-lowest": "#ffffff","surface-container-high": "#dce9ff",
+            "primary-container": "#2563eb","on-tertiary": "#ffffff","on-error": "#ffffff","on-secondary": "#ffffff",
+            "on-background": "#0b1c30","primary-fixed": "#dbe1ff","surface-variant": "#d3e4fe",
+            "inverse-on-surface": "#eaf1ff","on-primary-fixed": "#00174b","surface-container-low": "#eff4ff",
+            "on-secondary-fixed": "#002113","secondary": "#006c49","primary": "#004ac6","on-error-container": "#93000a",
+            "surface-container": "#e5eeff","surface-tint": "#0053db","on-secondary-container": "#00714d","error": "#ba1a1a",
+            "background": "#f8f9ff","secondary-container": "#6cf8bb","on-surface": "#0b1c30",
+            "on-primary-container": "#eeefff","on-primary": "#ffffff","on-surface-variant": "#434655",
+            "outline": "#737686","on-tertiary-container": "#ffece5","outline-variant": "#c3c6d7"
+          },
+          "borderRadius": {"DEFAULT": "0.25rem","lg": "0.5rem","xl": "0.75rem","full": "9999px"},
+          "spacing": {"xl": "32px","margin": "24px","md": "16px","base": "8px","xs": "4px","lg": "24px","gutter": "16px","xxl": "48px","sm": "8px"},
+          "fontSize": {
+            "label-md": ["14px",{"lineHeight":"1.4","fontWeight":"500"}],"body-md": ["16px",{"lineHeight":"1.6","fontWeight":"400"}],
+            "body-lg": ["18px",{"lineHeight":"1.6","fontWeight":"400"}],"title-lg": ["20px",{"lineHeight":"1.5","fontWeight":"600"}],
+            "title-md": ["16px",{"lineHeight":"1.5","fontWeight":"600"}],"headline-lg": ["32px",{"lineHeight":"1.3","fontWeight":"700"}],
+            "label-sm": ["12px",{"lineHeight":"1.2","fontWeight":"600"}],"headline-md": ["24px",{"lineHeight":"1.4","fontWeight":"600"}],
+            "display-lg": ["48px",{"lineHeight":"1.2","fontWeight":"700"}],"body-sm": ["14px",{"lineHeight":"1.6","fontWeight":"400"}]
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .prose-policy h2 { font-size: 18px; font-weight: 700; color: #0b1c30; margin-top: 2.5rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+    .dark .prose-policy h2 { color: #eaf1ff; }
+    .prose-policy h3 { font-size: 15px; font-weight: 600; color: #004ac6; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+    .dark .prose-policy h3 { color: #b4c5ff; }
+    .prose-policy p { font-size: 15px; line-height: 1.8; color: #434655; margin-bottom: 1rem; }
+    .dark .prose-policy p { color: #c3c6d7; }
+    .prose-policy ul { list-style: none; padding: 0; margin-bottom: 1rem; }
+    .prose-policy ul li { font-size: 15px; line-height: 1.8; color: #434655; padding-left: 1.5rem; position: relative; margin-bottom: 0.4rem; }
+    .dark .prose-policy ul li { color: #c3c6d7; }
+    .prose-policy ul li::before { content: "•"; position: absolute; left: 0; color: #004ac6; font-weight: 700; }
+    .dark .prose-policy ul li::before { color: #b4c5ff; }
+    .toc-link { font-size: 13px; color: #434655; text-decoration: none; padding: 6px 12px; border-radius: 8px; transition: background 0.2s, color 0.2s; display: block; }
+    .dark .toc-link { color: #c3c6d7; }
+    .toc-link:hover { background: #e5eeff; color: #004ac6; }
+    .section-divider { border: none; border-top: 1px solid #c3c6d7; margin: 2.5rem 0; }
+    .dark .section-divider { border-top-color: #374151; }
+    .highlight-box { background: linear-gradient(135deg, #004ac6/8%, #e5eeff); border-left: 4px solid #004ac6; border-radius: 0 12px 12px 0; padding: 16px 20px; margin: 1.5rem 0; }
+  </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col transition-colors duration-300">
+
+<nav class="bg-surface shadow-sm sticky top-0 z-50 border-b border-outline-variant/30">
+  <div class="flex justify-between items-center w-full px-4 md:px-margin py-sm max-w-[1280px] mx-auto">
+    <a href="index.html" class="font-bold text-[20px] text-primary">ReadBridge</a>
+    <div class="flex items-center gap-sm">
+      <a href="tentang-kami.html" class="hidden md:flex items-center gap-1 px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors text-[14px] font-medium">Tentang Kami</a>
+      <a href="pusat-bantuan.html" class="hidden md:flex items-center gap-1 px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors text-[14px] font-medium">Pusat Bantuan</a>
+      <a href="login.html" id="nav-login-btn" class="px-5 py-2 bg-primary text-on-primary rounded-full text-[14px] font-bold hover:bg-primary/90 transition-colors">Masuk</a>
+    </div>
+  </div>
+</nav>
+
+<section class="bg-gradient-to-br from-secondary/5 via-surface to-surface-container-low border-b border-outline-variant/30">
+  <div class="max-w-[1280px] mx-auto px-4 md:px-margin py-12 md:py-16">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center">
+        <span class="material-symbols-outlined text-secondary text-[28px]">gavel</span>
+      </div>
+      <div>
+        <p class="text-[12px] text-secondary font-bold uppercase tracking-widest">Legal</p>
+        <h1 class="text-[32px] font-black text-on-surface">Syarat &amp; Ketentuan</h1>
+      </div>
+    </div>
+    <p class="text-[16px] text-on-surface-variant max-w-2xl leading-relaxed">Harap baca syarat dan ketentuan ini dengan seksama sebelum menggunakan platform ReadBridge. Dengan mendaftar dan menggunakan layanan kami, Anda menyetujui semua ketentuan berikut.</p>
+    <div class="mt-4 flex items-center gap-2 text-on-surface-variant">
+      <span class="material-symbols-outlined text-[16px]">schedule</span>
+      <p class="text-[12px]">Terakhir diperbarui: 29 Juni 2024</p>
+    </div>
+  </div>
+</section>
+
+<main class="flex-1 max-w-[1280px] mx-auto w-full px-4 md:px-margin py-10 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 items-start">
+  <aside class="hidden lg:block sticky top-24 bg-surface rounded-2xl border border-outline-variant/30 shadow-sm p-5">
+    <p class="text-[16px] font-bold text-on-surface mb-3 flex items-center gap-2">
+      <span class="material-symbols-outlined text-[18px] text-primary">list</span> Daftar Isi
+    </p>
+    <nav class="flex flex-col gap-0.5">
+      <a class="toc-link" href="#penerimaan">1. Penerimaan Ketentuan</a>
+      <a class="toc-link" href="#layanan">2. Deskripsi Layanan</a>
+      <a class="toc-link" href="#akun-pengguna">3. Akun Pengguna</a>
+      <a class="toc-link" href="#konten-pengguna">4. Konten Pengguna</a>
+      <a class="toc-link" href="#larangan">5. Hal yang Dilarang</a>
+      <a class="toc-link" href="#hak-kekayaan">6. Hak Kekayaan Intelektual</a>
+      <a class="toc-link" href="#transaksi">7. Transaksi &amp; Pembayaran</a>
+      <a class="toc-link" href="#penghentian">8. Penghentian Akun</a>
+      <a class="toc-link" href="#pembatasan">9. Pembatasan Tanggung Jawab</a>
+      <a class="toc-link" href="#perubahan">10. Perubahan Ketentuan</a>
+      <a class="toc-link" href="#hukum">11. Hukum yang Berlaku</a>
+      <a class="toc-link" href="#kontak">12. Hubungi Kami</a>
+    </nav>
+    <hr class="section-divider my-4">
+    <a href="kebijakan-privasi.html" class="flex items-center gap-2 text-primary text-[13px] font-semibold hover:underline">
+      <span class="material-symbols-outlined text-[15px]">shield</span> Kebijakan Privasi &rarr;
+    </a>
+  </aside>
+
+  <article class="prose-policy bg-surface rounded-2xl border border-outline-variant/30 shadow-sm p-6 md:p-10">
+    <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-8 flex gap-4">
+      <span class="material-symbols-outlined text-amber-600 text-[24px] mt-0.5 flex-shrink-0">warning</span>
+      <div>
+        <p class="font-bold text-amber-900 text-[15px] mb-1">Mode Prototype</p>
+        <p class="text-amber-800">Website ini adalah <strong>prototype uji coba</strong>. Seluruh transaksi, produk, dan layanan di platform ini bersifat simulasi dan tidak melibatkan uang atau produk nyata.</p>
+      </div>
+    </div>
+
+    <section id="penerimaan">
+      <h2><span class="material-symbols-outlined text-primary text-[20px]">handshake</span> 1. Penerimaan Ketentuan</h2>
+      <p>Dengan mengakses atau menggunakan platform ReadBridge ("Layanan"), Anda menyatakan bahwa:</p>
+      <ul>
+        <li>Anda telah membaca dan memahami Syarat &amp; Ketentuan ini</li>
+        <li>Anda berusia minimal 13 tahun atau memiliki persetujuan orang tua/wali</li>
+        <li>Anda setuju untuk terikat oleh ketentuan-ketentuan ini</li>
+        <li>Anda memiliki kapasitas hukum untuk membuat perjanjian yang mengikat</li>
+      </ul>
+      <p>Jika Anda tidak menyetujui ketentuan ini, harap hentikan penggunaan layanan ReadBridge.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section id="layanan">
+      <h2><span class="material-symbols-outlined text-primary text-[20px]">library_books</span> 2. Deskripsi Layanan</h2>
+      <p>ReadBridge adalah platform literasi digital yang menyediakan:</p>
+      <ul>
+        <li>Platform komunitas diskusi buku dan literasi</li>
+        <li>Katalog buku digital untuk dibaca dan disewa (simulasi)</li>
+        <li>Marketplace buku dan produk literasi (simulasi)</li>
+        <li>Fitur club/komunitas membaca</li>
+        <li>Sistem poin dan leaderboard untuk mendorong minat baca</li>
+        <li>Perpustakaan digital pribadi</li>
+      </ul>
+      <p>Kami berhak untuk mengubah, menangguhkan, atau menghentikan layanan atau fitur apa pun kapan saja tanpa pemberitahuan sebelumnya.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section id="akun-pengguna">
+      <h2><span class="material-symbols-outlined text-primary text-[20px]">person</span> 3. Akun Pengguna</h2>
+      <h3>3.1 Pembuatan Akun</h3>
+      <p>Untuk menggunakan sebagian besar fitur ReadBridge, Anda perlu membuat akun. Anda bertanggung jawab untuk:</p>
+      <ul>
+        <li>Memberikan informasi yang akurat dan terkini saat mendaftar</li>
+        <li>Menjaga kerahasiaan kata sandi akun Anda</li>
+        <li>Memberitahu kami segera jika ada akses tidak sah ke akun Anda</li>
+        <li>Semua aktivitas yang terjadi di bawah akun Anda</li>
+      </ul>
+      <h3>3.2 Satu Akun Per Pengguna</h3>
+      <p>Setiap pengguna hanya diperbolehkan memiliki satu akun aktif. Pembuatan akun ganda untuk menghindari sanksi atau batasan tidak diperbolehkan.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section id="konten-pengguna">
+      <h2><span class="material-symbols-outlined text-primary text-[20px]">edit_note</span> 4. Konten Pengguna</h2>
+      <p>Anda bertanggung jawab atas semua konten yang Anda buat, unggah, atau bagikan di ReadBridge, termasuk:</p>
+      <ul>
+        <li>Diskusi dan komentar di forum komunitas</li>
+        <li>Ulasan dan rating buku</li>
+        <li>Konten yang dibagikan di club/komunitas</li>
+        <li>Foto profil dan informasi akun lainnya</li>
+      </ul>
+      <p>Dengan mengunggah konten, Anda memberikan ReadBridge lisensi non-eksklusif, bebas royalti, untuk menggunakan, menampilkan, dan mendistribusikan konten tersebut dalam konteks layanan kami.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section id="larangan">
+      <h2><span class="material-symbols-outlined text-primary text-[20px]">block</span> 5. Hal yang Dilarang</h2>
+      <p>Anda <strong>dilarang</strong> menggunakan ReadBridge untuk:</p>
+      <ul>
+        <li>Memposting konten yang bersifat pornografi, kekerasan, atau menyinggung SARA</li>
+        <li>Melakukan spam, phishing, atau aktivitas penipuan</li>
+        <li>Mengakses akun pengguna lain tanpa izin</li>
+        <li>Mencoba meretas atau mengganggu sistem dan keamanan platform</li>
+        <li>Menyebarkan malware atau konten berbahaya lainnya</li>
+        <li>Melanggar hak cipta atau kekayaan intelektual pihak lain</li>
+        <li>Membuat akun palsu atau menyamar sebagai orang lain</li>
+        <li>Melakukan aktivitas yang melanggar hukum yang berlaku di Indonesia</li>
+      </ul>
+      <p>Pelanggaran terhadap ketentuan ini dapat mengakibatkan penangguhan atau penghapusan akun Anda.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section id="hak-kekayaan">
+      <h2><span class="material-symbols-outlined text-primary text-[20px]">copyright</span> 6. Hak Kekayaan Intelektual</h2>
+      <p>Seluruh konten, desain, logo, dan kode platform ReadBridge (kecuali konten yang dibuat pengguna) adalah milik ReadBridge dan dilindungi oleh hukum hak cipta. Anda tidak diperbolehkan untuk:</p>
+      <ul>
+        <li>Menyalin atau mendistribusikan ulang konten platform tanpa izin</li>
+        <li>Merekayasa balik atau mengdecompile kode platform</li>
+        <li>Menggunakan merek, logo, atau materi ReadBridge tanpa izin tertulis</li>
+      </ul>
+    </section>
+
+    <hr class="section-divider">
+
+    <section id="transaksi">
+      <h2><span class="material-symbols-outlined text-primary text-[20px]">payments</span> 7. Transaksi &amp; Pembayaran</h2>
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+        <p class="text-amber-900 font-semibold text-[14px]">⚠️ PENTING: Semua transaksi di platform ini bersifat SIMULASI dan tidak melibatkan uang nyata.</p>
+      </div>
+      <p>Dalam lingkungan prototype ini:</p>
+      <ul>
+        <li>Semua harga dan transaksi yang ditampilkan adalah fiktif untuk tujuan demonstrasi</li>
+        <li>Tidak ada pembayaran nyata yang diproses melalui platform ini</li>
+        <li>Sistem poin merupakan fitur gamifikasi tanpa nilai moneter nyata</li>
+        <li>Produk, buku, dan layanan yang ditampilkan adalah konten simulasi</li>
+      </ul>
+    </section>
+
+    <hr class="section-divider">
+
+    <section id="penghentian">
+      <h2><span class="material-symbols-outlined text-primary text-[20px]">person_off</span> 8. Penghentian Akun</h2>
+      <h3>8.1 Penghentian oleh Pengguna</h3>
+      <p>Anda dapat menghapus akun Anda kapan saja melalui halaman Pengaturan akun.</p>
+      <h3>8.2 Penghentian oleh ReadBridge</h3>
+      <p>Kami berhak menangguhkan atau menghapus akun Anda jika Anda:</p>
+      <ul>
+        <li>Melanggar Syarat &amp; Ketentuan ini</li>
+        <li>Melakukan aktivitas yang merugikan pengguna lain atau platform</li>
+        <li>Tidak aktif dalam jangka waktu yang sangat lama</li>
+        <li>Memberikan informasi palsu saat mendaftar</li>
+      </ul>
+    </section>
+
+    <hr class="section-divider">
+
+    <section id="pembatasan">
+      <h2><span class="material-symbols-outlined text-primary text-[20px]">shield_question</span> 9. Pembatasan Tanggung Jawab</h2>
+      <p>ReadBridge disediakan "sebagaimana adanya" tanpa garansi apapun. Kami tidak bertanggung jawab atas:</p>
+      <ul>
+        <li>Kerugian tidak langsung atau insidental yang timbul dari penggunaan layanan</li>
+        <li>Gangguan atau ketidaktersediaan layanan sementara</li>
+        <li>Konten yang dibuat oleh pengguna lain</li>
+        <li>Kehilangan data akibat kegagalan teknis</li>
+        <li>Akses tidak sah yang diakibatkan oleh kelalaian pengguna sendiri</li>
+      </ul>
+    </section>
+
+    <hr class="section-divider">
+
+    <section id="perubahan">
+      <h2><span class="material-symbols-outlined text-primary text-[20px]">edit_document</span> 10. Perubahan Ketentuan</h2>
+      <p>Kami dapat merevisi Syarat &amp; Ketentuan ini kapan saja. Perubahan yang signifikan akan diberitahukan melalui platform. Penggunaan layanan yang berkelanjutan setelah revisi diterbitkan menandakan persetujuan Anda terhadap ketentuan yang diperbarui.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section id="hukum">
+      <h2><span class="material-symbols-outlined text-primary text-[20px]">account_balance</span> 11. Hukum yang Berlaku</h2>
+      <p>Syarat &amp; Ketentuan ini diatur oleh dan ditafsirkan sesuai dengan hukum Republik Indonesia. Segala sengketa yang timbul dari atau sehubungan dengan ketentuan ini akan diselesaikan secara musyawarah, atau jika tidak tercapai kesepakatan, melalui jalur hukum yang berlaku di Indonesia.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section id="kontak">
+      <h2><span class="material-symbols-outlined text-primary text-[20px]">contact_mail</span> 12. Hubungi Kami</h2>
+      <p>Jika Anda memiliki pertanyaan mengenai Syarat &amp; Ketentuan ini, silakan hubungi kami:</p>
+      <div class="bg-surface-container-low rounded-xl p-5 mt-3 flex flex-col gap-3">
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary text-[20px]">mail</span>
+          <span class="text-[15px]">legal@readbridge.id</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary text-[20px]">help_center</span>
+          <a href="pusat-bantuan.html" class="text-primary font-semibold hover:underline">Pusat Bantuan ReadBridge</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="mt-10 flex flex-col sm:flex-row gap-3">
+      <a href="kebijakan-privasi.html" class="flex-1 flex items-center justify-center gap-2 py-3 px-5 rounded-xl border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors text-[14px] font-semibold">
+        <span class="material-symbols-outlined text-[18px]">shield</span> Kebijakan Privasi
+      </a>
+      <a href="register.html" class="flex-1 flex items-center justify-center gap-2 py-3 px-5 rounded-xl bg-primary text-on-primary hover:bg-primary/90 transition-colors text-[14px] font-bold">
+        <span class="material-symbols-outlined text-[18px]">person_add</span> Daftar Sekarang
+      </a>
+    </div>
+  </article>
+</main>
+
+<footer class="bg-surface-container-highest border-t border-outline-variant w-full mt-auto">
+  <div class="flex flex-col md:flex-row justify-between items-center px-4 md:px-margin py-lg max-w-[1280px] mx-auto gap-md">
+    <span class="font-bold text-[20px] text-primary">ReadBridge</span>
+    <nav class="flex flex-wrap gap-md justify-center">
+      <a class="text-[12px] text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="tentang-kami.html">Tentang Kami</a>
+      <a class="text-[12px] text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="pusat-bantuan.html">Pusat Bantuan</a>
+      <a class="text-[12px] text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="kebijakan-privasi.html">Kebijakan Privasi</a>
+      <a class="text-[12px] text-primary font-bold underline decoration-primary underline-offset-4" href="syarat-dan-ketentuan.html">Syarat &amp; Ketentuan</a>
+    </nav>
+    <p class="text-[12px] text-on-surface-variant">© 2024 ReadBridge Indonesia. Membangun Generasi Literasi.</p>
+  </div>
+</footer>
+
+<script src="auth-logout.js?v=4"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const isLoggedIn = localStorage.getItem('rb_is_logged_in') === 'true';
+    const token = localStorage.getItem('rb_token');
+    const loginBtn = document.getElementById('nav-login-btn');
+    if (isLoggedIn && token && loginBtn) {
+      loginBtn.textContent = 'Dashboard';
+      loginBtn.href = 'index.html';
+    }
+  });
+</script>
+</body>
+</html>
