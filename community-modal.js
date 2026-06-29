@@ -729,6 +729,14 @@ window.addComment = async function (id) {
 };
 
 // Toast Notification — bottom-right
+function showToast(message, type) {
+  let icon = 'notifications';
+  if (type === 'success') icon = 'check_circle';
+  else if (type === 'warning') icon = 'warning';
+  else if (type === 'error') icon = 'error';
+  showToastNotification(message, icon);
+}
+
 function showToastNotification(message, icon) {
   const toast = document.createElement('div');
   toast.className = 'fixed bottom-6 right-6 bg-surface-container-highest text-on-surface px-4 py-3 rounded-xl shadow-lg border border-outline-variant/30 flex items-center gap-3 z-[300] transform transition-all duration-300 translate-y-6 opacity-0 max-w-xs';

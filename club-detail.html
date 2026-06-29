@@ -194,7 +194,184 @@ document.addEventListener("DOMContentLoaded", async function() {
     const clubId = urlParams.get('id');
     const API_BASE = localStorage.getItem('rb_api_base_url') || (['localhost', '127.0.0.1'].includes(window.location.hostname) ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
 
-    if (!clubId) { window.location.href = 'komunitas.html'; return; }
+    if (!clubId) {
+        // Change title
+        document.title = "Jelajahi Club - ReadBridge";
+        
+        // Hide Hero Section info and set it to a general theme
+        const heroBanner = document.getElementById('hero-banner');
+        if (heroBanner) heroBanner.src = 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80';
+        
+        const heroIconContainer = document.getElementById('hero-icon')?.parentElement;
+        if (heroIconContainer) heroIconContainer.classList.add('hidden');
+        
+        const heroTitle = document.getElementById('hero-title');
+        if (heroTitle) heroTitle.textContent = "Jelajahi Club Komunitas";
+        
+        const heroDesc = document.getElementById('hero-desc');
+        if (heroDesc) heroDesc.textContent = "Temukan teman belajar, klub buku favorit, dan diskusikan minat literasi Anda bersama anggota lainnya.";
+        
+        const badgePrivacy = document.getElementById('hero-badge-privacy');
+        if (badgePrivacy) badgePrivacy.classList.add('hidden');
+        
+        const btnAction = document.getElementById('btn-hero-action');
+        if (btnAction) btnAction.classList.add('hidden');
+        
+        const btnAdmin = document.getElementById('btn-hero-admin');
+        if (btnAdmin) btnAdmin.classList.add('hidden');
+        
+        const metaContainer = document.querySelector('.flex.items-center.gap-4.mt-4');
+        if (metaContainer) metaContainer.classList.add('hidden');
+        
+        // Hide rules in sidebar
+        const rulesAside = document.querySelector('aside');
+        if (rulesAside) rulesAside.classList.add('hidden');
+        
+        // Make the main layout grid full width
+        const mainEl = document.querySelector('main');
+        if (mainEl) {
+            mainEl.classList.remove('lg:grid-cols-12');
+            mainEl.classList.add('lg:grid-cols-1');
+        }
+        
+        const contentSection = document.querySelector('section');
+        if (contentSection) {
+            contentSection.classList.remove('lg:col-span-8');
+            contentSection.innerHTML = `
+                <div class="flex items-center justify-between mb-6 bg-surface p-6 rounded-2xl border border-outline-variant/30 shadow-sm">
+                    <h2 class="text-xl font-bold text-on-surface flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-[24px]">groups</span> Semua Club Komunitas
+                    </h2>
+                </div>
+                <div id="explore-clubs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Loader -->
+                    <div class="col-span-full py-20 text-center text-on-surface-variant">
+                        <span class="material-symbols-outlined text-[48px] animate-spin mb-2 text-primary">progress_activity</span>
+                        <p class="font-bold">Memuat daftar club...</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Action handler
+        window.handleExploreClubAction = async function(id, isPrivate, sudahGabung) {
+            if (sudahGabung) {
+                window.location.href = `club-detail.html?id=${id}`;
+                return;
+            }
+            
+            const token = localStorage.getItem('rb_token');
+            if (!token) {
+                alert('Login terlebih dahulu.');
+                return;
+            }
+            
+            if (isPrivate) {
+                window.openInviteModal(id);
+                return;
+            }
+            
+            try {
+                const res = await fetch(`${API_BASE}/api/community/clubs/${id}/gabung`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+                });
+                const json = await res.json();
+                if (json.success) {
+                    window.location.href = `club-detail.html?id=${id}`;
+                } else {
+                    alert(json.message);
+                }
+            } catch (e) {
+                alert('Gagal update keanggotaan.');
+            }
+        };
+
+        // Fetch all clubs
+        try {
+            const token = localStorage.getItem('rb_token');
+            const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+            const res = await fetch(`${API_BASE}/api/community/clubs?limit=100`, { headers });
+            const json = await res.json();
+            
+            if (!json.success) throw new Error(json.message);
+            
+            const grid = document.getElementById('explore-clubs-grid');
+            if (grid) {
+                grid.innerHTML = '';
+                
+                if (json.data.length === 0) {
+                    grid.innerHTML = `
+                        <div class="col-span-full py-20 text-center text-on-surface-variant">
+                            <span class="material-symbols-outlined text-[48px] mb-2">sentiment_dissatisfied</span>
+                            <p class="font-bold">Belum ada club yang dibuat.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                json.data.forEach(c => {
+                    const isPrivate = c.privat;
+                    const privacyIcon = isPrivate ? 'lock' : 'public';
+                    const privacyText = isPrivate ? 'Privat' : 'Publik';
+                    
+                    const bannerSrc = c.banner_url || c.foto_cover || 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=800&q=80';
+                    const iconSrc = c.icon_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.nama)}&background=${(c.color_scheme||'e0f2fe').replace('#','')}&color=${(c.color_primary||'0284c7').replace('#','')}&size=128`;
+                    
+                    let buttonLabel = c.sudahGabung ? 'Masuk' : 'Gabung';
+                    let buttonStyle = c.sudahGabung 
+                        ? 'bg-surface-container-high text-primary hover:bg-primary hover:text-white' 
+                        : 'bg-primary text-on-primary hover:bg-primary/90';
+                    
+                    grid.innerHTML += `
+                        <div class="bg-surface rounded-3xl shadow-sm border border-outline-variant/30 overflow-hidden flex flex-col hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+                            <!-- Banner -->
+                            <div class="h-32 w-full bg-surface-container relative">
+                                <img src="${bannerSrc}" alt="Banner" class="w-full h-full object-cover"/>
+                                <div class="absolute inset-0 bg-black/40"></div>
+                                <span class="absolute top-3 right-3 px-2.5 py-1 bg-black/50 backdrop-blur-md rounded-full text-[10px] font-bold text-white flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[12px]">${privacyIcon}</span> ${privacyText}
+                                </span>
+                            </div>
+                            
+                            <!-- Content -->
+                            <div class="p-5 flex-grow flex flex-col relative">
+                                <div class="w-14 h-14 rounded-xl border-2 border-surface bg-surface flex items-center justify-center overflow-hidden absolute -top-7 left-5 shadow">
+                                    <img src="${iconSrc}" alt="Icon" class="w-full h-full object-cover"/>
+                                </div>
+                                
+                                <div class="pt-8">
+                                    <h3 class="font-title-md text-title-md font-bold text-on-surface line-clamp-1">${c.nama}</h3>
+                                    <p class="text-xs text-on-surface-variant font-medium mt-0.5">${c.kategori || 'Kategori Umum'}</p>
+                                    <p class="font-body-sm text-body-sm text-on-surface-variant/80 mt-3 line-clamp-2 min-h-[40px]">${c.deskripsi || 'Tidak ada deskripsi.'}</p>
+                                </div>
+                                
+                                <div class="mt-5 pt-4 border-t border-outline-variant/30 flex items-center justify-between">
+                                    <span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1 font-bold">
+                                        <span class="material-symbols-outlined text-[16px]">group</span> ${c.total_anggota} Anggota
+                                    </span>
+                                    <button onclick="handleExploreClubAction(${c.id}, ${isPrivate}, ${c.sudahGabung})" class="px-5 py-2 rounded-xl font-bold text-sm transition-all ${buttonStyle}">
+                                        ${buttonLabel}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        } catch (err) {
+            const grid = document.getElementById('explore-clubs-grid');
+            if (grid) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-20 text-center text-error">
+                        <span class="material-symbols-outlined text-[48px] mb-2">error</span>
+                        <p class="font-bold">Gagal memuat daftar club: ${err.message}</p>
+                    </div>
+                `;
+            }
+        }
+        return;
+    }
 
     try {
         const token = localStorage.getItem('rb_token');
