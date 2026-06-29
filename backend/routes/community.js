@@ -1,15 +1,27 @@
 /*
   Project: ReadBridge
   Author: Liffy Sei / Affan
-  Date: May 2026
+  Date: June 2026
   Role: Lead Developer & UI/UX Designer
+  Update: Club Management V2 — invite system, ban, kick, transfer ownership
 */
 const express = require("express");
-const router = express.Router();
-const db = require("../config/db");
+const crypto  = require("crypto");
+const router  = express.Router();
+const db      = require("../config/db");
 const { verifyToken, optionalAuth } = require("../middleware/auth");
 
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
 const CLUB_DESTINATIONS = ["Pejuang SNBT", "Pecinta Fiksi"];
+
+function generateInviteCode() {
+  return crypto.randomBytes(5).toString("hex").toUpperCase(); // 10-char e.g. "A3F8C12E91"
+}
+
+function httpErr(status, msg) {
+  const e = new Error(msg); e.status = status; return e;
+}
 
 async function resolveClubId({ club_id, destination }) {
   if (club_id) return parseInt(club_id, 10) || null;
@@ -30,24 +42,33 @@ async function resolveClubId({ club_id, destination }) {
   return result.insertId;
 }
 
-async function getOrCreateBotUser(botNama) {
-  const slug = botNama.replace(/^@/, "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  const email = `bot.${slug}@readbridge.local`;
-  const [[existing]] = await db.execute("SELECT id FROM users WHERE email = ?", [email]);
-  if (existing) return existing.id;
+/**
+ * Middleware: pastikan user punya minimal role tertentu di club.
+ * Urutan kekuatan: kreator > moderator > anggota
+ */
+const ROLE_WEIGHT = { kreator: 3, moderator: 2, anggota: 1 };
 
-  const [result] = await db.execute(
-    "INSERT INTO users (nama, email, role, poin, level, bio) VALUES (?, ?, 'user', 0, 'Asisten Komunitas', ?)",
-    [botNama.startsWith("@") ? botNama : `@${botNama}`, email, "Bot AI ReadBridge — membuat diskusi lebih hidup dan interaktif."]
-  );
-  return result.insertId;
+function requireClubRole(minRole) {
+  return async (req, res, next) => {
+    try {
+      const clubId = req.params.id;
+      const [[row]] = await db.execute(
+        "SELECT role FROM club_anggota WHERE club_id = ? AND user_id = ? AND status = 'aktif'",
+        [clubId, req.user.id]
+      );
+      if (!row) return res.status(403).json({ success: false, message: "Anda bukan anggota club ini." });
+      if ((ROLE_WEIGHT[row.role] || 0) < (ROLE_WEIGHT[minRole] || 0)) {
+        return res.status(403).json({ success: false, message: "Anda tidak memiliki izin untuk tindakan ini." });
+      }
+      req.clubRole = row.role;
+      next();
+    } catch (e) {
+      res.status(500).json({ success: false, message: "Gagal memeriksa izin club." });
+    }
+  };
 }
 
-
-
-// ============================================================
-// DISKUSI
-// ============================================================
+// ─── DISKUSI ────────────────────────────────────────────────────────────────
 
 /**
  * GET /api/community/diskusi
@@ -73,9 +94,9 @@ router.get("/diskusi", optionalAuth, async (req, res) => {
     }
 
     const orderMap = {
-      terbaru: "d.created_at DESC",
+      terbaru:    "d.created_at DESC",
       terpopuler: "d.total_likes DESC",
-      ramai: "d.total_balasan DESC",
+      ramai:      "d.total_balasan DESC",
     };
 
     const fromClause = `FROM diskusi d
@@ -107,7 +128,6 @@ router.get("/diskusi", optionalAuth, async (req, res) => {
 
 /**
  * GET /api/community/diskusi/:id
- * Detail diskusi + balasan
  */
 router.get("/diskusi/:id", optionalAuth, async (req, res) => {
   try {
@@ -131,7 +151,6 @@ router.get("/diskusi/:id", optionalAuth, async (req, res) => {
       [req.params.id]
     );
 
-    // Cek apakah user sudah like
     let sudahLike = false;
     if (req.user) {
       const [[like]] = await db.execute(
@@ -149,14 +168,12 @@ router.get("/diskusi/:id", optionalAuth, async (req, res) => {
 
 /**
  * POST /api/community/diskusi
- * Buat diskusi baru
  */
 router.post("/diskusi", verifyToken, async (req, res) => {
   try {
     const { judul, konten, buku_id, club_id, destination, media_url, media_type } = req.body;
     if (!judul || !konten) return res.status(400).json({ success: false, message: "Judul dan konten wajib diisi" });
 
-    // Validate media_type if provided
     const validMediaType = ['image','video'].includes(media_type) ? media_type : null;
     const safeMediaUrl = media_url && validMediaType ? media_url : null;
 
@@ -167,7 +184,6 @@ router.post("/diskusi", verifyToken, async (req, res) => {
       [resolvedClubId, req.user.id, judul, konten, buku_id || null, safeMediaUrl, validMediaType]
     );
 
-    // Tambah poin
     await db.execute(
       "INSERT INTO poin_history (user_id, poin, keterangan, tipe) VALUES (?, 15, 'Membuat diskusi', 'diskusi')",
       [req.user.id]
@@ -182,44 +198,19 @@ router.post("/diskusi", verifyToken, async (req, res) => {
 });
 
 /**
- * POST /api/community/diskusi/:id/bot-balasan
- * Komentar otomatis dari bot AI komunitas (untuk simulasi & engagement)
- */
-router.post("/diskusi/:id/bot-balasan", verifyToken, async (req, res) => {
-  try {
-    const { konten, bot_nama = "@ReadBridgeAI" } = req.body;
-    if (!konten?.trim()) {
-      return res.status(400).json({ success: false, message: "Konten bot tidak boleh kosong" });
-    }
-
-    const [[diskusi]] = await db.execute("SELECT id FROM diskusi WHERE id = ?", [req.params.id]);
-    if (!diskusi) return res.status(404).json({ success: false, message: "Diskusi tidak ditemukan" });
-
-    await insertBotBalasan(req.params.id, konten.trim(), bot_nama);
-
-    res.status(201).json({
-      success: true,
-      message: "Balasan bot berhasil ditambahkan",
-      data: { bot_nama, konten: konten.trim() },
-    });
-  } catch (error) {
-    console.error("Bot balasan error:", error);
-    res.status(500).json({ success: false, message: "Gagal menambahkan balasan bot" });
-  }
-});
-
-/**
  * POST /api/community/diskusi/:id/balasan
- * Balas diskusi
  */
 router.post("/diskusi/:id/balasan", verifyToken, async (req, res) => {
   try {
-    const { konten, parent_id } = req.body;
+    const { konten, parent_id, media_url, media_type } = req.body;
     if (!konten) return res.status(400).json({ success: false, message: "Konten balasan tidak boleh kosong" });
 
+    const validMediaType = ['image','video'].includes(media_type) ? media_type : null;
+    const safeMediaUrl = media_url && validMediaType ? media_url : null;
+
     await db.execute(
-      "INSERT INTO diskusi_balasan (diskusi_id, user_id, konten, parent_id) VALUES (?, ?, ?, ?)",
-      [req.params.id, req.user.id, konten, parent_id || null]
+      "INSERT INTO diskusi_balasan (diskusi_id, user_id, konten, parent_id, media_url, media_type) VALUES (?, ?, ?, ?, ?, ?)",
+      [req.params.id, req.user.id, konten, parent_id || null, safeMediaUrl, validMediaType]
     );
 
     await db.execute(
@@ -227,7 +218,6 @@ router.post("/diskusi/:id/balasan", verifyToken, async (req, res) => {
       [req.params.id]
     );
 
-    // Poin
     await db.execute(
       "INSERT INTO poin_history (user_id, poin, keterangan, tipe) VALUES (?, 5, 'Membalas diskusi', 'diskusi')",
       [req.user.id]
@@ -242,7 +232,6 @@ router.post("/diskusi/:id/balasan", verifyToken, async (req, res) => {
 
 /**
  * POST /api/community/diskusi/:id/like
- * Toggle like diskusi
  */
 router.post("/diskusi/:id/like", verifyToken, async (req, res) => {
   try {
@@ -265,24 +254,26 @@ router.post("/diskusi/:id/like", verifyToken, async (req, res) => {
   }
 });
 
-// ============================================================
-// CLUB
-// ============================================================
+// ─── CLUB ───────────────────────────────────────────────────────────────────
 
 /**
  * GET /api/community/clubs
+ * ?search=&page=&limit=&filter=public|private|semua
  */
 router.get("/clubs", optionalAuth, async (req, res) => {
   try {
-    const { search, page = 1, limit = 9 } = req.query;
+    const { search, page = 1, limit = 9, filter } = req.query;
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
     let where = ["c.aktif = 1"];
     let params = [];
     if (search) { where.push("(c.nama LIKE ? OR c.deskripsi LIKE ?)"); params.push(`%${search}%`, `%${search}%`); }
+    if (filter === "public")  where.push("c.privat = 0");
+    if (filter === "private") where.push("c.privat = 1");
 
     const [rows] = await db.query(
-      `SELECT c.id, c.nama, c.slug, c.deskripsi, c.foto_cover, c.kategori, c.total_anggota, c.privat,
+      `SELECT c.id, c.nama, c.slug, c.deskripsi, c.foto_cover, c.icon_url, c.banner_url,
+              c.kategori, c.total_anggota, c.privat, c.color_primary, c.color_scheme,
               u.nama AS nama_kreator
        FROM club c
        LEFT JOIN users u ON c.kreator_id = u.id
@@ -292,8 +283,26 @@ router.get("/clubs", optionalAuth, async (req, res) => {
       [...params, parseInt(limit), offset]
     );
 
-    res.json({ success: true, data: rows });
+    // Sertakan apakah user sudah bergabung
+    let clubIds = rows.map(r => r.id);
+    let userMemberships = {};
+    if (req.user && clubIds.length > 0) {
+      const [memberRows] = await db.query(
+        `SELECT club_id, role FROM club_anggota WHERE user_id = ? AND club_id IN (${clubIds.map(() => '?').join(',')}) AND status = 'aktif'`,
+        [req.user.id, ...clubIds]
+      );
+      memberRows.forEach(m => { userMemberships[m.club_id] = m.role; });
+    }
+
+    const data = rows.map(r => ({
+      ...r,
+      sudahGabung: !!userMemberships[r.id],
+      roleAnggota: userMemberships[r.id] || null
+    }));
+
+    res.json({ success: true, data });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false, message: "Gagal mengambil data club" });
   }
 });
@@ -304,87 +313,471 @@ router.get("/clubs", optionalAuth, async (req, res) => {
 router.get("/clubs/:id", optionalAuth, async (req, res) => {
   try {
     const [[club]] = await db.execute(
-      `SELECT c.*, u.nama AS nama_kreator FROM club c
+      `SELECT c.*, u.nama AS nama_kreator, u.foto_profil AS foto_kreator
+       FROM club c
        LEFT JOIN users u ON c.kreator_id = u.id
-       WHERE c.id = ?`,
+       WHERE c.id = ? AND c.aktif = 1`,
       [req.params.id]
     );
     if (!club) return res.status(404).json({ success: false, message: "Club tidak ditemukan" });
 
-    // Cek apakah sudah bergabung
     let sudahGabung = false;
     let roleAnggota = null;
+    let isBanned    = false;
+
     if (req.user) {
       const [[anggota]] = await db.execute(
-        "SELECT role FROM club_anggota WHERE club_id = ? AND user_id = ?",
+        "SELECT role, status FROM club_anggota WHERE club_id = ? AND user_id = ?",
         [req.params.id, req.user.id]
       );
-      sudahGabung = !!anggota;
-      roleAnggota = anggota?.role || null;
+      if (anggota) {
+        sudahGabung = anggota.status === 'aktif';
+        roleAnggota = anggota.status === 'aktif' ? anggota.role : null;
+        isBanned    = anggota.status === 'banned';
+      }
     }
 
-    res.json({ success: true, data: { ...club, sudahGabung, roleAnggota } });
+    // Sembunyikan invite_code jika bukan anggota/admin
+    const isPrivileged = ['kreator','moderator'].includes(roleAnggota);
+    const clubData = { ...club };
+    if (!isPrivileged) delete clubData.invite_code;
+
+    res.json({ success: true, data: { ...clubData, sudahGabung, roleAnggota, isBanned } });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false, message: "Gagal mengambil detail club" });
   }
 });
 
 /**
  * POST /api/community/clubs
+ * Buat club baru
  */
 router.post("/clubs", verifyToken, async (req, res) => {
   try {
-    const { nama, deskripsi, kategori, foto_cover, privat } = req.body;
+    const { nama, deskripsi, kategori, foto_cover, icon_url, banner_url, privat, color_primary, color_scheme, aturan } = req.body;
     if (!nama) return res.status(400).json({ success: false, message: "Nama club wajib diisi" });
 
     const slug = nama.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-" + Date.now();
+    const inviteCode = privat ? generateInviteCode() : null;
 
     const [result] = await db.execute(
-      "INSERT INTO club (nama, slug, deskripsi, foto_cover, kategori, kreator_id, total_anggota, privat) VALUES (?, ?, ?, ?, ?, ?, 1, ?)",
-      [nama, slug, deskripsi || null, foto_cover || null, kategori || null, req.user.id, privat ? 1 : 0]
+      `INSERT INTO club (nama, slug, deskripsi, foto_cover, icon_url, banner_url, kategori,
+        kreator_id, total_anggota, privat, invite_code, color_primary, color_scheme, aturan)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?)`,
+      [nama, slug, deskripsi || null, foto_cover || banner_url || null,
+       icon_url || null, banner_url || null, kategori || null,
+       req.user.id, privat ? 1 : 0, inviteCode,
+       color_primary || '#0284c7', color_scheme || '#e0f2fe', aturan || null]
     );
 
-    // Kreator otomatis jadi anggota
     await db.execute(
       "INSERT INTO club_anggota (club_id, user_id, role) VALUES (?, ?, 'kreator')",
       [result.insertId, req.user.id]
     );
 
-    res.status(201).json({ success: true, message: "Club berhasil dibuat!", data: { id: result.insertId, slug } });
+    res.status(201).json({
+      success: true,
+      message: "Club berhasil dibuat!",
+      data: { id: result.insertId, slug, invite_code: inviteCode }
+    });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false, message: "Gagal membuat club" });
   }
 });
 
 /**
+ * PUT /api/community/clubs/:id
+ * Update info club (hanya kreator)
+ */
+router.put("/clubs/:id", verifyToken, requireClubRole("kreator"), async (req, res) => {
+  try {
+    const { nama, deskripsi, kategori, foto_cover, icon_url, banner_url, privat, color_primary, color_scheme, aturan } = req.body;
+
+    // Jika diubah jadi privat dan belum ada invite_code, generate baru
+    let extraSet = "";
+    const params = [];
+
+    if (nama !== undefined)          { extraSet += "nama = ?,";          params.push(nama); }
+    if (deskripsi !== undefined)     { extraSet += "deskripsi = ?,";     params.push(deskripsi); }
+    if (kategori !== undefined)      { extraSet += "kategori = ?,";      params.push(kategori); }
+    if (foto_cover !== undefined)    { extraSet += "foto_cover = ?,";    params.push(foto_cover); }
+    if (icon_url !== undefined)      { extraSet += "icon_url = ?,";      params.push(icon_url); }
+    if (banner_url !== undefined)    { extraSet += "banner_url = ?,";    params.push(banner_url); }
+    if (color_primary !== undefined) { extraSet += "color_primary = ?,"; params.push(color_primary); }
+    if (color_scheme !== undefined)  { extraSet += "color_scheme = ?,";  params.push(color_scheme); }
+    if (aturan !== undefined)        { extraSet += "aturan = ?,";        params.push(aturan); }
+    if (privat !== undefined) {
+      extraSet += "privat = ?,";
+      params.push(privat ? 1 : 0);
+      if (privat) {
+        const [[club]] = await db.execute("SELECT invite_code FROM club WHERE id = ?", [req.params.id]);
+        if (!club.invite_code) {
+          extraSet += "invite_code = ?,";
+          params.push(generateInviteCode());
+        }
+      }
+    }
+
+    if (!extraSet) return res.status(400).json({ success: false, message: "Tidak ada data yang diubah." });
+
+    params.push(req.params.id);
+    await db.execute(`UPDATE club SET ${extraSet.slice(0, -1)} WHERE id = ?`, params);
+
+    const [[updated]] = await db.execute("SELECT * FROM club WHERE id = ?", [req.params.id]);
+    res.json({ success: true, message: "Club berhasil diperbarui.", data: updated });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Gagal memperbarui club" });
+  }
+});
+
+/**
+ * DELETE /api/community/clubs/:id
+ * Hapus club (hanya kreator)
+ */
+router.delete("/clubs/:id", verifyToken, requireClubRole("kreator"), async (req, res) => {
+  try {
+    await db.execute("UPDATE club SET aktif = 0 WHERE id = ?", [req.params.id]);
+    res.json({ success: true, message: "Club berhasil dihapus." });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Gagal menghapus club" });
+  }
+});
+
+// ─── GABUNG / KELUAR ────────────────────────────────────────────────────────
+
+/**
  * POST /api/community/clubs/:id/gabung
- * Bergabung/keluar club
+ * Bergabung ke club (public langsung, private butuh invite_code)
  */
 router.post("/clubs/:id/gabung", verifyToken, async (req, res) => {
   try {
+    const { invite_code } = req.body;
+
+    const [[club]] = await db.execute(
+      "SELECT id, privat, invite_code, aktif FROM club WHERE id = ?",
+      [req.params.id]
+    );
+    if (!club || !club.aktif) return res.status(404).json({ success: false, message: "Club tidak ditemukan." });
+
+    // Cek ban
+    const [[banned]] = await db.execute(
+      "SELECT 1 FROM club_banned WHERE club_id = ? AND user_id = ?",
+      [req.params.id, req.user.id]
+    );
+    if (banned) return res.status(403).json({ success: false, message: "Anda telah di-ban dari club ini." });
+
     const [[existing]] = await db.execute(
-      "SELECT role FROM club_anggota WHERE club_id = ? AND user_id = ?",
+      "SELECT role, status FROM club_anggota WHERE club_id = ? AND user_id = ?",
       [req.params.id, req.user.id]
     );
 
-    if (existing) {
-      if (existing.role === "kreator") return res.status(400).json({ success: false, message: "Kreator tidak bisa keluar dari club" });
+    // Toggle keluar jika sudah aktif (bukan kreator)
+    if (existing && existing.status === 'aktif') {
+      if (existing.role === "kreator") return res.status(400).json({ success: false, message: "Kreator tidak bisa keluar dari club." });
       await db.execute("DELETE FROM club_anggota WHERE club_id = ? AND user_id = ?", [req.params.id, req.user.id]);
-      await db.execute("UPDATE club SET total_anggota = total_anggota - 1 WHERE id = ?", [req.params.id]);
-      return res.json({ success: true, message: "Berhasil keluar dari club", bergabung: false });
+      await db.execute("UPDATE club SET total_anggota = GREATEST(total_anggota - 1, 0) WHERE id = ?", [req.params.id]);
+      return res.json({ success: true, message: "Berhasil keluar dari club.", bergabung: false });
     }
 
-    await db.execute(
-      "INSERT INTO club_anggota (club_id, user_id, role) VALUES (?, ?, 'anggota')",
-      [req.params.id, req.user.id]
-    );
+    // Validasi invite code jika club privat
+    if (club.privat) {
+      if (!invite_code) return res.status(403).json({ success: false, message: "Club ini privat. Masukkan kode undangan." });
+      if (invite_code.trim().toUpperCase() !== (club.invite_code || "").toUpperCase()) {
+        return res.status(403).json({ success: false, message: "Kode undangan tidak valid." });
+      }
+    }
+
+    // Gabung / pulihkan dari status lama
+    if (existing) {
+      await db.execute(
+        "UPDATE club_anggota SET role = 'anggota', status = 'aktif' WHERE club_id = ? AND user_id = ?",
+        [req.params.id, req.user.id]
+      );
+    } else {
+      await db.execute(
+        "INSERT INTO club_anggota (club_id, user_id, role, status) VALUES (?, ?, 'anggota', 'aktif')",
+        [req.params.id, req.user.id]
+      );
+    }
     await db.execute("UPDATE club SET total_anggota = total_anggota + 1 WHERE id = ?", [req.params.id]);
 
     res.json({ success: true, message: "Berhasil bergabung ke club!", bergabung: true });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false, message: "Gagal update status club" });
   }
 });
 
+// ─── INVITE CODE ────────────────────────────────────────────────────────────
+
+/**
+ * GET /api/community/clubs/:id/invite-code
+ * Dapatkan kode invite (hanya owner/mod)
+ */
+router.get("/clubs/:id/invite-code", verifyToken, requireClubRole("moderator"), async (req, res) => {
+  try {
+    const [[club]] = await db.execute("SELECT invite_code, privat FROM club WHERE id = ?", [req.params.id]);
+    if (!club) return res.status(404).json({ success: false, message: "Club tidak ditemukan." });
+
+    // Auto-generate jika belum ada
+    if (!club.invite_code) {
+      const code = generateInviteCode();
+      await db.execute("UPDATE club SET invite_code = ? WHERE id = ?", [code, req.params.id]);
+      return res.json({ success: true, data: { invite_code: code } });
+    }
+
+    res.json({ success: true, data: { invite_code: club.invite_code } });
+  } catch (e) {
+    res.status(500).json({ success: false, message: "Gagal mengambil kode invite." });
+  }
+});
+
+/**
+ * POST /api/community/clubs/:id/regenerate-invite
+ * Buat ulang kode invite (invalidate kode lama)
+ */
+router.post("/clubs/:id/regenerate-invite", verifyToken, requireClubRole("moderator"), async (req, res) => {
+  try {
+    const newCode = generateInviteCode();
+    await db.execute("UPDATE club SET invite_code = ? WHERE id = ?", [newCode, req.params.id]);
+    res.json({ success: true, message: "Kode invite baru berhasil dibuat.", data: { invite_code: newCode } });
+  } catch (e) {
+    res.status(500).json({ success: false, message: "Gagal regenerate kode invite." });
+  }
+});
+
+// ─── ANGGOTA MANAGEMENT ─────────────────────────────────────────────────────
+
+/**
+ * GET /api/community/clubs/:id/anggota
+ * Daftar anggota (hanya anggota aktif)
+ */
+router.get("/clubs/:id/anggota", verifyToken, requireClubRole("anggota"), async (req, res) => {
+  try {
+    const { page = 1, limit = 20, search } = req.query;
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+
+    let where = ["ca.club_id = ?", "ca.status = 'aktif'"];
+    let params = [req.params.id];
+    if (search) { where.push("(u.nama LIKE ? OR u.email LIKE ?)"); params.push(`%${search}%`, `%${search}%`); }
+
+    const [rows] = await db.query(
+      `SELECT u.id, u.nama, u.foto_profil, u.level, ca.role, ca.joined_at
+       FROM club_anggota ca
+       JOIN users u ON ca.user_id = u.id
+       WHERE ${where.join(" AND ")}
+       ORDER BY FIELD(ca.role,'kreator','moderator','anggota'), ca.joined_at ASC
+       LIMIT ? OFFSET ?`,
+      [...params, parseInt(limit), offset]
+    );
+
+    res.json({ success: true, data: rows });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false, message: "Gagal mengambil daftar anggota." });
+  }
+});
+
+/**
+ * PATCH /api/community/clubs/:id/anggota/:uid/role
+ * Promote/demote anggota (hanya kreator)
+ */
+router.patch("/clubs/:id/anggota/:uid/role", verifyToken, requireClubRole("kreator"), async (req, res) => {
+  try {
+    const { role } = req.body; // 'moderator' atau 'anggota'
+    if (!['moderator','anggota'].includes(role)) {
+      return res.status(400).json({ success: false, message: "Role tidak valid. Pilih 'moderator' atau 'anggota'." });
+    }
+
+    const targetId = parseInt(req.params.uid);
+    if (targetId === req.user.id) return res.status(400).json({ success: false, message: "Anda tidak bisa mengubah role diri sendiri." });
+
+    const [[target]] = await db.execute(
+      "SELECT role FROM club_anggota WHERE club_id = ? AND user_id = ? AND status = 'aktif'",
+      [req.params.id, targetId]
+    );
+    if (!target) return res.status(404).json({ success: false, message: "Anggota tidak ditemukan." });
+    if (target.role === 'kreator') return res.status(403).json({ success: false, message: "Tidak bisa mengubah role kreator." });
+
+    await db.execute(
+      "UPDATE club_anggota SET role = ? WHERE club_id = ? AND user_id = ?",
+      [role, req.params.id, targetId]
+    );
+
+    const action = role === 'moderator' ? 'dijadikan Moderator' : 'dikembalikan ke Anggota';
+    res.json({ success: true, message: `User berhasil ${action}.` });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false, message: "Gagal mengubah role." });
+  }
+});
+
+/**
+ * DELETE /api/community/clubs/:id/anggota/:uid
+ * Kick anggota (owner bisa kick moderator & anggota; moderator hanya bisa kick anggota)
+ */
+router.delete("/clubs/:id/anggota/:uid", verifyToken, requireClubRole("moderator"), async (req, res) => {
+  try {
+    const targetId = parseInt(req.params.uid);
+    if (targetId === req.user.id) return res.status(400).json({ success: false, message: "Anda tidak bisa mengeluarkan diri sendiri." });
+
+    const [[target]] = await db.execute(
+      "SELECT role FROM club_anggota WHERE club_id = ? AND user_id = ? AND status = 'aktif'",
+      [req.params.id, targetId]
+    );
+    if (!target) return res.status(404).json({ success: false, message: "Anggota tidak ditemukan." });
+    if (target.role === 'kreator') return res.status(403).json({ success: false, message: "Kreator tidak bisa dikick." });
+
+    // Moderator tidak bisa kick sesama moderator
+    if (req.clubRole === 'moderator' && target.role === 'moderator') {
+      return res.status(403).json({ success: false, message: "Moderator tidak bisa mengeluarkan sesama moderator." });
+    }
+
+    await db.execute(
+      "DELETE FROM club_anggota WHERE club_id = ? AND user_id = ?",
+      [req.params.id, targetId]
+    );
+    await db.execute("UPDATE club SET total_anggota = GREATEST(total_anggota - 1, 0) WHERE id = ?", [req.params.id]);
+
+    res.json({ success: true, message: "Anggota berhasil dikeluarkan." });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false, message: "Gagal mengeluarkan anggota." });
+  }
+});
+
+/**
+ * POST /api/community/clubs/:id/anggota/:uid/ban
+ * Ban user permanen dari club
+ */
+router.post("/clubs/:id/anggota/:uid/ban", verifyToken, requireClubRole("moderator"), async (req, res) => {
+  try {
+    const { alasan } = req.body;
+    const targetId = parseInt(req.params.uid);
+    if (targetId === req.user.id) return res.status(400).json({ success: false, message: "Anda tidak bisa mem-ban diri sendiri." });
+
+    const [[target]] = await db.execute(
+      "SELECT role FROM club_anggota WHERE club_id = ? AND user_id = ?",
+      [req.params.id, targetId]
+    );
+    if (target?.role === 'kreator') return res.status(403).json({ success: false, message: "Kreator tidak bisa di-ban." });
+
+    if (req.clubRole === 'moderator' && target?.role === 'moderator') {
+      return res.status(403).json({ success: false, message: "Moderator tidak bisa mem-ban sesama moderator." });
+    }
+
+    // Masukkan ke tabel banned (upsert)
+    await db.execute(
+      `INSERT INTO club_banned (club_id, user_id, banned_by, alasan)
+       VALUES (?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE banned_by = VALUES(banned_by), alasan = VALUES(alasan), banned_at = NOW()`,
+      [req.params.id, targetId, req.user.id, alasan || null]
+    );
+
+    // Hapus dari club_anggota
+    await db.execute("DELETE FROM club_anggota WHERE club_id = ? AND user_id = ?", [req.params.id, targetId]);
+    await db.execute("UPDATE club SET total_anggota = GREATEST(total_anggota - 1, 0) WHERE id = ?", [req.params.id]);
+
+    res.json({ success: true, message: "User berhasil di-ban dari club." });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false, message: "Gagal mem-ban user." });
+  }
+});
+
+/**
+ * DELETE /api/community/clubs/:id/anggota/:uid/unban
+ * Hapus ban user
+ */
+router.delete("/clubs/:id/anggota/:uid/unban", verifyToken, requireClubRole("moderator"), async (req, res) => {
+  try {
+    await db.execute(
+      "DELETE FROM club_banned WHERE club_id = ? AND user_id = ?",
+      [req.params.id, req.params.uid]
+    );
+    res.json({ success: true, message: "Ban user berhasil dicabut." });
+  } catch (e) {
+    res.status(500).json({ success: false, message: "Gagal mencabut ban." });
+  }
+});
+
+/**
+ * GET /api/community/clubs/:id/banned
+ * Daftar user yang di-ban (hanya owner/mod)
+ */
+router.get("/clubs/:id/banned", verifyToken, requireClubRole("moderator"), async (req, res) => {
+  try {
+    const [rows] = await db.execute(
+      `SELECT cb.id, cb.alasan, cb.banned_at,
+              u.id AS user_id, u.nama, u.foto_profil,
+              b.nama AS banned_by_nama
+       FROM club_banned cb
+       JOIN users u ON cb.user_id = u.id
+       JOIN users b ON cb.banned_by = b.id
+       WHERE cb.club_id = ?
+       ORDER BY cb.banned_at DESC`,
+      [req.params.id]
+    );
+    res.json({ success: true, data: rows });
+  } catch (e) {
+    res.status(500).json({ success: false, message: "Gagal mengambil daftar banned." });
+  }
+});
+
+// ─── TRANSFER OWNERSHIP ─────────────────────────────────────────────────────
+
+/**
+ * POST /api/community/clubs/:id/transfer-owner
+ * Transfer ownership ke anggota lain (hanya kreator)
+ * Kreator lama otomatis jadi moderator setelah transfer.
+ */
+router.post("/clubs/:id/transfer-owner", verifyToken, requireClubRole("kreator"), async (req, res) => {
+  const conn = await db.getConnection();
+  try {
+    const { target_user_id } = req.body;
+    if (!target_user_id) return res.status(400).json({ success: false, message: "target_user_id wajib diisi." });
+    if (parseInt(target_user_id) === req.user.id) {
+      return res.status(400).json({ success: false, message: "Anda tidak bisa transfer ownership ke diri sendiri." });
+    }
+
+    const [[target]] = await conn.execute(
+      "SELECT role, status FROM club_anggota WHERE club_id = ? AND user_id = ? AND status = 'aktif'",
+      [req.params.id, target_user_id]
+    );
+    if (!target) return res.status(404).json({ success: false, message: "User tujuan tidak ditemukan atau bukan anggota aktif." });
+
+    await conn.beginTransaction();
+
+    // Downgrade kreator lama menjadi moderator
+    await conn.execute(
+      "UPDATE club_anggota SET role = 'moderator' WHERE club_id = ? AND user_id = ?",
+      [req.params.id, req.user.id]
+    );
+
+    // Upgrade user baru menjadi kreator
+    await conn.execute(
+      "UPDATE club_anggota SET role = 'kreator' WHERE club_id = ? AND user_id = ?",
+      [req.params.id, target_user_id]
+    );
+
+    // Update kreator_id di tabel club
+    await conn.execute(
+      "UPDATE club SET kreator_id = ? WHERE id = ?",
+      [target_user_id, req.params.id]
+    );
+
+    await conn.commit();
+    res.json({ success: true, message: "Ownership berhasil ditransfer. Anda kini menjadi Moderator." });
+  } catch (e) {
+    await conn.rollback();
+    console.error(e);
+    res.status(500).json({ success: false, message: "Gagal mentransfer ownership." });
+  } finally {
+    conn.release();
+  }
+});
 
 module.exports = router;

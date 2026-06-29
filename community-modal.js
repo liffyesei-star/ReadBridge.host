@@ -2644,3 +2644,299 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 });
+
+// ==========================================
+// CLUB V2 — BUAT CLUB & INVITE CODE SYSTEM
+// ==========================================
+
+/** Ekstrak warna dominan dari gambar menggunakan Canvas API */
+function extractDominantColor(imageUrl, callback) {
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 50; canvas.height = 50;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, 50, 50);
+    const data = ctx.getImageData(0, 0, 50, 50).data;
+    let r = 0, g = 0, b = 0, count = 0;
+    for (let i = 0; i < data.length; i += 16) {
+      r += data[i]; g += data[i+1]; b += data[i+2]; count++;
+    }
+    r = Math.round(r / count); g = Math.round(g / count); b = Math.round(b / count);
+    const toHex = v => v.toString(16).padStart(2, '0');
+    const primaryColor = `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    // Derive lighter scheme color
+    const mixLight = v => Math.round(v + (255 - v) * 0.7);
+    const schemeColor = `#${toHex(mixLight(r))}${toHex(mixLight(g))}${toHex(mixLight(b))}`;
+    callback(primaryColor, schemeColor);
+  };
+  img.onerror = () => callback('#0284c7', '#e0f2fe');
+  img.src = imageUrl;
+}
+
+/** Upload gambar ke Cloudinary, return URL */
+async function uploadImageToCloudinary(file) {
+  const CLOUD_NAME = 'dinntihid';
+  const UPLOAD_PRESET = 'readbridge_club';
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', UPLOAD_PRESET);
+  fd.append('folder', 'clubs');
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
+  if (!res.ok) throw new Error('Upload gagal');
+  const json = await res.json();
+  return json.secure_url;
+}
+
+/** Compress file image to base64 (fallback jika Cloudinary gagal) */
+async function compressImageToBase64(file, maxW = 500, quality = 0.75) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxW / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width * scale; canvas.height = img.height * scale;
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Club form state
+let _clubBannerUrl = null;
+let _clubIconUrl = null;
+
+/** Toggle privacy switch UI */
+window.toggleClubPrivacy = function() {
+  const hidden = document.getElementById('club-privat');
+  const isNowPrivate = hidden.value === '0';
+  hidden.value = isNowPrivate ? '1' : '0';
+
+  const knob     = document.getElementById('privacy-toggle-knob');
+  const btn      = document.getElementById('btn-toggle-privacy');
+  const iconSym  = document.getElementById('privacy-icon-symbol');
+  const label    = document.getElementById('privacy-label');
+  const desc     = document.getElementById('privacy-desc');
+
+  if (isNowPrivate) {
+    btn.classList.replace('bg-outline-variant', 'bg-primary');
+    btn.setAttribute('aria-checked', 'true');
+    knob.style.transform = 'translateX(24px)';
+    iconSym.textContent = 'lock';
+    label.textContent = 'Club Privat';
+    desc.textContent = 'Hanya bisa bergabung dengan kode undangan';
+  } else {
+    btn.classList.replace('bg-primary', 'bg-outline-variant');
+    btn.setAttribute('aria-checked', 'false');
+    knob.style.transform = 'translateX(0)';
+    iconSym.textContent = 'public';
+    label.textContent = 'Club Publik';
+    desc.textContent = 'Siapa pun bisa bergabung';
+  }
+};
+
+/** Inisialisasi modal Buat Club */
+function initBuatClubModal() {
+  const modal   = document.getElementById('modal-buat-club');
+  if (!modal) return;
+
+  const openBtn  = document.getElementById('btn-open-buat-club');
+  const closeBtn = document.getElementById('btn-close-buat-club');
+  const batalBtn = document.getElementById('btn-batal-club');
+  const overlay  = document.getElementById('overlay-buat-club');
+  const submitBtn = document.getElementById('btn-submit-club');
+  const errorEl  = document.getElementById('buat-club-error');
+
+  const openModal = () => { modal.classList.remove('hidden'); };
+  const closeModal = () => {
+    modal.classList.add('hidden');
+    // Reset form
+    document.getElementById('club-nama').value = '';
+    document.getElementById('club-deskripsi').value = '';
+    document.getElementById('club-kategori').value = '';
+    document.getElementById('club-privat').value = '0';
+    _clubBannerUrl = null; _clubIconUrl = null;
+    const bannerImg = document.getElementById('club-banner-img');
+    bannerImg.src = ''; bannerImg.classList.add('hidden');
+    document.getElementById('club-banner-placeholder').classList.remove('hidden');
+    const iconImg = document.getElementById('club-icon-img');
+    iconImg.src = ''; iconImg.classList.add('hidden');
+    document.getElementById('club-icon-placeholder').classList.remove('hidden');
+    if (errorEl) { errorEl.classList.add('hidden'); errorEl.textContent = ''; }
+    // Reset privacy toggle
+    const hidden = document.getElementById('club-privat');
+    if (hidden.value !== '0') toggleClubPrivacy();
+  };
+
+  openBtn?.addEventListener('click', () => {
+    const token = localStorage.getItem('rb_token');
+    if (!token) { showToast('⚠️ Login terlebih dahulu untuk membuat club.', 'warning'); return; }
+    openModal();
+  });
+  closeBtn?.addEventListener('click', closeModal);
+  batalBtn?.addEventListener('click', closeModal);
+  overlay?.addEventListener('click', closeModal);
+
+  // Banner upload
+  document.getElementById('club-banner-input')?.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const bannerImg = document.getElementById('club-banner-img');
+    const placeholder = document.getElementById('club-banner-placeholder');
+    const preview = URL.createObjectURL(file);
+    bannerImg.src = preview; bannerImg.classList.remove('hidden');
+    placeholder.classList.add('hidden');
+
+    // Extract color from banner
+    extractDominantColor(preview, (primary, scheme) => {
+      document.getElementById('club-color-primary').value = primary;
+      document.getElementById('club-color-scheme').value = scheme;
+      document.getElementById('color-preview-primary').style.background = primary;
+      document.getElementById('color-preview-scheme').style.background = scheme;
+    });
+
+    // Upload
+    try {
+      _clubBannerUrl = await uploadImageToCloudinary(file);
+    } catch {
+      _clubBannerUrl = await compressImageToBase64(file, 800, 0.7);
+    }
+  });
+
+  // Icon upload
+  document.getElementById('club-icon-input')?.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const iconImg = document.getElementById('club-icon-img');
+    iconImg.src = URL.createObjectURL(file); iconImg.classList.remove('hidden');
+    document.getElementById('club-icon-placeholder').classList.add('hidden');
+    try {
+      _clubIconUrl = await uploadImageToCloudinary(file);
+    } catch {
+      _clubIconUrl = await compressImageToBase64(file, 300, 0.75);
+    }
+  });
+
+  // Submit
+  submitBtn?.addEventListener('click', async () => {
+    const nama = document.getElementById('club-nama').value.trim();
+    if (!nama) {
+      errorEl.textContent = 'Nama club wajib diisi.';
+      errorEl.classList.remove('hidden');
+      return;
+    }
+    errorEl.classList.add('hidden');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span> Membuat...';
+
+    try {
+      const token = localStorage.getItem('rb_token');
+      const payload = {
+        nama,
+        deskripsi:     document.getElementById('club-deskripsi').value.trim(),
+        kategori:      document.getElementById('club-kategori').value,
+        privat:        document.getElementById('club-privat').value === '1',
+        banner_url:    _clubBannerUrl,
+        icon_url:      _clubIconUrl,
+        foto_cover:    _clubBannerUrl,
+        color_primary: document.getElementById('club-color-primary').value,
+        color_scheme:  document.getElementById('club-color-scheme').value,
+      };
+
+      const res = await fetch(`${API_BASE}/api/community/clubs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(payload)
+      });
+      const json = await res.json();
+
+      if (!json.success) throw new Error(json.message);
+
+      closeModal();
+      showToast('🎉 Club berhasil dibuat!', 'success');
+
+      // Redirect ke halaman club baru
+      setTimeout(() => {
+        window.location.href = `club-detail.html?id=${json.data.id}`;
+      }, 1200);
+    } catch (err) {
+      errorEl.textContent = err.message || 'Gagal membuat club. Coba lagi.';
+      errorEl.classList.remove('hidden');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">add</span> Buat Club';
+    }
+  });
+}
+
+// ── Invite Code Modal ──────────────────────────────────────────────────────
+
+let _pendingInviteClubId = null;
+
+/** Buka dialog kode invite untuk club privat */
+window.openInviteModal = function(clubId) {
+  _pendingInviteClubId = clubId;
+  const modal = document.getElementById('modal-invite-code');
+  if (!modal) return;
+  document.getElementById('invite-code-input').value = '';
+  const errEl = document.getElementById('invite-code-error');
+  if (errEl) { errEl.classList.add('hidden'); errEl.textContent = ''; }
+  modal.classList.remove('hidden');
+  setTimeout(() => document.getElementById('invite-code-input')?.focus(), 100);
+};
+
+function initInviteCodeModal() {
+  const modal    = document.getElementById('modal-invite-code');
+  if (!modal) return;
+  const cancelBtn = document.getElementById('btn-cancel-invite');
+  const submitBtn = document.getElementById('btn-submit-invite');
+  const overlay   = document.getElementById('overlay-invite-code');
+  const errEl     = document.getElementById('invite-code-error');
+
+  const closeInvite = () => { modal.classList.add('hidden'); _pendingInviteClubId = null; };
+  cancelBtn?.addEventListener('click', closeInvite);
+  overlay?.addEventListener('click', closeInvite);
+
+  // Enter key shortcut
+  document.getElementById('invite-code-input')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') submitBtn?.click();
+  });
+
+  submitBtn?.addEventListener('click', async () => {
+    const code = document.getElementById('invite-code-input').value.trim();
+    if (!code) { errEl.textContent = 'Masukkan kode undangan.'; errEl.classList.remove('hidden'); return; }
+    errEl.classList.add('hidden');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="material-symbols-outlined text-[14px] animate-spin">progress_activity</span>';
+
+    try {
+      const token = localStorage.getItem('rb_token');
+      const res = await fetch(`${API_BASE}/api/community/clubs/${_pendingInviteClubId}/gabung`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ invite_code: code })
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.message);
+      closeInvite();
+      showToast('🎉 Berhasil bergabung ke club!', 'success');
+      setTimeout(() => window.location.href = `club-detail.html?id=${_pendingInviteClubId}`, 1200);
+    } catch (err) {
+      errEl.textContent = err.message || 'Kode undangan tidak valid.';
+      errEl.classList.remove('hidden');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<span class="material-symbols-outlined text-[16px]">send</span> Gabung';
+    }
+  });
+}
+
+// Init on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+  initBuatClubModal();
+  initInviteCodeModal();
+});

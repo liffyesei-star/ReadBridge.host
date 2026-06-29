@@ -193,9 +193,12 @@
         <span class="material-symbols-outlined text-[20px]">public</span> Public Feed
       </a>
       <div id="joined-clubs-list" class="flex flex-col gap-1"></div>
-      <button class="mt-4 w-full py-2.5 bg-surface-container border border-outline-variant/50 rounded-xl font-label-md text-label-md text-primary flex justify-center items-center gap-xs hover:bg-surface-container-high transition-all">
-        <span class="material-symbols-outlined text-[18px]">add</span> Gabung Club
+      <button id="btn-open-buat-club" class="mt-4 w-full py-2.5 bg-primary text-on-primary rounded-xl font-label-md text-label-md font-bold flex justify-center items-center gap-xs hover:bg-primary/90 transition-all shadow-sm">
+        <span class="material-symbols-outlined text-[18px]">add</span> Buat Club Baru
       </button>
+      <a href="club-detail.html" class="mt-2 w-full py-2.5 bg-surface-container border border-outline-variant/50 rounded-xl font-label-md text-label-md text-primary flex justify-center items-center gap-xs hover:bg-surface-container-high transition-all">
+        <span class="material-symbols-outlined text-[18px]">groups</span> Jelajahi Club
+      </a>
     </div>
   </aside>
 
@@ -269,9 +272,135 @@
 </main>
 
 <!-- FAB -->
-<button id="fab-buat-diskusi" class="fixed bottom-lg right-lg lg:bottom-xl lg:right-xl bg-primary text-on-primary shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all rounded-full px-6 py-4 flex items-center gap-sm font-label-md text-label-md font-bold z-50" >
+<button id="fab-buat-diskusi" class="fixed bottom-lg right-lg lg:bottom-xl lg:right-xl bg-primary text-on-primary shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all rounded-full px-6 py-4 flex items-center gap-sm font-label-md text-label-md font-bold z-50">
   <span class="material-symbols-outlined text-[24px]">edit</span> Buat Diskusi
 </button>
+
+<!-- ═══════════════════════════════════════════════
+     MODAL: BUAT CLUB BARU
+═══════════════════════════════════════════════ -->
+<div id="modal-buat-club" class="fixed inset-0 z-[200] flex items-center justify-center p-4 hidden">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" id="overlay-buat-club"></div>
+  <div class="relative bg-surface rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col z-10">
+    
+    <!-- Banner Preview Area -->
+    <div id="club-banner-preview" class="relative w-full h-36 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-t-3xl overflow-hidden cursor-pointer group" onclick="document.getElementById('club-banner-input').click()">
+      <img id="club-banner-img" src="" alt="" class="w-full h-full object-cover hidden"/>
+      <div id="club-banner-placeholder" class="absolute inset-0 flex flex-col items-center justify-center gap-1 text-on-surface-variant/60 group-hover:bg-black/10 transition-colors">
+        <span class="material-symbols-outlined text-[40px]">add_photo_alternate</span>
+        <span class="text-sm font-medium">Klik untuk upload banner club</span>
+      </div>
+      <!-- Icon overlay -->
+      <div class="absolute -bottom-6 left-6">
+        <div id="club-icon-preview" class="w-14 h-14 rounded-2xl border-4 border-surface bg-surface-container-high flex items-center justify-center overflow-hidden shadow-lg cursor-pointer" onclick="event.stopPropagation(); document.getElementById('club-icon-input').click()" title="Upload icon club">
+          <img id="club-icon-img" src="" alt="" class="w-full h-full object-cover hidden"/>
+          <span id="club-icon-placeholder" class="material-symbols-outlined text-[28px] text-on-surface-variant/50">add_a_photo</span>
+        </div>
+      </div>
+    </div>
+    <input type="file" id="club-banner-input" accept="image/*" class="hidden"/>
+    <input type="file" id="club-icon-input" accept="image/*" class="hidden"/>
+
+    <!-- Form Body -->
+    <div class="pt-10 px-6 pb-6 flex flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <h2 class="font-title-lg text-title-lg font-bold text-on-surface">Buat Club Baru</h2>
+        <button id="btn-close-buat-club" class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Nama Club <span class="text-error">*</span></label>
+        <input id="club-nama" type="text" maxlength="60" placeholder="Contoh: Pemburu Buku Antik" class="w-full rounded-xl bg-surface-container-low border border-outline-variant px-4 py-2.5 font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"/>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Deskripsi</label>
+        <textarea id="club-deskripsi" rows="3" maxlength="300" placeholder="Ceritakan tujuan dan tema diskusi club ini..." class="w-full rounded-xl bg-surface-container-low border border-outline-variant px-4 py-2.5 font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary resize-none"></textarea>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Kategori</label>
+        <select id="club-kategori" class="w-full rounded-xl bg-surface-container-low border border-outline-variant px-4 py-2.5 font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary">
+          <option value="">-- Pilih Kategori --</option>
+          <option value="Buku & Literasi">Buku & Literasi</option>
+          <option value="Akademik & Ujian">Akademik & Ujian</option>
+          <option value="Fiksi & Novel">Fiksi & Novel</option>
+          <option value="Sains & Teknologi">Sains & Teknologi</option>
+          <option value="Bisnis & Keuangan">Bisnis & Keuangan</option>
+          <option value="Seni & Budaya">Seni & Budaya</option>
+          <option value="Lainnya">Lainnya</option>
+        </select>
+      </div>
+
+      <!-- Privacy Toggle -->
+      <div class="flex items-center justify-between p-3 bg-surface-container-low rounded-xl border border-outline-variant/50">
+        <div class="flex items-center gap-3">
+          <div id="privacy-icon" class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+            <span id="privacy-icon-symbol" class="material-symbols-outlined text-[20px] text-primary">public</span>
+          </div>
+          <div>
+            <p id="privacy-label" class="font-label-md text-label-md font-bold text-on-surface">Club Publik</p>
+            <p id="privacy-desc" class="font-label-sm text-label-sm text-on-surface-variant">Siapa pun bisa bergabung</p>
+          </div>
+        </div>
+        <button id="btn-toggle-privacy" role="switch" aria-checked="false" class="relative w-12 h-6 rounded-full transition-colors bg-outline-variant focus:outline-none" onclick="toggleClubPrivacy()">
+          <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 transform" id="privacy-toggle-knob"></span>
+        </button>
+      </div>
+      <input type="hidden" id="club-privat" value="0"/>
+
+      <!-- Color palette preview -->
+      <div class="flex flex-col gap-1">
+        <label class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Warna Tema Club</label>
+        <div class="flex items-center gap-3">
+          <div id="color-preview-primary" class="w-8 h-8 rounded-full border-2 border-white shadow-md" style="background:#0284c7"></div>
+          <div id="color-preview-scheme" class="w-8 h-8 rounded-full border-2 border-white shadow-md" style="background:#e0f2fe"></div>
+          <span class="font-label-sm text-label-sm text-on-surface-variant">Diekstrak otomatis dari banner</span>
+          <input type="hidden" id="club-color-primary" value="#0284c7"/>
+          <input type="hidden" id="club-color-scheme" value="#e0f2fe"/>
+        </div>
+      </div>
+
+      <!-- Error msg -->
+      <p id="buat-club-error" class="text-error text-sm font-semibold hidden"></p>
+
+      <!-- Actions -->
+      <div class="flex gap-3 pt-2">
+        <button id="btn-batal-club" class="flex-1 py-3 rounded-xl bg-surface-container font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-colors">Batal</button>
+        <button id="btn-submit-club" class="flex-1 py-3 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-bold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">add</span> Buat Club
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     MODAL: INPUT KODE INVITE (Club Private)
+═══════════════════════════════════════════════ -->
+<div id="modal-invite-code" class="fixed inset-0 z-[200] flex items-center justify-center p-4 hidden">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" id="overlay-invite-code"></div>
+  <div class="relative bg-surface rounded-3xl shadow-2xl w-full max-w-sm z-10 p-6 flex flex-col gap-4">
+    <div class="text-center">
+      <div class="w-16 h-16 bg-secondary-container rounded-2xl flex items-center justify-center mx-auto mb-3">
+        <span class="material-symbols-outlined text-[36px] text-secondary">lock</span>
+      </div>
+      <h3 class="font-title-lg text-title-lg font-bold text-on-surface">Club Privat</h3>
+      <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Masukkan kode undangan untuk bergabung</p>
+    </div>
+    <input id="invite-code-input" type="text" maxlength="12" placeholder="Contoh: A3F8C12E91" autocomplete="off"
+      class="w-full text-center text-2xl font-bold tracking-[0.3em] uppercase rounded-xl bg-surface-container-low border-2 border-outline-variant px-4 py-3 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"/>
+    <p id="invite-code-error" class="text-error text-sm font-semibold text-center hidden"></p>
+    <div class="flex gap-3">
+      <button id="btn-cancel-invite" class="flex-1 py-2.5 rounded-xl bg-surface-container text-on-surface-variant font-label-md hover:bg-surface-container-high transition-colors">Batal</button>
+      <button id="btn-submit-invite" class="flex-1 py-2.5 rounded-xl bg-primary text-on-primary font-label-md font-bold hover:bg-primary/90 transition-colors flex items-center justify-center gap-1">
+        <span class="material-symbols-outlined text-[16px]">send</span> Gabung
+      </button>
+    </div>
+  </div>
+</div>
 
 
 <!-- Footer -->

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Kelola Club - ReadBridge</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0284c7",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#0369a1",
+                        "on-primary-container": "#f0f9ff",
+                        surface: "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f0f9ff",
+                        "surface-container": "#e0f2fe",
+                        "surface-container-high": "#bae6fd",
+                        "surface-container-highest": "#7dd3fc",
+                        "on-surface": "#0c4a6e",
+                        "on-surface-variant": "#334155",
+                        "outline-variant": "#bae6fd",
+                        background: "#f8fafc",
+                        secondary: "#f59e0b",
+                        "secondary-container": "#fef3c7",
+                        "on-secondary-container": "#d97706",
+                        tertiary: "#0d9488",
+                        "tertiary-container": "#ccfbf1",
+                        "on-tertiary-container": "#115e59",
+                        error: "#ba1a1a"
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="bg-background text-on-surface font-sans min-h-screen flex flex-col">
+
+<!-- Header -->
+<nav class="bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 sticky top-0 z-50">
+  <div class="max-w-[1280px] mx-auto w-full px-4 h-[80px] flex items-center justify-between">
+    <div class="flex items-center gap-sm cursor-pointer" id="btn-back">
+      <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+      <span class="font-title-lg text-title-lg font-bold">Kembali ke Club</span>
+    </div>
+  </div>
+</nav>
+
+<main class="flex-grow max-w-[1000px] mx-auto w-full px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+  <!-- Sidebar Menu -->
+  <aside class="md:col-span-1 flex flex-col gap-2">
+    <button class="admin-tab active w-full text-left px-4 py-3 rounded-xl font-bold bg-surface-container text-primary" data-target="tab-anggota">Anggota</button>
+    <button class="admin-tab w-full text-left px-4 py-3 rounded-xl font-medium text-on-surface-variant hover:bg-surface-container-low" data-target="tab-invite">Kode Undangan</button>
+    <button class="admin-tab w-full text-left px-4 py-3 rounded-xl font-medium text-on-surface-variant hover:bg-surface-container-low" data-target="tab-settings" id="menu-settings">Pengaturan</button>
+  </aside>
+
+  <!-- Content -->
+  <section class="md:col-span-3 bg-surface rounded-3xl shadow-sm border border-outline-variant/30 p-6 min-h-[500px]">
+    
+    <!-- TAB: ANGGOTA -->
+    <div id="tab-anggota" class="admin-content block">
+      <h2 class="font-title-lg text-title-lg font-bold mb-4">Kelola Anggota</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-outline-variant/50">
+              <th class="py-3 px-4 font-label-md text-on-surface-variant">User</th>
+              <th class="py-3 px-4 font-label-md text-on-surface-variant">Role</th>
+              <th class="py-3 px-4 font-label-md text-on-surface-variant text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="member-list">
+            <!-- Render via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB: INVITE CODE -->
+    <div id="tab-invite" class="admin-content hidden">
+      <h2 class="font-title-lg text-title-lg font-bold mb-1">Kode Undangan</h2>
+      <p class="font-body-sm text-on-surface-variant mb-6">Bagikan kode ini agar orang lain bisa bergabung ke club private Anda.</p>
+      
+      <div class="bg-surface-container-low border border-outline-variant rounded-2xl p-6 flex flex-col items-center justify-center gap-4 text-center">
+        <span class="material-symbols-outlined text-[48px] text-primary">key</span>
+        <h3 class="text-4xl font-black tracking-widest text-on-surface" id="invite-code-display">---</h3>
+        <div class="flex gap-2 mt-2">
+          <button id="btn-copy-invite" class="px-6 py-2 bg-primary text-on-primary rounded-xl font-bold hover:bg-primary/90 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">content_copy</span> Salin Kode
+          </button>
+          <button id="btn-regen-invite" class="px-6 py-2 bg-surface text-error border border-error rounded-xl font-bold hover:bg-error-container flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">refresh</span> Buat Baru
+          </button>
+        </div>
+        <p class="text-xs text-on-surface-variant mt-2">*Membuat kode baru akan membuat kode lama tidak berlaku.</p>
+      </div>
+    </div>
+
+    <!-- TAB: SETTINGS (Kreator Only) -->
+    <div id="tab-settings" class="admin-content hidden">
+      <h2 class="font-title-lg text-title-lg font-bold mb-4">Pengaturan Club</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-bold mb-1">Nama Club</label>
+          <input type="text" id="set-nama" class="w-full rounded-xl border border-outline-variant px-4 py-2 bg-surface-container-low" />
+        </div>
+        <div>
+          <label class="block text-sm font-bold mb-1">Aturan Club</label>
+          <textarea id="set-aturan" rows="5" class="w-full rounded-xl border border-outline-variant px-4 py-2 bg-surface-container-low" placeholder="Tuliskan aturan untuk anggota club..."></textarea>
+        </div>
+        <hr class="my-4 border-outline-variant/50"/>
+        <div>
+          <h3 class="text-error font-bold mb-2">Zona Berbahaya</h3>
+          <div class="p-4 border border-error rounded-xl bg-error-container/10 flex items-center justify-between">
+            <div>
+              <p class="font-bold text-on-surface">Transfer Ownership</p>
+              <p class="text-sm text-on-surface-variant">Pindahkan hak kepemilikan club ke anggota lain.</p>
+            </div>
+            <button id="btn-transfer-owner" class="px-4 py-2 bg-error text-on-error rounded-lg font-bold">Transfer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", async function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const clubId = urlParams.get('id');
+    const API_BASE = localStorage.getItem('rb_api_base_url') || (['localhost', '127.0.0.1'].includes(window.location.hostname) ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+    const token = localStorage.getItem('rb_token');
+
+    if (!clubId || !token) { window.location.href = 'komunitas.html'; return; }
+    
+    document.getElementById('btn-back').onclick = () => window.location.href = `club-detail.html?id=${clubId}`;
+
+    // Tab Logic
+    const tabs = document.querySelectorAll('.admin-tab');
+    const contents = document.querySelectorAll('.admin-content');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => { t.classList.remove('bg-surface-container', 'text-primary'); t.classList.add('text-on-surface-variant'); });
+            tab.classList.add('bg-surface-container', 'text-primary');
+            tab.classList.remove('text-on-surface-variant');
+            
+            contents.forEach(c => c.classList.add('hidden'));
+            document.getElementById(tab.dataset.target).classList.remove('hidden');
+        });
+    });
+
+    // Check Role
+    let myRole = 'anggota';
+    try {
+        const res = await fetch(`${API_BASE}/api/community/clubs/${clubId}`, { headers: { 'Authorization': `Bearer ${token}` }});
+        const json = await res.json();
+        if (json.success) {
+            myRole = json.data.roleAnggota;
+            if (myRole === 'anggota') {
+                alert('Akses Ditolak');
+                window.location.href = `club-detail.html?id=${clubId}`;
+            }
+            if (myRole === 'moderator') {
+                document.getElementById('menu-settings').style.display = 'none'; // Sembunyikan setting buat moderator
+            }
+            // Populate settings
+            document.getElementById('set-nama').value = json.data.nama;
+            document.getElementById('set-aturan').value = json.data.aturan || '';
+        }
+    } catch(e) {}
+
+    // Load Members
+    async function loadMembers() {
+        const res = await fetch(`${API_BASE}/api/community/clubs/${clubId}/anggota`, { headers: { 'Authorization': `Bearer ${token}` }});
+        const json = await res.json();
+        const tbody = document.getElementById('member-list');
+        tbody.innerHTML = '';
+        
+        json.data.forEach(m => {
+            let roleBadge = m.role === 'kreator' ? '<span class="px-2 py-1 bg-secondary-container text-on-secondary-container rounded-md text-xs font-bold">Kreator</span>' :
+                            m.role === 'moderator' ? '<span class="px-2 py-1 bg-primary-container text-on-primary-container rounded-md text-xs font-bold">Moderator</span>' :
+                            '<span class="px-2 py-1 bg-surface-container text-on-surface-variant rounded-md text-xs">Anggota</span>';
+            
+            let actions = '';
+            if (myRole === 'kreator' && m.role !== 'kreator') {
+                actions = `
+                    <select onchange="updateRole(${m.id}, this.value)" class="text-xs rounded border border-outline-variant py-1 px-2">
+                        <option value="anggota" ${m.role==='anggota'?'selected':''}>Anggota</option>
+                        <option value="moderator" ${m.role==='moderator'?'selected':''}>Moderator</option>
+                    </select>
+                    <button onclick="kickUser(${m.id})" class="text-error hover:bg-error-container p-1 rounded"><span class="material-symbols-outlined text-[18px]">person_remove</span></button>
+                    <button onclick="banUser(${m.id})" class="text-error hover:bg-error-container p-1 rounded"><span class="material-symbols-outlined text-[18px]">block</span></button>
+                `;
+            } else if (myRole === 'moderator' && m.role === 'anggota') {
+                actions = `
+                    <button onclick="kickUser(${m.id})" class="text-error hover:bg-error-container p-1 rounded" title="Kick"><span class="material-symbols-outlined text-[18px]">person_remove</span></button>
+                    <button onclick="banUser(${m.id})" class="text-error hover:bg-error-container p-1 rounded" title="Ban"><span class="material-symbols-outlined text-[18px]">block</span></button>
+                `;
+            }
+
+            tbody.innerHTML += `
+                <tr class="border-b border-outline-variant/30 hover:bg-surface-container-lowest">
+                    <td class="py-3 px-4 flex items-center gap-3">
+                        <img src="${m.foto_profil || 'https://ui-avatars.com/api/?name='+m.nama}" class="w-8 h-8 rounded-full"/>
+                        <span class="font-bold">${m.nama}</span>
+                    </td>
+                    <td class="py-3 px-4">${roleBadge}</td>
+                    <td class="py-3 px-4 text-right flex justify-end gap-2 items-center h-full">${actions}</td>
+                </tr>
+            `;
+        });
+    }
+    loadMembers();
+
+    // Load Invite Code
+    async function loadInviteCode() {
+        const res = await fetch(`${API_BASE}/api/community/clubs/${clubId}/invite-code`, { headers: { 'Authorization': `Bearer ${token}` }});
+        const json = await res.json();
+        if (json.success && json.data.invite_code) {
+            document.getElementById('invite-code-display').textContent = json.data.invite_code;
+        } else {
+            document.getElementById('invite-code-display').textContent = "Tidak ada (Club Publik)";
+        }
+    }
+    loadInviteCode();
+
+    document.getElementById('btn-copy-invite').onclick = () => {
+        const code = document.getElementById('invite-code-display').textContent;
+        if(code && code !== '---') { navigator.clipboard.writeText(code); alert('Disalin!'); }
+    };
+    
+    document.getElementById('btn-regen-invite').onclick = async () => {
+        if(!confirm('Kode lama akan hangus. Lanjutkan?')) return;
+        const res = await fetch(`${API_BASE}/api/community/clubs/${clubId}/regenerate-invite`, {
+            method:'POST', headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const json = await res.json();
+        if(json.success) document.getElementById('invite-code-display').textContent = json.data.invite_code;
+    };
+
+    // Global Action functions for UI
+    window.kickUser = async (uid) => {
+        if(!confirm('Keluarkan anggota ini?')) return;
+        await fetch(`${API_BASE}/api/community/clubs/${clubId}/anggota/${uid}`, { method:'DELETE', headers: { 'Authorization': `Bearer ${token}` }});
+        loadMembers();
+    };
+    window.banUser = async (uid) => {
+        if(!confirm('Ban anggota ini permanen?')) return;
+        await fetch(`${API_BASE}/api/community/clubs/${clubId}/anggota/${uid}/ban`, { method:'POST', headers: { 'Authorization': `Bearer ${token}` }});
+        loadMembers();
+    };
+    window.updateRole = async (uid, role) => {
+        await fetch(`${API_BASE}/api/community/clubs/${clubId}/anggota/${uid}/role`, {
+            method:'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ role })
+        });
+        loadMembers();
+    };
+
+    // Transfer Owner
+    document.getElementById('btn-transfer-owner').onclick = async () => {
+        const uid = prompt("Masukkan ID User tujuan transfer:");
+        if(!uid) return;
+        if(confirm(`Yakin transfer ownership ke user ID ${uid}? Anda akan menjadi Moderator.`)) {
+            const res = await fetch(`${API_BASE}/api/community/clubs/${clubId}/transfer-owner`, {
+                method:'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ target_user_id: uid })
+            });
+            const json = await res.json();
+            alert(json.message);
+            if(json.success) window.location.reload();
+        }
+    };
+});
+</script>
+</body>
+</html>

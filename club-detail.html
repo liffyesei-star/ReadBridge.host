@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <script id="global-preferences-controller">
+        (function() {
+            function applyTheme(theme) { document.documentElement.classList.toggle('dark', theme === 'dark'); }
+            function applyFontSize(size) {
+                document.documentElement.style.fontSize = size === 'kecil' ? '14px' : (size === 'besar' ? '18px' : '16px');
+            }
+            function applyFontFamily(family) {
+                let style = document.getElementById('global-font-override');
+                if (family === 'serif') {
+                    if (!style) {
+                        style = document.createElement('style');
+                        style.id = 'global-font-override';
+                        style.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span, a, button, input, select, textarea { font-family: Georgia, serif !important; }`;
+                        document.head.appendChild(style);
+                    }
+                } else if (style) style.remove();
+            }
+            applyTheme(localStorage.getItem('rb_theme'));
+            applyFontSize(localStorage.getItem('rb_font_size') || 'sedang');
+            applyFontFamily(localStorage.getItem('rb_font_family') || 'sans');
+        })();
+    </script>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Club - ReadBridge</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0284c7",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#0369a1",
+                        "on-primary-container": "#f0f9ff",
+                        surface: "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f0f9ff",
+                        "surface-container": "#e0f2fe",
+                        "surface-container-high": "#bae6fd",
+                        "surface-container-highest": "#7dd3fc",
+                        "on-surface": "#0c4a6e",
+                        "on-surface-variant": "#334155",
+                        "outline-variant": "#bae6fd",
+                        background: "#f8fafc",
+                        secondary: "#f59e0b",
+                        "secondary-container": "#fef3c7",
+                        "on-secondary-container": "#d97706",
+                        tertiary: "#0d9488",
+                        "tertiary-container": "#ccfbf1",
+                        "on-tertiary-container": "#115e59",
+                        error: "#ba1a1a"
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        .club-banner-overlay { background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%); }
+        .dynamic-theme {
+            --club-primary: #0284c7;
+            --club-scheme: #e0f2fe;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-sans antialiased min-h-screen flex flex-col transition-colors duration-300">
+
+<!-- Header -->
+<nav class="bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 sticky top-0 z-50">
+  <div class="max-w-[1280px] mx-auto w-full px-4 md:px-margin h-[80px] flex items-center justify-between">
+    <div class="flex items-center gap-sm cursor-pointer" onclick="window.location.href='index.html'">
+      <span class="material-symbols-outlined text-[32px] text-primary">menu_book</span>
+      <span class="font-title-lg text-title-lg font-black tracking-tight text-primary">ReadBridge</span>
+    </div>
+    <div class="hidden lg:flex items-center gap-md">
+      <a href="komunitas.html" class="flex items-center gap-xs px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors font-label-md text-label-md font-bold">
+        <span class="material-symbols-outlined text-[20px]">group</span> Komunitas
+      </a>
+    </div>
+    <div class="flex items-center gap-sm">
+      <a href="login.html" id="nav-btn-login" class="px-6 py-2.5 rounded-xl border-2 border-primary text-primary font-label-md font-bold hover:bg-primary hover:text-on-primary transition-colors hidden">Masuk</a>
+      <div id="nav-user-menu" class="hidden items-center gap-3">
+        <a href="profil.html" class="flex items-center gap-3 hover:bg-surface-container-low p-2 rounded-xl transition-colors">
+          <div class="text-right hidden md:block">
+            <p class="font-label-md text-label-md font-bold text-on-surface" id="nav-user-name">User</p>
+            <p class="font-label-sm text-label-sm text-primary">150 Poin</p>
+          </div>
+          <img id="nav-user-avatar" src="https://ui-avatars.com/api/?name=User&background=e0f2fe&color=0284c7" alt="Profil" class="w-10 h-10 rounded-full border-2 border-primary/20 object-cover" />
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section Club -->
+<div id="club-hero" class="w-full relative h-[300px] md:h-[400px] bg-surface-container overflow-hidden">
+  <img id="hero-banner" src="" alt="Cover" class="w-full h-full object-cover" />
+  <div class="absolute inset-0 club-banner-overlay"></div>
+  <div class="absolute inset-0 flex flex-col justify-end max-w-[1280px] mx-auto px-4 md:px-margin pb-xl">
+    <div class="flex items-end gap-md">
+      <!-- Icon/Avatar -->
+      <div class="w-24 h-24 md:w-32 md:h-32 rounded-2xl border-4 border-surface bg-surface flex items-center justify-center overflow-hidden shadow-xl shrink-0">
+        <img id="hero-icon" src="" class="w-full h-full object-cover" />
+      </div>
+      <!-- Info -->
+      <div class="flex flex-col mb-2 text-white">
+        <div class="flex items-center gap-2">
+          <span id="hero-badge-privacy" class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold text-white flex items-center gap-1"></span>
+          <span id="hero-badge-category" class="px-3 py-1 bg-primary/80 backdrop-blur-md rounded-full text-xs font-bold text-white hidden"></span>
+        </div>
+        <h1 id="hero-title" class="font-display-sm text-display-sm md:text-display-md font-black mt-2 drop-shadow-md">Memuat Club...</h1>
+        <p class="font-body-md text-body-md text-white/90 mt-1 max-w-2xl drop-shadow" id="hero-desc"></p>
+        <div class="flex items-center gap-4 mt-4">
+          <span class="flex items-center gap-1 font-label-md font-bold"><span class="material-symbols-outlined text-[18px]">group</span> <span id="hero-members">0</span> Anggota</span>
+          <button id="btn-hero-action" class="px-6 py-2 bg-primary text-on-primary rounded-xl font-bold hover:bg-primary/90 transition-colors shadow-lg flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">add</span> Gabung Club
+          </button>
+          <a id="btn-hero-admin" href="#" class="px-6 py-2 bg-surface text-on-surface rounded-xl font-bold hover:bg-surface-container-low transition-colors shadow-lg flex items-center gap-2 hidden">
+            <span class="material-symbols-outlined text-[18px]">settings</span> Kelola Club
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Layout -->
+<main class="flex-grow max-w-[1280px] mx-auto w-full px-4 md:px-margin py-xl grid grid-cols-1 lg:grid-cols-12 gap-xl relative -top-8 z-10">
+  
+  <!-- Content Area -->
+  <section class="lg:col-span-8 flex flex-col gap-md">
+    <!-- Tabs -->
+    <div class="bg-surface rounded-2xl shadow-sm border border-outline-variant/30 flex px-2 overflow-x-auto hide-scrollbar">
+      <button class="font-label-md text-label-md font-bold text-primary border-b-2 border-primary py-4 px-6 whitespace-nowrap">Diskusi Terbaru</button>
+      <button class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-surface-container-lowest transition-colors py-4 px-6 whitespace-nowrap">Anggota</button>
+      <button class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-surface-container-lowest transition-colors py-4 px-6 whitespace-nowrap">Tentang Club</button>
+    </div>
+
+    <!-- Feed List -->
+    <div id="community-feed" class="flex flex-col gap-md mt-2">
+      <!-- Diisi oleh community-modal.js -->
+    </div>
+  </section>
+
+  <!-- Sidebar -->
+  <aside class="hidden lg:flex lg:col-span-4 flex-col gap-lg">
+    <!-- Aturan -->
+    <div class="bg-surface rounded-2xl p-lg shadow-sm border border-outline-variant/30">
+      <h3 class="font-title-lg text-title-lg text-on-surface mb-md font-bold flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-[24px]">gavel</span> Aturan Club
+      </h3>
+      <div id="club-rules" class="font-body-sm text-body-sm text-on-surface-variant space-y-2">
+        <p>1. Bersikap sopan dan saling menghargai.</p>
+        <p>2. Dilarang spam atau promosi tanpa izin.</p>
+        <p>3. Diskusi harus sesuai dengan tema club.</p>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<!-- Modal Invite Code (Sama dengan komunitas.html) -->
+<div id="modal-invite-code" class="fixed inset-0 z-[200] flex items-center justify-center p-4 hidden">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" id="overlay-invite-code"></div>
+  <div class="relative bg-surface rounded-3xl shadow-2xl w-full max-w-sm z-10 p-6 flex flex-col gap-4">
+    <div class="text-center">
+      <div class="w-16 h-16 bg-secondary-container rounded-2xl flex items-center justify-center mx-auto mb-3">
+        <span class="material-symbols-outlined text-[36px] text-secondary">lock</span>
+      </div>
+      <h3 class="font-title-lg text-title-lg font-bold text-on-surface">Club Privat</h3>
+      <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Masukkan kode undangan untuk bergabung</p>
+    </div>
+    <input id="invite-code-input" type="text" maxlength="12" placeholder="Contoh: A3F8C12E91" autocomplete="off" class="w-full text-center text-2xl font-bold tracking-[0.3em] uppercase rounded-xl bg-surface-container-low border-2 border-outline-variant px-4 py-3 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"/>
+    <p id="invite-code-error" class="text-error text-sm font-semibold text-center hidden"></p>
+    <div class="flex gap-3">
+      <button id="btn-cancel-invite" class="flex-1 py-2.5 rounded-xl bg-surface-container text-on-surface-variant font-label-md hover:bg-surface-container-high transition-colors">Batal</button>
+      <button id="btn-submit-invite" class="flex-1 py-2.5 rounded-xl bg-primary text-on-primary font-label-md font-bold hover:bg-primary/90 transition-colors flex items-center justify-center gap-1">
+        <span class="material-symbols-outlined text-[16px]">send</span> Gabung
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="community-modal.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const clubId = urlParams.get('id');
+    const API_BASE = localStorage.getItem('rb_api_base_url') || (['localhost', '127.0.0.1'].includes(window.location.hostname) ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+
+    if (!clubId) { window.location.href = 'komunitas.html'; return; }
+
+    try {
+        const token = localStorage.getItem('rb_token');
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+        const res = await fetch(`${API_BASE}/api/community/clubs/${clubId}`, { headers });
+        const json = await res.json();
+        
+        if (!json.success) throw new Error(json.message);
+        const club = json.data;
+
+        // Render Header
+        document.getElementById('hero-title').textContent = club.nama;
+        document.getElementById('hero-desc').textContent = club.deskripsi || '';
+        document.getElementById('hero-members').textContent = club.total_anggota;
+        
+        // Render Images (fallback ke placeholder)
+        document.getElementById('hero-banner').src = club.banner_url || club.foto_cover || 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=1200&q=80';
+        document.getElementById('hero-icon').src = club.icon_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(club.nama)}&background=${(club.color_scheme||'e0f2fe').replace('#','')}&color=${(club.color_primary||'0284c7').replace('#','')}&size=128`;
+
+        // Apply Colors (CSS Custom Properties)
+        if (club.color_primary) document.documentElement.style.setProperty('--club-primary', club.color_primary);
+        if (club.color_scheme) document.documentElement.style.setProperty('--club-scheme', club.color_scheme);
+        // Replace tailwind class logic - simplest is overriding inline for buttons
+        const btnAction = document.getElementById('btn-hero-action');
+        if (club.color_primary) btnAction.style.backgroundColor = club.color_primary;
+
+        // Badges
+        const privacyBadge = document.getElementById('hero-badge-privacy');
+        privacyBadge.innerHTML = club.privat 
+            ? `<span class="material-symbols-outlined text-[14px]">lock</span> Privat`
+            : `<span class="material-symbols-outlined text-[14px]">public</span> Publik`;
+
+        if (club.kategori) {
+            const catBadge = document.getElementById('hero-badge-category');
+            catBadge.textContent = club.kategori;
+            catBadge.classList.remove('hidden');
+        }
+
+        if (club.aturan) {
+            document.getElementById('club-rules').innerHTML = club.aturan.split('\n').map(l => `<p>${l}</p>`).join('');
+        }
+
+        // Action Buttons Logic
+        const btnAdmin = document.getElementById('btn-hero-admin');
+        
+        if (club.isBanned) {
+            btnAction.innerHTML = '<span class="material-symbols-outlined text-[18px]">block</span> Di-ban';
+            btnAction.style.backgroundColor = '#ba1a1a';
+            btnAction.disabled = true;
+        } else if (club.sudahGabung) {
+            btnAction.innerHTML = '<span class="material-symbols-outlined text-[18px]">logout</span> Keluar Club';
+            btnAction.style.backgroundColor = '#334155';
+            btnAction.onclick = () => toggleJoin(club.id, club.privat);
+        } else {
+            btnAction.innerHTML = '<span class="material-symbols-outlined text-[18px]">add</span> Gabung Club';
+            btnAction.onclick = () => toggleJoin(club.id, club.privat);
+        }
+
+        // Admin Button
+        if (['kreator', 'moderator'].includes(club.roleAnggota)) {
+            btnAdmin.classList.remove('hidden');
+            btnAdmin.href = `club-admin.html?id=${club.id}`;
+        }
+
+        // Load Feed for this club
+        window.loadFeed(club.id);
+
+    } catch (err) {
+        alert("Gagal memuat detail club: " + err.message);
+    }
+
+    async function toggleJoin(id, isPrivate) {
+        const token = localStorage.getItem('rb_token');
+        if (!token) return alert('Login terlebih dahulu.');
+        
+        if (isPrivate && document.getElementById('btn-hero-action').innerText.includes('Gabung')) {
+            window.openInviteModal(id);
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE}/api/community/clubs/${id}/gabung`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+            });
+            const json = await res.json();
+            if (json.success) location.reload();
+            else alert(json.message);
+        } catch (e) {
+            alert('Gagal update keanggotaan.');
+        }
+    }
+});
+</script>
+</body>
+</html>
