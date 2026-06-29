@@ -280,7 +280,7 @@
         </a>
         <div class="relative" id="profile-menu-container">
           <button id="profile-avatar-btn" class="focus:outline-none flex rounded-full">
-            <img alt="User profile avatar"
+            <img id="nav-user-avatar" alt="User profile avatar"
               class="w-10 h-10 rounded-full object-cover border-2 border-primary cursor-pointer hover:ring-2 hover:ring-primary transition-all"
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4" />
           </button>
@@ -1172,6 +1172,15 @@
         els[i].textContent = savedName;
       }
 
+      // ── Early Avatar Load: Apply Google profile pic immediately ──
+      const earlyGooglePic = localStorage.getItem('rb_profile_pic');
+      if (earlyGooglePic) {
+        ['nav-user-avatar', 'sidebar-user-avatar', 'leaderboard-user-avatar'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.src = earlyGooglePic;
+        });
+      }
+
       // --- Dynamic Gamification Logic ---
       calculateGamification(savedName);
 
@@ -1422,6 +1431,14 @@
       let xpFromActivities = combinedActivities.length * 50; // +50 XP per diskusi/komentar
 
       // ─── DYNAMIC QUESTS CHECKING ───
+      // Daily reset: clear quests if it's a new calendar day
+      const todayStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+      const lastQuestDate = localStorage.getItem('rb_quests_date') || '';
+      if (lastQuestDate !== todayStr) {
+        localStorage.setItem('rb_completed_quests', '[]');
+        localStorage.setItem('rb_quests_date', todayStr);
+      }
+
       let completedQuests = JSON.parse(localStorage.getItem('rb_completed_quests') || '[]');
 
       // Auto check Login Streak
@@ -1438,13 +1455,13 @@
 
       // Auto check Tulis Review
       let userReviewsCount = 0;
+      const reviewUserHandle = '@' + savedName.replace(/\s+/g, '');
       try {
         const recs = JSON.parse(localStorage.getItem('readbridge_book_recommendations_v2') || '[]');
-        const userHandle = '@' + savedName.replace(/\s+/g, '');
         recs.forEach(r => {
           if (r.reviews) {
             r.reviews.forEach(rev => {
-              if (rev.username === savedName || rev.username === userHandle || rev.username === '@SiswaIndonesia') {
+              if (rev.username === savedName || rev.username === reviewUserHandle || rev.username === '@SiswaIndonesia') {
                 userReviewsCount++;
               }
             });
@@ -1665,8 +1682,9 @@
       // Update Google / Auth profile avatar images
       const googlePic = localStorage.getItem('rb_profile_pic');
       if (googlePic) {
-        document.querySelectorAll('#profile-avatar-btn img, #sidebar-user-avatar, #leaderboard-user-avatar').forEach(img => {
-          img.src = googlePic;
+        ['nav-user-avatar', 'sidebar-user-avatar', 'leaderboard-user-avatar'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.src = googlePic;
         });
       }
 
