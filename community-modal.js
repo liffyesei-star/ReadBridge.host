@@ -1557,6 +1557,16 @@ function setupModalLogic() {
       }
     });
 
+    // Ensure the current active club is always an option if fetched from backend
+    const activeClub = getActiveClub();
+    if (activeClub && !joinedClubIds.includes(activeClub.id) && !ALL_CLUBS[activeClub.id]) {
+        pillsHtml += `
+          <button type="button" data-dest="${activeClub.name}" class="dest-pill flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-semibold border transition-colors bg-white text-slate-700 border-slate-200 hover:border-primary hover:text-primary">
+            <span class="material-symbols-outlined text-[16px]">groups</span> ${activeClub.name}
+          </button>
+        `;
+    }
+
     container.innerHTML = pillsHtml;
 
     // Attach click events dynamically since the HTML was replaced
@@ -1733,6 +1743,11 @@ function setupModalLogic() {
     try {
       const destination = getSelectedDestination();
       const payload = { judul, konten: getEditor().innerHTML, destination };
+      
+      const activeClub = getActiveClub();
+      if (activeClub && activeClub.id && activeClub.id.toString().match(/^\d+$/)) {
+          payload.club_id = parseInt(activeClub.id, 10);
+      }
       if (_modalMediaUrl) { payload.media_url = _modalMediaUrl; payload.media_type = _modalMediaType; }
 
       const res = await fetch(`${API_BASE}/api/community/diskusi`, {
