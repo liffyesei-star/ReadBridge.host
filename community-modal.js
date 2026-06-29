@@ -126,7 +126,12 @@ function getJoinedClubs() {
   return []; // default: belum join klub mana pun
 }
 
+window.activeClubData = null;
+
 function getActiveClub() {
+  if (window.activeClubData) {
+    return window.activeClubData;
+  }
   const path = window.location.pathname;
   const searchParams = new URLSearchParams(window.location.search);
   const id = searchParams.get('id');
@@ -324,6 +329,11 @@ function getCurrentPageClubFilter() {
   return null;
 }
 
+window.loadFeed = async function (clubId) {
+  apiPostsFetched = false;
+  await renderAllPosts();
+};
+
 window.fetchPostsFromAPI = async function () {
   try {
     const token = localStorage.getItem('rb_token');
@@ -331,10 +341,18 @@ window.fetchPostsFromAPI = async function () {
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
     const sortParam = (window.activeFeedTab === 'Trending') ? 'terpopuler' : 'terbaru';
-    const pageClub = getCurrentPageClubFilter();
+    const searchParams = new URLSearchParams(window.location.search);
+    const clubId = searchParams.get('id');
+    const path = window.location.pathname;
+
     let url = `${API_BASE}/api/community/diskusi?sort=${sortParam}`;
-    if (pageClub) {
-      url += `&destination=${encodeURIComponent(pageClub)}`;
+    if (clubId && (path.includes('club-detail.html') || path.includes('club.html'))) {
+      url += `&club_id=${clubId}`;
+    } else {
+      const pageClub = getCurrentPageClubFilter();
+      if (pageClub) {
+        url += `&destination=${encodeURIComponent(pageClub)}`;
+      }
     }
 
     const res = await fetch(url, { headers });
