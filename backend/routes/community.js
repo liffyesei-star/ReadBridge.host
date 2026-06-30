@@ -42,6 +42,27 @@ async function resolveClubId({ club_id, destination }) {
   return result.insertId;
 }
 
+async function createDiskusi({ userId, judul, konten, buku_id, club_id, destination, media_url, media_type }) {
+  if (!judul || !konten) throw httpErr(400, "Judul dan konten wajib diisi");
+
+  const validMediaType = ['image','video'].includes(media_type) ? media_type : null;
+  const safeMediaUrl = media_url && validMediaType ? media_url : null;
+  const resolvedClubId = await resolveClubId({ club_id, destination });
+
+  const [result] = await db.execute(
+    "INSERT INTO diskusi (club_id, user_id, judul, konten, buku_id, media_url, media_type) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    [resolvedClubId, userId, judul, konten, buku_id || null, safeMediaUrl, validMediaType]
+  );
+
+  await db.execute(
+    "INSERT INTO poin_history (user_id, poin, keterangan, tipe) VALUES (?, 15, 'Membuat diskusi', 'diskusi')",
+    [userId]
+  );
+  await db.execute("UPDATE users SET poin = poin + 15 WHERE id = ?", [userId]);
+
+  return result.insertId;
+}
+
 /**
  * Middleware: pastikan user punya minimal role tertentu di club.
  * Urutan kekuatan: kreator > moderator > anggota
@@ -172,28 +193,35 @@ router.get("/diskusi/:id", optionalAuth, async (req, res) => {
 router.post("/diskusi", verifyToken, async (req, res) => {
   try {
     const { judul, konten, buku_id, club_id, destination, media_url, media_type } = req.body;
-    if (!judul || !konten) return res.status(400).json({ success: false, message: "Judul dan konten wajib diisi" });
-
-    const validMediaType = ['image','video'].includes(media_type) ? media_type : null;
-    const safeMediaUrl = media_url && validMediaType ? media_url : null;
-
-    const resolvedClubId = await resolveClubId({ club_id, destination });
-
-    const [result] = await db.execute(
-      "INSERT INTO diskusi (club_id, user_id, judul, konten, buku_id, media_url, media_type) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [resolvedClubId, req.user.id, judul, konten, buku_id || null, safeMediaUrl, validMediaType]
-    );
-
-    await db.execute(
-      "INSERT INTO poin_history (user_id, poin, keterangan, tipe) VALUES (?, 15, 'Membuat diskusi', 'diskusi')",
-      [req.user.id]
-    );
-    await db.execute("UPDATE users SET poin = poin + 15 WHERE id = ?", [req.user.id]);
-
-    res.status(201).json({ success: true, message: "Diskusi berhasil dibuat. +15 poin!", data: { id: result.insertId } });
+    const id = await createDiskusi({ userId: req.user.id, judul, konten, buku_id, club_id, destination, media_url, media_type });
+    res.status(201).json({ success: true, message: "Diskusi berhasil dibuat. +15 poin!", data: { id } });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Gagal membuat diskusi" });
+    res.status(error.status || 500).json({ success: false, message: error.status ? error.message : "Gagal membuat diskusi" });
+  }
+});
+
+/**
+ * POST /api/community/clubs/:id/diskusi
+ * Alias untuk frontend/detail club lama: buat diskusi langsung pada club id apa pun.
+ */
+router.post("/clubs/:id/diskusi", verifyToken, async (req, res) => {
+  try {
+    const { judul, konten, buku_id, destination, media_url, media_type } = req.body;
+    const id = await createDiskusi({
+      userId: req.user.id,
+      judul,
+      konten,
+      buku_id,
+      club_id: req.params.id,
+      destination,
+      media_url,
+      media_type
+    });
+    res.status(201).json({ success: true, message: "Diskusi berhasil dibuat. +15 poin!", data: { id } });
+  } catch (error) {
+    console.error(error);
+    res.status(error.status || 500).json({ success: false, message: error.status ? error.message : "Gagal membuat diskusi club" });
   }
 });
 
