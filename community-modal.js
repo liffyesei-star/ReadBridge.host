@@ -1745,12 +1745,15 @@ function setupModalLogic() {
       const payload = { judul, konten: getEditor().innerHTML, destination };
       
       const activeClub = getActiveClub();
+      let url = `${API_BASE}/api/community/diskusi`;
+
       if (activeClub && activeClub.id && activeClub.id.toString().match(/^\d+$/)) {
           payload.club_id = parseInt(activeClub.id, 10);
+          url = `${API_BASE}/api/community/clubs/${activeClub.id}/diskusi`;
       }
       if (_modalMediaUrl) { payload.media_url = _modalMediaUrl; payload.media_type = _modalMediaType; }
 
-      const res = await fetch(`${API_BASE}/api/community/diskusi`, {
+      const res = await fetch(url, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -233,10 +233,10 @@
 <span id="detail-time">2 jam yang lalu</span>
 </div>
 <div class="hidden sm:block w-1 h-1 rounded-full bg-outline-variant"></div>
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[20px]">thumb_up</span>
+<button id="upvote-btn" class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]" id="upvote-icon">thumb_up</span>
 <span id="detail-upvotes">1.2k</span>
-</div>
+</button>
 </div>
 </div>
 <!-- Actions -->
@@ -277,96 +277,22 @@
 <span class="material-symbols-outlined text-primary">forum</span>
             Diskusi Komunitas
         </h2>
-<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full font-label-md text-label-md">12 Balasan</span>
+<span id="detail-comments-count" class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full font-label-md text-label-md">0 Balasan</span>
 </div>
 <!-- Comment Input -->
 <div class="flex gap-md p-md bg-surface-container-low rounded-xl">
-<img alt="User profile" class="w-10 h-10 rounded-full border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
+<img id="current-user-avatar" alt="User profile" class="w-10 h-10 rounded-full border border-outline-variant object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
 <div class="flex-grow flex flex-col gap-sm">
-<textarea class="w-full p-3 bg-surface border border-outline-variant rounded-lg font-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent resize-none" placeholder="Bagikan pemikiran Anda tentang jurnal ini..." rows="2"></textarea>
+<textarea id="comment-textarea" class="w-full p-3 bg-surface border border-outline-variant rounded-lg font-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent resize-none" placeholder="Tulis balasan Anda..." rows="2"></textarea>
 <div class="flex justify-end">
-<button class="bg-primary text-on-primary px-6 py-2 rounded-full font-label-md text-label-md hover:bg-primary/90 transition-colors">Kirim</button>
+<button id="comment-submit-btn" class="bg-primary text-on-primary px-6 py-2 rounded-full font-label-md text-label-md hover:bg-primary/90 transition-colors cursor-pointer disabled:opacity-50">Kirim</button>
 </div>
 </div>
 </div>
 <!-- Comments List -->
-<div class="flex flex-col gap-lg">
-<!-- Comment 1 -->
-<div class="flex flex-col gap-md">
-<div class="flex gap-md">
-<img alt="Rizky Pratama" class="w-10 h-10 rounded-full bg-surface-container-high" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHoXm7yD_eR7uB_C1V9vW0k5fS1X5mKqH9J9L6E9J7G5F4D3C2B1A0"/>
-<div class="flex-grow">
-<div class="flex items-center gap-2 mb-1">
-<span class="font-label-md text-label-md text-on-surface font-bold">Rizky Pratama</span>
-<span class="text-outline text-label-sm">• 2 jam yang lalu</span>
+<div id="comments-list-container" class="flex flex-col gap-lg min-h-[100px]">
+    <!-- Comments will be injected here dynamically -->
 </div>
-<p class="font-body-md text-body-md text-on-surface-variant mb-3">
-                        Analisis mengenai korelasi IPK dan literasi digital ini sangat relevan dengan kondisi pembelajaran hybrid saat ini. Apakah ada data spesifik mengenai perbedaan antar fakultas?
-                    </p>
-<div class="flex items-center gap-md text-on-surface-variant font-label-sm">
-<div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-full">
-<button class="material-symbols-outlined text-[18px] hover:text-primary">thumb_up</button>
-<span>18</span>
-<button class="material-symbols-outlined text-[18px] hover:text-error">thumb_down</button>
-</div>
-<button class="flex items-center gap-1 hover:text-primary">
-<span class="material-symbols-outlined text-[18px]">reply</span> Balas
-                        </button>
-<button class="flex items-center gap-1 hover:text-primary">
-<span class="material-symbols-outlined text-[18px]">share</span> Bagikan
-                        </button>
-</div>
-</div>
-</div>
-<!-- Threaded Reply -->
-<div class="ml-12 pl-4 border-l-2 border-outline-variant flex flex-col gap-md">
-<div class="flex gap-md">
-<img alt="Prof. Eko Purwanto" class="w-8 h-8 rounded-full border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcaKjRh43RjONFiYgEm0HomZ05DrVOCgZX8kssDCHf3TbEwiEyCNVvZe16DqSD3QApclULCZFOFkA_nxQe2NEFW7GyBWUXJIQbGHVwGRHTqO1zBUlOnFqPgx1BSCJ8kl0fMg6lsGUwPn2BSqHN9i2w_0ymyb7xBFdS1Y7yiyM6XW2XJm_z45vgiUMNkQPDSrqykc8a7iv9vvs7Y-WqmfcZf0s3YAEIs7-L2XKLepKJgmhU5IgEcvExJYcWsbnbFQU4gQ48CoMj20M"/>
-<div class="flex-grow">
-<div class="flex items-center gap-2 mb-1">
-<span class="font-label-md text-label-md text-on-surface font-bold">Prof. Eko Purwanto</span>
-<span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded text-[10px] font-bold">PENULIS</span>
-<span class="text-outline text-label-sm">• 1 jam yang lalu</span>
-</div>
-<p class="font-body-md text-body-md text-on-surface-variant mb-2">Halo Rizky, terima kasih pertanyaannya. Di lampiran jurnal (Halaman 58), kami mencantumkan breakdown data per rumpun ilmu sosial dan eksakta.</p>
-<div class="flex items-center gap-md text-on-surface-variant font-label-sm">
-<div class="flex items-center gap-1">
-<button class="material-symbols-outlined text-[16px] hover:text-primary">thumb_up</button>
-<span>5</span>
-</div>
-<button class="hover:text-primary">Balas</button>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Comment 2 -->
-<div class="flex gap-md">
-<img alt="Siti Aminah" class="w-10 h-10 rounded-full bg-surface-container-high" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_v8r9_X1z2y3w4v5u6"/>
-<div class="flex-grow">
-<div class="flex items-center gap-2 mb-1">
-<span class="font-label-md text-label-md text-on-surface font-bold">Siti Aminah</span>
-<span class="text-outline text-label-sm">• 5 jam yang lalu</span>
-</div>
-<p class="font-body-md text-body-md text-on-surface-variant mb-3">
-                    Sangat bermanfaat untuk referensi skripsi saya. Terima kasih sudah membagikan jurnal ini!
-                </p>
-<div class="flex items-center gap-md text-on-surface-variant font-label-sm">
-<div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-full">
-<button class="material-symbols-outlined text-[18px] hover:text-primary">thumb_up</button>
-<span>12</span>
-<button class="material-symbols-outlined text-[18px] hover:text-error">thumb_down</button>
-</div>
-<button class="flex items-center gap-1 hover:text-primary">
-<span class="material-symbols-outlined text-[18px]">reply</span> Balas
-                    </button>
-</div>
-</div>
-</div>
-</div>
-<button class="w-full py-3 border border-outline-variant rounded-xl text-primary font-label-md text-label-md hover:bg-surface-container-low transition-colors">
-        Muat Lebih Banyak Balasan
-    </button>
 </section>
 </div>
 <!-- Right Column (Sidebar) -->
@@ -451,55 +377,99 @@
 
 <script src="main.js"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
+  document.addEventListener("DOMContentLoaded", async function() {
     const urlParams = new URLSearchParams(window.location.search);
     const rawId = urlParams.get('id');
+    const token = localStorage.getItem('rb_token');
+    const apiBaseUrl = localStorage.getItem('rb_api_base_url') || (['localhost', '127.0.0.1'].includes(window.location.hostname) ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+    const currentUser = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+    const currentUsername = '@' + currentUser.replace(/\s+/g, '');
+    const currentUserAvatar = localStorage.getItem('rb_profile_pic') || "https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4";
+    
+    const currentUserAvatarEl = document.getElementById('current-user-avatar');
+    if (currentUserAvatarEl) currentUserAvatarEl.src = currentUserAvatar;
 
-    if (rawId) {
-      let diskusi = null;
+    if (!rawId) return;
 
-      // Cek apakah ini post dari localStorage komunitas
-      if (rawId.startsWith('post-') || rawId === 'snbt-tutor-1') {
-        const stored = localStorage.getItem('readbridge_community_posts_v2');
-        if (stored) {
-          const posts = JSON.parse(stored);
-          const found = posts.find(p => p.id === rawId);
-          if (found) {
-            diskusi = {
-              title: found.judul,
-              author: found.username,
-              timeAgo: found.waktu || "Baru saja",
-              upvotes: found.votes,
-              content: found.isi,
-              tags: found.tags,
-              isRichText: false,
-              attachment: found.attachment
-            };
-          }
-        }
-      } else {
-        // Ambil dari data dummy explore
-        const intId = parseInt(rawId);
-        if (window.readbridgeData && window.readbridgeData.discussions) {
-          diskusi = window.readbridgeData.discussions.find(d => d.id === intId);
-        }
+    let diskusi = null;
+    let isBackendPost = false;
+
+    // Hardcoded defaults fallback in case readbridgeData fails
+    const dummyPosts = {
+      "fiksi-1": {
+        id: "fiksi-1", judul: "Review: The Midnight Library - Apakah Terlalu Overrated?", username: "@SiswaWangi", waktu: "2 jam yang lalu", votes: 45,
+        isi: "Baru selesai baca The Midnight Library karya Matt Haig. Konsepnya menarik tentang paralel universe berdasarkan penyesalan kita, tapi eksekusinya terasa repetitif di pertengahan. Bagaimana menurut teman-teman? Apakah buku ini layak dapat hype sebesar itu?", tags: ["Review Buku", "Fiksi", "Diskusi"],
+        commentsList: [
+            {username: "@PejuangKampus", text: "Menurutku eksekusinya bagus kok, sangat relatable.", waktu: "1 jam yang lalu"},
+            {username: "@PecintaBuku", text: "Setuju, pertengahannya agak lambat.", waktu: "45 menit yang lalu"}
+        ]
+      },
+      "snbt-1": {
+        id: "snbt-1", judul: "Strategi Belajar Penalaran Matematika H-30 SNBT 2024", username: "@PakAgusPratama", waktu: "1 hari yang lalu", votes: 128,
+        isi: "Mengingat waktu yang semakin dekat, fokuslah pada pemahaman konsep rasio, proporsi, dan statistika dasar. Jangan sekadar menghafal rumus. Berikut adalah beberapa tipe soal yang sering keluar dan cara cepat menyelesaikannya:\n\n1. Soal kecukupan data (P & Q)\n2. Soal perbandingan senilai dan berbalik nilai\n3. Analisis grafik dan tabel data\n\nSiapa yang masih kesulitan di materi mana? Mari bahas di sini.", tags: ["SNBT 2024", "Matematika", "Tips Belajar"],
+        commentsList: [
+            {username: "@SiswaRajin", text: "Terima kasih pak, saya masih bingung di kecukupan data.", waktu: "5 jam yang lalu"}
+        ]
+      },
+      "snbt-tutor-1": {
+        id: "snbt-tutor-1", judul: "Strategi Belajar Penalaran Matematika H-30 SNBT", username: "@PakAgusPratama", waktu: "1 hari yang lalu", votes: 128,
+        isi: "Mengingat waktu yang semakin dekat, fokuslah pada pemahaman konsep rasio, proporsi, dan statistika dasar. Jangan sekadar menghafal rumus. Berikut adalah beberapa tipe soal yang sering keluar dan cara cepat menyelesaikannya.", tags: ["SNBT", "Tutor"], commentsList: []
       }
-      
-      if (diskusi) {
-        document.getElementById('detail-title').textContent = diskusi.title;
-        document.getElementById('detail-author').textContent = diskusi.author;
-        document.getElementById('detail-time').textContent = diskusi.timeAgo || "Beberapa waktu yang lalu";
-        document.getElementById('detail-upvotes').textContent = diskusi.upvotes || 0;
+    };
+
+    function renderComments() {
+        const commentsList = diskusi.commentsList || [];
+        document.getElementById('detail-comments-count').textContent = `${commentsList.length} Balasan`;
+        const container = document.getElementById('comments-list-container');
+        
+        if (commentsList.length === 0) {
+            container.innerHTML = '<p class="text-on-surface-variant text-sm italic">Belum ada balasan. Jadilah yang pertama berkomentar!</p>';
+            return;
+        }
+        
+        container.innerHTML = commentsList.map(c => {
+            const cAvatar = c.avatar || (c.username === currentUsername ? currentUserAvatar : `https://api.dicebear.com/9.x/avataaars/svg?seed=${c.username.replace('@', '')}&backgroundColor=e5eeff`);
+            return `
+            <div class="flex gap-md">
+                <img alt="${c.username}" class="w-10 h-10 rounded-full border border-outline-variant object-cover" src="${cAvatar}"/>
+                <div class="flex-grow">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="font-label-md text-label-md text-on-surface font-bold">${c.username}</span>
+                        <span class="text-outline text-label-sm">• ${c.waktu || 'Baru saja'}</span>
+                    </div>
+                    <p class="font-body-md text-body-md text-on-surface-variant mb-3">${c.text || c.konten}</p>
+                    <div class="flex items-center gap-md text-on-surface-variant font-label-sm">
+                        <button class="flex items-center gap-1 hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-[18px]">thumb_up</span> Suka
+                        </button>
+                        <button class="flex items-center gap-1 hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-[18px]">reply</span> Balas
+                        </button>
+                    </div>
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    function renderDiscussion() {
+        if (!diskusi) return;
+        
+        document.getElementById('detail-title').textContent = diskusi.title || diskusi.judul;
+        document.getElementById('detail-author').textContent = diskusi.author || diskusi.username;
+        document.getElementById('detail-time').textContent = diskusi.timeAgo || diskusi.waktu || "Baru saja";
+        document.getElementById('detail-upvotes').textContent = diskusi.upvotes || diskusi.votes || 0;
         
         if (diskusi.isRichText) {
-          document.getElementById('detail-content').innerHTML = diskusi.content;
+          document.getElementById('detail-content').innerHTML = diskusi.content || diskusi.isi || '';
         } else {
-          document.getElementById('detail-content').textContent = diskusi.content;
+          document.getElementById('detail-content').textContent = diskusi.content || diskusi.isi || '';
         }
-        
+
         // Render attachment if exists
-        if (diskusi.attachment) {
+        if (diskusi.attachment && !document.getElementById('attachment-rendered')) {
           const attachmentContainer = document.createElement('div');
+          attachmentContainer.id = "attachment-rendered";
           attachmentContainer.className = "mt-6";
           attachmentContainer.innerHTML = `
             <div class="p-4 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-all cursor-pointer group" onclick="window.openAttachment('${diskusi.attachment.url}', true)">
@@ -522,63 +492,209 @@
           
           if (!window.openAttachment) {
             window.openAttachment = function(url, autoDownload) {
-              if (autoDownload) {
-                window.open(url + '?download=1', '_blank');
-              } else {
-                window.open(url, '_blank');
-              }
+              if (autoDownload) window.open(url + '?download=1', '_blank');
+              else window.open(url, '_blank');
             };
           }
         }
         
+        // Render tags
+        const tagsContainer = document.getElementById('detail-tags');
+        tagsContainer.innerHTML = '';
+        if (diskusi.tags && Array.isArray(diskusi.tags)) {
+            diskusi.tags.forEach(tag => {
+               const span = document.createElement('span');
+               span.className = "px-3 py-1 border border-outline-variant rounded-full text-label-md font-label-md text-on-surface hover:bg-surface-container-low transition-colors cursor-pointer";
+               span.textContent = tag;
+               tagsContainer.appendChild(span);
+             });
+        }
+        
         // Update sidebar author profile card
+        const authorName = diskusi.author || diskusi.username;
         const avatarEl = document.getElementById('detail-author-avatar');
         const nameEl = document.getElementById('detail-author-name');
         const roleEl = document.getElementById('detail-author-role');
         const iconEl = document.getElementById('detail-author-icon');
         
-        if (nameEl) nameEl.textContent = diskusi.author;
+        if (nameEl) nameEl.textContent = authorName;
         if (avatarEl) {
-          if (diskusi.author === '@SiswaIndonesia') {
-            avatarEl.src = "https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4";
-          } else {
-            avatarEl.src = `https://api.dicebear.com/9.x/avataaars/svg?seed=${diskusi.author.replace('@','')}&backgroundColor=e5eeff`;
-          }
+            avatarEl.src = diskusi.avatar || (authorName === currentUsername ? currentUserAvatar : `https://api.dicebear.com/9.x/avataaars/svg?seed=${authorName.replace('@','')}&backgroundColor=e5eeff`);
         }
         if (roleEl) {
-          if (diskusi.author === '@PakAgusPratama') {
-            roleEl.textContent = "Master Tutor";
-            if (iconEl) {
-              iconEl.textContent = "verified";
-              iconEl.className = "material-symbols-outlined text-[16px] text-primary font-bold";
+            if (authorName === '@PakAgusPratama') {
+                roleEl.textContent = "Master Tutor";
+                if (iconEl) { iconEl.textContent = "verified"; iconEl.className = "material-symbols-outlined text-[16px] text-primary font-bold"; }
+            } else if (authorName === '@SiswaWangi' || authorName === '@PejuangKampus') {
+                roleEl.textContent = "Anggota Komunitas";
+                if (iconEl) iconEl.textContent = "person";
+            } else {
+                roleEl.textContent = "Kontributor";
+                if (iconEl) iconEl.textContent = "history_edu";
             }
-          } else if (diskusi.author === '@SiswaWangi' || diskusi.author === '@PejuangKampus') {
-            roleEl.textContent = "Anggota Komunitas";
-            if (iconEl) iconEl.textContent = "person";
-          } else {
-            roleEl.textContent = "Kontributor";
-            if (iconEl) iconEl.textContent = "history_edu";
-          }
         }
         
-        // Update tags
-        const tagsContainer = document.getElementById('detail-tags');
-        tagsContainer.innerHTML = '';
-        if (diskusi.tags) {
-            diskusi.tags.forEach(tag => {
-               const span = document.createElement('span');
-               span.className = "px-3 py-1 border border-outline-variant rounded-full text-label-md font-label-md text-on-surface hover:bg-surface-container-low transition-colors";
-               span.textContent = tag;
-               tagsContainer.appendChild(span);
-             });
-        }
-
         // Update breadcrumb
         const breadcrumbs = document.querySelectorAll('nav.text-on-surface-variant > span.text-on-surface');
         if (breadcrumbs.length > 0) {
-          breadcrumbs[breadcrumbs.length - 1].textContent = diskusi.title;
+          breadcrumbs[breadcrumbs.length - 1].textContent = diskusi.title || diskusi.judul;
         }
-      }
+
+        renderComments();
+    }
+
+    // Try fetching from backend if ID is purely numeric
+    if (/^\d+$/.test(rawId)) {
+        isBackendPost = true;
+        try {
+            const headers = {};
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+            const res = await fetch(`${apiBaseUrl}/api/community/diskusi/${rawId}`, { headers });
+            const json = await res.json();
+            if (json.success && json.data) {
+                diskusi = {
+                    id: json.data.id,
+                    title: json.data.judul,
+                    author: json.data.nama_user?.startsWith('@') ? json.data.nama_user : `@${json.data.nama_user || 'Anonim'}`,
+                    avatar: json.data.foto_profil,
+                    timeAgo: json.data.created_at,
+                    upvotes: json.data.total_likes,
+                    content: json.data.konten,
+                    tags: [],
+                    isRichText: false,
+                    commentsList: (json.data.balasan || []).map(b => ({
+                        username: b.nama_user?.startsWith('@') ? b.nama_user : `@${b.nama_user || 'Anonim'}`,
+                        text: b.konten,
+                        waktu: b.created_at,
+                        avatar: b.foto_profil
+                    }))
+                };
+            }
+        } catch(e) { console.error('Failed to fetch from backend', e); }
+    }
+
+    // Fallback to local data
+    if (!diskusi) {
+        let foundLocally = false;
+        
+        // Cek localStorage created by user
+        if (rawId.startsWith('post-') || rawId === 'snbt-tutor-1') {
+          const stored = localStorage.getItem('readbridge_community_posts_v2');
+          if (stored) {
+            const posts = JSON.parse(stored);
+            const found = posts.find(p => p.id === rawId);
+            if (found) {
+                diskusi = {
+                    title: found.judul, author: found.username, timeAgo: found.waktu,
+                    upvotes: found.votes, content: found.isi, tags: found.tags,
+                    isRichText: false, attachment: found.attachment, commentsList: found.commentsList || []
+                };
+                foundLocally = true;
+            }
+          }
+        }
+        
+        // Cek global readbridgeData if exists
+        if (!foundLocally && window.readbridgeData && window.readbridgeData.discussions) {
+            const intId = parseInt(rawId);
+            const d = window.readbridgeData.discussions.find(d => d.id === intId || d.id === rawId);
+            if (d) { diskusi = d; foundLocally = true; }
+        }
+
+        // Cek dummyPosts fallback
+        if (!foundLocally && dummyPosts[rawId]) {
+            diskusi = dummyPosts[rawId];
+        }
+    }
+
+    renderDiscussion();
+
+    // Setup Upvote
+    const upvoteBtn = document.getElementById('upvote-btn');
+    if (upvoteBtn) {
+        upvoteBtn.addEventListener('click', async () => {
+            if (!diskusi) return;
+            if (isBackendPost && token) {
+                try {
+                    const res = await fetch(`${apiBaseUrl}/api/community/diskusi/${rawId}/like`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }});
+                    const json = await res.json();
+                    if (json.success) {
+                        diskusi.upvotes = (diskusi.upvotes || 0) + 1;
+                        document.getElementById('detail-upvotes').textContent = diskusi.upvotes;
+                        upvoteBtn.classList.add('text-primary');
+                        upvoteBtn.classList.remove('text-on-surface-variant');
+                    }
+                } catch(e) { console.error(e); }
+            } else {
+                // Local upvote
+                diskusi.votes = (diskusi.votes || diskusi.upvotes || 0) + 1;
+                diskusi.upvotes = diskusi.votes;
+                document.getElementById('detail-upvotes').textContent = diskusi.upvotes;
+                upvoteBtn.classList.add('text-primary');
+                upvoteBtn.classList.remove('text-on-surface-variant');
+                
+                // save if stored locally
+                const stored = localStorage.getItem('readbridge_community_posts_v2');
+                if (stored) {
+                    const posts = JSON.parse(stored);
+                    const idx = posts.findIndex(p => p.id == rawId);
+                    if (idx > -1) {
+                        posts[idx].votes = diskusi.votes;
+                        localStorage.setItem('readbridge_community_posts_v2', JSON.stringify(posts));
+                    }
+                }
+            }
+        });
+    }
+
+    // Setup Comment Submission
+    const commentSubmitBtn = document.getElementById('comment-submit-btn');
+    const commentTextarea = document.getElementById('comment-textarea');
+    
+    if (commentSubmitBtn && commentTextarea) {
+        commentSubmitBtn.addEventListener('click', async () => {
+            const text = commentTextarea.value.trim();
+            if (!text) return;
+
+            commentSubmitBtn.disabled = true;
+            commentSubmitBtn.textContent = 'Mengirim...';
+
+            if (isBackendPost && token) {
+                try {
+                    const res = await fetch(`${apiBaseUrl}/api/community/diskusi/${rawId}/balasan`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ konten: text })
+                    });
+                    if (res.ok) {
+                        diskusi.commentsList = diskusi.commentsList || [];
+                        diskusi.commentsList.push({ username: currentUsername, text: text, waktu: 'Baru saja', avatar: currentUserAvatar });
+                        renderComments();
+                        commentTextarea.value = '';
+                    } else { alert("Gagal mengirim balasan"); }
+                } catch(e) { console.error(e); alert("Terjadi kesalahan."); }
+            } else {
+                // Local comment
+                diskusi.commentsList = diskusi.commentsList || [];
+                diskusi.commentsList.push({ username: currentUsername, text: text, waktu: 'Baru saja', avatar: currentUserAvatar });
+                renderComments();
+                commentTextarea.value = '';
+                
+                // save if stored
+                const stored = localStorage.getItem('readbridge_community_posts_v2');
+                if (stored) {
+                    const posts = JSON.parse(stored);
+                    const idx = posts.findIndex(p => p.id == rawId);
+                    if (idx > -1) {
+                        posts[idx].commentsList = diskusi.commentsList;
+                        localStorage.setItem('readbridge_community_posts_v2', JSON.stringify(posts));
+                    }
+                }
+            }
+            
+            commentSubmitBtn.disabled = false;
+            commentSubmitBtn.textContent = 'Kirim';
+        });
     }
   });
 </script>
