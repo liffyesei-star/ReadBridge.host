@@ -25,6 +25,70 @@ const journals = [
   { id: 8, type: 'journal', title: "Etika Artificial Intelligence dalam Layanan Kesehatan", author: "Dr. Setiawan Dalimunthe", publishedYear: 2023, university: "Fakultas Kedokteran UI", downloads: 512, abstract: "Diskusi mengenai batasan moral, privasi data pasien, dan tanggung jawab hukum dalam penerapan AI di rumah sakit.", category: "Sains & Teknologi", access: "Exclusive Access", rating: 4.9, reviews: 210, reviewer: "Pratikno" }
 ];
 
+// Data Tulisan Literasi
+const literacyArticles = [
+  {
+    id: 1,
+    type: 'article',
+    title: "Kenapa Membaca 15 Menit Sehari Bisa Mengubah Cara Kita Belajar",
+    author: "@NadiaLiterasi",
+    publishDate: "28 Juni 2026",
+    editedDate: "29 Juni 2026",
+    readTime: "5 menit baca",
+    upvotes: "2.4k",
+    comments: 86,
+    xp: 120,
+    topics: ["#KebiasaanMembaca", "#BelajarMandiri", "#Produktivitas"],
+    coverImage: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?auto=format&fit=crop&q=80&w=1200",
+    imageCredit: "Foto oleh Blaz Photo via Unsplash",
+    excerpt: "Literasi tidak selalu dimulai dari target besar. Kebiasaan pendek yang konsisten membantu otak mengenali pola, membangun kosakata, dan memperluas cara kita menyusun argumen.",
+    sources: [
+      "National Literacy Trust - Reading for pleasure research overview",
+      "OECD - Reading performance and learning habits"
+    ]
+  },
+  {
+    id: 2,
+    type: 'article',
+    title: "Cara Menulis Ulasan Buku yang Tidak Sekadar Bagus atau Jelek",
+    author: "@AksaraRuang",
+    publishDate: "27 Juni 2026",
+    editedDate: null,
+    readTime: "7 menit baca",
+    upvotes: "980",
+    comments: 42,
+    xp: 150,
+    topics: ["#UlasanBuku", "#CreatorWrite", "#Komunitas"],
+    coverImage: "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=1200",
+    imageCredit: "Foto oleh Green Chameleon via Unsplash",
+    excerpt: "Ulasan yang kuat punya konteks, bukti, dan posisi pembaca. Artikel ini membedah struktur sederhana agar opini terasa jernih dan bisa dibalas dengan diskusi yang sehat.",
+    sources: [
+      "Purdue OWL - Writing a book review",
+      "ReadBridge Community Guide - Etika berdiskusi"
+    ]
+  },
+  {
+    id: 3,
+    type: 'article',
+    title: "Membaca Data Populer: Jangan Langsung Percaya Grafik yang Viral",
+    author: "@RakaData",
+    publishDate: "25 Juni 2026",
+    editedDate: "26 Juni 2026",
+    readTime: "6 menit baca",
+    upvotes: "1.7k",
+    comments: 63,
+    xp: 180,
+    topics: ["#LiterasiData", "#BerpikirKritis", "#Sumber"],
+    coverImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1200",
+    imageCredit: "Foto oleh Luke Chesser via Unsplash",
+    excerpt: "Grafik bisa membantu pemahaman, tapi juga bisa menyesatkan. Kenali skala, sampel, konteks, dan sumber sebelum menyimpulkan sebuah klaim.",
+    sources: [
+      "Data Literacy Project - Essential skills",
+      "UNESCO - Media and information literacy resources"
+    ]
+  }
+];
+
 // Data Diskusi
 const discussions = [
   { id: 1, type: 'discussion', title: "Rekomendasi novel fiksi sejarah Indonesia?", author: "@SastraWangi", timeAgo: "2 jam yang lalu", upvotes: "1.2k", comments: 45, content: "Halo semuanya, ada yang punya rekomendasi novel fiksi yang berlatar belakang sejarah Indonesia? Aku lagi nyari bacaan buat nambah wawasan sekaligus hiburan.", tags: ["#Fiksi", "#Sejarah"] },
@@ -35,7 +99,27 @@ const discussions = [
   { id: 6, type: 'discussion', title: "Diskusi Jurnal: Pengaruh AI terhadap lapangan kerja", author: "@TechEnthusiast", timeAgo: "12 jam yang lalu", upvotes: "750", comments: 95, content: "Baru saja baca jurnal terbaru dari MIT tentang otomasi. Menurut kalian, profesi apa saja yang akan paling terdampak dalam 5 tahun ke depan?", tags: ["#DiskusiJurnal", "#TechNews"] }
 ];
 
-window.readbridgeData = { books, journals, discussions, marketplaceBooks, sewaBooks };
+function getCreatorWriteArticles() {
+  let userArticles = [];
+  try {
+    userArticles = JSON.parse(localStorage.getItem('rb_creator_articles') || '[]');
+  } catch (err) {
+    userArticles = [];
+  }
+  return [...userArticles, ...literacyArticles];
+}
+
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[char]));
+}
+
+window.readbridgeData = { books, journals, literacyArticles, getCreatorWriteArticles, discussions, marketplaceBooks, sewaBooks };
 
 // Fetch books from API
 const isLocalFrontend = ['localhost', '127.0.0.1'].includes(window.location.hostname);
@@ -95,6 +179,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Tab elements
   const tabBuku = document.getElementById("tab-buku");
   const tabBukuDigital = document.getElementById("tab-buku-digital");
+  const tabTulisan = document.getElementById("tab-tulisan");
   const ebookSection = document.getElementById("ebook-section");
 
   // Jika elemen tidak ditemukan (misal di halaman yang bukan eksplor.html), hentikan eksekusi
@@ -178,6 +263,65 @@ document.addEventListener("DOMContentLoaded", function () {
             </a>
           `;
         }
+        else if (type === 'tulisan') {
+          const safeTitle = escapeHTML(item.title);
+          const safeAuthor = escapeHTML(item.author);
+          const safePublishDate = escapeHTML(item.publishDate);
+          const safeEditedDate = escapeHTML(item.editedDate);
+          const safeReadTime = escapeHTML(item.readTime);
+          const safeExcerpt = escapeHTML(item.excerpt);
+          const safeImageCredit = escapeHTML(item.imageCredit);
+          const topicsHTML = item.topics.map(topic => `<span class="bg-surface-container-high text-on-surface px-3 py-1 rounded-md font-label-sm text-label-sm">${escapeHTML(topic)}</span>`).join('');
+          const editedHTML = item.editedDate ? `<span class="hidden sm:block w-1 h-1 rounded-full bg-outline-variant"></span><span>Diedit ${safeEditedDate}</span>` : '';
+          const sourcesHTML = item.sources.slice(0, 2).map(source => `<li>${escapeHTML(source)}</li>`).join('');
+
+          cardHTML = `
+            <article class="bg-surface-container-lowest col-span-full rounded-xl border border-outline-variant/30 shadow-sm hover:shadow-md transition-all overflow-hidden">
+              <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr]">
+                <a href="detail-tulisan.html?id=${item.id}" class="block h-56 lg:h-full bg-surface-container-high overflow-hidden">
+                  <img alt="${safeTitle}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" src="${escapeHTML(item.coverImage)}">
+                </a>
+                <div class="p-lg flex flex-col gap-md">
+                  <div class="flex flex-wrap items-center justify-between gap-sm">
+                    <div class="flex flex-wrap gap-2">${topicsHTML}</div>
+                    <span class="inline-flex items-center gap-1 px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full font-label-sm text-label-sm font-bold">
+                      <span class="material-symbols-outlined text-[16px]">bolt</span> +${item.xp} XP
+                    </span>
+                  </div>
+                  <div class="flex flex-col gap-sm">
+                    <a href="detail-tulisan.html?id=${item.id}" class="group">
+                      <h3 class="font-headline-md text-[22px] leading-tight text-on-surface font-bold group-hover:text-primary transition-colors">${safeTitle}</h3>
+                    </a>
+                    <div class="flex flex-wrap items-center gap-sm text-label-md font-label-md text-on-surface-variant">
+                      <span class="font-bold text-primary">${safeAuthor}</span>
+                      <span class="hidden sm:block w-1 h-1 rounded-full bg-outline-variant"></span>
+                      <span>${safePublishDate}</span>
+                      ${editedHTML}
+                      <span class="hidden sm:block w-1 h-1 rounded-full bg-outline-variant"></span>
+                      <span>${safeReadTime}</span>
+                    </div>
+                    <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed line-clamp-2">${safeExcerpt}</p>
+                  </div>
+                  <div class="border-l-4 border-tertiary bg-tertiary-container/10 px-md py-sm rounded-r-lg">
+                    <p class="font-label-sm text-label-sm text-on-surface font-bold mb-xs">Sumber</p>
+                    <ul class="list-disc list-inside font-label-sm text-label-sm text-on-surface-variant space-y-1">${sourcesHTML}</ul>
+                  </div>
+                  <div class="flex flex-wrap items-center justify-between gap-sm pt-sm border-t border-outline-variant/30">
+                    <p class="font-label-sm text-label-sm text-on-surface-variant">${safeImageCredit}</p>
+                    <div class="flex items-center gap-sm text-on-surface">
+                      <button class="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-surface-container-low transition-colors font-label-md text-label-md">
+                        <span class="material-symbols-outlined text-[20px]">arrow_upward</span> ${item.upvotes}
+                      </button>
+                      <a href="detail-tulisan.html?id=${item.id}#comments" class="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-surface-container-low transition-colors font-label-md text-label-md">
+                        <span class="material-symbols-outlined text-[20px]">chat_bubble</span> ${item.comments}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          `;
+        }
         else if (type === 'diskusi') {
           // Layout Kartu Diskusi
           let tagsHTML = item.tags.map(tag => `<span class="bg-surface-container-high text-on-surface px-3 py-1 rounded-md font-label-sm text-label-sm">${tag}</span>`).join('');
@@ -227,7 +371,7 @@ document.addEventListener("DOMContentLoaded", function () {
     currentActiveTab = selectedTabStr;
 
     // Reset style semua tab
-    [tabBuku, tabBukuDigital].forEach(tab => {
+    [tabBuku, tabBukuDigital, tabTulisan].forEach(tab => {
       if (!tab) return;
       tab.className = "font-title-lg text-title-lg text-on-surface-variant hover:text-primary transition-colors pb-2 px-2 shrink-0 select-none";
     });
@@ -256,6 +400,9 @@ document.addEventListener("DOMContentLoaded", function () {
       dataToRender = books;
     } else if (selectedTabStr === 'buku-digital') {
       activeElement = tabBukuDigital;
+    } else if (selectedTabStr === 'tulisan') {
+      activeElement = tabTulisan;
+      dataToRender = getCreatorWriteArticles();
     }
 
     if (activeElement) {
@@ -269,6 +416,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Ganti Sidebar Filter berdasarkan tab yang aktif
     const filterBuku = document.getElementById('filter-buku');
     const filterEbook = document.getElementById('filter-buku-digital');
+    const filterTulisan = document.getElementById('filter-tulisan');
 
     if (filterBuku) {
       filterBuku.classList.add('hidden'); filterBuku.classList.remove('block');
@@ -276,11 +424,16 @@ document.addEventListener("DOMContentLoaded", function () {
     if (filterEbook) {
       filterEbook.classList.add('hidden'); filterEbook.classList.remove('block');
     }
+    if (filterTulisan) {
+      filterTulisan.classList.add('hidden'); filterTulisan.classList.remove('block');
+    }
 
     if (selectedTabStr === 'buku' && filterBuku) {
       filterBuku.classList.remove('hidden'); filterBuku.classList.add('block');
     } else if (selectedTabStr === 'buku-digital' && filterEbook) {
       filterEbook.classList.remove('hidden'); filterEbook.classList.add('block');
+    } else if (selectedTabStr === 'tulisan' && filterTulisan) {
+      filterTulisan.classList.remove('hidden'); filterTulisan.classList.add('block');
     }
 
     // Reset isi input pencarian saat pindah tab
@@ -299,6 +452,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Pasang Event Listener Tab
   if (tabBuku) tabBuku.addEventListener("click", () => switchTab('buku'));
   if (tabBukuDigital) tabBukuDigital.addEventListener("click", () => switchTab('buku-digital'));
+  if (tabTulisan) tabTulisan.addEventListener("click", () => switchTab('tulisan'));
 
 
   // 4. Fitur Pencarian
@@ -316,6 +470,7 @@ document.addEventListener("DOMContentLoaded", function () {
       let sourceData = [];
       if (currentActiveTab === 'buku') sourceData = books;
       else if (currentActiveTab === 'jurnal') sourceData = journals;
+      else if (currentActiveTab === 'tulisan') sourceData = getCreatorWriteArticles();
       else if (currentActiveTab === 'diskusi') sourceData = discussions;
 
       // Filter data menggunakan perulangan array (.filter)
@@ -323,6 +478,8 @@ document.addEventListener("DOMContentLoaded", function () {
         // Logika pencarian menyesuaikan tipe tab
         if (currentActiveTab === 'buku' || currentActiveTab === 'jurnal') {
           return item.title.toLowerCase().includes(keyword) || item.author.toLowerCase().includes(keyword);
+        } else if (currentActiveTab === 'tulisan') {
+          return item.title.toLowerCase().includes(keyword) || item.excerpt.toLowerCase().includes(keyword) || item.author.toLowerCase().includes(keyword) || item.topics.join(' ').toLowerCase().includes(keyword);
         } else if (currentActiveTab === 'diskusi') {
           return item.title.toLowerCase().includes(keyword) || item.content.toLowerCase().includes(keyword);
         }
@@ -380,6 +537,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         renderData(filteredData, 'jurnal');
+      } else if (currentActiveTab === 'tulisan') {
+        const selectedTopics = Array.from(document.querySelectorAll('[data-topic-filter]:checked')).map(input => input.value);
+        const filteredArticles = getCreatorWriteArticles().filter(article => {
+          if (selectedTopics.length === 0) return true;
+          return article.topics.some(topic => selectedTopics.includes(topic.replace('#', '')));
+        });
+        renderData(filteredArticles, 'tulisan');
       } else {
         alert('Filter khusus untuk tab ini akan segera hadir.');
       }
@@ -439,7 +603,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Abaikan jika ada alert sendiri
       if (clickable.id === 'mark-all-read') return;
-      if (clickable.closest('#tab-buku') || clickable.closest('#tab-buku-digital')) return;
+      if (clickable.closest('#tab-buku') || clickable.closest('#tab-buku-digital') || clickable.closest('#tab-tulisan')) return;
 
       // Coba dapatkan nama ikon jika dia berupa tombol ikon
       let content = "";
@@ -665,7 +829,7 @@ document.addEventListener("DOMContentLoaded", function () {
         bannerContainer.className = "bg-gradient-to-r from-emerald-950 via-teal-900 to-emerald-950 rounded-2xl p-lg md:p-xl text-white border border-emerald-500/20 shadow-xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-md";
       }
       if (bannerTitle) bannerTitle.innerHTML = "Akses BridgePass Premium Aktif! 👑";
-      if (bannerDesc) bannerDesc.textContent = "Selamat! Anda memiliki akses membaca penuh sepuasnya tanpa batasan waktu untuk seluruh buku digital, modul belajar, komik, dan jurnal akademik ReadBridge.";
+      if (bannerDesc) bannerDesc.textContent = "Selamat! Anda memiliki akses membaca penuh sepuasnya tanpa batasan waktu untuk seluruh buku digital, modul belajar, komik, dan tulisan literasi ReadBridge.";
       if (upgradeCta) {
         upgradeCta.innerHTML = "<span class='material-symbols-outlined text-[18px]'>verified</span> Akun Premium Aktif";
         upgradeCta.className = "w-full md:w-auto px-6 py-3 bg-emerald-500 text-white font-bold text-label-md rounded-full shadow-[0_4px_16px_rgba(16,185,129,0.3)] transition-all cursor-default select-none flex items-center justify-center gap-sm";
@@ -676,7 +840,7 @@ document.addEventListener("DOMContentLoaded", function () {
         bannerContainer.className = "bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 dark:from-slate-950 dark:via-indigo-980 dark:to-slate-950 rounded-2xl p-lg md:p-xl text-white border border-indigo-500/20 shadow-xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-md";
       }
       if (bannerTitle) bannerTitle.textContent = "Unlock Unlimited E-Books with BridgePass 👑";
-      if (bannerDesc) bannerDesc.textContent = "Nikmati akses membaca sepuasnya untuk ribuan buku digital premium, jurnal eksklusif, perpustakaan sewa, dan hilangkan semua batasan waktu membaca gratis sekarang!";
+      if (bannerDesc) bannerDesc.textContent = "Nikmati akses membaca sepuasnya untuk ribuan buku digital premium, tulisan komunitas pilihan, perpustakaan sewa, dan hilangkan semua batasan waktu membaca gratis sekarang!";
       if (upgradeCta) {
         upgradeCta.innerHTML = "<span class='material-symbols-outlined font-bold text-[18px]'>workspace_premium</span> Upgrade ke Premium";
         upgradeCta.className = "w-full md:w-auto px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-label-md rounded-full shadow-[0_4px_16px_rgba(245,158,11,0.3)] transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-sm";
@@ -771,7 +935,7 @@ document.addEventListener("DOMContentLoaded", function () {
         "fiksi": { name: "Novel & Fiksi", title: "Novel & Fiksi Pilihan Untukmu 📚", desc: "Jelajahi petualangan imajinatif dari novelis terbaik." },
         "self_dev": { name: "Pengembangan Diri", title: "🌱 Rekomendasi Pengembangan Diri", desc: "Mulai bangun kebiasaan baru dan capai potensi terbaikmu." },
         "komik": { name: "Komik", title: "🎨 Komik & Novel Grafis Terbaik", desc: "Nikmati visual memukau dan petualangan seru." },
-        "jurnal": { name: "Sains & Teknologi", title: "🔬 Referensi Sains & Teknologi", desc: "Kumpulan buku digital untuk menambah pengetahuan akademis." },
+        "jurnal": { name: "Sains & Teknologi", title: "Referensi Sains & Teknologi", desc: "Kumpulan bacaan digital untuk menambah pengetahuan akademis." },
         "pelajaran": { name: "Buku Pelajaran", title: "🏫 Buku Pelajaran & Pendamping Kurikulum", desc: "Buku penunjang belajar harian agar makin berprestasi." }
       };
 
@@ -1423,4 +1587,3 @@ document.addEventListener("DOMContentLoaded", function () {
   // (Sinkronisasi dengan task lain bila diperlukan)
 
 });
-

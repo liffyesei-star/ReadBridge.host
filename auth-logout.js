@@ -154,6 +154,25 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(checkTokenExpiration, 10000);
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+  const dropdowns = document.querySelectorAll('[id^="profile-dropdown"]');
+  dropdowns.forEach((dropdown) => {
+    if (dropdown.querySelector('a[href="creator-write.html"]')) return;
+
+    const link = document.createElement("a");
+    link.href = "creator-write.html";
+    link.className = "flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface";
+    link.innerHTML = '<span class="material-symbols-outlined text-[20px]">edit_square</span> Creator Write';
+
+    const logoutLink = Array.from(dropdown.querySelectorAll("a")).find((item) => /log\s*out/i.test(item.textContent));
+    if (logoutLink) {
+      dropdown.insertBefore(link, logoutLink);
+    } else {
+      dropdown.appendChild(link);
+    }
+  });
+});
+
 // Dynamic Prototype & Sandbox Mode Warnings Injection
 (function injectWarning() {
   function initWarning() {

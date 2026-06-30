@@ -155,6 +155,9 @@
           <a href="profile.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
                                 <span class="material-symbols-outlined text-[20px]">person</span> Detail Akun
           </a>
+          <a href="creator-write.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+            <span class="material-symbols-outlined text-[20px]">edit_square</span> Creator Write
+          </a>
           <a href="login.html" class="flex items-center gap-2 px-4 py-3 hover:bg-error/10 transition-colors font-label-md text-label-md text-error border-t border-outline-variant/30 font-bold">
             <span class="material-symbols-outlined text-[20px]">logout</span> Log Out
           </a>
@@ -288,6 +291,27 @@
         </div>
       </div>
 
+      <!-- Filter Tulisan -->
+      <div id="filter-tulisan" class="filter-section hidden">
+        <div class="mb-lg">
+          <h4 class="font-label-md text-label-md text-on-surface-variant mb-sm">Topik Tulisan</h4>
+          <div class="flex flex-col gap-sm">
+            <label class="flex items-center gap-sm cursor-pointer"><input data-topic-filter value="KebiasaanMembaca" checked class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/><span class="font-body-md text-body-md text-on-surface">Kebiasaan Membaca</span></label>
+            <label class="flex items-center gap-sm cursor-pointer"><input data-topic-filter value="UlasanBuku" checked class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/><span class="font-body-md text-body-md text-on-surface">Ulasan Buku</span></label>
+            <label class="flex items-center gap-sm cursor-pointer"><input data-topic-filter value="LiterasiData" checked class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/><span class="font-body-md text-body-md text-on-surface">Literasi Data</span></label>
+            <label class="flex items-center gap-sm cursor-pointer"><input data-topic-filter value="BerpikirKritis" checked class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/><span class="font-body-md text-body-md text-on-surface">Berpikir Kritis</span></label>
+            <label class="flex items-center gap-sm cursor-pointer"><input data-topic-filter value="CreatorWrite" checked class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/><span class="font-body-md text-body-md text-on-surface">Creator Write</span></label>
+          </div>
+        </div>
+        <div class="rounded-xl border border-secondary/30 bg-secondary-container/40 p-md">
+          <div class="flex items-center gap-sm text-on-secondary-container font-label-md text-label-md font-bold">
+            <span class="material-symbols-outlined text-[20px]">bolt</span>
+            Menulis juga dapat XP
+          </div>
+          <p class="font-label-sm text-label-sm text-on-secondary-container mt-xs">Publikasikan tulisan, dapatkan upvote, komentar, dan progress gamifikasi.</p>
+        </div>
+      </div>
+
       <button id="apply-filter-btn" class="w-full mt-lg py-2 px-4 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-colors shadow-sm">Terapkan Filter</button>
     </div>
   </aside>
@@ -297,11 +321,11 @@
     <!-- Hero Search -->
     <div id="hero-search-section" class="bg-surface-container-lowest rounded-xl p-xl flex flex-col items-center justify-center border border-outline-variant/20 shadow-[0_4px_12px_rgba(0,0,0,0.02)] text-center relative overflow-hidden">
       <div class="relative z-10 w-full max-w-2xl">
-        <h1 class="font-headline-lg text-[24px] md:text-headline-lg leading-tight text-on-surface mb-sm">Temukan Bacaan Berikutnya</h1>
-        <p class="font-body-lg text-body-lg text-on-surface-variant mb-lg">Jelajahi ribuan buku dan buku digital menarik.</p>
+        <h1 class="font-headline-lg text-[24px] md:text-headline-lg leading-tight text-on-surface mb-sm">Temukan Bacaan dan Tulisan Baru</h1>
+        <p class="font-body-lg text-body-lg text-on-surface-variant mb-lg">Jelajahi buku, buku digital, dan tulisan literasi dari komunitas ReadBridge.</p>
         <div class="relative w-full shadow-sm rounded-full">
           <span class="material-symbols-outlined absolute left-4 top-4 text-on-surface-variant text-[24px]">search</span>
-          <input id="search-input" class="w-full pl-12 pr-32 py-4 bg-surface-container-lowest border-2 border-surface-variant rounded-full text-body-lg focus:outline-none focus:border-primary transition-colors" placeholder="Cari judul, penulis, atau ISBN..." type="text"/>
+          <input id="search-input" class="w-full pl-12 pr-32 py-4 bg-surface-container-lowest border-2 border-surface-variant rounded-full text-body-lg focus:outline-none focus:border-primary transition-colors" placeholder="Cari judul, penulis, topik, atau ISBN..." type="text"/>
           <button id="search-btn" class="absolute right-2 top-2 bottom-2 px-6 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors">Cari</button>
         </div>
       </div>
@@ -311,14 +335,20 @@
     <div id="explore-tabs" class="flex border-b border-outline-variant gap-lg overflow-x-auto hide-scrollbar">
       <button id="tab-buku" class="font-title-lg text-title-lg text-primary border-b-2 border-primary pb-2 px-2 transition-colors shrink-0">Buku</button>
       <button id="tab-buku-digital" class="font-title-lg text-title-lg text-on-surface-variant hover:text-primary transition-colors pb-2 px-2 shrink-0 select-none">Buku Digital</button>
+      <button id="tab-tulisan" class="font-title-lg text-title-lg text-on-surface-variant hover:text-primary transition-colors pb-2 px-2 shrink-0 select-none">Tulisan</button>
     </div>
 
     <!-- Results -->
-    <div class="flex justify-between items-center">
+    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-sm">
       <span id="result-message" class="font-label-md text-label-md text-on-surface-variant">Menampilkan hasil...</span>
-      <select class="bg-surface-container border border-outline-variant rounded-lg px-3 py-1.5 font-label-md text-label-md text-on-surface focus:outline-none focus:border-primary">
-        <option>Paling Relevan</option><option>Terbaru</option><option>Harga: Rendah - Tinggi</option><option>Rating Tertinggi</option>
-      </select>
+      <div class="flex flex-col sm:flex-row gap-sm">
+        <a href="creator-write.html" class="inline-flex items-center justify-center gap-sm bg-primary text-on-primary px-4 py-2 rounded-full font-label-md text-label-md hover:bg-surface-tint transition-colors">
+          <span class="material-symbols-outlined text-[20px]">edit_square</span> Tulis di Creator Write
+        </a>
+        <select class="bg-surface-container border border-outline-variant rounded-lg px-3 py-1.5 font-label-md text-label-md text-on-surface focus:outline-none focus:border-primary">
+          <option>Paling Relevan</option><option>Terbaru</option><option>Upvote Tertinggi</option><option>Rating Tertinggi</option>
+        </select>
+      </div>
     </div>
 
     <!-- Ebook Section -->
@@ -334,7 +364,7 @@
             </span>
           </div>
           <h2 id="ebook-banner-title" class="font-headline-lg text-[22px] md:text-headline-lg font-extrabold text-white tracking-tight mt-sm">Unlock Unlimited E-Books with BridgePass 👑</h2>
-          <p id="ebook-banner-desc" class="font-body-md text-[14px] md:text-body-md text-slate-300 leading-relaxed">Nikmati akses membaca sepuasnya untuk ribuan buku digital premium, jurnal eksklusif, perpustakaan sewa, dan hilangkan semua batasan waktu membaca gratis sekarang!</p>
+          <p id="ebook-banner-desc" class="font-body-md text-[14px] md:text-body-md text-slate-300 leading-relaxed">Nikmati akses membaca sepuasnya untuk ribuan buku digital premium, tulisan komunitas pilihan, perpustakaan sewa, dan hilangkan semua batasan waktu membaca gratis sekarang!</p>
         </div>
         <div class="relative z-10 shrink-0 self-stretch md:self-auto flex items-center">
           <button id="ebook-upgrade-cta-btn" class="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-label-md rounded-full shadow-[0_4px_16px_rgba(245,158,11,0.3)] transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-sm">
@@ -600,7 +630,7 @@ document.addEventListener("DOMContentLoaded", function() {
         </div>
         <div class="flex flex-col gap-xs">
           <h3 id="locked-overlay-title" class="font-headline-sm text-headline-sm font-extrabold text-on-surface">Batas Membaca Gratis Tercapai 👑</h3>
-          <p id="locked-overlay-desc" class="font-body-md text-body-md text-on-surface-variant">Aktivasi **BridgePass Premium** untuk langsung membuka semua bab e-book ini, ribuan buku digital, jurnal akademik eksklusif, serta sewa tak terbatas tanpa interupsi waktu!</p>
+          <p id="locked-overlay-desc" class="font-body-md text-body-md text-on-surface-variant">Aktivasi **BridgePass Premium** untuk langsung membuka semua bab e-book ini, ribuan buku digital, tulisan literasi pilihan, serta sewa tak terbatas tanpa interupsi waktu!</p>
         </div>
         <div class="flex flex-col gap-sm w-full mt-sm">
           <button id="reader-upgrade-btn" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-label-md rounded-full shadow-[0_4px_16px_rgba(245,158,11,0.25)] transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-sm">
