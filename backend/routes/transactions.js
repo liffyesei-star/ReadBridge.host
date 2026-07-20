@@ -46,32 +46,48 @@ async function createQrislyPayment({ kode, hargaTotal }) {
   requireQrislyConfig();
   const totalAmount = toRupiahAmount(hargaTotal);
   
-  try {
-    // Mencoba melakukan hit ke endpoint rajaongkir komerce untuk qrisly 
-    // Apabila endpoint salah karena dokumentasi terbatas, kita menggunakan fallback
-    const res = await fetch("https://rajaongkir.komerce.id/api/v1/payment/qris/generate", {
-      method: "POST",
-      headers: {
-        "key": QRISLY_API_KEY,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        order_id: kode,
-        gross_amount: totalAmount,
-      })
-    });
-    
-    if (res.ok) {
-      const data = await res.json();
-      if (data && data.qr_url) {
-         return { token: data.token || `qrisly-${kode}`, redirect_url: data.qr_url };
+  const qrisEndpoints = [
+    "https://api-sandbox.collaborator.komerce.id/user/api/v1/qrisly/generate-qris",
+    "https://api.collaborator.komerce.id/user/api/v1/qrisly/generate-qris",
+    "https://rajaongkir.komerce.id/api/v1/payment/qris/generate"
+  ];
+
+  for (const endpoint of qrisEndpoints) {
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "x-api-key": QRISLY_API_KEY,
+          "key": QRISLY_API_KEY,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          qris_id: process.env.QRIS_ID ? parseInt(process.env.QRIS_ID) : 1,
+          amount: totalAmount,
+          order_id: kode,
+          gross_amount: totalAmount,
+          output_type: "url"
+        })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        const qrUrl = data?.qr_url || data?.data?.qr_url || data?.data?.qris_url;
+        const qrString = data?.qr_string || data?.data?.qr_string || data?.data?.qris_string;
+        
+        if (qrUrl) {
+          return { token: data.token || `qrisly-${kode}`, redirect_url: qrUrl };
+        } else if (qrString) {
+          const generatedUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrString)}`;
+          return { token: data.token || `qrisly-${kode}`, redirect_url: generatedUrl };
+        }
       }
+    } catch(e) {
+      console.error("Qrisly API fetch attempt error:", e);
     }
-  } catch(e) {
-    console.error("Qrisly API error fallback:", e);
   }
 
-  // Fallback Dummy QR Code jika Endpoint API tidak sesuai dokumentasi
+  // Fallback Dummy QR Code jika Endpoint Sandbox/Prod Komerce belum bisa membalas secara langsung
   return {
     token: `qrisly-${kode}`,
     redirect_url: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=QRIS_MOCK_${kode}_Rp${totalAmount}`
