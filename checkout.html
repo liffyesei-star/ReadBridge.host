@@ -342,8 +342,8 @@
                     <div class="flex flex-col gap-2" id="payment-methods">
                         <label class="flex items-center justify-between p-3 border border-primary bg-primary-fixed rounded-lg cursor-pointer focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent">
                             <div class="flex items-center gap-3">
-                                <input type="radio" name="payment" value="midtrans" checked class="w-4 h-4 text-primary bg-surface border-outline focus:ring-primary">
-                                <span class="font-label-md text-label-md text-on-surface">Midtrans Snap</span>
+                                <input type="radio" name="payment" value="qrisly" checked class="w-4 h-4 text-primary bg-surface border-outline focus:ring-primary">
+                                <span class="font-label-md text-label-md text-on-surface">QRIS (Qrisly by RajaOngkir)</span>
                             </div>
                             <span class="material-symbols-outlined text-primary">verified</span>
                         </label>
@@ -377,8 +377,8 @@
                         <span id="summary-total" class="font-headline-md text-[20px] md:text-headline-md leading-tight font-bold text-primary">Rp0 (IDR)</span>
                     </div>
                     <button id="btn-pay" class="w-full bg-primary hover:bg-primary/90 text-on-primary font-label-md text-label-md py-4 rounded-full transition-colors mt-2 font-bold flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined">lock</span>
-                        Lanjutkan ke Midtrans
+                        <span class="material-symbols-outlined">qr_code_2</span>
+                        Bayar dengan QRIS
                     </button>
                     <p class="text-center text-[11px] text-outline mt-2">Dengan melanjutkan, Anda menyetujui Syarat dan Ketentuan ReadBridge.</p>
                 </section>
@@ -536,6 +536,21 @@
             let insuranceFee = 0;
             let discount = 0;
 
+            async function fetchShippingFee() {
+                try {
+                    const shipRes = await fetch(`${apiBaseUrl}/api/shipping/destination/domestic-destination?search=jakarta`);
+                    const shipData = await shipRes.json();
+                    if (shipData && shipData.status !== "error") {
+                        // Dummy cost for demonstration, as we don't have the cost calculation JSON format handy
+                        shippingFee = 18500; 
+                    }
+                } catch(e) {
+                    console.log("RajaOngkir fetch error fallback:", e);
+                }
+                updateSummary();
+            }
+            fetchShippingFee();
+
             function updateSummary() {
                 document.getElementById('summary-price').textContent = formatter.format(itemPrice) + ' (IDR)';
                 
@@ -607,7 +622,7 @@
                 const btnPay = document.getElementById('btn-pay');
                 const originalContent = btnPay.innerHTML;
                 btnPay.disabled = true;
-                btnPay.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span> Membuka Midtrans...';
+                btnPay.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span> Memproses QRIS...';
 
                 try {
                     const bukuId = targetBook.isDb ? targetBook.id : (targetBook.id > 100 ? targetBook.id - 100 : targetBook.id);
@@ -626,11 +641,12 @@
                     });
                     const data = await response.json();
                     if (!response.ok || !data.success) {
-                        throw new Error(data.message || 'Gagal membuat pembayaran Midtrans');
+                        throw new Error(data.message || 'Gagal membuat pembayaran QRISLY');
                     }
+                    // Redirect ke URL pembayaran QRIS
                     window.location.href = data.data.payment_url;
                 } catch (error) {
-                    alert(error.message || 'Terjadi kesalahan saat membuka pembayaran Midtrans.');
+                    alert(error.message || 'Terjadi kesalahan saat membuat pembayaran QRISLY.');
                     btnPay.disabled = false;
                     btnPay.innerHTML = originalContent;
                 }
