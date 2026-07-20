@@ -40,7 +40,7 @@
                     if (!style) {
                         style = document.createElement('style');
                         style.id = 'global-font-override';
-                        style.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span:not(.material-symbols-outlined), a, button, input, select, textarea { font-family: Georgia, serif !important; }`;
+                        style.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span:not(.material-symbols-outlined), a:not(.material-symbols-outlined), button:not(.material-symbols-outlined), input, select, textarea { font-family: Georgia, serif !important; }`;
                         document.head.appendChild(style);
                     }
                 } else {
