@@ -7,7 +7,7 @@ const RAJAONGKIR_API_KEY = process.env.RAJAONGKIR_API_KEY;
 const BASE_URL = "https://rajaongkir.komerce.id/api/v1";
 
 // Proxy semua request shipping ke API RajaOngkir Komerce
-router.all("/*", verifyToken, async (req, res) => {
+router.all("/*", async (req, res) => {
   try {
     if (!RAJAONGKIR_API_KEY) {
       return res.status(500).json({ status: "error", message: "API Key RajaOngkir belum dikonfigurasi" });

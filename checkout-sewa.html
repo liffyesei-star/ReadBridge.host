@@ -481,7 +481,10 @@
             let shippingFee = 15000;
             async function fetchShippingFee() {
                 try {
-                    const shipRes = await fetch(`${apiBaseUrl}/api/shipping/destination/domestic-destination?search=jakarta`);
+                    const token = localStorage.getItem('rb_token');
+                    const headers = {};
+                    if (token) headers['Authorization'] = `Bearer ${token}`;
+                    const shipRes = await fetch(`${apiBaseUrl}/api/shipping/destination/domestic-destination?search=jakarta`, { headers });
                     const shipData = await shipRes.json();
                     if (shipData && shipData.status !== "error") {
                         shippingFee = 18500; 
