@@ -386,6 +386,44 @@
         </div>
     </main>
 
+    <!-- Modal QRIS Pembayaran -->
+    <div id="qris-modal" class="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden">
+      <div class="bg-surface-container-lowest rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col border border-outline-variant/30 animate-fadeIn">
+        <div class="bg-primary p-6 text-on-primary text-center relative flex flex-col items-center">
+          <span class="material-symbols-outlined text-[48px] mb-1">qr_code_2</span>
+          <h3 class="font-title-lg text-title-lg font-bold">Pembayaran QRIS</h3>
+          <p class="font-body-sm text-xs opacity-90">Scan menggunakan aplikasi E-Wallet atau Mobile Banking Anda</p>
+        </div>
+        <div class="p-6 flex flex-col items-center gap-4 text-center">
+          <div class="bg-white p-3 rounded-2xl border-2 border-dashed border-primary/40 shadow-inner inline-block">
+            <img id="qris-modal-img" src="" alt="Kode QRIS" class="w-56 h-56 object-contain rounded-xl" />
+          </div>
+          <div class="w-full bg-surface-container-low p-4 rounded-2xl flex flex-col gap-1 border border-outline-variant/30">
+            <div class="flex justify-between items-center text-xs text-on-surface-variant">
+              <span>Kode Transaksi:</span>
+              <span id="qris-modal-kode" class="font-mono font-bold text-on-surface"></span>
+            </div>
+            <div class="flex justify-between items-center text-sm font-bold">
+              <span>Total Tagihan:</span>
+              <span id="qris-modal-total" class="text-primary font-headline-sm"></span>
+            </div>
+          </div>
+          <div class="flex items-center justify-center gap-2 text-xs text-on-surface-variant">
+            <span class="material-symbols-outlined text-[16px] text-primary">verified</span>
+            <span>Dukungan: GoPay, OVO, DANA, ShopeePay, BCA, dll.</span>
+          </div>
+        </div>
+        <div class="p-4 bg-surface-container border-t border-outline-variant/30 flex flex-col gap-2">
+          <button id="btn-qris-done" class="w-full py-3 bg-primary text-on-primary rounded-full font-label-md font-bold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">check_circle</span> Saya Sudah Bayar
+          </button>
+          <button id="btn-qris-cancel" class="w-full py-2 text-on-surface-variant hover:text-error rounded-full font-label-sm text-xs font-semibold transition-colors">
+            Tutup / Bayar Nanti
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script src="main.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
@@ -645,8 +683,30 @@
                     if (!response.ok || !data.success) {
                         throw new Error(data.message || 'Gagal membuat pembayaran QRISLY');
                     }
-                    // Redirect ke URL pembayaran QRIS
-                    window.location.href = data.data.payment_url;
+                    
+                    // Tampilkan Modal QRIS
+                    const modal = document.getElementById('qris-modal');
+                    const img = document.getElementById('qris-modal-img');
+                    const kodeEl = document.getElementById('qris-modal-kode');
+                    const totalEl = document.getElementById('qris-modal-total');
+                    const btnDone = document.getElementById('btn-qris-done');
+                    const btnCancel = document.getElementById('btn-qris-cancel');
+
+                    img.src = data.data.payment_url;
+                    kodeEl.textContent = data.data.kode_transaksi;
+                    totalEl.textContent = document.getElementById('summary-total').textContent;
+
+                    modal.classList.remove('hidden');
+
+                    btnDone.onclick = () => {
+                        window.location.href = `invoice.html?kode=${data.data.kode_transaksi}`;
+                    };
+                    btnCancel.onclick = () => {
+                        modal.classList.add('hidden');
+                        btnPay.disabled = false;
+                        btnPay.innerHTML = originalContent;
+                    };
+
                 } catch (error) {
                     alert(error.message || 'Terjadi kesalahan saat membuat pembayaran QRISLY.');
                     btnPay.disabled = false;
