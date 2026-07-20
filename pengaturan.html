@@ -856,14 +856,34 @@
         // Interests Chips Logic
         let selectedInterests = [];
 
-        function initInterestsChips() {
+        async function initInterestsChips() {
             const savedInterests = localStorage.getItem('rb_interests');
             if (savedInterests) {
-                selectedInterests = JSON.parse(savedInterests);
+                try { selectedInterests = JSON.parse(savedInterests); } catch(e) {}
             } else {
                 selectedInterests = ['fiksi', 'self_dev']; // default
             }
             updateInterestsUI();
+
+            // Sync from Database if logged in
+            const token = localStorage.getItem('rb_token');
+            if (token) {
+                try {
+                    const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+                    const API_BASE = localStorage.getItem('rb_api_base_url') || (isLocal ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+                    const res = await fetch(`${API_BASE}/api/users/minat`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const json = await res.json();
+                    if (json.success && Array.isArray(json.minat) && json.minat.length > 0) {
+                        selectedInterests = json.minat;
+                        localStorage.setItem('rb_interests', JSON.stringify(selectedInterests));
+                        updateInterestsUI();
+                    }
+                } catch(e) {
+                    console.warn("Gagal memuat minat dari DB:", e);
+                }
+            }
         }
 
         function toggleInterestChip(interest) {
@@ -880,6 +900,7 @@
             const allInterests = ['fiksi', 'komik', 'jurnal', 'pelajaran', 'self_dev'];
             allInterests.forEach(interest => {
                 const chip = document.getElementById('chip-' + interest);
+                if (!chip) return;
                 const isSelected = selectedInterests.includes(interest);
                 
                 if (isSelected) {
@@ -890,12 +911,29 @@
             });
         }
 
-        function saveInterests() {
+        async function saveInterests() {
             localStorage.setItem('rb_interests', JSON.stringify(selectedInterests));
             
             const btn = document.querySelector('button[onclick="saveInterests()"]');
             const originalText = btn.textContent;
-            btn.textContent = 'Berhasil Disimpan ✓';
+            btn.textContent = 'Menyimpan...';
+
+            const token = localStorage.getItem('rb_token');
+            if (token) {
+                try {
+                    const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+                    const API_BASE = localStorage.getItem('rb_api_base_url') || (isLocal ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+                    await fetch(`${API_BASE}/api/users/minat`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ minat: selectedInterests })
+                    });
+                } catch(e) {
+                    console.warn("Gagal menyimpan minat ke DB:", e);
+                }
+            }
+
+            btn.textContent = 'Berhasil Disimpan ke DB ✓';
             btn.className = "px-6 py-3 bg-secondary text-on-secondary rounded-full font-bold shadow-md hover:-translate-y-0.5 transition-all";
             
             setTimeout(() => {

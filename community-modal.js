@@ -156,6 +156,31 @@ async function fetchJoinedClubs() {
   }
 }
 
+async function syncUserInterestsFromDB() {
+  const token = localStorage.getItem('rb_token');
+  if (!token) return;
+  try {
+    const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    const API_BASE = localStorage.getItem('rb_api_base_url') || (isLocal ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+    const res = await fetch(`${API_BASE}/api/auth/me`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const json = await res.json();
+    if (json.success && json.data) {
+      if (json.data.minat) {
+        const minatArr = typeof json.data.minat === 'string' ? JSON.parse(json.data.minat) : json.data.minat;
+        if (Array.isArray(minatArr) && minatArr.length > 0) {
+          localStorage.setItem('rb_interests', JSON.stringify(minatArr));
+        }
+      }
+      if (json.data.nama) localStorage.setItem('rb_username', json.data.nama);
+      if (json.data.foto_profil) localStorage.setItem('rb_avatar', json.data.foto_profil);
+    }
+  } catch(e) {
+    console.warn("Gagal sinkron personalisasi dari DB:", e);
+  }
+}
+
 window.activeClubData = null;
 
 function getActiveClub() {
@@ -3274,5 +3299,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initInviteCodeModal();
   ensureJoinByIdModalInDOM();
   fetchJoinedClubs();
+  syncUserInterestsFromDB();
 });
 

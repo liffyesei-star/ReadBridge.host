@@ -299,10 +299,26 @@
             });
         });
 
-        document.getElementById('btn-submit').addEventListener('click', () => {
+        document.getElementById('btn-submit').addEventListener('click', async () => {
             const selectedCards = document.querySelectorAll('.interest-card.ring-2');
             const interests = Array.from(selectedCards).map(card => card.dataset.id);
             localStorage.setItem('rb_interests', JSON.stringify(interests));
+
+            const token = localStorage.getItem('rb_token');
+            if (token) {
+                try {
+                    const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+                    const API_BASE = localStorage.getItem('rb_api_base_url') || (isLocal ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+                    await fetch(`${API_BASE}/api/users/minat`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ minat: interests })
+                    });
+                } catch(e) {
+                    console.warn("Gagal sinkron minat ke DB:", e);
+                }
+            }
+
             window.location.href = 'index.html';
         });
     });

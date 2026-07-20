@@ -34,6 +34,44 @@ router.put("/profile", verifyToken, async (req, res) => {
 });
 
 /**
+ * PUT /api/users/minat
+ * Update minat / personalisasi user ke database
+ */
+router.put("/minat", verifyToken, async (req, res) => {
+  try {
+    const { minat } = req.body;
+    const minatArr = Array.isArray(minat) ? minat : [];
+
+    await db.execute(
+      "UPDATE users SET minat = ? WHERE id = ?",
+      [JSON.stringify(minatArr), req.user.id]
+    );
+
+    res.json({ success: true, message: "Minat & personalisasi berhasil disimpan ke database.", minat: minatArr });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Gagal menyimpan minat user" });
+  }
+});
+
+/**
+ * GET /api/users/minat
+ * Dapatkan minat / personalisasi user dari database
+ */
+router.get("/minat", verifyToken, async (req, res) => {
+  try {
+    const [[user]] = await db.execute("SELECT minat FROM users WHERE id = ?", [req.user.id]);
+    let minat = [];
+    if (user && user.minat) {
+      minat = typeof user.minat === 'string' ? JSON.parse(user.minat) : user.minat;
+    }
+    res.json({ success: true, minat });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Gagal mengambil minat user" });
+  }
+});
+
+/**
  * GET /api/users/perpustakaan
  * Buku koleksi user (yang dimiliki/disewa)
  */
