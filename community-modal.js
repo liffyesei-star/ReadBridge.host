@@ -3015,9 +3015,264 @@ function initInviteCodeModal() {
   });
 }
 
+// ── Gabung Club via ID / Kode Modal ─────────────────────────────────────────
+
+function ensureJoinByIdModalInDOM() {
+  if (document.getElementById('modal-join-by-id')) return;
+
+  const modalHtml = `
+  <div id="modal-join-by-id" class="fixed inset-0 z-[200] flex items-center justify-center p-4 hidden">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" id="overlay-join-by-id"></div>
+    <div class="relative bg-surface rounded-3xl shadow-2xl w-full max-w-md z-10 p-6 flex flex-col gap-4">
+      <div class="flex items-center justify-between border-b border-outline-variant/30 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-[28px]">tag</span>
+          <h3 class="font-title-lg text-title-lg font-bold text-on-surface">Gabung Club via ID / Kode</h3>
+        </div>
+        <button id="btn-close-join-by-id" class="text-on-surface-variant hover:text-error transition-colors flex items-center justify-center">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <p class="font-body-sm text-body-sm text-on-surface-variant">
+        Masukkan <strong>ID Club</strong> (contoh: <code class="bg-surface-container-high px-1.5 py-0.5 rounded text-primary font-bold">12</code> atau <code class="bg-surface-container-high px-1.5 py-0.5 rounded text-primary font-bold">#12</code>) atau <strong>Kode Undangan</strong> (contoh: <code class="bg-surface-container-high px-1.5 py-0.5 rounded text-primary font-bold">A3F8C12E91</code>).
+      </p>
+
+      <!-- Search Input -->
+      <div class="relative">
+        <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+        <input id="input-join-club-id" type="text" placeholder="Masukkan ID atau Kode Undangan..." autocomplete="off" class="w-full pl-11 pr-24 py-3 rounded-xl bg-surface-container-low border border-outline-variant text-on-surface font-bold text-base focus:outline-none focus:ring-2 focus:ring-primary"/>
+        <button id="btn-search-club-id" class="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 bg-primary text-on-primary rounded-lg font-bold text-xs hover:bg-primary/90 transition-all flex items-center gap-1">
+          Cari
+        </button>
+      </div>
+
+      <!-- Error Element -->
+      <div id="join-by-id-error" class="hidden p-3 bg-error/10 border border-error/20 rounded-xl text-error text-xs font-semibold flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">error</span>
+        <span id="join-by-id-error-msg"></span>
+      </div>
+
+      <!-- Club Preview Container -->
+      <div id="join-club-preview" class="hidden border border-outline-variant/50 rounded-2xl p-4 bg-surface-container-low flex flex-col gap-3">
+        <div class="flex items-center gap-3">
+          <img id="preview-club-icon" src="" class="w-12 h-12 rounded-xl object-cover border border-outline-variant bg-surface" />
+          <div class="flex-grow">
+            <div class="flex items-center gap-2">
+              <h4 id="preview-club-nama" class="font-bold text-on-surface text-base"></h4>
+              <span id="preview-club-privacy-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold"></span>
+            </div>
+            <p id="preview-club-kategori" class="text-xs text-on-surface-variant"></p>
+            <p id="preview-club-members" class="text-xs text-primary font-bold mt-0.5"></p>
+          </div>
+        </div>
+        <p id="preview-club-desc" class="text-xs text-on-surface-variant/90 line-clamp-2 italic"></p>
+        
+        <!-- Additional Invite Code Input for Private Club if query wasn't code -->
+        <div id="preview-invite-code-container" class="hidden flex flex-col gap-1.5 pt-2 border-t border-outline-variant/30">
+          <label class="text-xs font-bold text-on-surface flex items-center gap-1">
+            <span class="material-symbols-outlined text-[14px] text-secondary">lock</span> Kode Undangan Wajib
+          </label>
+          <input id="preview-invite-code-input" type="text" placeholder="Masukkan Kode Undangan Privat..." class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-outline-variant font-bold tracking-widest uppercase" />
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-3 pt-2">
+        <button id="btn-cancel-join-by-id" class="flex-1 py-2.5 rounded-xl bg-surface-container text-on-surface-variant font-label-md hover:bg-surface-container-high transition-colors">Batal</button>
+        <button id="btn-submit-join-by-id" disabled class="flex-1 py-2.5 rounded-xl bg-primary text-on-primary font-label-md font-bold opacity-50 cursor-not-allowed hover:bg-primary/90 transition-all flex items-center justify-center gap-1">
+          <span class="material-symbols-outlined text-[18px]">group_add</span> Gabung Club
+        </button>
+      </div>
+    </div>
+  </div>`;
+
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  initJoinByIdModal();
+}
+
+let _foundClubData = null;
+let _searchedQuery = '';
+
+window.openJoinByIdModal = function(prefill) {
+  ensureJoinByIdModalInDOM();
+  const modal = document.getElementById('modal-join-by-id');
+  if (!modal) return;
+
+  const inputEl = document.getElementById('input-join-club-id');
+  const errEl = document.getElementById('join-by-id-error');
+  const previewEl = document.getElementById('join-club-preview');
+  const submitBtn = document.getElementById('btn-submit-join-by-id');
+
+  if (inputEl) inputEl.value = prefill || '';
+  if (errEl) errEl.classList.add('hidden');
+  if (previewEl) previewEl.classList.add('hidden');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+  }
+  _foundClubData = null;
+  _searchedQuery = '';
+
+  modal.classList.remove('hidden');
+  setTimeout(() => inputEl?.focus(), 100);
+
+  if (prefill) {
+    document.getElementById('btn-search-club-id')?.click();
+  }
+};
+
+function initJoinByIdModal() {
+  const modal = document.getElementById('modal-join-by-id');
+  if (!modal) return;
+
+  const closeBtn = document.getElementById('btn-close-join-by-id');
+  const cancelBtn = document.getElementById('btn-cancel-join-by-id');
+  const overlay = document.getElementById('overlay-join-by-id');
+  const searchBtn = document.getElementById('btn-search-club-id');
+  const inputEl = document.getElementById('input-join-club-id');
+  const submitBtn = document.getElementById('btn-submit-join-by-id');
+  const errEl = document.getElementById('join-by-id-error');
+  const errMsgEl = document.getElementById('join-by-id-error-msg');
+  const previewEl = document.getElementById('join-club-preview');
+
+  const closeModal = () => { modal.classList.add('hidden'); };
+
+  closeBtn?.addEventListener('click', closeModal);
+  cancelBtn?.addEventListener('click', closeModal);
+  overlay?.addEventListener('click', closeModal);
+
+  inputEl?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      if (!_foundClubData) searchBtn?.click();
+      else submitBtn?.click();
+    }
+  });
+
+  searchBtn?.addEventListener('click', async () => {
+    const rawVal = inputEl.value.trim();
+    if (!rawVal) {
+      errMsgEl.textContent = 'Masukkan ID Club atau Kode Undangan.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    errEl.classList.add('hidden');
+    previewEl.classList.add('hidden');
+    searchBtn.disabled = true;
+    searchBtn.innerHTML = '<span class="material-symbols-outlined text-[14px] animate-spin">progress_activity</span>';
+
+    try {
+      const token = localStorage.getItem('rb_token');
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      const res = await fetch(`${API_BASE}/api/community/clubs/lookup/${encodeURIComponent(rawVal)}`, { headers });
+      const json = await res.json();
+
+      searchBtn.disabled = false;
+      searchBtn.textContent = 'Cari';
+
+      if (!json.success || !json.data) {
+        throw new Error(json.message || 'Club tidak ditemukan.');
+      }
+
+      const c = json.data;
+      _foundClubData = c;
+      _searchedQuery = rawVal;
+
+      // Populate preview card
+      const iconUrl = c.icon_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.nama)}&background=${(c.color_scheme||'e0f2fe').replace('#','')}&color=${(c.color_primary||'0284c7').replace('#','')}&size=128`;
+      document.getElementById('preview-club-icon').src = iconUrl;
+      document.getElementById('preview-club-nama').textContent = c.nama;
+      document.getElementById('preview-club-kategori').textContent = c.kategori || 'Kategori Umum';
+      document.getElementById('preview-club-members').textContent = `👥 ${c.total_anggota || 0} Anggota`;
+      document.getElementById('preview-club-desc').textContent = c.deskripsi || 'Tidak ada deskripsi.';
+
+      const badgeEl = document.getElementById('preview-club-privacy-badge');
+      if (c.privat) {
+        badgeEl.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-secondary-container text-on-secondary-container';
+        badgeEl.textContent = 'Privat';
+      } else {
+        badgeEl.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-surface-container-high text-primary';
+        badgeEl.textContent = 'Publik';
+      }
+
+      const inviteCodeBox = document.getElementById('preview-invite-code-container');
+      const matchedByInviteCode = c.privat && (rawVal.toUpperCase() === (c.invite_code || "").toUpperCase());
+      if (c.privat && !matchedByInviteCode) {
+        inviteCodeBox.classList.remove('hidden');
+      } else {
+        inviteCodeBox.classList.add('hidden');
+      }
+
+      previewEl.classList.remove('hidden');
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+      if (c.sudahGabung) {
+        submitBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">login</span> Masuk ke Club';
+      } else {
+        submitBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">group_add</span> Gabung Club';
+      }
+
+    } catch (err) {
+      searchBtn.disabled = false;
+      searchBtn.textContent = 'Cari';
+      errMsgEl.textContent = err.message || 'Gagal mencari club. Periksa koneksi backend.';
+      errEl.classList.remove('hidden');
+      submitBtn.disabled = true;
+      submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+  });
+
+  submitBtn?.addEventListener('click', async () => {
+    if (!_foundClubData) return;
+
+    if (_foundClubData.sudahGabung) {
+      closeModal();
+      window.location.href = `club-detail.html?id=${_foundClubData.id}`;
+      return;
+    }
+
+    const token = localStorage.getItem('rb_token');
+    if (!token) {
+      errMsgEl.textContent = 'Silakan login terlebih dahulu untuk bergabung ke club.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+
+    const inviteCodeInput = document.getElementById('preview-invite-code-input')?.value.trim();
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="material-symbols-outlined text-[14px] animate-spin">progress_activity</span> Memproses...';
+
+    try {
+      const res = await fetch(`${API_BASE}/api/community/clubs/join-by-id`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ query: _searchedQuery, invite_code: inviteCodeInput })
+      });
+      const json = await res.json();
+
+      if (!json.success) throw new Error(json.message);
+
+      closeModal();
+      showToast(`🎉 ${json.message || 'Berhasil bergabung ke club!'}`, 'success');
+      setTimeout(() => {
+        window.location.href = `club-detail.html?id=${json.data.id || _foundClubData.id}`;
+      }, 1000);
+
+    } catch (err) {
+      errMsgEl.textContent = err.message || 'Gagal bergabung ke club.';
+      errEl.classList.remove('hidden');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">group_add</span> Coba Lagi';
+    }
+  });
+}
+
 // Init on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
   initBuatClubModal();
   initInviteCodeModal();
+  ensureJoinByIdModalInDOM();
   fetchJoinedClubs();
 });
+

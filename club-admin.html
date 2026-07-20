@@ -107,6 +107,18 @@
     <div id="tab-settings" class="admin-content hidden">
       <h2 class="font-title-lg text-title-lg font-bold mb-4">Pengaturan Club</h2>
       <div class="space-y-4">
+        <!-- ID Club Display -->
+        <div class="bg-primary/5 border border-primary/20 rounded-2xl p-4 flex items-center justify-between">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-primary">ID Club</span>
+            <p class="text-2xl font-black text-on-surface" id="set-id-display">#---</p>
+            <p class="text-xs text-on-surface-variant">Anggota dapat menggunakan ID ini untuk mencari & bergabung ke club.</p>
+          </div>
+          <button id="btn-copy-club-id" class="px-4 py-2 bg-primary text-on-primary rounded-xl font-bold hover:bg-primary/90 flex items-center gap-2 text-sm">
+            <span class="material-symbols-outlined text-[18px]">content_copy</span> Salin ID
+          </button>
+        </div>
+
         <div>
           <label class="block text-sm font-bold mb-1">Nama Club</label>
           <input type="text" id="set-nama" class="w-full rounded-xl border border-outline-variant px-4 py-2 bg-surface-container-low" />
@@ -174,8 +186,19 @@ document.addEventListener("DOMContentLoaded", async function() {
             // Populate settings
             document.getElementById('set-nama').value = json.data.nama;
             document.getElementById('set-aturan').value = json.data.aturan || '';
+            const idDisp = document.getElementById('set-id-display');
+            if (idDisp) idDisp.textContent = `#${json.data.id || clubId}`;
         }
     } catch(e) {}
+
+    const copyIdBtn = document.getElementById('btn-copy-club-id');
+    if (copyIdBtn) {
+        copyIdBtn.onclick = () => {
+            const rawId = String(clubId).replace(/^#/, '');
+            navigator.clipboard.writeText(rawId);
+            alert(`ID Club #${rawId} berhasil disalin!`);
+        };
+    }
 
     // Load Members
     async function loadMembers() {

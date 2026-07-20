@@ -543,6 +543,131 @@ router.post("/clubs/:id/gabung", verifyToken, async (req, res) => {
   }
 });
 
+/**
+ * GET /api/community/clubs/lookup/:query
+ * Cari club berdasarkan ID numerik, Invite Code, atau Slug
+ */
+router.get("/clubs/lookup/:query", optionalAuth, async (req, res) => {
+  try {
+    let q = (req.params.query || "").trim().replace(/^#/, "");
+    if (!q) return res.status(400).json({ success: false, message: "ID atau Kode Undangan wajib diisi." });
+
+    const qUpper = q.toUpperCase();
+    const isNum = /^\d+$/.test(q);
+    const numVal = isNum ? parseInt(q, 10) : -1;
+
+    const [[club]] = await db.execute(
+      `SELECT c.*, u.nama AS nama_kreator, u.foto_profil AS foto_kreator
+       FROM club c
+       LEFT JOIN users u ON c.kreator_id = u.id
+       WHERE c.aktif = 1 AND (c.id = ? OR UPPER(c.invite_code) = ? OR c.slug = ?)
+       LIMIT 1`,
+      [numVal, qUpper, q.toLowerCase()]
+    );
+
+    if (!club) return res.status(404).json({ success: false, message: "Club tidak ditemukan. Periksa kembali ID atau Kode Undangan." });
+
+    let sudahGabung = false;
+    let roleAnggota = null;
+    let isBanned    = false;
+
+    if (req.user) {
+      const [[anggota]] = await db.execute(
+        "SELECT role, status FROM club_anggota WHERE club_id = ? AND user_id = ?",
+        [club.id, req.user.id]
+      );
+      if (anggota) {
+        sudahGabung = anggota.status === 'aktif';
+        roleAnggota = anggota.status === 'aktif' ? anggota.role : null;
+        isBanned    = anggota.status === 'banned';
+      }
+    }
+
+    const clubData = { ...club };
+    if (!['kreator','moderator'].includes(roleAnggota)) delete clubData.invite_code;
+
+    res.json({ success: true, data: { ...clubData, sudahGabung, roleAnggota, isBanned } });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Gagal mencari club." });
+  }
+});
+
+/**
+ * POST /api/community/clubs/join-by-id
+ * Bergabung ke club menggunakan ID numerik atau Invite Code
+ */
+router.post("/clubs/join-by-id", verifyToken, async (req, res) => {
+  try {
+    const { query, invite_code } = req.body;
+    let q = (query || "").trim().replace(/^#/, "");
+    if (!q) return res.status(400).json({ success: false, message: "ID atau Kode Undangan wajib diisi." });
+
+    const qUpper = q.toUpperCase();
+    const isNum = /^\d+$/.test(q);
+    const numVal = isNum ? parseInt(q, 10) : -1;
+
+    const [[club]] = await db.execute(
+      "SELECT id, nama, privat, invite_code, aktif FROM club WHERE aktif = 1 AND (id = ? OR UPPER(invite_code) = ? OR slug = ?) LIMIT 1",
+      [numVal, qUpper, q.toLowerCase()]
+    );
+
+    if (!club) return res.status(404).json({ success: false, message: "Club tidak ditemukan." });
+
+    // Cek ban
+    const [[banned]] = await db.execute(
+      "SELECT 1 FROM club_banned WHERE club_id = ? AND user_id = ?",
+      [club.id, req.user.id]
+    );
+    if (banned) return res.status(403).json({ success: false, message: "Anda telah di-ban dari club ini." });
+
+    const [[existing]] = await db.execute(
+      "SELECT role, status FROM club_anggota WHERE club_id = ? AND user_id = ?",
+      [club.id, req.user.id]
+    );
+
+    if (existing && existing.status === 'aktif') {
+      return res.json({ success: true, message: "Anda sudah menjadi anggota club ini.", data: { id: club.id, sudahGabung: true } });
+    }
+
+    // Validasi kode jika privat
+    if (club.privat) {
+      // Jika pencarian menggunakan kode invite valid secara langsung, ijinkan
+      const matchedByInviteCode = (qUpper === (club.invite_code || "").toUpperCase());
+      const providedCode = (invite_code || "").trim().toUpperCase();
+      const codeIsValid = matchedByInviteCode || (providedCode && providedCode === (club.invite_code || "").toUpperCase());
+
+      if (!codeIsValid) {
+        return res.status(403).json({
+          success: false,
+          requiresInviteCode: true,
+          clubId: club.id,
+          message: "Club ini privat. Masukkan kode undangan yang valid."
+        });
+      }
+    }
+
+    // Insert or update status
+    if (existing) {
+      await db.execute(
+        "UPDATE club_anggota SET role = 'anggota', status = 'aktif' WHERE club_id = ? AND user_id = ?",
+        [club.id, req.user.id]
+      );
+    } else {
+      await db.execute(
+        "INSERT INTO club_anggota (club_id, user_id, role, status) VALUES (?, ?, 'anggota', 'aktif')",
+        [club.id, req.user.id]
+      );
+    }
+    await db.execute("UPDATE club SET total_anggota = total_anggota + 1 WHERE id = ?", [club.id]);
+
+    res.json({ success: true, message: `Berhasil bergabung ke ${club.nama}!`, data: { id: club.id, sudahGabung: true } });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Gagal bergabung ke club." });
+  }
+});
+
 // ─── INVITE CODE ────────────────────────────────────────────────────────────
 
 /**
