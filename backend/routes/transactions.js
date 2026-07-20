@@ -47,16 +47,26 @@ function generateDynamicQRISPayload(baseQris, amount) {
   const tag54 = "54" + String(amtStr.length).padStart(2, "0") + amtStr;
   let cleanQris = (baseQris || "").replace(/6304[A-Fa-f0-9]{4}$/, "");
   
-  if (/54\d{2}\d+/.test(cleanQris)) {
-    cleanQris = cleanQris.replace(/54\d{2}\d+/, tag54);
-  } else {
-    const pos = cleanQris.indexOf("5802");
-    if (pos !== -1) {
-      cleanQris = cleanQris.slice(0, pos) + tag54 + cleanQris.slice(pos);
+  const pos = cleanQris.indexOf("5802ID");
+  if (pos !== -1) {
+    const before58 = cleanQris.slice(0, pos);
+    const after58 = cleanQris.slice(pos);
+    const pos53 = before58.indexOf("5303360");
+    
+    if (pos53 !== -1) {
+        let chunk = before58.slice(pos53 + 7);
+        if (chunk.startsWith("54")) {
+            cleanQris = before58.slice(0, pos53 + 7) + tag54 + after58;
+        } else {
+            cleanQris = before58 + tag54 + after58;
+        }
     } else {
-      cleanQris = cleanQris + tag54;
+        cleanQris = before58 + tag54 + after58;
     }
+  } else {
+    cleanQris = cleanQris + tag54;
   }
+  
   cleanQris = cleanQris.replace("010211", "010212");
   const toChecksum = cleanQris + "6304";
   
@@ -78,7 +88,9 @@ function generateDynamicQRISPayload(baseQris, amount) {
 async function createQrislyPayment({ kode, hargaTotal }) {
   requireQrislyConfig();
   const totalAmount = toRupiahAmount(hargaTotal);
-  const baseQrisString = process.env.BASE_QRIS_STRING || "0002010102112661006299INVALID_DATA54051000163048C11";
+  
+  // Menggunakan QRIS Asli milik pengguna
+  const baseQrisString = process.env.BASE_QRIS_STRING || "00020101021126610014COM.GO-JEK.WWW01189360091436437795300210G6437795300303UMI51440014ID.CO.QRIS.WWW0215ID10254503939270303UMI5204899953033605802ID5925ABDULLAH AFFAN RIZQONI, D6009INDRAMAYU61054521162070703A01630409BA";
   
   const qrisEndpoints = [
     "https://api-sandbox.collaborator.komerce.id/user/api/v1/qrisly/generate-qris",
