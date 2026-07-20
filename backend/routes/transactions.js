@@ -42,9 +42,43 @@ function toRupiahAmount(value) {
   return amount;
 }
 
+function generateDynamicQRISPayload(baseQris, amount) {
+  const amtStr = String(Math.round(amount));
+  const tag54 = "54" + String(amtStr.length).padStart(2, "0") + amtStr;
+  let cleanQris = (baseQris || "").replace(/6304[A-Fa-f0-9]{4}$/, "");
+  
+  if (/54\d{2}\d+/.test(cleanQris)) {
+    cleanQris = cleanQris.replace(/54\d{2}\d+/, tag54);
+  } else {
+    const pos = cleanQris.indexOf("5802");
+    if (pos !== -1) {
+      cleanQris = cleanQris.slice(0, pos) + tag54 + cleanQris.slice(pos);
+    } else {
+      cleanQris = cleanQris + tag54;
+    }
+  }
+  cleanQris = cleanQris.replace("010211", "010212");
+  const toChecksum = cleanQris + "6304";
+  
+  let crc = 0xFFFF;
+  for (let i = 0; i < toChecksum.length; i++) {
+    crc ^= toChecksum.charCodeAt(i) << 8;
+    for (let j = 0; j < 8; j++) {
+      if ((crc & 0x8000) !== 0) {
+        crc = ((crc << 1) ^ 0x1021) & 0xFFFF;
+      } else {
+        crc = (crc << 1) & 0xFFFF;
+      }
+    }
+  }
+  const checksum = crc.toString(16).toUpperCase().padStart(4, "0");
+  return toChecksum + checksum;
+}
+
 async function createQrislyPayment({ kode, hargaTotal }) {
   requireQrislyConfig();
   const totalAmount = toRupiahAmount(hargaTotal);
+  const baseQrisString = process.env.BASE_QRIS_STRING || "0002010102112661006299INVALID_DATA54051000163048C11";
   
   const qrisEndpoints = [
     "https://api-sandbox.collaborator.komerce.id/user/api/v1/qrisly/generate-qris",
@@ -87,10 +121,13 @@ async function createQrislyPayment({ kode, hargaTotal }) {
     }
   }
 
-  // Fallback Dummy QR Code jika Endpoint Sandbox/Prod Komerce belum bisa membalas secara langsung
+  // Generate Dynamic QRIS EMVCo Payload dari String QRIS Pengguna
+  const dynamicPayload = generateDynamicQRISPayload(baseQrisString, totalAmount);
+  const generatedQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(dynamicPayload)}`;
+
   return {
     token: `qrisly-${kode}`,
-    redirect_url: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=QRIS_MOCK_${kode}_Rp${totalAmount}`
+    redirect_url: generatedQrUrl
   };
 }
 
