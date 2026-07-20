@@ -3,7 +3,7 @@ const router = express.Router();
 const fetch = require("node-fetch");
 const { verifyToken } = require("../middleware/auth");
 
-const RAJAONGKIR_API_KEY = process.env.RAJAONGKIR_API_KEY;
+const RAJAONGKIR_API_KEY = process.env.RAJAONGKIR_API_KEY || "y8ajBnF40ebd0136939bbd78AtTCwodQDan";
 const BASE_URL = "https://rajaongkir.komerce.id/api/v1";
 
 // Proxy semua request shipping ke API RajaOngkir Komerce
