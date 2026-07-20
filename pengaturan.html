@@ -695,7 +695,7 @@
                     overrideStyle.id = 'global-font-override';
                     document.head.appendChild(overrideStyle);
                 }
-                overrideStyle.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span, a, button, input, select, textarea { font-family: Georgia, serif !important; }`;
+                overrideStyle.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span:not(.material-symbols-outlined), a:not(.material-symbols-outlined), button:not(.material-symbols-outlined), input, select, textarea { font-family: Georgia, serif !important; }`;
             } else {
                 if (overrideStyle) {
                     overrideStyle.remove();
