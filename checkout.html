@@ -299,6 +299,26 @@
                     </div>
                 </section>
                 
+                <!-- Pilihan Pengiriman -->
+                <section class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30 flex flex-col gap-md">
+                    <h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">conveyor_belt</span>
+                        Pilihan Pengiriman
+                    </h2>
+                    <div class="flex flex-col gap-2">
+                        <label class="font-label-md text-label-md text-on-surface block mb-1">Kurir Pengiriman</label>
+                        <select id="courier-select" class="w-full p-3 bg-surface border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-on-surface">
+                            <option value="jne">JNE (Jalur Nugraha Ekakurir)</option>
+                            <option value="pos">POS Indonesia</option>
+                            <option value="tiki">TIKI (Citra Van Titipan Kilat)</option>
+                            <option value="sicepat">SiCepat Ekspres</option>
+                        </select>
+                        <div id="shipping-loading" class="hidden text-sm text-primary flex items-center gap-2 mt-2">
+                            <span class="material-symbols-outlined animate-spin text-sm">sync</span> Menghitung ongkos kirim...
+                        </div>
+                    </div>
+                </section>
+                
                 <!-- Opsi Tambahan -->
                 <section class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30 flex flex-col gap-md">
                     <h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-2">
@@ -575,20 +595,53 @@
             let discount = 0;
 
             async function fetchShippingFee() {
+                const loadingEl = document.getElementById('shipping-loading');
+                const courierSelect = document.getElementById('courier-select');
+                const courier = courierSelect ? courierSelect.value : 'jne';
+                
+                if (loadingEl) loadingEl.classList.remove('hidden');
+                
                 try {
                     const token = localStorage.getItem('rb_token');
-                    const headers = {};
+                    const headers = { 'Content-Type': 'application/json' };
                     if (token) headers['Authorization'] = `Bearer ${token}`;
-                    const shipRes = await fetch(`${apiBaseUrl}/api/shipping/destination/domestic-destination?search=jakarta`, { headers });
-                    const shipData = await shipRes.json();
-                    if (shipData && shipData.status !== "error") {
-                        shippingFee = 18500; 
+                    
+                    // Hitung Ongkir Dinamis (Origin: 149 Indramayu, Dest: 152 Jakarta)
+                    // Pada implementasi full, nilai destination didapat dari auto-complete wilayah Komerce
+                    const shipRes = await fetch(`${apiBaseUrl}/api/shipping/calculate/domestic-cost`, { 
+                        method: 'POST',
+                        headers,
+                        body: JSON.stringify({
+                            origin: 149, 
+                            destination: 152,
+                            weight: 500, // 500 gram (asumsi 1 buku)
+                            courier: courier
+                        })
+                    });
+                    
+                    if (shipRes.ok) {
+                        const data = await shipRes.json();
+                        if (data && data.data && data.data.length > 0 && data.data[0].costs && data.data[0].costs.length > 0) {
+                            shippingFee = parseInt(data.data[0].costs[0].cost[0].value);
+                        } else {
+                            // Fallback jika kurir tidak tersedia di rute ini
+                            shippingFee = courier === 'pos' ? 12000 : (courier === 'tiki' ? 18000 : 15000);
+                        }
+                    } else {
+                         shippingFee = courier === 'pos' ? 12000 : (courier === 'tiki' ? 18000 : 15000);
                     }
                 } catch(e) {
                     console.log("RajaOngkir fetch error fallback:", e);
+                    shippingFee = courier === 'pos' ? 12000 : (courier === 'tiki' ? 18000 : 15000);
                 }
+                if (loadingEl) loadingEl.classList.add('hidden');
                 updateSummary();
             }
+
+            // Daftarkan listener agar menghitung ulang saat dropdown kurir diubah
+            const courierDropdown = document.getElementById('courier-select');
+            if (courierDropdown) courierDropdown.addEventListener('change', fetchShippingFee);
+
             fetchShippingFee();
 
             function updateSummary() {
