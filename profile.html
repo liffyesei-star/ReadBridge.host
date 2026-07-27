@@ -504,64 +504,93 @@
       <div id="content-detail" class="grid grid-cols-1 lg:grid-cols-3 gap-lg w-full">
         <!-- Left Column: User Level & Gamification Status -->
         <div class="lg:col-span-1 flex flex-col gap-lg">
-          <!-- Level Card (Progress to next level) -->
+          <!-- Integrated Level & Progresi Master Bento Card (Glowing Neon Aura) -->
           <div id="level-card" onclick="window.showLevelModal()"
-            class="bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl p-lg shadow-sm border border-outline-variant/30 relative overflow-hidden cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-            <div class="absolute top-0 right-0 p-4 opacity-10">
-              <span class="material-symbols-outlined text-6xl text-primary">school</span>
-            </div>
-            <h3 class="font-title-lg text-title-lg text-on-surface dark:text-white font-extrabold mb-xs relative z-10">Level Scholar</h3>
-            <p id="level-card-desc" class="font-body-md text-xs text-on-surface-variant dark:text-slate-400 mb-md relative z-10">
-              Dapatkan XP lagi untuk naik tingkat</p>
-            <div class="w-full bg-surface-variant rounded-full h-3 mb-2">
-              <div id="level-card-progress" class="bg-primary h-3 rounded-full" style="width: 0%"></div>
-            </div>
-            <div class="flex justify-between font-label-sm text-xs font-bold text-outline">
-              <span id="level-card-xp-min">0 XP</span>
-              <span id="level-card-xp-max">200 XP</span>
-            </div>
-          </div>
+            class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 rounded-2xl p-lg shadow-lg border border-emerald-500/30 cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
+            
+            <!-- Ambient Glow Background Effect -->
+            <div id="level-card-glow" class="absolute -right-10 -bottom-10 w-48 h-48 rounded-full blur-3xl opacity-30 pointer-events-none transition-all duration-500 bg-emerald-500"></div>
 
-          <!-- Level System Roadmap Card (Explorer -> Reader -> Thinker -> Scholar) -->
-          <div class="bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl shadow-sm p-lg border border-outline-variant/30">
-            <h2 class="font-title-lg text-title-lg font-extrabold text-on-surface dark:text-white mb-md flex items-center gap-2">
-              <span class="material-symbols-outlined text-secondary">route</span>
-              Progresi Level Explorer
-            </h2>
-            <div class="relative flex items-center justify-between w-full mt-md mb-lg px-sm">
-              <!-- Connecting Line -->
-              <div class="absolute top-1/2 left-0 w-full h-1 bg-surface-variant dark:bg-slate-800 -z-10 -translate-y-1/2"></div>
-              <div class="absolute top-1/2 left-0 w-3/4 h-1 bg-secondary -z-10 -translate-y-1/2"></div>
-              <!-- Level: Explorer -->
-              <div class="flex flex-col items-center gap-sm z-10">
-                <div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm" title="Explorer Level (0-200 XP)">
-                  <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">explore</span>
+            <!-- Top Header Badge & XP Info -->
+            <div class="relative z-10 flex items-center justify-between mb-md">
+              <div class="flex items-center gap-2.5">
+                <div id="level-icon-badge" class="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center shadow-[0_0_12px_rgba(16,185,129,0.3)]">
+                  <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">explore</span>
                 </div>
-                <span class="text-[10px] font-bold text-on-surface dark:text-slate-300">Explorer</span>
+                <div>
+                  <h3 id="level-card-title" class="font-extrabold text-base text-white tracking-wide flex items-center gap-1.5 mb-0.5">
+                    <span>Level Explorer</span>
+                  </h3>
+                  <span id="level-rank-pill" class="text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    🟢 TINGKAT 1
+                  </span>
+                </div>
               </div>
-              <!-- Level: Reader -->
-              <div class="flex flex-col items-center gap-sm z-10">
-                <div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm" title="Reader Level (200-500 XP)">
-                  <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">menu_book</span>
-                </div>
-                <span class="text-[10px] font-bold text-on-surface dark:text-slate-300">Reader</span>
-              </div>
-              <!-- Level: Thinker -->
-              <div class="flex flex-col items-center gap-sm z-10">
-                <div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm ring-4 ring-secondary-container" title="Thinker Level (500-1000 XP)">
-                  <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
-                </div>
-                <span class="text-[10px] font-bold text-on-surface dark:text-slate-300">Thinker</span>
-              </div>
-              <!-- Level: Scholar -->
-              <div class="flex flex-col items-center gap-sm z-10">
-                <div class="w-10 h-10 rounded-full bg-surface-variant dark:bg-slate-800 text-outline flex items-center justify-center shadow-sm" title="Scholar Level (1000+ XP)">
-                  <span class="material-symbols-outlined text-sm">school</span>
-                </div>
-                <span class="text-[10px] font-bold text-on-surface-variant dark:text-slate-400">Scholar</span>
+
+              <!-- XP Counter Box -->
+              <div class="bg-slate-950/80 px-3 py-1.5 rounded-xl border border-emerald-500/30 text-right">
+                <span id="level-card-xp-min" class="font-black text-sm text-emerald-400">0 XP</span>
+                <span class="text-[10px] text-slate-400 block font-semibold" id="level-card-xp-max">Target: 200 XP</span>
               </div>
             </div>
-            <p id="level-roadmap-desc" class="font-body-md text-xs text-on-surface-variant dark:text-slate-400 text-center mt-xs">Kumpulkan XP dari aktivitas & membaca untuk naik tingkat ke jenjang berikutnya!</p>
+
+            <!-- Progress Bar -->
+            <div class="relative z-10 mb-md">
+              <div class="flex justify-between items-center text-xs mb-1.5">
+                <span id="level-card-desc" class="text-slate-300 font-medium truncate max-w-[200px]">Dapatkan XP lagi untuk naik tingkat</span>
+                <span id="level-card-percent-text" class="font-black text-emerald-400 text-xs shrink-0">0%</span>
+              </div>
+              <div class="w-full bg-slate-950 rounded-full h-3.5 p-0.5 border border-slate-800 relative overflow-hidden">
+                <div id="level-card-progress" class="bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 h-full rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Stage Route Nodes (Explorer -> Reader -> Thinker -> Scholar) -->
+            <div class="relative z-10 pt-sm border-t border-slate-800/80">
+              <div class="flex items-center justify-between text-[11px] font-bold text-slate-400 mb-2">
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-emerald-400">route</span> Rute Progresi Jenjang</span>
+                <span class="text-[10px] text-cyan-400">Detail XP →</span>
+              </div>
+
+              <div class="relative flex items-center justify-between w-full py-2 px-1">
+                <!-- Connecting Line Base -->
+                <div class="absolute top-1/2 left-4 right-4 h-1.5 bg-slate-800 -z-0 rounded-full -translate-y-1/2"></div>
+                <!-- Connecting Line Fill Glow -->
+                <div id="level-roadmap-line-fill" class="absolute top-1/2 left-4 h-1.5 bg-gradient-to-r from-emerald-500 to-cyan-400 -z-0 rounded-full -translate-y-1/2 transition-all duration-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]" style="width: 15%"></div>
+
+                <!-- Node 1: Explorer -->
+                <div id="node-explorer" class="flex flex-col items-center gap-1.5 z-10 group/node">
+                  <div class="w-9 h-9 rounded-full bg-emerald-500 text-slate-950 font-bold flex items-center justify-center shadow-[0_0_12px_rgba(16,185,129,0.5)] ring-4 ring-emerald-500/30 transition-transform group-hover/node:scale-110">
+                    <span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">explore</span>
+                  </div>
+                  <span class="text-[10px] font-black text-emerald-400">Explorer</span>
+                </div>
+
+                <!-- Node 2: Reader -->
+                <div id="node-reader" class="flex flex-col items-center gap-1.5 z-10 group/node">
+                  <div class="w-9 h-9 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center border border-slate-700 transition-transform group-hover/node:scale-110">
+                    <span class="material-symbols-outlined text-base">menu_book</span>
+                  </div>
+                  <span class="text-[10px] font-bold text-slate-400">Reader</span>
+                </div>
+
+                <!-- Node 3: Thinker -->
+                <div id="node-thinker" class="flex flex-col items-center gap-1.5 z-10 group/node">
+                  <div class="w-9 h-9 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center border border-slate-700 transition-transform group-hover/node:scale-110">
+                    <span class="material-symbols-outlined text-base">lightbulb</span>
+                  </div>
+                  <span class="text-[10px] font-bold text-slate-400">Thinker</span>
+                </div>
+
+                <!-- Node 4: Scholar -->
+                <div id="node-scholar" class="flex flex-col items-center gap-1.5 z-10 group/node">
+                  <div class="w-9 h-9 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center border border-slate-700 transition-transform group-hover/node:scale-110">
+                    <span class="material-symbols-outlined text-base">school</span>
+                  </div>
+                  <span class="text-[10px] font-bold text-slate-400">Scholar</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Reading Streak Card -->
@@ -1746,35 +1775,107 @@
       const levelDesc = document.getElementById('level-card-desc');
       if (levelDesc) {
         if (totalXP >= 3500) {
-          levelDesc.textContent = 'Anda telah mencapai level tertinggi!';
+          levelDesc.textContent = 'Level tertinggi dicapai!';
         } else {
-          levelDesc.textContent = `Dapatkan ${xpLeft} XP lagi untuk naik tingkat ke ${nextLevelName}`;
+          levelDesc.textContent = `Dapatkan ${xpLeft} XP lagi untuk ke ${nextLevelName}`;
         }
       }
 
       const levelProgress = document.getElementById('level-card-progress');
       if (levelProgress) levelProgress.style.width = progressPercent + '%';
 
+      const levelPercentText = document.getElementById('level-card-percent-text');
+      if (levelPercentText) levelPercentText.textContent = Math.round(progressPercent) + '%';
+
       const xpMinEl = document.getElementById('level-card-xp-min');
       if (xpMinEl) xpMinEl.textContent = totalXP + ' XP';
 
       const xpMaxEl = document.getElementById('level-card-xp-max');
-      if (xpMaxEl) xpMaxEl.textContent = maxXP + ' XP';
+      if (xpMaxEl) xpMaxEl.textContent = 'Target: ' + maxXP + ' XP';
 
-      // Update Level Modal
-      const levelModalXp = document.getElementById('level-modal-xp');
-      if (levelModalXp) levelModalXp.textContent = totalXP + ' XP';
+      // ── DYNAMIC LEVEL MASTER CARD GLOW & STAGE NODES ──
+      const levelGlow = document.getElementById('level-card-glow');
+      const levelBadgeIcon = document.getElementById('level-icon-badge');
+      const levelRankPill = document.getElementById('level-rank-pill');
+      const roadmapLineFill = document.getElementById('level-roadmap-line-fill');
 
-      const levelModalRank = document.getElementById('level-modal-rank-name');
-      if (levelModalRank) levelModalRank.textContent = currentLevelName;
+      const nExplorer = document.getElementById('node-explorer');
+      const nReader = document.getElementById('node-reader');
+      const nThinker = document.getElementById('node-thinker');
+      const nScholar = document.getElementById('node-scholar');
 
-      // Update user-sidebar-level-badge & roadmap desc
-      const userSidebarLevelBadge = document.getElementById('user-sidebar-level-badge');
-      if (userSidebarLevelBadge) userSidebarLevelBadge.textContent = currentLevelName + ' Level';
+      if (currentLevelName === 'Scholar') {
+        if (levelGlow) levelGlow.className = "absolute -right-10 -bottom-10 w-48 h-48 rounded-full blur-3xl opacity-40 pointer-events-none transition-all duration-500 bg-amber-500";
+        if (levelBadgeIcon) {
+          levelBadgeIcon.className = "w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center shadow-[0_0_14px_rgba(245,158,11,0.4)]";
+          levelBadgeIcon.innerHTML = `<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">military_tech</span>`;
+        }
+        if (levelRankPill) {
+          levelRankPill.className = "text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/40";
+          levelRankPill.textContent = "🟡 TINGKAT 4 (SCHOLAR)";
+        }
+        if (roadmapLineFill) roadmapLineFill.style.width = "100%";
+      } else if (currentLevelName === 'Thinker') {
+        if (levelGlow) levelGlow.className = "absolute -right-10 -bottom-10 w-48 h-48 rounded-full blur-3xl opacity-40 pointer-events-none transition-all duration-500 bg-purple-500";
+        if (levelBadgeIcon) {
+          levelBadgeIcon.className = "w-10 h-10 rounded-2xl bg-purple-500/20 text-purple-400 border border-purple-500/40 flex items-center justify-center shadow-[0_0_12px_rgba(168,85,247,0.4)]";
+          levelBadgeIcon.innerHTML = `<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">lightbulb</span>`;
+        }
+        if (levelRankPill) {
+          levelRankPill.className = "text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider bg-purple-500/20 text-purple-400 border border-purple-500/40";
+          levelRankPill.textContent = "💜 TINGKAT 3 (THINKER)";
+        }
+        if (roadmapLineFill) roadmapLineFill.style.width = "70%";
+      } else if (currentLevelName === 'Reader') {
+        if (levelGlow) levelGlow.className = "absolute -right-10 -bottom-10 w-48 h-48 rounded-full blur-3xl opacity-40 pointer-events-none transition-all duration-500 bg-cyan-500";
+        if (levelBadgeIcon) {
+          levelBadgeIcon.className = "w-10 h-10 rounded-2xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 flex items-center justify-center shadow-[0_0_12px_rgba(6,182,212,0.4)]";
+          levelBadgeIcon.innerHTML = `<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">menu_book</span>`;
+        }
+        if (levelRankPill) {
+          levelRankPill.className = "text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider bg-cyan-500/20 text-cyan-400 border border-cyan-500/40";
+          levelRankPill.textContent = "🔵 TINGKAT 2 (READER)";
+        }
+        if (roadmapLineFill) roadmapLineFill.style.width = "40%";
+      } else {
+        // Explorer
+        if (levelGlow) levelGlow.className = "absolute -right-10 -bottom-10 w-48 h-48 rounded-full blur-3xl opacity-40 pointer-events-none transition-all duration-500 bg-emerald-500";
+        if (levelBadgeIcon) {
+          levelBadgeIcon.className = "w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center shadow-[0_0_12px_rgba(16,185,129,0.4)]";
+          levelBadgeIcon.innerHTML = `<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">explore</span>`;
+        }
+        if (levelRankPill) {
+          levelRankPill.className = "text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+          levelRankPill.textContent = "🟢 TINGKAT 1 (EXPLORER)";
+        }
+        if (roadmapLineFill) roadmapLineFill.style.width = "15%";
+      }
 
-      const levelRoadmapDesc = document.getElementById('level-roadmap-desc');
-      if (levelRoadmapDesc) {
-        levelRoadmapDesc.textContent = `Anda berada di tingkat ${currentLevelName} (${totalXP} XP). Butuh ${xpLeft} XP lagi untuk ke ${nextLevelName}!`;
+      // Update Stage Nodes Active State
+      if (nExplorer) {
+        nExplorer.querySelector('div').className = "w-9 h-9 rounded-full bg-emerald-500 text-slate-950 font-bold flex items-center justify-center shadow-[0_0_12px_rgba(16,185,129,0.5)] ring-4 ring-emerald-500/30";
+        nExplorer.querySelector('span:last-child').className = "text-[10px] font-black text-emerald-400";
+      }
+      if (nReader) {
+        const isReached = totalXP >= 200 || currentLevelName === 'Reader' || currentLevelName === 'Thinker' || currentLevelName === 'Scholar';
+        nReader.querySelector('div').className = isReached 
+          ? "w-9 h-9 rounded-full bg-cyan-500 text-slate-950 font-bold flex items-center justify-center shadow-[0_0_12px_rgba(6,182,212,0.5)] ring-4 ring-cyan-500/30" 
+          : "w-9 h-9 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center border border-slate-700";
+        nReader.querySelector('span:last-child').className = isReached ? "text-[10px] font-black text-cyan-400" : "text-[10px] font-bold text-slate-400";
+      }
+      if (nThinker) {
+        const isReached = totalXP >= 500 || currentLevelName === 'Thinker' || currentLevelName === 'Scholar';
+        nThinker.querySelector('div').className = isReached 
+          ? "w-9 h-9 rounded-full bg-purple-500 text-slate-950 font-bold flex items-center justify-center shadow-[0_0_12px_rgba(168,85,247,0.5)] ring-4 ring-purple-500/30" 
+          : "w-9 h-9 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center border border-slate-700";
+        nThinker.querySelector('span:last-child').className = isReached ? "text-[10px] font-black text-purple-400" : "text-[10px] font-bold text-slate-400";
+      }
+      if (nScholar) {
+        const isReached = totalXP >= 1200 || currentLevelName === 'Scholar';
+        nScholar.querySelector('div').className = isReached 
+          ? "w-9 h-9 rounded-full bg-amber-400 text-slate-950 font-bold flex items-center justify-center shadow-[0_0_14px_rgba(245,158,11,0.6)] ring-4 ring-amber-400/30 animate-pulse" 
+          : "w-9 h-9 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center border border-slate-700";
+        nScholar.querySelector('span:last-child').className = isReached ? "text-[10px] font-black text-amber-400" : "text-[10px] font-bold text-slate-400";
       }
 
       // Update Leaderboard row
