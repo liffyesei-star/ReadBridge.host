@@ -105,6 +105,83 @@ router.put("/profile", verifyToken, async (req, res) => {
 });
 
 /**
+ * PUT /api/users/change-password
+ * Mengubah atau membuat kata sandi lokal user
+ */
+router.put("/change-password", verifyToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!newPassword || newPassword.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Kata sandi baru minimal 8 karakter."
+      });
+    }
+
+    if (!/[a-zA-Z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+      return res.status(400).json({
+        success: false,
+        message: "Kata sandi baru harus mengombinasikan huruf dan angka."
+      });
+    }
+
+    const [[user]] = await db.execute(
+      "SELECT id, password, email FROM users WHERE id = ?",
+      [req.user.id]
+    );
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User tidak ditemukan" });
+    }
+
+    // Jika user sudah memiliki password lokal sebelumnya, wajib verifikasi password lama
+    if (user.password) {
+      if (!currentPassword) {
+        return res.status(400).json({
+          success: false,
+          message: "Kata sandi saat ini harus diisi."
+        });
+      }
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return res.status(400).json({
+          success: false,
+          message: "Kata sandi saat ini salah."
+        });
+      }
+    }
+
+    // Hash password baru
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    await db.execute(
+      "UPDATE users SET password = ? WHERE id = ?",
+      [hashedPassword, req.user.id]
+    );
+
+    // Trigger Notifikasi Real-Time Keamanan Sistem
+    await addNotification(
+      req.user.id,
+      'sistem',
+      'Kata Sandi Berhasil Diubah 🔒',
+      'Kata sandi akun ReadBridge Anda berhasil diperbarui secara aman.',
+      'pengaturan.html'
+    );
+
+    res.json({
+      success: true,
+      has_password: true,
+      message: user.password ? "Kata sandi berhasil diubah." : "Kata sandi lokal berhasil dibuat! Anda kini dapat login dengan Email & Password."
+    });
+  } catch (error) {
+    console.error("Change password error:", error);
+    res.status(500).json({ success: false, message: "Gagal mengubah kata sandi." });
+  }
+});
+
+/**
  * PUT /api/users/minat
  * Update minat / personalisasi user ke database
  */
