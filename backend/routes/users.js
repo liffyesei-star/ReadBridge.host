@@ -8,6 +8,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
 const bcrypt = require("bcryptjs");
+const admin = require("../config/firebase");
 const { verifyToken } = require("../middleware/auth");
 const { addNotification } = require("../utils/notification");
 
@@ -127,7 +128,7 @@ router.put("/change-password", verifyToken, async (req, res) => {
     }
 
     const [[user]] = await db.execute(
-      "SELECT id, password, email FROM users WHERE id = ?",
+      "SELECT id, firebase_uid, password, email FROM users WHERE id = ?",
       [req.user.id]
     );
 
@@ -152,7 +153,7 @@ router.put("/change-password", verifyToken, async (req, res) => {
       }
     }
 
-    // Hash password baru
+    // Hash password baru untuk MySQL database
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
@@ -160,6 +161,15 @@ router.put("/change-password", verifyToken, async (req, res) => {
       "UPDATE users SET password = ? WHERE id = ?",
       [hashedPassword, req.user.id]
     );
+
+    // Synchronize password ke Firebase jika akun terhubung via Firebase/Google
+    if (user.firebase_uid) {
+      try {
+        await admin.auth().updateUser(user.firebase_uid, { password: newPassword });
+      } catch (fbErr) {
+        console.warn("Firebase password sync notice:", fbErr.message);
+      }
+    }
 
     // Trigger Notifikasi Real-Time Keamanan Sistem
     await addNotification(

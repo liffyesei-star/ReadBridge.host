@@ -351,7 +351,7 @@ router.post("/reset-password", async (req, res) => {
 
     // Cari user dengan token yang belum expired
     const [users] = await db.execute(
-      `SELECT id, email FROM users 
+      `SELECT id, firebase_uid, email FROM users 
        WHERE reset_password_token = ? 
        AND reset_password_expires > NOW()
        LIMIT 1`,
@@ -367,11 +367,11 @@ router.post("/reset-password", async (req, res) => {
 
     const user = users[0];
 
-    // Hash password baru
+    // Hash password baru untuk MySQL database
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    // Update password dan clear token
+    // Update password dan clear token di MySQL database
     await db.execute(
       `UPDATE users 
        SET password = ?, 
@@ -380,6 +380,15 @@ router.post("/reset-password", async (req, res) => {
        WHERE id = ?`,
       [hashedPassword, user.id]
     );
+
+    // Synchronize password ke Firebase jika akun terhubung via Firebase/Google
+    if (user.firebase_uid) {
+      try {
+        await admin.auth().updateUser(user.firebase_uid, { password: newPassword });
+      } catch (fbErr) {
+        console.warn("Firebase password sync notice:", fbErr.message);
+      }
+    }
 
     // Trigger Notifikasi Keamanan Sistem
     await addNotification(
