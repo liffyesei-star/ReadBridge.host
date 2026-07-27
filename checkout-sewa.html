@@ -401,6 +401,15 @@
     <script src="main.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
+            // Auth Guard Check: Require login before checkout sewa
+            const token = localStorage.getItem('rb_token');
+            if (!token) {
+                localStorage.setItem('rb_redirect_after_login', window.location.href);
+                alert('Silakan login terlebih dahulu untuk mengakses halaman sewa & transaksi.');
+                window.location.href = 'login.html';
+                return;
+            }
+
             const params = new URLSearchParams(window.location.search);
             const bookId = parseInt(params.get('id'));
             const duration = params.get('duration') || 'harian';

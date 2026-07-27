@@ -13,6 +13,11 @@
   }
 
   function destination() {
+    var redirect = localStorage.getItem("rb_redirect_after_login");
+    if (redirect) {
+      localStorage.removeItem("rb_redirect_after_login");
+      return redirect;
+    }
     return localStorage.getItem("rb_interests") ? "eksplor.html" : "minat.html";
   }
 
