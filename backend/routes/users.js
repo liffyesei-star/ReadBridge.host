@@ -329,44 +329,72 @@ router.put("/level", verifyToken, async (req, res) => {
 
 /**
  * GET /api/users/leaderboard
- * ?periode=semua|bulan|minggu&limit=10
+ * Mengambil daftar seluruh user terdaftar (Real Database Leaderboard - Person vs Person)
  */
 router.get("/leaderboard", async (req, res) => {
   try {
-    const { periode = "semua", limit = 10 } = req.query;
+    const limit = parseInt(req.query.limit) || 50;
 
-    let dateFilter = "";
-    if (periode === "bulan") dateFilter = "WHERE ph.created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH)";
-    else if (periode === "minggu") dateFilter = "WHERE ph.created_at >= DATE_SUB(NOW(), INTERVAL 1 WEEK)";
+    const query = `
+      SELECT 
+        u.id, 
+        u.nama, 
+        u.email, 
+        u.foto_profil, 
+        u.poin, 
+        u.level,
+        u.created_at,
+        (SELECT COUNT(*) FROM perpustakaan WHERE user_id = u.id AND selesai = 1) AS buku_selesai,
+        (SELECT COUNT(*) FROM diskusi WHERE user_id = u.id) AS total_diskusi,
+        (SELECT COUNT(*) FROM diskusi_balasan WHERE user_id = u.id) AS total_balasan
+      FROM users u
+      WHERE u.aktif = 1
+      ORDER BY u.id ASC
+    `;
 
-    let query;
-    if (periode === "semua") {
-      query = `SELECT u.id, u.nama, u.foto_profil, u.poin, u.level,
-                      (SELECT COUNT(*) FROM perpustakaan WHERE user_id = u.id AND selesai = 1) AS buku_selesai,
-                      (SELECT COUNT(*) FROM diskusi WHERE user_id = u.id) AS total_diskusi
-               FROM users u
-               WHERE u.aktif = 1
-               ORDER BY u.poin DESC
-               LIMIT ?`;
-    } else {
-      query = `SELECT u.id, u.nama, u.foto_profil, u.level,
-                      SUM(ph.poin) AS poin_periode,
-                      u.poin AS total_poin
-               FROM users u
-               JOIN poin_history ph ON ph.user_id = u.id
-               ${dateFilter}
-               GROUP BY u.id
-               ORDER BY poin_periode DESC
-               LIMIT ?`;
-    }
+    const [rows] = await db.execute(query);
 
-    const [rows] = await db.execute(query, [parseInt(limit)]);
-    const data = rows.map((r, i) => ({ ...r, rank: i + 1 }));
+    // Calculate total XP dynamically for each real registered user
+    const usersWithXP = rows.map(u => {
+      const xpPoin = u.poin || 0;
+      const xpBuku = (u.buku_selesai || 0) * 150;
+      const xpDiskusi = (u.total_diskusi || 0) * 50;
+      const xpBalasan = (u.total_balasan || 0) * 20;
+      const totalXP = xpPoin + xpBuku + xpDiskusi + xpBalasan;
+      const computedLevel = Math.max(1, Math.floor(totalXP / 200) + 1);
 
-    res.json({ success: true, data });
+      let levelTitle = 'Explorer';
+      if (computedLevel >= 15) levelTitle = 'Scholar Legend';
+      else if (computedLevel >= 10) levelTitle = 'Scholar';
+      else if (computedLevel >= 5) levelTitle = 'Thinker';
+      else if (computedLevel >= 2) levelTitle = 'Reader';
+
+      return {
+        id: u.id,
+        nama: u.nama || u.email?.split('@')[0] || 'Member',
+        email: u.email,
+        foto_profil: u.foto_profil,
+        xp: totalXP,
+        level: computedLevel,
+        level_title: levelTitle,
+        total_diskusi: u.total_diskusi,
+        buku_selesai: u.buku_selesai
+      };
+    });
+
+    // Sort by XP descending, then by ID
+    usersWithXP.sort((a, b) => b.xp - a.xp || a.id - b.id);
+
+    // Attach rank
+    const leaderboard = usersWithXP.slice(0, limit).map((u, index) => ({
+      ...u,
+      rank: index + 1
+    }));
+
+    res.json({ success: true, data: leaderboard, total_users: usersWithXP.length });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Gagal mengambil leaderboard" });
+    console.error("Leaderboard error:", error);
+    res.status(500).json({ success: false, message: "Gagal mengambil data leaderboard real-time." });
   }
 });
 

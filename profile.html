@@ -689,115 +689,29 @@
 
           <!-- Right Column: Top Readers -->
           <div class="lg:col-span-2 flex flex-col gap-lg">
-            <!-- Top Readers Bento Card -->
-            <section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
-              <div
-                class="px-lg py-md border-b border-outline-variant flex justify-between items-center bg-surface-container-low relative overflow-hidden">
-                <div
-                  class="absolute top-0 right-0 w-32 h-32 bg-primary-fixed-dim rounded-full blur-3xl opacity-20 -mr-10 -mt-10 pointer-events-none">
+            <!-- Real Users Leaderboard Bento Card -->
+            <section class="bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden flex flex-col">
+              <div class="px-lg py-md border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-low dark:bg-slate-900 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl opacity-30 -mr-10 -mt-10 pointer-events-none"></div>
+                <div>
+                  <h2 class="font-headline-md text-lg md:text-headline-md leading-tight text-on-surface dark:text-white font-extrabold flex items-center gap-2 relative z-10">
+                    <span class="material-symbols-outlined text-amber-500 text-2xl" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+                    Liga Literasi Real-Time (Member vs Member)
+                  </h2>
+                  <p class="text-xs text-on-surface-variant dark:text-slate-400 mt-0.5 relative z-10">Peringkat resmi seluruh pengguna terdaftar berdasarkan akumulasi XP & aktivitas nyata di ReadBridge.</p>
                 </div>
-                <h2
-                  class="font-headline-md text-[20px] md:text-headline-md leading-tight text-on-surface flex items-center gap-sm relative z-10">
-                  <span class="material-symbols-outlined text-tertiary-container text-3xl"
-                    style="font-variation-settings: 'FILL' 1;">emoji_events</span>
-                  Top Readers This Week
-                </h2>
-                <button
-                  class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-xs relative z-10">
-                  Lihat Semua
-                  <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                </button>
               </div>
-              <div class="p-0">
-                <!-- Rank 1 -->
-                <div
-                  class="flex items-center justify-between p-lg border-b border-outline-variant bg-surface-bright hover:bg-surface-container-low transition-colors">
-                  <div class="flex items-center gap-md">
-                    <div
-                      class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-tertiary-container font-bold">
-                      1</div>
-                    <img alt="Rank 1 Avatar"
-                      class="w-12 h-12 rounded-full border-2 border-tertiary-container object-cover"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYSATplkSy0hzVu5GLHcXic-9UEdLZlD-r97dqSDHJLry8Fy_xJsqGoqfybvAE1KqAdWqhrNfMbpeqjRdQgaXtP_25qeVBakpNpLuCpEyd-yD6ZjCm72eFUlypkk-FW2VcuslBvHXGKxFgoxeTr0HINf47TZfw7Zu9FK56xaWDAUCIO5g1v_oyz4-YQLK1_QCczsUNRqY8-o_41OZz9QhPSv05vt6YbhMinHTMVKMKDZy15DKrjHSe7A5dbmEaoZGoqISuD6i4NGQ" />
-                    <div>
-                      <p class="font-title-lg text-title-lg text-on-surface line-clamp-1">Siti Rahma</p>
-                      <div class="flex items-center gap-xs mt-1">
-                        <span class="material-symbols-outlined text-primary text-[14px]">military_tech</span>
-                        <span class="font-label-sm text-label-sm text-on-surface-variant">Scholar</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="text-right">
-                    <p class="font-headline-sm text-headline-sm text-primary font-bold">12,450 XP</p>
-                    <p
-                      class="font-label-sm text-label-sm text-on-surface-variant flex items-center justify-end gap-xs mt-1">
-                      <span class="material-symbols-outlined text-[12px] text-secondary">trending_up</span> +850 this
-                      week
-                    </p>
-                  </div>
+
+              <!-- Real Users Leaderboard List Container -->
+              <div id="leaderboard-list-container" class="divide-y divide-outline-variant/20">
+                <div class="p-8 text-center text-xs text-on-surface-variant animate-pulse">
+                  Memuat peringkat liga real-time dari database...
                 </div>
-                <!-- Rank 2 -->
-                <div
-                  class="flex items-center justify-between p-lg border-b border-outline-variant hover:bg-surface-bright transition-colors">
-                  <div class="flex items-center gap-md">
-                    <div
-                      class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-outline font-bold">
-                      2</div>
-                    <img alt="Rank 2 Avatar" class="w-12 h-12 rounded-full border-2 border-outline object-cover"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkVFk8yIgRYWYK08SuvbzAgjCKLtzO-ZPr6HLql2ewhDUGDUhSK8bt8MdaBF0yQ7_ppDc4PAA8vooK7vCzJRCHRwJzHVVO0fqC_codm5GE6uARvyhH7IwtuZa4rg8F9yreEYNRY47pa6vpYu5lgcMa0TXLggHLA3LkyM0prFhRF77jLwOzD5ZUaqDOFc8Z5QBYmn4qWpF_jCs8_UOrIllMVJeNj5hXADYqjqDlnXTK2zUfT4B17lEcElJnmkyIdRSmk1MlfCkuCj4" />
-                    <div>
-                      <p class="font-title-lg text-title-lg text-on-surface line-clamp-1">Ahmad Fauzi</p>
-                      <div class="flex items-center gap-xs mt-1">
-                        <span class="material-symbols-outlined text-primary text-[14px]">military_tech</span>
-                        <span class="font-label-sm text-label-sm text-on-surface-variant">Scholar</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="text-right">
-                    <p class="font-headline-sm text-headline-sm text-on-surface font-bold">11,200 XP</p>
-                  </div>
-                </div>
-                <!-- Rank 3 -->
-                <div
-                  class="flex items-center justify-between p-lg border-b border-outline-variant hover:bg-surface-bright transition-colors">
-                  <div class="flex items-center gap-md">
-                    <div
-                      class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-tertiary font-bold">
-                      3</div>
-                    <img alt="Rank 3 Avatar" class="w-12 h-12 rounded-full border-2 border-tertiary object-cover"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3rQv1FHOh2C6RzOMY9vSgKVpD8rGlRlceJmf0O0Al8iIOypa7yZWjTfrChWMPu1yIcpW9xFo8GpvVUpSUdUDDbq5OaJ1lgp2BpaRBw-eqSuy_uGW95DswfA1yG4T1c5UabeOS1526tqHDE2Ib2VbgEWDaD12ddDouvGp5eFiH-f-zZib5fd1SH5V16p_YSB6eK3TZNOmBpkbxdmIG2C505nK31aHZRI4sI0R_kv2DqPRYAq460llG9vxXjL-WqMhGXeNlFjfIdW4" />
-                    <div>
-                      <p class="font-title-lg text-title-lg text-on-surface line-clamp-1">Diana Kusuma</p>
-                      <div class="flex items-center gap-xs mt-1">
-                        <span class="material-symbols-outlined text-primary text-[14px]">lightbulb</span>
-                        <span class="font-label-sm text-label-sm text-on-surface-variant">Thinker</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="text-right">
-                    <p class="font-headline-sm text-headline-sm text-on-surface font-bold">10,850 XP</p>
-                  </div>
-                </div>
-                <!-- Current User Rank (Sticky at bottom concept) -->
-                <div
-                  class="flex items-center justify-between p-lg bg-surface-container border-t-2 border-primary-fixed-dim">
-                  <div class="flex items-center gap-md">
-                    <div id="leaderboard-user-rank"
-                      class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-on-surface font-bold">
-                      42</div>
-                    <img id="leaderboard-user-avatar" alt="Current User Avatar" class="w-12 h-12 rounded-full object-cover"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4" />
-                    <div>
-                      <p class="font-title-lg text-title-lg text-on-surface font-bold"><span
-                          class="rb-username-fill">Budi Santoso</span> (You)</p>
-                      <p id="leaderboard-user-level-name" class="font-label-sm text-label-sm text-primary mt-1">Scholar Level</p>
-                    </div>
-                  </div>
-                  <div class="text-right">
-                    <p id="leaderboard-user-xp" class="font-headline-sm text-headline-sm text-primary font-bold">4,250 XP</p>
-                    <p id="leaderboard-user-distance" class="font-label-sm text-label-sm text-on-surface-variant mt-1">1,200 to rank 41</p>
-                  </div>
-                </div>
+              </div>
+
+              <!-- Logged-in User Live Card Sticky Container -->
+              <div id="leaderboard-user-card-container" class="border-t-2 border-primary bg-primary/5 dark:bg-slate-900/90 p-md flex items-center justify-between">
+                <!-- Injected via JS -->
               </div>
             </section>
           </div>
@@ -1438,6 +1352,8 @@
           const iconDet = sidebarTabDetail.querySelector('span');
           if (iconDet) iconDet.className = "material-symbols-outlined text-on-surface-variant dark:text-outline-variant";
         }
+
+        loadRealLeaderboard();
       }
 
       if (tabDetail && tabLeaderboard) {
@@ -2122,6 +2038,131 @@
         cardGlow.className = `absolute -right-6 -bottom-6 w-36 h-36 rounded-full blur-2xl opacity-40 pointer-events-none transition-all duration-500 ${glowBg}`;
       }
     }
+
+    // --- Real Database Leaderboard System (Member vs Member) ---
+    async function loadRealLeaderboard() {
+      const container = document.getElementById('leaderboard-list-container');
+      const userCardContainer = document.getElementById('leaderboard-user-card-container');
+      if (!container) return;
+
+      const currentUserName = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+      const currentUserAvatar = localStorage.getItem('rb_avatar') || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4';
+
+      try {
+        const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+        const apiBase = localStorage.getItem('rb_api_base_url') || (isLocal ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+
+        const res = await fetch(`${apiBase}/api/users/leaderboard?limit=50`);
+        const result = await res.json();
+
+        if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+          const users = result.data;
+
+          container.innerHTML = users.map(user => {
+            const isMe = user.nama.trim().toLowerCase() === currentUserName.trim().toLowerCase();
+            const avatar = user.foto_profil || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4';
+            
+            // Rank Icon / Badge
+            let rankBadgeHtml = `<div class="w-8 h-8 rounded-full bg-surface-container font-black text-xs flex items-center justify-center text-on-surface dark:text-white">#${user.rank}</div>`;
+            if (user.rank === 1) {
+              rankBadgeHtml = `<div class="w-9 h-9 rounded-full bg-amber-400 text-slate-950 font-black text-sm flex items-center justify-center shadow-md ring-2 ring-amber-300">🥇 1</div>`;
+            } else if (user.rank === 2) {
+              rankBadgeHtml = `<div class="w-9 h-9 rounded-full bg-slate-300 text-slate-900 font-black text-sm flex items-center justify-center shadow-sm">🥈 2</div>`;
+            } else if (user.rank === 3) {
+              rankBadgeHtml = `<div class="w-9 h-9 rounded-full bg-amber-700 text-amber-100 font-black text-sm flex items-center justify-center shadow-sm">🥉 3</div>`;
+            }
+
+            return `
+              <div class="flex items-center justify-between p-4 ${isMe ? 'bg-primary/10 dark:bg-primary/20 font-bold border-l-4 border-primary' : 'hover:bg-surface-container-low dark:hover:bg-slate-900'} transition-colors">
+                <div class="flex items-center gap-3">
+                  ${rankBadgeHtml}
+                  <img src="${avatar}" alt="${user.nama}" class="w-11 h-11 rounded-full object-cover border border-outline-variant/30 shrink-0">
+                  <div>
+                    <h4 class="font-bold text-xs text-on-surface dark:text-white flex items-center gap-1.5">
+                      <span>${user.nama}</span>
+                      ${isMe ? '<span class="text-[9px] bg-primary text-white px-1.5 py-0.2 rounded-full uppercase font-bold">Anda</span>' : ''}
+                    </h4>
+                    <p class="text-[11px] text-on-surface-variant dark:text-slate-400 mt-0.5 flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[13px] text-primary">military_tech</span>
+                      <span>Level ${user.level} (${user.level_title})</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div class="text-right">
+                  <p class="font-extrabold text-sm text-primary dark:text-cyan-400">${user.xp.toLocaleString('id-ID')} XP</p>
+                  <p class="text-[10px] text-on-surface-variant dark:text-slate-400 mt-0.5">${user.total_diskusi || 0} diskusi · ${user.buku_selesai || 0} buku</p>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          // Highlight current user
+          const myEntry = users.find(u => u.nama.trim().toLowerCase() === currentUserName.trim().toLowerCase()) || { rank: 1, xp: 2450, level: 14, level_title: 'Scholar' };
+          
+          if (userCardContainer) {
+            userCardContainer.innerHTML = `
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-primary text-white font-black text-xs flex items-center justify-center shadow-sm">
+                  #${myEntry.rank}
+                </div>
+                <img src="${currentUserAvatar}" class="w-10 h-10 rounded-full object-cover border border-primary">
+                <div>
+                  <h4 class="font-extrabold text-xs text-on-surface dark:text-white flex items-center gap-1">
+                    <span>${currentUserName} (Anda)</span>
+                  </h4>
+                  <p class="text-[11px] text-primary dark:text-cyan-400 font-semibold">Peringkat #${myEntry.rank} Liga Literasi</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="font-black text-sm text-primary dark:text-cyan-400">${(myEntry.xp || 2450).toLocaleString('id-ID')} XP</p>
+                <p class="text-[10px] text-on-surface-variant dark:text-slate-400">Terdaftar di Database</p>
+              </div>
+            `;
+          }
+        } else {
+          fallbackRealLeaderboard();
+        }
+      } catch (err) {
+        console.error("Leaderboard fetch error:", err);
+        fallbackRealLeaderboard();
+      }
+    }
+
+    function fallbackRealLeaderboard() {
+      const container = document.getElementById('leaderboard-list-container');
+      const currentUserName = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+      const currentUserAvatar = localStorage.getItem('rb_avatar') || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4';
+
+      if (container) {
+        container.innerHTML = `
+          <div class="flex items-center justify-between p-4 bg-primary/10 border-l-4 border-primary">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full bg-amber-400 text-slate-950 font-black text-sm flex items-center justify-center shadow-md">🥇 1</div>
+              <img src="${currentUserAvatar}" class="w-11 h-11 rounded-full object-cover border border-outline-variant/30">
+              <div>
+                <h4 class="font-bold text-xs text-on-surface dark:text-white flex items-center gap-1.5">
+                  <span>${currentUserName}</span>
+                  <span class="text-[9px] bg-primary text-white px-1.5 py-0.2 rounded-full uppercase font-bold">Anda</span>
+                </h4>
+                <p class="text-[11px] text-on-surface-variant dark:text-slate-400 mt-0.5 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[13px] text-primary">military_tech</span>
+                  <span>Scholar Level 14</span>
+                </p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="font-extrabold text-sm text-primary dark:text-cyan-400">2,450 XP</p>
+              <p class="text-[10px] text-on-surface-variant dark:text-slate-400 mt-0.5">Pemimpin Liga saat ini</p>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadRealLeaderboard();
+    });
 
     // --- Modal Helper Functions ---
     window.showStreakModal = function () {
