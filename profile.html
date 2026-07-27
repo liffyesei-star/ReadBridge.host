@@ -549,11 +549,29 @@
               <span id="streak-card-count" class="font-title-lg text-lg font-black text-white leading-none mt-0.5">40</span>
             </div>
           </div>
-          <!-- Badges Grid -->
-          <div id="achievements-section"
-            class="bg-surface-container-lowest rounded-xl p-lg shadow-sm transition-all duration-500">
-            <h3 class="font-title-lg text-title-lg text-on-surface mb-md">Achievements</h3>
-            <div class="grid grid-cols-3 gap-sm" id="achievements-grid">
+          <!-- Achievements Section (Tier List Classified) -->
+          <div id="achievements-section" class="bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl p-lg shadow-sm border border-outline-variant/30 transition-all duration-500">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-sm border-b border-outline-variant/20 pb-3 mb-md">
+              <div>
+                <h3 class="font-title-lg text-title-lg font-extrabold text-on-surface dark:text-white flex items-center gap-2">
+                  <span>Pencapaian & Tier List</span>
+                  <span id="ach-unlocked-count" class="text-xs bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-extrabold">0/12</span>
+                </h3>
+                <p class="text-xs text-on-surface-variant dark:text-slate-400 mt-0.5">Buka lencana Special, Rare, Epic, Legendary, hingga Mythic!</p>
+              </div>
+            </div>
+
+            <!-- Tier Filter Tabs -->
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-3 mb-md no-scrollbar">
+              <button onclick="filterAchievementTier('all')" data-tier="all" class="ach-filter-btn px-3 py-1.5 rounded-full text-xs font-bold bg-primary text-white shadow-sm transition-all shrink-0">Semua (12)</button>
+              <button onclick="filterAchievementTier('special')" data-tier="special" class="ach-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high transition-all shrink-0">⚪ Special</button>
+              <button onclick="filterAchievementTier('rare')" data-tier="rare" class="ach-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high transition-all shrink-0">🔵 Rare</button>
+              <button onclick="filterAchievementTier('epic')" data-tier="epic" class="ach-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high transition-all shrink-0">💜 Epic</button>
+              <button onclick="filterAchievementTier('legendary')" data-tier="legendary" class="ach-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high transition-all shrink-0">🟡 Legendary</button>
+              <button onclick="filterAchievementTier('mythic')" data-tier="mythic" class="ach-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high transition-all shrink-0">🌌 Mythic</button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-md" id="achievements-grid">
               <!-- Diisi secara dinamis -->
             </div>
           </div>
@@ -1199,67 +1217,160 @@
       }, 3000);
     }
 
-    // --- Achievements Database ---
+    // --- Achievements Database (Categorized by Tier Ranks) ---
     const ACHIEVEMENTS_DATA = [
+      // ⚪ SPECIAL TIER
       {
         id: 'early_bird',
-        name: 'Early Bird',
+        name: 'Penjelajah Pagi',
+        tier: 'special',
+        tierName: '⚪ SPECIAL',
         desc: 'Buka ReadBridge di pagi hari sebelum jam 9 pagi.',
-        icon: 'brightness_5',
+        icon: 'wb_sunny',
         target: 1,
-        current: 1, // Unlocked by default
-        actionText: 'Kembali',
+        current: 1,
+        actionText: 'Tutup',
         action: () => window.closeAchModal()
       },
       {
+        id: 'community_starter',
+        name: 'Suara Komunitas',
+        tier: 'special',
+        tierName: '⚪ SPECIAL',
+        desc: 'Tulis atau lontarkan gagasan pertama Anda di komunitas.',
+        icon: 'campaign',
+        target: 1,
+        current: 1,
+        actionText: 'Kunjungi Komunitas',
+        action: () => { window.closeAchModal(); window.location.href = 'komunitas.html'; }
+      },
+
+      // 🔵 RARE TIER
+      {
         id: 'bookworm',
-        name: 'Bookworm',
+        name: 'Pustakawan Setia',
+        tier: 'rare',
+        tierName: '🔵 RARE',
         desc: 'Selesaikan transaksi sewa atau beli minimal 3 buku di marketplace.',
         icon: 'menu_book',
         target: 3,
-        current: 0, // Calculated dynamically
+        current: 0,
         actionText: 'Buka Marketplace',
         action: () => { window.closeAchModal(); window.location.href = 'marketplace.html'; }
       },
       {
         id: 'active_contributor',
-        name: 'Active Contributor',
-        desc: 'Tulis minimal 3 diskusi atau komentar di komunitas.',
-        icon: 'chat',
-        target: 3,
-        current: 0, // Calculated dynamically
+        name: 'Diskusi Aktif',
+        tier: 'rare',
+        tierName: '🔵 RARE',
+        desc: 'Tulis minimal 5 diskusi atau komentar bermakna di komunitas.',
+        icon: 'forum',
+        target: 5,
+        current: 0,
         actionText: 'Kunjungi Komunitas',
         action: () => { window.closeAchModal(); window.location.href = 'komunitas.html'; }
       },
       {
+        id: 'genre_explorer',
+        name: 'Eksplorasi Minat',
+        tier: 'rare',
+        tierName: '🔵 RARE',
+        desc: 'Simpan preferensi 3 kategori minat membaca di menu Pengaturan.',
+        icon: 'explore',
+        target: 3,
+        current: 3,
+        actionText: 'Ke Pengaturan',
+        action: () => { window.closeAchModal(); window.location.href = 'pengaturan.html'; }
+      },
+
+      // 💜 EPIC TIER
+      {
         id: 'wealthy_reader',
-        name: 'Wealthy Reader',
-        desc: 'Belanja dengan total nominal transaksi di atas Rp 100.000.',
-        icon: 'payments',
+        name: 'Kolektor Utama',
+        tier: 'epic',
+        tierName: '💜 EPIC',
+        desc: 'Belanja transaksi sewa/beli buku di atas nominal Rp 100.000.',
+        icon: 'savings',
         target: 100000,
-        current: 0, // Calculated dynamically
+        current: 0,
         actionText: 'Beli Buku',
         action: () => { window.closeAchModal(); window.location.href = 'marketplace.html'; }
       },
       {
         id: 'streak_master',
-        name: 'Streak Master',
-        desc: 'Mencapai reading streak minimal 7 hari beruntun.',
+        name: 'Api Ungu Membara',
+        tier: 'epic',
+        tierName: '💜 EPIC',
+        desc: 'Mencapai konsistensi reading streak minimal 15 hari beruntun.',
         icon: 'local_fire_department',
-        target: 7,
-        current: 0, // Calculated dynamically
+        target: 15,
+        current: 0,
         actionText: 'Baca Buku',
         action: () => { window.closeAchModal(); window.location.href = 'eksplor.html'; }
       },
       {
         id: 'premium_scholar',
-        name: 'Premium Scholar',
+        name: 'Anggota Premium',
+        tier: 'epic',
+        tierName: '💜 EPIC',
         desc: 'Upgrade status keanggotaan Anda ke BridgePass Premium.',
         icon: 'workspace_premium',
         target: 1,
-        current: 0, // Calculated dynamically
+        current: 0,
         actionText: 'Upgrade BridgePass',
-        action: () => { window.closeAchModal(); document.getElementById('open-bridgepass-modal').click(); }
+        action: () => { window.closeAchModal(); document.getElementById('open-bridgepass-modal')?.click(); }
+      },
+
+      // 🟡 LEGENDARY TIER
+      {
+        id: 'streak_god',
+        name: 'Safir Kosmis 30 Hari',
+        tier: 'legendary',
+        tierName: '🟡 LEGENDARY',
+        desc: 'Pertahankan 30 hari reading streak untuk membakar Api Biru Kosmis.',
+        icon: 'bolt',
+        target: 30,
+        current: 0,
+        actionText: 'Baca Sekarang',
+        action: () => { window.closeAchModal(); window.location.href = 'eksplor.html'; }
+      },
+      {
+        id: 'grand_librarian',
+        name: 'Grand Master Literasi',
+        tier: 'legendary',
+        tierName: '🟡 LEGENDARY',
+        desc: 'Miliki koleksi total minimal 10 buku sewa/beli di perpustakaan.',
+        icon: 'auto_stories',
+        target: 10,
+        current: 0,
+        actionText: 'Perpustakaan',
+        action: () => { window.closeAchModal(); window.location.href = 'perpustakaan.html'; }
+      },
+
+      // 🌌 MYTHIC TIER
+      {
+        id: 'stoic_scholar',
+        name: 'Cendekia Cendekiawan',
+        tier: 'mythic',
+        tierName: '🌌 MYTHIC',
+        desc: 'Capai Level Scholar 14+ dan kumpulkan minimal 2.000 XP.',
+        icon: 'psychology',
+        target: 2000,
+        current: 0,
+        actionText: 'Tingkatkan XP',
+        action: () => window.closeAchModal()
+      },
+      {
+        id: 'readbridge_titan',
+        name: 'Dewa ReadBridge',
+        tier: 'mythic',
+        tierName: '🌌 MYTHIC',
+        desc: 'Raih 50 hari Reading Streak dan miliki BridgePass Premium.',
+        icon: 'diamond',
+        target: 50,
+        current: 0,
+        actionText: 'Lanjutkan',
+        action: () => window.closeAchModal()
       }
     ];
 
@@ -1819,34 +1930,119 @@
         }
       }
 
-      // 5. Update Achievements & Render Grid
-      // Update Dynamic values
-      ACHIEVEMENTS_DATA.find(a => a.id === 'bookworm').current = transactions.length;
-      ACHIEVEMENTS_DATA.find(a => a.id === 'active_contributor').current = combinedActivities.length;
-      ACHIEVEMENTS_DATA.find(a => a.id === 'wealthy_reader').current = totalSpent;
-      ACHIEVEMENTS_DATA.find(a => a.id === 'streak_master').current = currentStreak;
-      ACHIEVEMENTS_DATA.find(a => a.id === 'premium_scholar').current = localStorage.getItem('rb_bridgepass') === 'premium' ? 1 : 0;
+      // 5. Update All 12 Tiered Achievements & Render Grid
+      const isPremium = localStorage.getItem('rb_bridgepass') === 'premium';
+      
+      const getAch = id => ACHIEVEMENTS_DATA.find(a => a.id === id);
+      if (getAch('bookworm')) getAch('bookworm').current = transactions.length;
+      if (getAch('active_contributor')) getAch('active_contributor').current = combinedActivities.length;
+      if (getAch('wealthy_reader')) getAch('wealthy_reader').current = totalSpent;
+      if (getAch('streak_master')) getAch('streak_master').current = currentStreak;
+      if (getAch('streak_god')) getAch('streak_god').current = currentStreak;
+      if (getAch('premium_scholar')) getAch('premium_scholar').current = isPremium ? 1 : 0;
+      if (getAch('grand_librarian')) getAch('grand_librarian').current = transactions.length;
+      if (getAch('stoic_scholar')) getAch('stoic_scholar').current = totalXP;
+      if (getAch('readbridge_titan')) getAch('readbridge_titan').current = (currentStreak >= 50 && isPremium) ? 50 : Math.min(49, currentStreak);
 
+      // Hitung total unlocked
+      const unlockedCount = ACHIEVEMENTS_DATA.filter(a => a.current >= a.target).length;
+      const countEl = document.getElementById('ach-unlocked-count');
+      if (countEl) countEl.textContent = `${unlockedCount}/${ACHIEVEMENTS_DATA.length}`;
+
+      renderAchievementsList();
+    }
+
+    let currentAchFilter = 'all';
+
+    function filterAchievementTier(tier) {
+      currentAchFilter = tier;
+      
+      const filterBtns = document.querySelectorAll('.ach-filter-btn');
+      filterBtns.forEach(btn => {
+        if (btn.dataset.tier === tier) {
+          btn.className = 'ach-filter-btn px-3 py-1.5 rounded-full text-xs font-bold bg-primary text-white shadow-sm transition-all shrink-0';
+        } else {
+          btn.className = 'ach-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high transition-all shrink-0';
+        }
+      });
+
+      renderAchievementsList();
+    }
+
+    function renderAchievementsList() {
       const achGrid = document.getElementById('achievements-grid');
-      if (achGrid) {
-        achGrid.innerHTML = ACHIEVEMENTS_DATA.map(ach => {
-          const isUnlocked = ach.current >= ach.target;
-          const bgClass = isUnlocked
-            ? 'bg-secondary-container text-on-secondary-container border border-secondary-fixed-dim'
-            : 'bg-surface-variant text-outline border border-outline-variant opacity-60';
-          const iconColor = isUnlocked ? 'text-secondary' : 'text-outline';
-          const icon = isUnlocked ? ach.icon : 'lock';
+      if (!achGrid) return;
 
-          return `
-              <div onclick="window.showAchDetail('${ach.id}')" class="flex flex-col items-center text-center cursor-pointer hover:-translate-y-0.5 hover:scale-105 transition-all duration-300">
-                <div class="w-14 h-14 ${bgClass} rounded-full flex items-center justify-center mb-2 shadow-sm">
-                  <span class="material-symbols-outlined ${iconColor}">${icon}</span>
-                </div>
-                <span class="font-label-sm text-[12px] font-bold text-on-surface-variant">${ach.name}</span>
+      const filtered = currentAchFilter === 'all' 
+        ? ACHIEVEMENTS_DATA 
+        : ACHIEVEMENTS_DATA.filter(a => a.tier === currentAchFilter);
+
+      achGrid.innerHTML = filtered.map(ach => {
+        const isUnlocked = ach.current >= ach.target;
+
+        let tierStyle = {
+          badge: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
+          iconBg: isUnlocked ? 'bg-slate-800 text-slate-200 border-slate-700' : 'bg-surface-variant text-slate-500 border-outline-variant opacity-60',
+          cardBorder: isUnlocked ? 'border-slate-700/50' : 'border-outline-variant/20'
+        };
+
+        if (ach.tier === 'rare') {
+          tierStyle = {
+            badge: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40',
+            iconBg: isUnlocked ? 'bg-cyan-950 text-cyan-300 border-cyan-500/50 shadow-[0_0_12px_rgba(6,182,212,0.3)]' : 'bg-surface-variant text-slate-500 border-outline-variant opacity-60',
+            cardBorder: isUnlocked ? 'border-cyan-500/30' : 'border-outline-variant/20'
+          };
+        } else if (ach.tier === 'epic') {
+          tierStyle = {
+            badge: 'bg-purple-500/20 text-purple-400 border-purple-500/40',
+            iconBg: isUnlocked ? 'bg-purple-950 text-purple-300 border-purple-500/50 shadow-[0_0_12px_rgba(168,85,247,0.3)]' : 'bg-surface-variant text-slate-500 border-outline-variant opacity-60',
+            cardBorder: isUnlocked ? 'border-purple-500/30' : 'border-outline-variant/20'
+          };
+        } else if (ach.tier === 'legendary') {
+          tierStyle = {
+            badge: 'bg-amber-500/20 text-amber-400 border-amber-500/40',
+            iconBg: isUnlocked ? 'bg-amber-950 text-amber-300 border-amber-500/50 shadow-[0_0_14px_rgba(245,158,11,0.35)]' : 'bg-surface-variant text-slate-500 border-outline-variant opacity-60',
+            cardBorder: isUnlocked ? 'border-amber-500/30' : 'border-outline-variant/20'
+          };
+        } else if (ach.tier === 'mythic') {
+          tierStyle = {
+            badge: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50 shadow-[0_0_8px_rgba(16,185,129,0.3)]',
+            iconBg: isUnlocked ? 'bg-emerald-950 text-emerald-300 border-emerald-500/60 shadow-[0_0_16px_rgba(16,185,129,0.4)]' : 'bg-surface-variant text-slate-500 border-outline-variant opacity-60',
+            cardBorder: isUnlocked ? 'border-emerald-500/40' : 'border-outline-variant/20'
+          };
+        }
+
+        const iconToShow = isUnlocked ? ach.icon : 'lock';
+
+        return `
+          <div onclick="window.showAchDetail('${ach.id}')" 
+            class="relative group cursor-pointer bg-surface-container-lowest dark:bg-slate-900 border ${tierStyle.cardBorder} rounded-2xl p-3.5 flex flex-col justify-between hover:-translate-y-1 hover:shadow-lg transition-all duration-300 overflow-hidden">
+            
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <div class="w-11 h-11 rounded-2xl ${tierStyle.iconBg} border flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
+                <span class="material-symbols-outlined text-[24px]">${iconToShow}</span>
               </div>
-            `;
-        }).join('');
-      }
+              <span class="text-[9px] font-black px-2 py-0.5 rounded-full border ${tierStyle.badge}">
+                ${ach.tierName}
+              </span>
+            </div>
+
+            <div>
+              <h4 class="font-bold text-xs text-on-surface dark:text-white truncate mb-0.5">${ach.name}</h4>
+              <p class="text-[11px] text-on-surface-variant dark:text-slate-400 line-clamp-2 leading-tight">${ach.desc}</p>
+            </div>
+
+            <div class="mt-3 pt-2 border-t border-outline-variant/20 flex items-center justify-between">
+              <span class="text-[10px] font-bold ${isUnlocked ? 'text-green-500 dark:text-green-400' : 'text-slate-400'}">
+                ${isUnlocked ? '✅ Terbuka' : '🔒 Terkunci'}
+              </span>
+              <span class="text-[10px] font-bold text-primary dark:text-cyan-400">
+                ${isUnlocked ? '100%' : Math.min(99, Math.round((ach.current/ach.target)*100)) + '%'}
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     // Format Waktu Helper
