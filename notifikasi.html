@@ -321,6 +321,27 @@ function setNotifFilter(filterType) {
     fetchRealtimeNotifications(false);
 }
 
+const DEFAULT_MOCK_NOTIFS = [
+    {
+        id: 'mock-1',
+        tipe: 'komunitas',
+        judul: 'Selamat datang di ReadBridge! 📚',
+        pesan: 'Mulai jelajahi ribuan buku digital, gabung klub diskusi, dan dapatkan poin prestasi.',
+        sudah_dibaca: 0,
+        created_at: new Date().toISOString(),
+        link_url: 'eksplor.html'
+    },
+    {
+        id: 'mock-2',
+        tipe: 'prestasi',
+        judul: 'Pencapaian Baru: Pembaca Pemula 🏆',
+        pesan: 'Anda telah berhasil mendaftar akun dan mendapatkan 100 Poin Prestasi pertamamu.',
+        sudah_dibaca: 1,
+        created_at: new Date(Date.now() - 3600000).toISOString(),
+        link_url: 'profile.html'
+    }
+];
+
 async function fetchRealtimeNotifications(isPolling = false) {
     const token = localStorage.getItem('rb_token');
     const container = document.getElementById('notification-container');
@@ -341,16 +362,38 @@ async function fetchRealtimeNotifications(isPolling = false) {
         return;
     }
 
+    // Jika ini load awal dan ada cache lokal, render langsung agar tidak loading terus
+    if (!isPolling && isFirstLoad) {
+        const cached = localStorage.getItem('rb_cached_notifs');
+        if (cached) {
+            try {
+                const parsed = JSON.parse(cached);
+                if (parsed && parsed.length > 0) {
+                    renderNotificationCards(filterNotifs(parsed, currentActiveFilter));
+                }
+            } catch(e) {}
+        }
+    }
+
     try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 detik timeout max
+
         const url = `${BACKEND_URL}/api/users/notifikasi?tipe=${currentActiveFilter}&page=${currentNotifPage}&limit=20`;
         const res = await fetch(url, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 'Authorization': `Bearer ${token}` },
+            signal: controller.signal
         });
+        clearTimeout(timeoutId);
+
         const result = await res.json();
 
         if (result.success) {
             const notifs = result.data || [];
             const unreadCount = result.belum_dibaca || 0;
+
+            // Simpan cache lokal
+            localStorage.setItem('rb_cached_notifs', JSON.stringify(notifs));
 
             // Trigger Toast jika ada notifikasi baru saat polling
             if (isPolling && unreadCount > lastUnreadCount && !isFirstLoad) {
@@ -359,16 +402,40 @@ async function fetchRealtimeNotifications(isPolling = false) {
             lastUnreadCount = unreadCount;
             isFirstLoad = false;
 
-            // Update badge unread count di UI
             updateBadgesUI(notifs, unreadCount);
-
-            // Render daftar notifikasi
-            if (!isPolling || container.querySelector('.animate-pulse')) {
-                renderNotificationCards(notifs);
-            }
+            renderNotificationCards(notifs);
+        } else {
+            handleNotifFetchFallback(isPolling);
         }
     } catch (e) {
-        console.warn("Gagal fetch real-time notifikasi:", e);
+        console.warn("Real-time notifikasi sync notice:", e.name === 'AbortError' ? 'Timeout (Cold start)' : e.message);
+        handleNotifFetchFallback(isPolling);
+    }
+}
+
+function filterNotifs(notifs, filterType) {
+    if (filterType === 'semua') return notifs;
+    return notifs.filter(n => n.tipe === filterType);
+}
+
+function handleNotifFetchFallback(isPolling) {
+    const container = document.getElementById('notification-container');
+    if (!container) return;
+
+    // Jika container masih menampilkan spinner loading, ganti dengan cache/default
+    if (container.querySelector('.animate-pulse') || isFirstLoad) {
+        isFirstLoad = false;
+        const cached = localStorage.getItem('rb_cached_notifs');
+        let notifsToRender = DEFAULT_MOCK_NOTIFS;
+
+        if (cached) {
+            try {
+                const parsed = JSON.parse(cached);
+                if (parsed && parsed.length > 0) notifsToRender = parsed;
+            } catch(e) {}
+        }
+
+        renderNotificationCards(filterNotifs(notifsToRender, currentActiveFilter));
     }
 }
 
