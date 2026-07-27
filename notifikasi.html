@@ -195,119 +195,65 @@
 <aside class="w-full md:w-[280px] flex-shrink-0">
 <div class="bg-surface-container-lowest rounded-xl p-md shadow-[0px_4px_12px_rgba(0,0,0,0.04)] sticky top-[104px]">
 <h2 class="font-title-lg text-title-lg font-semibold mb-md text-on-surface">Filter</h2>
-<nav class="flex flex-col gap-sm">
-<a class="flex items-center gap-md px-md py-sm rounded-lg bg-primary text-on-primary font-label-md text-label-md font-bold transition-colors" href="#">
-<span class="material-symbols-outlined">inbox</span>
-                        Semua
-                    </a>
-<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors font-label-md text-label-md" href="#">
-<span class="material-symbols-outlined">forum</span>
-                        Aktivitas
-                    </a>
-<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors font-label-md text-label-md" href="#">
-<span class="material-symbols-outlined">shopping_cart</span>
-                        Transaksi
-                    </a>
-<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors font-label-md text-label-md" href="#">
-<span class="material-symbols-outlined">military_tech</span>
-                        Prestasi
-                    </a>
+<nav class="flex flex-col gap-sm" id="notification-filter-nav">
+<button onclick="setNotifFilter('semua')" id="filter-btn-semua" class="flex items-center justify-between px-md py-sm rounded-lg bg-primary text-on-primary font-label-md text-label-md font-bold transition-all text-left w-full">
+  <div class="flex items-center gap-md">
+    <span class="material-symbols-outlined">inbox</span> Semua
+  </div>
+  <span id="badge-count-semua" class="hidden text-[11px] bg-white/20 px-2 py-0.5 rounded-full font-extrabold">0</span>
+</button>
+<button onclick="setNotifFilter('komunitas')" id="filter-btn-komunitas" class="flex items-center justify-between px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all font-label-md text-label-md text-left w-full">
+  <div class="flex items-center gap-md">
+    <span class="material-symbols-outlined">forum</span> Aktivitas
+  </div>
+  <span id="badge-count-komunitas" class="hidden text-[11px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-extrabold">0</span>
+</button>
+<button onclick="setNotifFilter('transaksi')" id="filter-btn-transaksi" class="flex items-center justify-between px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all font-label-md text-label-md text-left w-full">
+  <div class="flex items-center gap-md">
+    <span class="material-symbols-outlined">shopping_cart</span> Transaksi
+  </div>
+  <span id="badge-count-transaksi" class="hidden text-[11px] bg-tertiary/20 text-tertiary px-2 py-0.5 rounded-full font-extrabold">0</span>
+</button>
+<button onclick="setNotifFilter('prestasi')" id="filter-btn-prestasi" class="flex items-center justify-between px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all font-label-md text-label-md text-left w-full">
+  <div class="flex items-center gap-md">
+    <span class="material-symbols-outlined">military_tech</span> Prestasi
+  </div>
+  <span id="badge-count-prestasi" class="hidden text-[11px] bg-secondary/20 text-secondary px-2 py-0.5 rounded-full font-extrabold">0</span>
+</button>
+<button onclick="setNotifFilter('sistem')" id="filter-btn-sistem" class="flex items-center justify-between px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all font-label-md text-label-md text-left w-full">
+  <div class="flex items-center gap-md">
+    <span class="material-symbols-outlined">settings_suggest</span> Sistem
+  </div>
+  <span id="badge-count-sistem" class="hidden text-[11px] bg-slate-500/20 text-slate-700 px-2 py-0.5 rounded-full font-extrabold">0</span>
+</button>
 </nav>
 </div>
 </aside>
+
 <!-- Right Column: Notification List -->
 <section class="flex-grow flex flex-col gap-md">
 <!-- Header Row -->
 <div class="flex justify-between items-end border-b border-outline-variant pb-sm mb-sm">
 <div>
 <h1 class="font-headline-lg text-[24px] md:text-headline-lg leading-tight text-on-surface">Notifikasi</h1>
-<p class="font-body-md text-body-md text-on-surface-variant mt-xs">Tetap up-to-date dengan aktivitas dan pembaruan Anda.</p>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs">Tetap up-to-date dengan aktivitas dan pembaruan Anda secara real-time.</p>
 </div>
-<button id="mark-all-read" class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors py-sm px-md rounded-lg hover:bg-surface-container flex items-center gap-xs">
+<button onclick="markAllNotificationsRead()" id="mark-all-read" class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors py-sm px-md rounded-lg hover:bg-surface-container flex items-center gap-xs font-bold">
 <span class="material-symbols-outlined text-[18px]">done_all</span>
-                    Tandai semua telah dibaca
-                </button>
+Tandai semua telah dibaca
+</button>
 </div>
+
 <!-- Notifications Container -->
 <div id="notification-container" class="flex flex-col gap-gutter">
-<!-- Notification Card: Activity (Unread) -->
-<div class="notification-card unread bg-surface-container-lowest rounded-xl p-md flex gap-md items-start border border-outline-variant/30 hover:shadow-md transition-shadow cursor-pointer">
-<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary flex-shrink-0">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">forum</span>
+  <div class="p-8 text-center text-on-surface-variant animate-pulse font-label-md">
+    <span class="material-symbols-outlined text-3xl mb-2 animate-spin">progress_activity</span>
+    <p>Memuat notifikasi real-time...</p>
+  </div>
 </div>
-<div class="flex-grow">
-<div class="flex justify-between items-center mb-xs">
-<span class="font-label-sm text-label-sm text-on-surface-variant font-bold uppercase tracking-wider">Aktivitas Komunitas</span>
-<div class="flex items-center gap-2">
-  <span class="font-label-sm text-label-sm text-outline">10 menit yang lalu</span>
-  <div class="unread-dot w-2 h-2 rounded-full bg-tertiary"></div>
-</div>
-</div>
-<h3 class="font-title-lg text-title-lg text-on-surface mb-xs font-semibold">Siti Rahma membalas komentar Anda di <span class="text-primary">Pejuang SNBT</span></h3>
-<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">"Wah, saya setuju banget! Persiapan awal itu kunci, terutama untuk materi penalaran matematika yang sering tricky."</p>
-<div class="mt-md">
-<button class="font-label-md text-label-md text-primary font-bold hover:underline">Lihat Diskusi</button>
-</div>
-</div>
-</div>
-<!-- Notification Card: Transaction (Unread) -->
-<div class="notification-card unread bg-surface-container-lowest rounded-xl p-md flex gap-md items-start border border-outline-variant/30 hover:shadow-md transition-shadow cursor-pointer">
-<div class="w-12 h-12 rounded-full bg-tertiary-fixed-dim flex items-center justify-center text-tertiary flex-shrink-0">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">book</span>
-</div>
-<div class="flex-grow">
-<div class="flex justify-between items-center mb-xs">
-<span class="font-label-sm text-label-sm text-tertiary font-bold uppercase tracking-wider">Transaksi &amp; Sewa</span>
-<div class="flex items-center gap-2">
-  <span class="font-label-sm text-label-sm text-outline">2 jam yang lalu</span>
-  <div class="unread-dot w-2 h-2 rounded-full bg-tertiary"></div>
-</div>
-</div>
-<h3 class="font-title-lg text-title-lg text-on-surface mb-xs font-semibold">Pengingat Pengembalian Buku</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">Buku <span class="font-bold text-on-surface">"Bumi Manusia"</span> yang Anda sewa dari Perpustakaan Pusat harus dikembalikan dalam <span class="text-tertiary font-bold">2 hari</span> (26 Okt 2023).</p>
-<div class="mt-md flex gap-sm">
-<button class="bg-tertiary text-on-tertiary font-label-md text-label-md px-md py-sm rounded-full font-bold hover:bg-on-tertiary-fixed transition-colors">Perpanjang Sewa</button>
-<button class="border border-outline-variant text-on-surface font-label-md text-label-md px-md py-sm rounded-full font-bold hover:bg-surface-container transition-colors">Lihat Detail</button>
-</div>
-</div>
-</div>
-<!-- Notification Card: Gamification (Read) -->
-<div class="notification-card bg-surface-container-lowest rounded-xl p-md flex gap-md items-start border border-outline-variant/30 hover:shadow-md transition-shadow cursor-pointer">
-<div class="w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary flex-shrink-0">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">military_tech</span>
-</div>
-<div class="flex-grow opacity-80">
-<div class="flex justify-between items-center mb-xs">
-<span class="font-label-sm text-label-sm text-secondary font-bold uppercase tracking-wider">Prestasi &amp; Gamification</span>
-<span class="font-label-sm text-label-sm text-outline">Kemarin</span>
-</div>
-<h3 class="font-title-lg text-title-lg text-on-surface mb-xs font-semibold">Selamat! Anda naik ke level <span class="text-secondary">Reader</span>!</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">Anda telah menyelesaikan target membaca minggu ini dan mendapatkan +500 XP. Terus pertahankan semangat membaca Anda!</p>
-<div class="mt-md">
-<button class="font-label-md text-label-md text-secondary font-bold hover:underline">Lihat Profil Prestasi</button>
-</div>
-</div>
-</div>
-<!-- Notification Card: System Update (Read) -->
-<div class="notification-card bg-surface-container-lowest rounded-xl p-md flex gap-md items-start border border-outline-variant/30 hover:shadow-md transition-shadow cursor-pointer">
-<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant flex-shrink-0">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">campaign</span>
-</div>
-<div class="flex-grow opacity-80">
-<div class="flex justify-between items-center mb-xs">
-<span class="font-label-sm text-label-sm text-on-surface-variant font-bold uppercase tracking-wider">Update Sistem</span>
-<span class="font-label-sm text-label-sm text-outline">3 hari yang lalu</span>
-</div>
-<h3 class="font-title-lg text-title-lg text-on-surface mb-xs font-semibold">Book Bazaar ReadBridge Kini Hadir!</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">Temukan ribuan buku bekas berkualitas dengan diskon hingga 70%. Jangan lewatkan kesempatan ini untuk melengkapi koleksi perpustakaan Anda.</p>
-<div class="mt-md">
-<button class="border border-outline-variant text-on-surface font-label-md text-label-md px-md py-sm rounded-full font-bold hover:bg-surface-container transition-colors">Jelajahi Bazaar</button>
-</div>
-</div>
-</div>
-</div>
-<div class="mt-lg text-center">
-<button class="font-label-md text-label-md text-primary border border-primary px-lg py-sm rounded-full hover:bg-primary-container hover:text-on-primary-container transition-colors">Muat Lebih Banyak</button>
+
+<div id="load-more-container" class="mt-lg text-center hidden">
+<button onclick="loadMoreNotifications()" class="font-label-md text-label-md text-primary border border-primary px-lg py-sm rounded-full hover:bg-primary-container hover:text-on-primary-container transition-colors font-bold">Muat Lebih Banyak</button>
 </div>
 </section>
 </main>
@@ -327,8 +273,23 @@
 
 <script src="main.js"></script>
 
+<!-- Real-time Notification Engine -->
 <script>
+const isLocalEnv = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+const BACKEND_URL = localStorage.getItem('rb_api_base_url') || (isLocalEnv ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+
+let currentActiveFilter = 'semua';
+let currentNotifPage = 1;
+let lastUnreadCount = 0;
+let isFirstLoad = true;
+
 document.addEventListener("DOMContentLoaded", function() {
+    initNotifications();
+    // Real-time Auto Polling (Setiap 4 Detik)
+    setInterval(() => fetchRealtimeNotifications(true), 4000);
+});
+
+async function initNotifications() {
     const savedName = localStorage.getItem('rb_username');
     if (savedName) {
         const els = document.querySelectorAll('span.text-on-surface, p.text-on-surface, h1, h2, h3, h4, h5, h6');
@@ -338,7 +299,224 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
     }
-});
+    await fetchRealtimeNotifications(false);
+}
+
+function setNotifFilter(filterType) {
+    currentActiveFilter = filterType;
+    currentNotifPage = 1;
+    
+    // Update Tab UI Styles
+    const filters = ['semua', 'komunitas', 'transaksi', 'prestasi', 'sistem'];
+    filters.forEach(f => {
+        const btn = document.getElementById(`filter-btn-${f}`);
+        if (!btn) return;
+        if (f === filterType) {
+            btn.className = "flex items-center justify-between px-md py-sm rounded-lg bg-primary text-on-primary font-label-md text-label-md font-bold transition-all text-left w-full shadow-sm";
+        } else {
+            btn.className = "flex items-center justify-between px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all font-label-md text-label-md text-left w-full font-medium";
+        }
+    });
+
+    fetchRealtimeNotifications(false);
+}
+
+async function fetchRealtimeNotifications(isPolling = false) {
+    const token = localStorage.getItem('rb_token');
+    const container = document.getElementById('notification-container');
+
+    if (!token) {
+        if (!isPolling && container) {
+            container.innerHTML = `
+                <div class="bg-surface-container-lowest rounded-xl p-xl border border-outline-variant/30 text-center flex flex-col items-center gap-md">
+                    <span class="material-symbols-outlined text-4xl text-primary">lock</span>
+                    <div>
+                        <h3 class="font-title-lg text-title-lg font-bold">Silakan Login Terlebih Dahulu</h3>
+                        <p class="text-on-surface-variant text-sm mt-1">Anda perlu masuk ke akun ReadBridge untuk melihat dan mengelola notifikasi Anda.</p>
+                    </div>
+                    <a href="login.html" class="px-6 py-2.5 bg-primary text-white rounded-full font-bold text-xs hover:bg-primary-container transition-all">Login Sekarang</a>
+                </div>
+            `;
+        }
+        return;
+    }
+
+    try {
+        const url = `${BACKEND_URL}/api/users/notifikasi?tipe=${currentActiveFilter}&page=${currentNotifPage}&limit=20`;
+        const res = await fetch(url, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await res.json();
+
+        if (result.success) {
+            const notifs = result.data || [];
+            const unreadCount = result.belum_dibaca || 0;
+
+            // Trigger Toast jika ada notifikasi baru saat polling
+            if (isPolling && unreadCount > lastUnreadCount && !isFirstLoad) {
+                playNotificationToast('🔔 Ada notifikasi baru!');
+            }
+            lastUnreadCount = unreadCount;
+            isFirstLoad = false;
+
+            // Update badge unread count di UI
+            updateBadgesUI(notifs, unreadCount);
+
+            // Render daftar notifikasi
+            if (!isPolling || container.querySelector('.animate-pulse')) {
+                renderNotificationCards(notifs);
+            }
+        }
+    } catch (e) {
+        console.warn("Gagal fetch real-time notifikasi:", e);
+    }
+}
+
+function updateBadgesUI(notifs, unreadCount) {
+    // Header top badge
+    const headerBadge = document.querySelector('a[aria-label="notifications"] .absolute');
+    if (headerBadge) {
+        if (unreadCount > 0) {
+            headerBadge.classList.remove('hidden');
+        } else {
+            headerBadge.classList.add('hidden');
+        }
+    }
+
+    const semuaBadge = document.getElementById('badge-count-semua');
+    if (semuaBadge) {
+        if (unreadCount > 0) {
+            semuaBadge.textContent = unreadCount;
+            semuaBadge.classList.remove('hidden');
+        } else {
+            semuaBadge.classList.add('hidden');
+        }
+    }
+}
+
+function renderNotificationCards(notifs) {
+    const container = document.getElementById('notification-container');
+    if (!container) return;
+
+    if (notifs.length === 0) {
+        container.innerHTML = `
+            <div class="bg-surface-container-lowest rounded-xl p-xl border border-outline-variant/30 text-center flex flex-col items-center gap-md">
+                <span class="material-symbols-outlined text-4xl text-on-surface-variant/40">notifications_off</span>
+                <div>
+                    <h3 class="font-title-lg text-title-lg font-bold text-on-surface">Tidak Ada Notifikasi</h3>
+                    <p class="text-on-surface-variant text-sm mt-1">Belum ada aktivitas atau pembaruan di kategori ini.</p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = notifs.map(item => {
+        const isUnread = !item.sudah_dibaca;
+        const iconConfig = getNotificationIcon(item.tipe);
+        const timeAgo = formatWaktuAgo(item.created_at);
+
+        return `
+            <div onclick="readSingleNotification('${item.id}', '${item.link_url || '#'}')" 
+                 class="notification-card ${isUnread ? 'unread bg-surface-container-lowest border-l-4 border-l-primary' : 'bg-surface-container-low opacity-85'} rounded-xl p-md flex gap-md items-start border border-outline-variant/30 hover:shadow-md transition-all cursor-pointer">
+                <div class="w-12 h-12 rounded-full ${iconConfig.bgColor} flex items-center justify-center ${iconConfig.textColor} flex-shrink-0">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">${iconConfig.icon}</span>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex justify-between items-center mb-xs">
+                        <span class="font-label-sm text-label-sm ${iconConfig.textColor} font-bold uppercase tracking-wider">${iconConfig.label}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="font-label-sm text-label-sm text-outline">${timeAgo}</span>
+                            ${isUnread ? '<div class="unread-dot w-2.5 h-2.5 rounded-full bg-error"></div>' : ''}
+                        </div>
+                    </div>
+                    <h3 class="font-title-lg text-title-lg text-on-surface mb-xs font-semibold">${item.judul}</h3>
+                    <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">${item.pesan}</p>
+                    ${item.link_url ? `
+                        <div class="mt-md">
+                            <span class="font-label-md text-label-md text-primary font-bold hover:underline inline-flex items-center gap-1">Lihat Detail <span class="material-symbols-outlined text-[16px]">arrow_forward</span></span>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function getNotificationIcon(tipe) {
+    switch(tipe) {
+        case 'komunitas':
+            return { icon: 'forum', bgColor: 'bg-primary-fixed', textColor: 'text-primary', label: 'Aktivitas Komunitas' };
+        case 'transaksi':
+            return { icon: 'shopping_cart', bgColor: 'bg-tertiary-fixed-dim', textColor: 'text-tertiary', label: 'Transaksi & Sewa' };
+        case 'prestasi':
+            return { icon: 'military_tech', bgColor: 'bg-secondary-fixed', textColor: 'text-secondary', label: 'Prestasi & Gamification' };
+        case 'sistem':
+        default:
+            return { icon: 'campaign', bgColor: 'bg-surface-container-high', textColor: 'text-on-surface-variant', label: 'Update Sistem' };
+    }
+}
+
+async function markAllNotificationsRead() {
+    const token = localStorage.getItem('rb_token');
+    if (!token) return;
+
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/users/notifikasi/baca-semua`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await res.json();
+        if (result.success) {
+            playNotificationToast('✓ Semua notifikasi ditandai dibaca');
+            fetchRealtimeNotifications(false);
+        }
+    } catch(e) {
+        console.error("Gagal tandai dibaca", e);
+    }
+}
+
+async function readSingleNotification(id, linkUrl) {
+    const token = localStorage.getItem('rb_token');
+    if (token) {
+        try {
+            await fetch(`${BACKEND_URL}/api/users/notifikasi/${id}/baca`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+        } catch(e) {}
+    }
+
+    if (linkUrl && linkUrl !== '#') {
+        window.location.href = linkUrl;
+    } else {
+        fetchRealtimeNotifications(false);
+    }
+}
+
+function formatWaktuAgo(dateString) {
+    if (!dateString) return 'Baru saja';
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+
+    if (seconds < 60) return 'Baru saja';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes} menit yang lalu`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} jam yang lalu`;
+    const days = Math.floor(hours / 24);
+    if (days < 30) return `${days} hari yang lalu`;
+    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+}
+
+function playNotificationToast(msg) {
+    const toast = document.createElement('div');
+    toast.className = "fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2 text-xs font-bold border border-slate-700 animate-slideUp";
+    toast.innerHTML = `<span class="material-symbols-outlined text-primary text-[18px]">notifications_active</span> ${msg}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
 </script>
 
 <script id="dynamic-logo-menu">

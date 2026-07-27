@@ -10,6 +10,7 @@ const crypto  = require("crypto");
 const router  = express.Router();
 const db      = require("../config/db");
 const { verifyToken, optionalAuth } = require("../middleware/auth");
+const { addNotification } = require("../utils/notification");
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -209,6 +210,16 @@ router.post("/diskusi", verifyToken, async (req, res) => {
   try {
     const { judul, konten, buku_id, club_id, destination, media_url, media_type } = req.body;
     const id = await createDiskusi({ userId: req.user.id, judul, konten, buku_id, club_id, destination, media_url, media_type });
+
+    // Trigger Notifikasi Real-time untuk Penulis
+    await addNotification(
+      req.user.id,
+      'komunitas',
+      'Diskusi Baru Diposting 📝',
+      `Diskusi "${judul.trim().slice(0, 50)}" Anda telah berhasil dibuat.`,
+      `detail-diskusi.html?id=${id}`
+    );
+
     res.status(201).json({ success: true, message: "Diskusi berhasil dibuat. +15 poin!", data: { id } });
   } catch (error) {
     console.error(error);
@@ -233,6 +244,15 @@ router.post("/clubs/:id/diskusi", verifyToken, async (req, res) => {
       media_url,
       media_type
     });
+
+    await addNotification(
+      req.user.id,
+      'komunitas',
+      'Diskusi Club Berhasil Diposting 📝',
+      `Diskusi "${judul.trim().slice(0, 50)}" telah diposting ke club.`,
+      `detail-diskusi.html?id=${id}`
+    );
+
     res.status(201).json({ success: true, message: "Diskusi berhasil dibuat. +15 poin!", data: { id } });
   } catch (error) {
     console.error(error);
@@ -267,8 +287,25 @@ router.post("/diskusi/:id/balasan", verifyToken, async (req, res) => {
     );
     await db.execute("UPDATE users SET poin = poin + 5 WHERE id = ?", [req.user.id]);
 
+    // Trigger Notifikasi Real-time ke Pemilik Diskusi
+    const [[postOwner]] = await db.execute(
+      "SELECT user_id, judul FROM diskusi WHERE id = ?",
+      [req.params.id]
+    );
+
+    if (postOwner && postOwner.user_id !== req.user.id) {
+      await addNotification(
+        postOwner.user_id,
+        'komunitas',
+        'Balasan Baru di Diskusi Anda 💬',
+        `${req.user.nama} membalas diskusi Anda "${postOwner.judul}": "${konten.slice(0, 80)}..."`,
+        `detail-diskusi.html?id=${req.params.id}`
+      );
+    }
+
     res.status(201).json({ success: true, message: "Balasan berhasil ditambahkan. +5 poin!" });
   } catch (error) {
+    console.error("Balasan error:", error);
     res.status(500).json({ success: false, message: "Gagal menambahkan balasan" });
   }
 });
@@ -291,9 +328,50 @@ router.post("/diskusi/:id/like", verifyToken, async (req, res) => {
 
     await db.execute("INSERT INTO diskusi_likes (user_id, diskusi_id) VALUES (?, ?)", [req.user.id, req.params.id]);
     await db.execute("UPDATE diskusi SET total_likes = total_likes + 1 WHERE id = ?", [req.params.id]);
+
+    // Trigger Notifikasi Real-time ke Pemilik Diskusi
+    const [[postOwner]] = await db.execute(
+      "SELECT user_id, judul FROM diskusi WHERE id = ?",
+      [req.params.id]
+    );
+
+    if (postOwner && postOwner.user_id !== req.user.id) {
+      await addNotification(
+        postOwner.user_id,
+        'komunitas',
+        'Menyukai Diskusi Anda ❤️',
+        `${req.user.nama} menyukai diskusi Anda "${postOwner.judul}".`,
+        `detail-diskusi.html?id=${req.params.id}`
+      );
+    }
+
     res.json({ success: true, liked: true });
   } catch (error) {
     res.status(500).json({ success: false, message: "Gagal update like" });
+  }
+});
+
+/**
+ * POST /api/community/diskusi/:id/share
+ */
+router.post("/diskusi/:id/share", verifyToken, async (req, res) => {
+  try {
+    const [[post]] = await db.execute(
+      "SELECT judul FROM diskusi WHERE id = ?",
+      [req.params.id]
+    );
+
+    await addNotification(
+      req.user.id,
+      'komunitas',
+      'Membagikan Diskusi 🔗',
+      `Anda berhasil membagikan diskusi "${post ? post.judul : ''}".`,
+      `detail-diskusi.html?id=${req.params.id}`
+    );
+
+    res.json({ success: true, message: "Berhasil membagikan diskusi" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Gagal membagikan diskusi" });
   }
 });
 

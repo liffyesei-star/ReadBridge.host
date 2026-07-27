@@ -564,10 +564,10 @@ function renderPostCard(p) {
         <button onclick="window.togglePostMenu(event, '${p.id}')" class="text-on-surface-variant hover:bg-surface-container p-2 rounded-full transition-colors"><span class="material-symbols-outlined">more_horiz</span></button>
         <div id="post-menu-${p.id}" class="hidden absolute right-0 top-full mt-1 bg-white border border-outline-variant/30 rounded-xl shadow-lg w-40 z-10 flex-col py-1 overflow-hidden">
           ${p.isCurrentUser
-      ? `<button class="text-left px-4 py-2 hover:bg-surface-container text-on-surface text-sm font-semibold flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">share</span> Bagikan</button>
+      ? `<button onclick="window.sharePost('${p.id}')" class="text-left px-4 py-2 hover:bg-surface-container text-on-surface text-sm font-semibold flex items-center gap-2 w-full"><span class="material-symbols-outlined text-[18px]">share</span> Bagikan</button>
                <button onclick="window.editPost('${p.id}')" class="text-left px-4 py-2 hover:bg-surface-container text-on-surface text-sm font-semibold flex items-center gap-2 w-full"><span class="material-symbols-outlined text-[18px]">edit</span> Edit</button>
                <button onclick="window.deletePost('${p.id}')" class="text-left px-4 py-2 hover:bg-red-50 text-error text-sm font-semibold flex items-center gap-2 w-full"><span class="material-symbols-outlined text-[18px]">delete</span> Hapus</button>`
-      : `<button class="text-left px-4 py-2 hover:bg-surface-container text-on-surface text-sm font-semibold flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">share</span> Bagikan</button>
+      : `<button onclick="window.sharePost('${p.id}')" class="text-left px-4 py-2 hover:bg-surface-container text-on-surface text-sm font-semibold flex items-center gap-2 w-full"><span class="material-symbols-outlined text-[18px]">share</span> Bagikan</button>
                <button class="text-left px-4 py-2 hover:bg-surface-container text-on-surface text-sm font-semibold flex items-center gap-2 w-full"><span class="material-symbols-outlined text-[18px]">flag</span> Laporkan</button>`
     }
         </div>
@@ -716,6 +716,27 @@ window.ubahVote = async function (id, delta) {
     console.error("Gagal like", e);
   }
 }
+
+window.sharePost = async function (id) {
+  const token = localStorage.getItem('rb_token');
+  const shareUrl = `${window.location.origin}/detail-diskusi.html?id=${id}`;
+  
+  try {
+    if (navigator.clipboard) {
+      await navigator.clipboard.writeText(shareUrl);
+    }
+    showToastNotification('🔗 Link diskusi berhasil disalin!', 'link');
+    
+    if (token) {
+      fetch(`${API_BASE}/api/community/diskusi/${id}/share`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).catch(e => console.warn("Share log error:", e));
+    }
+  } catch (e) {
+    showToastNotification('Tautan diskusi: ' + shareUrl, 'info');
+  }
+};
 
 window.togglePostMenu = function (e, id) {
   e.stopPropagation();

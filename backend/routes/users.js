@@ -7,7 +7,9 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
+const bcrypt = require("bcryptjs");
 const { verifyToken } = require("../middleware/auth");
+const { addNotification } = require("../utils/notification");
 
 // ============================================================
 // PROFILE
@@ -15,23 +17,38 @@ const { verifyToken } = require("../middleware/auth");
 
 /**
  * PUT /api/users/profile
- * Update profil user
+ * Update profil user (Nama, Foto Profil, Bio, Minat)
  */
 router.put("/profile", verifyToken, async (req, res) => {
   try {
-    const { nama, bio, foto_profil, minat } = req.body;
+    const { nama, bio, foto_profil, minat, email } = req.body;
     if (!nama) return res.status(400).json({ success: false, message: "Nama tidak boleh kosong" });
 
     // Dapatkan data user saat ini
-    const [rows] = await db.execute("SELECT nama, last_name_change FROM users WHERE id = ?", [req.user.id]);
+    const [rows] = await db.execute("SELECT nama, email, last_name_change FROM users WHERE id = ?", [req.user.id]);
     if (rows.length === 0) return res.status(404).json({ success: false, message: "User tidak ditemukan" });
     const user = rows[0];
+
+    let isNameChanged = false;
+    let isEmailChanged = false;
 
     let queryUpdates = "bio = ?, foto_profil = ?, minat = ?";
     let queryParams = [bio || null, foto_profil || null, minat ? JSON.stringify(minat) : null];
 
+    // Jika mencoba mengubah email
+    if (email && email.trim().toLowerCase() !== user.email.toLowerCase()) {
+      const cleanEmail = email.trim().toLowerCase();
+      const [existingEmail] = await db.execute("SELECT id FROM users WHERE email = ? AND id != ?", [cleanEmail, req.user.id]);
+      if (existingEmail.length > 0) {
+        return res.status(400).json({ success: false, message: "Email sudah digunakan oleh akun lain" });
+      }
+      queryUpdates = "email = ?, " + queryUpdates;
+      queryParams.unshift(cleanEmail);
+      isEmailChanged = true;
+    }
+
     // Jika mencoba mengubah nama
-    if (nama !== user.nama) {
+    if (nama.trim() !== user.nama) {
       if (user.last_name_change) {
         const lastChange = new Date(user.last_name_change);
         const now = new Date();
@@ -39,7 +56,7 @@ router.put("/profile", verifyToken, async (req, res) => {
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         
         if (diffDays <= 30) {
-          const sisaHari = 30 - diffDays + 1; // +1 to ensure it shows at least 1 if < 1
+          const sisaHari = 30 - diffDays + 1;
           return res.status(400).json({ 
             success: false, 
             message: `Nama hanya bisa diganti 1x dalam 30 hari. Anda harus menunggu ${sisaHari} hari lagi.` 
@@ -48,7 +65,8 @@ router.put("/profile", verifyToken, async (req, res) => {
       }
       // Boleh ganti nama
       queryUpdates = "nama = ?, last_name_change = NOW(), " + queryUpdates;
-      queryParams.unshift(nama);
+      queryParams.unshift(nama.trim());
+      isNameChanged = true;
     }
 
     queryParams.push(req.user.id);
@@ -57,6 +75,27 @@ router.put("/profile", verifyToken, async (req, res) => {
       `UPDATE users SET ${queryUpdates} WHERE id = ?`,
       queryParams
     );
+
+    // Trigger Notifikasi Real-Time
+    if (isNameChanged) {
+      await addNotification(
+        req.user.id,
+        'sistem',
+        'Nama Tampilan Diperbarui 👤',
+        `Nama tampilan Anda berhasil diubah menjadi "${nama.trim()}".`,
+        'pengaturan.html'
+      );
+    }
+
+    if (isEmailChanged) {
+      await addNotification(
+        req.user.id,
+        'sistem',
+        'Alamat Email Diperbarui ✉️',
+        `Email akun ReadBridge Anda berhasil diperbarui menjadi ${email.trim().toLowerCase()}.`,
+        'pengaturan.html'
+      );
+    }
 
     res.json({ success: true, message: "Profil berhasil diperbarui" });
   } catch (error) {
@@ -250,15 +289,24 @@ router.get("/leaderboard", async (req, res) => {
 
 /**
  * GET /api/users/notifikasi
+ * Supports ?tipe=komunitas|transaksi|prestasi|sistem&page=1&limit=20
  */
 router.get("/notifikasi", verifyToken, async (req, res) => {
   try {
-    const { page = 1, limit = 20 } = req.query;
+    const { page = 1, limit = 20, tipe } = req.query;
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
+    let whereClause = "WHERE user_id = ?";
+    let queryParams = [req.user.id];
+
+    if (tipe && tipe !== 'semua') {
+      whereClause += " AND tipe = ?";
+      queryParams.push(tipe);
+    }
+
     const [rows] = await db.execute(
-      "SELECT * FROM notifikasi WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?",
-      [req.user.id, parseInt(limit), offset]
+      `SELECT * FROM notifikasi ${whereClause} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+      [...queryParams, parseInt(limit), offset]
     );
 
     const [[{ belum_dibaca }]] = await db.execute(
@@ -268,6 +316,7 @@ router.get("/notifikasi", verifyToken, async (req, res) => {
 
     res.json({ success: true, data: rows, belum_dibaca });
   } catch (error) {
+    console.error("Fetch notifikasi error:", error);
     res.status(500).json({ success: false, message: "Gagal mengambil notifikasi" });
   }
 });

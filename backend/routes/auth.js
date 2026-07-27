@@ -14,6 +14,7 @@ const jwt = require("jsonwebtoken");
 const rateLimit = require("express-rate-limit");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
+const { addNotification } = require("../utils/notification");
 
 const JWT_SECRET = process.env.JWT_SECRET || 'readbridge_jwt_secret_key_production_2026';
 if (!process.env.JWT_SECRET) {
@@ -378,6 +379,15 @@ router.post("/reset-password", async (req, res) => {
            reset_password_expires = NULL 
        WHERE id = ?`,
       [hashedPassword, user.id]
+    );
+
+    // Trigger Notifikasi Keamanan Sistem
+    await addNotification(
+      user.id,
+      'sistem',
+      'Kata Sandi Berhasil Diperbarui 🔒',
+      'Kata sandi akun ReadBridge Anda berhasil diatur ulang. Jika ini bukan Anda, segera hubungi bantuan.',
+      'pengaturan.html'
     );
 
     // Opsional: Kirim email konfirmasi bahwa password sudah direset
