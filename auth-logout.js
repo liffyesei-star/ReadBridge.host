@@ -109,30 +109,13 @@ function checkTokenExpiration() {
   }
 }
 
-// Global fetch interceptor for 401 Unauthorized or expired token messages
+// Global fetch interceptor for 401 Unauthorized
 (function setupFetchInterceptor() {
   const originalFetch = window.fetch;
   window.fetch = async function(...args) {
     try {
       const response = await originalFetch(...args);
-      let shouldLogout = (response.status === 401);
-
-      if (!shouldLogout) {
-        try {
-          const clonedResponse = response.clone();
-          const json = await clonedResponse.json();
-          if (json && json.success === false && 
-              (json.message === "Token expired, silakan login ulang" || 
-               json.message === "Token tidak valid" || 
-               json.message === "Token tidak ditemukan")) {
-            shouldLogout = true;
-          }
-        } catch (e) {
-          // Ignore if body is not JSON
-        }
-      }
-
-      if (shouldLogout) {
+      if (response.status === 401) {
         const path = window.location.pathname.toLowerCase();
         if (!isPublicPage(path)) {
           console.warn("[ReadBridge] Token expired or 401 returned. Logging out.");

@@ -11,12 +11,15 @@ const DRAFT_KEY = 'readbridge_draft';
 const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 const API_BASE = localStorage.getItem('rb_api_base_url') || (isLocal ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
 
-// Security: HTML escape untuk mencegah Stored XSS pada user-generated content
+// Security & Performance: High-speed HTML escape
 function escapeHtml(str) {
-  if (!str) return '';
-  const div = document.createElement('div');
-  div.appendChild(document.createTextNode(str));
-  return div.innerHTML;
+  if (typeof str !== 'string') return str || '';
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 // 7 Daftar Klub Belajar & Diskusi ReadBridge
