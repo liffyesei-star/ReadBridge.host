@@ -270,8 +270,18 @@ document.addEventListener("DOMContentLoaded", async function() {
         document.getElementById('club-create-post-trigger')?.classList.add('hidden');
         document.getElementById('fab-buat-diskusi')?.classList.add('hidden');
         
+        // Sembunyikan panel kanan (aturan dan tentang klub) saat tidak berada di dalam spesifik klub
+        const rightSidebar = document.getElementById('right-sidebar');
+        if (rightSidebar) {
+            rightSidebar.classList.add('hidden');
+            rightSidebar.classList.remove('lg:flex');
+        }
+        
         const contentSection = document.getElementById('main-content-section');
         if (contentSection) {
+            contentSection.classList.remove('lg:col-span-6');
+            contentSection.classList.add('lg:col-span-9');
+            
             contentSection.innerHTML = `
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 bg-surface p-6 rounded-2xl border border-outline-variant/30 shadow-sm">
                     <h2 class="text-xl font-bold text-on-surface flex items-center gap-2">
