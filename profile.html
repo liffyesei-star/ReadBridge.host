@@ -502,26 +502,69 @@
       </div>
 
       <div id="content-detail" class="grid grid-cols-1 lg:grid-cols-3 gap-lg w-full">
-        <!-- Left Column: Gamification Profile Bento Grid -->
+        <!-- Left Column: User Level & Gamification Status -->
         <div class="lg:col-span-1 flex flex-col gap-lg">
-          <!-- Level Card -->
+          <!-- Level Card (Progress to next level) -->
           <div id="level-card" onclick="window.showLevelModal()"
-            class="bg-surface-container-lowest rounded-xl p-lg shadow-sm relative overflow-hidden cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+            class="bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl p-lg shadow-sm border border-outline-variant/30 relative overflow-hidden cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
             <div class="absolute top-0 right-0 p-4 opacity-10">
               <span class="material-symbols-outlined text-6xl text-primary">school</span>
             </div>
-            <h3 class="font-title-lg text-title-lg text-on-surface mb-xs relative z-10">Level Scholar</h3>
-            <p id="level-card-desc" class="font-body-md text-body-md text-on-surface-variant mb-md relative z-10">
-              Dapatkan 250 XP lagi untuk naik tingkat</p>
+            <h3 class="font-title-lg text-title-lg text-on-surface dark:text-white font-extrabold mb-xs relative z-10">Level Scholar</h3>
+            <p id="level-card-desc" class="font-body-md text-xs text-on-surface-variant dark:text-slate-400 mb-md relative z-10">
+              Dapatkan XP lagi untuk naik tingkat</p>
             <div class="w-full bg-surface-variant rounded-full h-3 mb-2">
-              <div id="level-card-progress" class="bg-primary h-3 rounded-full" style="width: 75%"></div>
+              <div id="level-card-progress" class="bg-primary h-3 rounded-full" style="width: 0%"></div>
             </div>
-            <div class="flex justify-between font-label-sm text-label-sm text-outline">
-              <span id="level-card-xp-min">1500 XP</span>
-              <span id="level-card-xp-max">2000 XP</span>
+            <div class="flex justify-between font-label-sm text-xs font-bold text-outline">
+              <span id="level-card-xp-min">0 XP</span>
+              <span id="level-card-xp-max">200 XP</span>
             </div>
           </div>
-          <!-- Streak Card -->
+
+          <!-- Level System Roadmap Card (Explorer -> Reader -> Thinker -> Scholar) -->
+          <div class="bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl shadow-sm p-lg border border-outline-variant/30">
+            <h2 class="font-title-lg text-title-lg font-extrabold text-on-surface dark:text-white mb-md flex items-center gap-2">
+              <span class="material-symbols-outlined text-secondary">route</span>
+              Progresi Level Explorer
+            </h2>
+            <div class="relative flex items-center justify-between w-full mt-md mb-lg px-sm">
+              <!-- Connecting Line -->
+              <div class="absolute top-1/2 left-0 w-full h-1 bg-surface-variant dark:bg-slate-800 -z-10 -translate-y-1/2"></div>
+              <div class="absolute top-1/2 left-0 w-3/4 h-1 bg-secondary -z-10 -translate-y-1/2"></div>
+              <!-- Level: Explorer -->
+              <div class="flex flex-col items-center gap-sm z-10">
+                <div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm" title="Explorer Level (0-200 XP)">
+                  <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">explore</span>
+                </div>
+                <span class="text-[10px] font-bold text-on-surface dark:text-slate-300">Explorer</span>
+              </div>
+              <!-- Level: Reader -->
+              <div class="flex flex-col items-center gap-sm z-10">
+                <div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm" title="Reader Level (200-500 XP)">
+                  <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+                </div>
+                <span class="text-[10px] font-bold text-on-surface dark:text-slate-300">Reader</span>
+              </div>
+              <!-- Level: Thinker -->
+              <div class="flex flex-col items-center gap-sm z-10">
+                <div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm ring-4 ring-secondary-container" title="Thinker Level (500-1000 XP)">
+                  <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+                </div>
+                <span class="text-[10px] font-bold text-on-surface dark:text-slate-300">Thinker</span>
+              </div>
+              <!-- Level: Scholar -->
+              <div class="flex flex-col items-center gap-sm z-10">
+                <div class="w-10 h-10 rounded-full bg-surface-variant dark:bg-slate-800 text-outline flex items-center justify-center shadow-sm" title="Scholar Level (1000+ XP)">
+                  <span class="material-symbols-outlined text-sm">school</span>
+                </div>
+                <span class="text-[10px] font-bold text-on-surface-variant dark:text-slate-400">Scholar</span>
+              </div>
+            </div>
+            <p id="level-roadmap-desc" class="font-body-md text-xs text-on-surface-variant dark:text-slate-400 text-center mt-xs">Kumpulkan XP dari aktivitas & membaca untuk naik tingkat ke jenjang berikutnya!</p>
+          </div>
+
+          <!-- Reading Streak Card -->
           <div id="streak-card" onclick="window.showStreakModal()"
             class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 dark:from-slate-900 dark:to-slate-950 rounded-2xl p-lg shadow-md flex items-center justify-between border border-cyan-500/30 cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group streak-aura-active">
             
@@ -549,7 +592,11 @@
               <span id="streak-card-count" class="font-title-lg text-lg font-black text-white leading-none mt-0.5">40</span>
             </div>
           </div>
-          <!-- Achievements Section (Tier List Classified) -->
+        </div>
+
+        <!-- Right Column: Top Right Achievements, then User Activity, then Transaction History -->
+        <div class="lg:col-span-2 flex flex-col gap-lg">
+          <!-- 1. TOP RIGHT: Achievements Section (Tier List Classified) -->
           <div id="achievements-section" class="bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl p-lg shadow-sm border border-outline-variant/30 transition-all duration-500">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-sm border-b border-outline-variant/20 pb-3 mb-md">
               <div>
@@ -575,17 +622,12 @@
               <!-- Diisi secara dinamis -->
             </div>
           </div>
-        </div>
-        <!-- Right Column: Sections -->
-        <div class="lg:col-span-2 flex flex-col gap-lg">
-          <!-- Aktivitas User Section -->
-          <section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
-            <div
-              class="px-lg py-md border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
-              <h2 class="font-headline-md text-[20px] md:text-headline-md leading-tight text-on-surface">Aktivitas User
-              </h2>
-              <a href="komunitas.html"
-                class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-xs">
+
+          <!-- 2. Aktivitas User Section (Below Achievements) -->
+          <section class="bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden flex flex-col">
+            <div class="px-lg py-md border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-low dark:bg-slate-900">
+              <h2 class="font-headline-md text-lg md:text-headline-md leading-tight text-on-surface dark:text-white font-extrabold">Aktivitas User</h2>
+              <a href="komunitas.html" class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-xs">
                 Semua Aktivitas
                 <span class="material-symbols-outlined text-sm">arrow_forward</span>
               </a>
@@ -594,14 +636,12 @@
               <!-- Diisi dinamis -->
             </div>
           </section>
-          <!-- Riwayat Transaksi Section -->
-          <section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
-            <div
-              class="px-lg py-md border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
-              <h2 class="font-headline-md text-[20px] md:text-headline-md leading-tight text-on-surface">Riwayat
-                Transaksi</h2>
-              <a href="javascript:void(0)" onclick="document.getElementById('tab-leaderboard').click()"
-                class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-xs">
+
+          <!-- 3. Riwayat Transaksi Section (Below Aktivitas) -->
+          <section class="bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden flex flex-col">
+            <div class="px-lg py-md border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-low dark:bg-slate-900">
+              <h2 class="font-headline-md text-lg md:text-headline-md leading-tight text-on-surface dark:text-white font-extrabold">Riwayat Transaksi</h2>
+              <a href="javascript:void(0)" onclick="document.getElementById('tab-leaderboard').click()" class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-xs">
                 Lihat Semua
                 <span class="material-symbols-outlined text-sm">arrow_forward</span>
               </a>
@@ -615,75 +655,24 @@
 
       <div id="content-leaderboard" class="hidden flex-col gap-lg w-full">
         <div>
-          <h1 class="font-display-lg text-[32px] md:text-display-lg leading-tight text-on-surface mb-sm">Leaderboard &
-            Progress</h1>
-          <p class="font-body-lg text-body-lg text-on-surface-variant">Track your reading journey, complete daily
-            quests, and climb the ranks.</p>
+          <h1 class="font-display-lg text-[32px] md:text-display-lg leading-tight text-on-surface dark:text-white font-black mb-sm">Leaderboard & Quests</h1>
+          <p class="font-body-lg text-body-lg text-on-surface-variant dark:text-slate-400">Selesaikan daily quest harian dan raih posisi teratas di Liga Literasi ReadBridge.</p>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
-          <!-- Left Column: Daily Quests & Level -->
+          <!-- Left Column: Daily Quests -->
           <div class="lg:col-span-1 flex flex-col gap-lg">
-            <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg flex flex-col">
+            <div class="bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl shadow-sm p-lg border border-outline-variant/30 flex flex-col">
               <div class="flex justify-between items-center mb-md">
-                <h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-sm">
-                  <span class="material-symbols-outlined text-tertiary-container">task_alt</span>
+                <h2 class="font-title-lg text-title-lg text-on-surface dark:text-white font-extrabold flex items-center gap-sm">
+                  <span class="material-symbols-outlined text-primary">task_alt</span>
                   Daily Quests
                 </h2>
-                <span id="quests-done-counter"
-                  class="bg-primary-container text-on-primary-container font-label-sm text-label-sm px-2 py-1 rounded-full">0
-                  / 4 Done</span>
+                <span id="quests-done-counter" class="bg-primary/10 text-primary font-bold text-xs px-2.5 py-1 rounded-full">0 / 4 Done</span>
               </div>
-              <p class="font-body-sm text-body-sm text-on-surface-variant mb-lg">Complete tasks to earn daily XP
-                bonuses.</p>
+              <p class="font-body-sm text-xs text-on-surface-variant dark:text-slate-400 mb-lg">Selesaikan tantangan membaca harian untuk mengklaim bonus XP.</p>
               <div id="daily-quests-container" class="space-y-sm">
                 <!-- Will be populated dynamically by JavaScript -->
               </div>
-            </div>
-
-            <!-- Level Progression Visualization Moved to Left Column for balance -->
-            <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg">
-              <h2 class="font-title-lg text-title-lg text-on-surface mb-lg flex items-center gap-sm">
-                <span class="material-symbols-outlined text-secondary">route</span>
-                Level System
-              </h2>
-              <div class="relative flex items-center justify-between w-full mt-md mb-xl px-sm">
-                <!-- Connecting Line -->
-                <div class="absolute top-1/2 left-0 w-full h-1 bg-surface-variant -z-10 -translate-y-1/2"></div>
-                <div class="absolute top-1/2 left-0 w-3/4 h-1 bg-secondary -z-10 -translate-y-1/2"></div>
-                <!-- Level: Explorer -->
-                <div class="flex flex-col items-center gap-sm z-10">
-                  <div
-                    class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm">
-                    <span class="material-symbols-outlined text-sm"
-                      style="font-variation-settings: 'FILL' 1;">explore</span>
-                  </div>
-                </div>
-                <!-- Level: Reader -->
-                <div class="flex flex-col items-center gap-sm z-10">
-                  <div
-                    class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm">
-                    <span class="material-symbols-outlined text-sm"
-                      style="font-variation-settings: 'FILL' 1;">menu_book</span>
-                  </div>
-                </div>
-                <!-- Level: Thinker -->
-                <div class="flex flex-col items-center gap-sm z-10">
-                  <div
-                    class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm ring-4 ring-secondary-container">
-                    <span class="material-symbols-outlined text-sm"
-                      style="font-variation-settings: 'FILL' 1;">lightbulb</span>
-                  </div>
-                </div>
-                <!-- Level: Scholar -->
-                <div class="flex flex-col items-center gap-sm z-10">
-                  <div
-                    class="w-10 h-10 rounded-full bg-surface-variant text-outline flex items-center justify-center shadow-sm">
-                    <span class="material-symbols-outlined text-sm">school</span>
-                  </div>
-                </div>
-              </div>
-              <p class="font-body-md text-body-md text-on-surface-variant text-center mt-md">You are currently a <strong
-                  class="text-on-surface">Thinker</strong>. Earn 750 more XP to become a Scholar!</p>
             </div>
           </div>
 
@@ -1779,9 +1768,14 @@
       const levelModalRank = document.getElementById('level-modal-rank-name');
       if (levelModalRank) levelModalRank.textContent = currentLevelName;
 
-      // Update user-sidebar-level-badge
+      // Update user-sidebar-level-badge & roadmap desc
       const userSidebarLevelBadge = document.getElementById('user-sidebar-level-badge');
       if (userSidebarLevelBadge) userSidebarLevelBadge.textContent = currentLevelName + ' Level';
+
+      const levelRoadmapDesc = document.getElementById('level-roadmap-desc');
+      if (levelRoadmapDesc) {
+        levelRoadmapDesc.textContent = `Anda berada di tingkat ${currentLevelName} (${totalXP} XP). Butuh ${xpLeft} XP lagi untuk ke ${nextLevelName}!`;
+      }
 
       // Update Leaderboard row
       const lbUserLevelName = document.getElementById('leaderboard-user-level-name');
