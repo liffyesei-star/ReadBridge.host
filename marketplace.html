@@ -136,7 +136,11 @@
         <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">search</span>
         <input id="search-input" class="pl-10 pr-sm py-xs rounded-xl bg-surface-container-low border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md w-64 outline-none" placeholder="Cari buku preloved..." type="text"/>
       </div>
-      <a href="notifikasi.html" class="flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+      <a href="pesan.html" class="flex items-center justify-center p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors relative">
+        <span class="material-symbols-outlined">chat</span>
+        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full border-2 border-surface hidden"></span>
+      </a>
+      <a href="notifikasi.html" class="flex items-center justify-center p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
         <span class="material-symbols-outlined">notifications</span>
       </a>
       <div class="relative" id="profile-menu-container">
@@ -408,7 +412,7 @@
           <div class="flex items-center gap-xs text-on-surface-variant mb-md mt-auto"><span class="material-symbols-outlined text-[16px]">location_on</span><span class="font-label-sm text-label-sm">${b.location}</span></div>
           <div class="flex gap-sm mt-auto">
             <button onclick="window.location.href='${checkoutUrl}'" class="flex-grow bg-primary text-on-primary font-label-md text-label-md py-sm rounded-full hover:bg-primary-container transition-colors font-bold">Beli</button>
-            <button class="w-10 h-10 flex items-center justify-center border border-outline-variant rounded-full text-primary hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined">chat</span></button>
+            <a href="pesan.html?tab=transaksi" class="w-10 h-10 flex items-center justify-center border border-outline-variant rounded-full text-primary hover:bg-surface-container-low transition-colors" title="Chat Penjual"><span class="material-symbols-outlined">chat</span></a>
           </div>
         </div>
       </article>`;
@@ -441,7 +445,10 @@
               <span class="font-label-md text-label-md text-primary">Rp ${b.priceHarian.toLocaleString('id-ID')} (IDR) / hari</span>
             </div>
           </div>
-          <button onclick="checkoutSewa(${b.id}, ${b.isDb ? 'true' : 'false'})" class="w-full py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container hover:shadow-md transition-all mt-md">Sewa Sekarang</button>`
+          <div class="flex gap-sm mt-md">
+            <button onclick="checkoutSewa(${b.id}, ${b.isDb ? 'true' : 'false'})" class="flex-grow py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container hover:shadow-md transition-all font-bold">Sewa</button>
+            <a href="pesan.html?tab=transaksi" class="w-10 h-10 flex items-center justify-center border border-outline-variant rounded-full text-primary hover:bg-surface-container-low transition-colors" title="Chat Penjual"><span class="material-symbols-outlined">chat</span></a>
+          </div>`
         : `<div class="mt-auto flex flex-col gap-xs bg-surface-container p-sm rounded-lg border border-outline-variant opacity-70">
             <div class="flex justify-between items-center"><span class="font-body-md text-body-md text-outline">Harga Sewa</span><span class="font-label-md text-label-md text-outline">Rp ${b.priceHarian.toLocaleString('id-ID')} (IDR) / hari</span></div>
           </div>
