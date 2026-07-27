@@ -6,22 +6,25 @@
 */
 const admin = require("../config/firebase");
 const db = require("../config/db");
-
 const jwt = require("jsonwebtoken");
+const ApiResponse = require("../utils/apiResponse");
+
 const JWT_SECRET = process.env.JWT_SECRET || 'readbridge_jwt_secret_key_production_2026';
 
-// Middleware wajib login
+/**
+ * Middleware Wajib Login (JWT Local or Firebase ID Token)
+ */
 const verifyToken = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ success: false, message: "Token tidak ditemukan" });
+      return ApiResponse.unauthorized(res, "Token autentikasi tidak ditemukan.");
     }
 
     const token = authHeader.split("Bearer ")[1];
     let decoded;
-    
-    // Coba verifikasi sebagai JWT lokal dulu
+
+    // 1. Coba Verifikasi JWT Lokal
     try {
       decoded = jwt.verify(token, JWT_SECRET);
       const [rows] = await db.execute(
@@ -29,35 +32,38 @@ const verifyToken = async (req, res, next) => {
         [decoded.id]
       );
       if (rows.length === 0) {
-        return res.status(401).json({ success: false, message: "User tidak ditemukan atau tidak aktif" });
+        return ApiResponse.unauthorized(res, "Akun tidak ditemukan atau telah dinonaktifkan.");
       }
       req.user = rows[0];
       return next();
     } catch (jwtErr) {
-      // Jika bukan JWT lokal, coba Firebase
-      decoded = await admin.auth().verifyIdToken(token);
-      const [rows] = await db.execute(
-        "SELECT id, firebase_uid, nama, email, role, foto_profil, poin FROM users WHERE firebase_uid = ? AND aktif = 1",
-        [decoded.uid]
-      );
+      // 2. Jika bukan JWT Lokal, Coba Verifikasi Firebase Token
+      try {
+        decoded = await admin.auth().verifyIdToken(token);
+        const [rows] = await db.execute(
+          "SELECT id, firebase_uid, nama, email, role, foto_profil, poin FROM users WHERE firebase_uid = ? AND aktif = 1",
+          [decoded.uid]
+        );
 
-      if (rows.length === 0) {
-        return res.status(401).json({ success: false, message: "User tidak ditemukan atau tidak aktif" });
+        if (rows.length === 0) {
+          return ApiResponse.unauthorized(res, "Akun Firebase tidak terdaftar di database.");
+        }
+
+        req.user = rows[0];
+        req.firebaseUser = decoded;
+        return next();
+      } catch (firebaseErr) {
+        return ApiResponse.unauthorized(res, "Token tidak valid atau telah kedaluwarsa.");
       }
-
-      req.user = rows[0];
-      req.firebaseUser = decoded;
-      return next();
     }
   } catch (error) {
-    if (error.code === "auth/id-token-expired") {
-      return res.status(401).json({ success: false, message: "Token expired, silakan login ulang" });
-    }
-    return res.status(401).json({ success: false, message: "Token tidak valid" });
+    return ApiResponse.unauthorized(res, "Gagal memproses autentikasi.");
   }
 };
 
-// Middleware opsional login (tidak wajib, tapi kalau ada token akan di-decode)
+/**
+ * Middleware Opsional Login (Inject user jika token valid, tidak melempar 401 jika tidak ada)
+ */
 const optionalAuth = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -69,7 +75,6 @@ const optionalAuth = async (req, res, next) => {
     const token = authHeader.split("Bearer ")[1];
     let decoded;
 
-    // Coba verifikasi sebagai JWT lokal dulu
     try {
       decoded = jwt.verify(token, JWT_SECRET);
       const [rows] = await db.execute(
@@ -78,29 +83,34 @@ const optionalAuth = async (req, res, next) => {
       );
       req.user = rows.length > 0 ? rows[0] : null;
       return next();
-    } catch (jwtErr) {
-      // Jika bukan JWT lokal, coba Firebase
-      decoded = await admin.auth().verifyIdToken(token);
-      const [rows] = await db.execute(
-        "SELECT id, firebase_uid, nama, email, role, foto_profil, poin FROM users WHERE firebase_uid = ? AND aktif = 1",
-        [decoded.uid]
-      );
-
-      req.user = rows.length > 0 ? rows[0] : null;
-      return next();
+    } catch {
+      try {
+        decoded = await admin.auth().verifyIdToken(token);
+        const [rows] = await db.execute(
+          "SELECT id, firebase_uid, nama, email, role, foto_profil, poin FROM users WHERE firebase_uid = ? AND aktif = 1",
+          [decoded.uid]
+        );
+        req.user = rows.length > 0 ? rows[0] : null;
+        return next();
+      } catch {
+        req.user = null;
+        return next();
+      }
     }
   } catch {
     req.user = null;
-    next();
+    return next();
   }
 };
 
-// Middleware role admin
+/**
+ * Middleware Role Admin
+ */
 const requireAdmin = (req, res, next) => {
   if (!req.user || req.user.role !== "admin") {
-    return res.status(403).json({ success: false, message: "Akses ditolak: hanya admin" });
+    return ApiResponse.forbidden(res, "Akses ditolak: Fitur ini khusus untuk Administrator.");
   }
-  next();
+  return next();
 };
 
 module.exports = { verifyToken, optionalAuth, requireAdmin };
