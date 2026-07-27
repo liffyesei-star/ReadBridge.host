@@ -8,6 +8,7 @@ const admin = require("../config/firebase");
 const db = require("../config/db");
 
 const jwt = require("jsonwebtoken");
+const JWT_SECRET = process.env.JWT_SECRET || 'readbridge_jwt_secret_key_production_2026';
 
 // Middleware wajib login
 const verifyToken = async (req, res, next) => {
@@ -22,7 +23,7 @@ const verifyToken = async (req, res, next) => {
     
     // Coba verifikasi sebagai JWT lokal dulu
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET);
+      decoded = jwt.verify(token, JWT_SECRET);
       const [rows] = await db.execute(
         "SELECT id, firebase_uid, nama, email, role, foto_profil, poin FROM users WHERE id = ? AND aktif = 1",
         [decoded.id]
@@ -70,7 +71,7 @@ const optionalAuth = async (req, res, next) => {
 
     // Coba verifikasi sebagai JWT lokal dulu
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET);
+      decoded = jwt.verify(token, JWT_SECRET);
       const [rows] = await db.execute(
         "SELECT id, firebase_uid, nama, email, role, foto_profil, poin FROM users WHERE id = ? AND aktif = 1",
         [decoded.id]

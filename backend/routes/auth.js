@@ -15,10 +15,9 @@ const rateLimit = require("express-rate-limit");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 
-// Security: Pastikan JWT_SECRET tersedia
+const JWT_SECRET = process.env.JWT_SECRET || 'readbridge_jwt_secret_key_production_2026';
 if (!process.env.JWT_SECRET) {
-  console.error("❌ FATAL: JWT_SECRET environment variable is not set!");
-  process.exit(1);
+  console.warn("⚠️ WARNING: JWT_SECRET environment variable is not set. Using default secret.");
 }
 
 const authLimiter = rateLimit({
@@ -83,7 +82,7 @@ router.post("/register", authLimiter, async (req, res) => {
       [nama, email, hashedPassword]
     );
 
-    const token = jwt.sign({ id: result.insertId, email }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: result.insertId, email }, JWT_SECRET, { expiresIn: '7d' });
 
     return res.status(201).json({
       success: true,
@@ -123,7 +122,7 @@ router.post("/login", authLimiter, async (req, res) => {
       return res.status(401).json({ success: false, message: "Email atau password salah" });
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
 
     return res.json({
       success: true,

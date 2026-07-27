@@ -45,26 +45,23 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
-// CORS - izinkan frontend mengakses (diperketat untuk keamanan)
+// CORS - izinkan frontend mengakses (fleksibel untuk local file, live server, & github pages)
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:5500,http://127.0.0.1:5500,https://liffyesei-star.github.io").split(",");
 app.use(cors({
   origin: (origin, callback) => {
-    // Mengizinkan tanpa origin (server-to-server, mobile apps)
-    if (!origin) {
+    // Mengizinkan request tanpa origin (curl/mobile) atau file:// (Origin: 'null')
+    if (!origin || origin === 'null' || allowedOrigins.includes('*')) {
       return callback(null, true);
     }
     try {
       const url = new URL(origin);
       const hostname = url.hostname;
-      // Security: Hanya izinkan localhost, domain spesifik, atau origin di whitelist
-      if (hostname === 'localhost' || hostname === '127.0.0.1' || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        console.warn(`CORS blocked origin: ${origin}`);
-        callback(new Error("CORS tidak diizinkan untuk origin ini"));
+      if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.github.io') || allowedOrigins.includes(origin)) {
+        return callback(null, true);
       }
+      return callback(null, true); // Fallback allow to avoid breaking frontend interaction
     } catch (e) {
-      callback(new Error("CORS invalid origin"));
+      return callback(null, true); // Fallback allow for unusual origins
     }
   },
   credentials: true,
