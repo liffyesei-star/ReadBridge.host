@@ -1549,8 +1549,8 @@
       const highestStreakEl = document.getElementById('streak-modal-highest');
       if (highestStreakEl) highestStreakEl.textContent = (currentStreak + 3) + ' Hari';
 
-      // 4. Kalkulasi XP dan Level
-      let baseXP = 800; // XP awal default
+      // 4. Kalkulasi XP dan Level (Mulai murni dari 0 XP)
+      let baseXP = 0; // XP awal murni 0
       let xpFromTransactions = transactions.length * 150; // +150 XP per transaksi
       let xpFromActivities = combinedActivities.length * 50; // +50 XP per diskusi/komentar
 
@@ -2131,8 +2131,12 @@
 
     function fallbackRealLeaderboard() {
       const container = document.getElementById('leaderboard-list-container');
+      const userCardContainer = document.getElementById('leaderboard-user-card-container');
       const currentUserName = localStorage.getItem('rb_username') || 'Siswa Indonesia';
       const currentUserAvatar = localStorage.getItem('rb_avatar') || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4';
+
+      const userXPText = document.getElementById('level-card-xp-min')?.textContent || '0 XP';
+      const levelName = document.getElementById('user-sidebar-level-badge')?.textContent || 'Explorer Level';
 
       if (container) {
         container.innerHTML = `
@@ -2147,14 +2151,35 @@
                 </h4>
                 <p class="text-[11px] text-on-surface-variant dark:text-slate-400 mt-0.5 flex items-center gap-1">
                   <span class="material-symbols-outlined text-[13px] text-primary">military_tech</span>
-                  <span>Scholar Level 14</span>
+                  <span>${levelName}</span>
                 </p>
               </div>
             </div>
             <div class="text-right">
-              <p class="font-extrabold text-sm text-primary dark:text-cyan-400">2,450 XP</p>
-              <p class="text-[10px] text-on-surface-variant dark:text-slate-400 mt-0.5">Pemimpin Liga saat ini</p>
+              <p class="font-extrabold text-sm text-primary dark:text-cyan-400">${userXPText}</p>
+              <p class="text-[10px] text-on-surface-variant dark:text-slate-400 mt-0.5">Akun Terdaftar di Database</p>
             </div>
+          </div>
+        `;
+      }
+
+      if (userCardContainer) {
+        userCardContainer.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-primary text-white font-black text-xs flex items-center justify-center shadow-sm">
+              #1
+            </div>
+            <img src="${currentUserAvatar}" class="w-10 h-10 rounded-full object-cover border border-primary">
+            <div>
+              <h4 class="font-extrabold text-xs text-on-surface dark:text-white flex items-center gap-1">
+                <span>${currentUserName} (Anda)</span>
+              </h4>
+              <p class="text-[11px] text-primary dark:text-cyan-400 font-semibold">Peringkat #1 Liga Literasi</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="font-black text-sm text-primary dark:text-cyan-400">${userXPText}</p>
+            <p class="text-[10px] text-on-surface-variant dark:text-slate-400">Poin Real Terverifikasi</p>
           </div>
         `;
       }
