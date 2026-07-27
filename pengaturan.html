@@ -161,22 +161,68 @@
         body { background-color: #f8f9ff; color: #0b1c30; }
         .dark body { background-color: #0b1c30; color: #f8f9ff; }
         
-        /* Toggle Switch Styling */
-        .toggle-checkbox:checked {
-            right: 0;
-            border-color: #10B981;
+        /* Ultra-Fluid & Elastic Toggle Switch Styling */
+        .toggle-switch-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            width: 3rem; /* 48px */
+            height: 1.625rem; /* 26px */
+            border-radius: 9999px;
+            cursor: pointer;
+            user-select: none;
+            flex-shrink: 0;
         }
-        .toggle-checkbox:checked + .toggle-label {
-            background-color: #10B981;
+
+        .toggle-switch-checkbox {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+            pointer-events: none;
         }
-        .toggle-checkbox {
-            right: 0;
-            z-index: 1;
-            border-color: #c3c6d7;
-            transition: all 0.3s;
+
+        .toggle-switch-track {
+            position: absolute;
+            inset: 0;
+            border-radius: 9999px;
+            background-color: #cbd5e1; /* slate-300 */
+            transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s ease;
+            box-shadow: inset 0 1.5px 3px rgba(0, 0, 0, 0.12);
         }
-        .toggle-label {
-            transition: all 0.3s;
+
+        .dark .toggle-switch-track {
+            background-color: #334155; /* slate-700 */
+        }
+
+        .toggle-switch-knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 22px;
+            height: 22px;
+            border-radius: 9999px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.22), 0 1px 2px rgba(0, 0, 0, 0.1);
+            transition: transform 0.35s cubic-bezier(0.34, 1.45, 0.64, 1), width 0.2s ease, background-color 0.35s ease, box-shadow 0.35s ease;
+            transform: translateX(0);
+        }
+
+        /* Checked State - Fluid Elastic Spring Animation */
+        .toggle-switch-checkbox:checked + .toggle-switch-track {
+            background-color: #2563eb;
+            background-image: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.35);
+        }
+
+        .toggle-switch-checkbox:checked + .toggle-switch-track .toggle-switch-knob {
+            transform: translateX(22px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+        }
+
+        /* Elastic Click Squish Effect */
+        .toggle-switch-wrapper:active .toggle-switch-knob {
+            width: 26px;
         }
         
         /* Interactive chip transition */
@@ -504,36 +550,54 @@
                 <!-- Tab: Notifikasi -->
                 <section id="tab-content-notifikasi" class="hidden bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl p-lg shadow-sm border border-outline-variant/30 flex-col gap-lg transition-opacity duration-300">
                     <div>
-                        <h2 class="font-title-lg text-title-lg font-extrabold text-on-surface dark:text-on-primary-container border-b border-outline-variant/20 pb-2 mb-md">Notifikasi Email</h2>
+                        <h2 class="font-title-lg text-title-lg font-extrabold text-on-surface dark:text-on-primary-container border-b border-outline-variant/20 pb-2 mb-md">Notifikasi Email & Langganan</h2>
                         <div class="flex items-center justify-between py-3.5 border-b border-outline-variant/20">
                             <div>
                                 <p class="font-bold text-on-surface dark:text-on-primary-container text-xs">Ringkasan Aktivitas Mingguan</p>
                                 <p class="text-[11px] text-on-surface-variant dark:text-outline-variant mt-0.5">Dapatkan email rangkuman tentang XP dan pencapaian membaca Anda minggu ini.</p>
                             </div>
-                            <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in shrink-0">
-                                <input type="checkbox" name="toggle" id="toggle1" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
-                                <label for="toggle1" class="toggle-label block overflow-hidden h-6 rounded-full bg-outline-variant cursor-pointer"></label>
-                            </div>
+                            <label class="toggle-switch-wrapper">
+                                <input type="checkbox" id="toggle-notif-mingguan" class="toggle-switch-checkbox" onchange="saveNotifTogglePreferences()" checked/>
+                                <div class="toggle-switch-track">
+                                    <div class="toggle-switch-knob"></div>
+                                </div>
+                            </label>
                         </div>
                         <div class="flex items-center justify-between py-3.5 border-b border-outline-variant/20">
                             <div>
                                 <p class="font-bold text-on-surface dark:text-on-primary-container text-xs">Balasan Komunitas Baru</p>
                                 <p class="text-[11px] text-on-surface-variant dark:text-outline-variant mt-0.5">Notifikasi instan ketika seseorang membalas utas diskusi Anda di komunitas.</p>
                             </div>
-                            <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in shrink-0">
-                                <input type="checkbox" name="toggle" id="toggle2" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
-                                <label for="toggle2" class="toggle-label block overflow-hidden h-6 rounded-full bg-outline-variant cursor-pointer"></label>
+                            <label class="toggle-switch-wrapper">
+                                <input type="checkbox" id="toggle-notif-komunitas" class="toggle-switch-checkbox" onchange="saveNotifTogglePreferences()" checked/>
+                                <div class="toggle-switch-track">
+                                    <div class="toggle-switch-knob"></div>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between py-3.5 border-b border-outline-variant/20">
+                            <div>
+                                <p class="font-bold text-on-surface dark:text-on-primary-container text-xs">Promo & Diskon Marketplace</p>
+                                <p class="text-[11px] text-on-surface-variant dark:text-outline-variant mt-0.5">Info penawaran sewa buku pelajaran murah dan kode diskon marketplace buku bekas.</p>
                             </div>
+                            <label class="toggle-switch-wrapper">
+                                <input type="checkbox" id="toggle-notif-promo" class="toggle-switch-checkbox" onchange="saveNotifTogglePreferences()"/>
+                                <div class="toggle-switch-track">
+                                    <div class="toggle-switch-knob"></div>
+                                </div>
+                            </label>
                         </div>
                         <div class="flex items-center justify-between py-3.5">
                             <div>
-                                <p class="font-bold text-on-surface dark:text-on-primary-container text-xs">Promo Marketplace</p>
-                                <p class="text-[11px] text-on-surface-variant dark:text-outline-variant mt-0.5">Info penawaran sewa buku pelajaran murah dan kode diskon marketplace buku bekas.</p>
+                                <p class="font-bold text-on-surface dark:text-on-primary-container text-xs">Peringatan Keamanan Akun</p>
+                                <p class="text-[11px] text-on-surface-variant dark:text-outline-variant mt-0.5">Notifikasi penting saat ada aktivitas login baru atau perubahan kata sandi.</p>
                             </div>
-                            <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in shrink-0">
-                                <input type="checkbox" name="toggle" id="toggle3" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
-                                <label for="toggle3" class="toggle-label block overflow-hidden h-6 rounded-full bg-outline-variant cursor-pointer"></label>
-                            </div>
+                            <label class="toggle-switch-wrapper">
+                                <input type="checkbox" id="toggle-notif-keamanan" class="toggle-switch-checkbox" onchange="saveNotifTogglePreferences()" checked disabled/>
+                                <div class="toggle-switch-track opacity-80">
+                                    <div class="toggle-switch-knob"></div>
+                                </div>
+                            </label>
                         </div>
                     </div>
                 </section>
@@ -959,6 +1023,38 @@ previewBox.style.fontFamily = 'inherit';
                 btn.textContent = 'Simpan Password';
             }
         }
+
+        function initNotifTogglePreferences() {
+            const mingguan = localStorage.getItem('rb_notif_mingguan');
+            const komunitas = localStorage.getItem('rb_notif_komunitas');
+            const promo = localStorage.getItem('rb_notif_promo');
+
+            if (mingguan !== null && document.getElementById('toggle-notif-mingguan')) {
+                document.getElementById('toggle-notif-mingguan').checked = (mingguan === 'true');
+            }
+            if (komunitas !== null && document.getElementById('toggle-notif-komunitas')) {
+                document.getElementById('toggle-notif-komunitas').checked = (komunitas === 'true');
+            }
+            if (promo !== null && document.getElementById('toggle-notif-promo')) {
+                document.getElementById('toggle-notif-promo').checked = (promo === 'true');
+            }
+        }
+
+        function saveNotifTogglePreferences() {
+            const mingguan = document.getElementById('toggle-notif-mingguan')?.checked;
+            const komunitas = document.getElementById('toggle-notif-komunitas')?.checked;
+            const promo = document.getElementById('toggle-notif-promo')?.checked;
+
+            localStorage.setItem('rb_notif_mingguan', mingguan);
+            localStorage.setItem('rb_notif_komunitas', komunitas);
+            localStorage.setItem('rb_notif_promo', promo);
+
+            alertFeedback('✅ Preferensi notifikasi berhasil disimpan');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initNotifTogglePreferences();
+        });
 
         function fallbackProfile() {
             const savedName = localStorage.getItem('rb_username') || 'Siswa Indonesia';
