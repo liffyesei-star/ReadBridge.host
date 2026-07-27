@@ -15,6 +15,12 @@ const rateLimit = require("express-rate-limit");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 
+// Security: Pastikan JWT_SECRET tersedia
+if (!process.env.JWT_SECRET) {
+  console.error("❌ FATAL: JWT_SECRET environment variable is not set!");
+  process.exit(1);
+}
+
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
@@ -48,7 +54,22 @@ router.post("/register", authLimiter, async (req, res) => {
       return res.status(400).json({ success: false, message: "Semua field harus diisi" });
     }
 
-    const [existing] = await db.execute("SELECT id FROM users WHERE email = ?", [email]);
+    // Security: Validasi format email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const cleanEmail = email.trim().toLowerCase();
+    if (!emailRegex.test(cleanEmail)) {
+      return res.status(400).json({ success: false, message: "Format email tidak valid" });
+    }
+
+    // Security: Validasi kekuatan password
+    if (password.length < 8) {
+      return res.status(400).json({ success: false, message: "Password minimal 8 karakter" });
+    }
+    if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
+      return res.status(400).json({ success: false, message: "Password harus mengandung huruf dan angka" });
+    }
+
+    const [existing] = await db.execute("SELECT id FROM users WHERE email = ?", [cleanEmail]);
     if (existing.length > 0) {
       return res.status(400).json({ success: false, message: "Email sudah terdaftar" });
     }
@@ -62,7 +83,7 @@ router.post("/register", authLimiter, async (req, res) => {
       [nama, email, hashedPassword]
     );
 
-    const token = jwt.sign({ id: result.insertId, email }, process.env.JWT_SECRET || 'readbridge_secret_key', { expiresIn: '7d' });
+    const token = jwt.sign({ id: result.insertId, email }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
     return res.status(201).json({
       success: true,
@@ -87,22 +108,22 @@ router.post("/login", authLimiter, async (req, res) => {
       return res.status(400).json({ success: false, message: "Email dan password harus diisi" });
     }
 
-    const [users] = await db.execute("SELECT * FROM users WHERE email = ?", [email]);
+    const [users] = await db.execute("SELECT * FROM users WHERE email = ?", [email.trim().toLowerCase()]);
     if (users.length === 0) {
-      return res.status(401).json({ success: false, message: "Email tidak ditemukan" });
+      return res.status(401).json({ success: false, message: "Email atau password salah" });
     }
 
     const user = users[0];
     if (!user.password) {
-      return res.status(401).json({ success: false, message: "Gunakan fitur login dengan Google" });
+      return res.status(401).json({ success: false, message: "Akun ini menggunakan login Google" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: "Password salah" });
+      return res.status(401).json({ success: false, message: "Email atau password salah" });
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET || 'readbridge_secret_key', { expiresIn: '7d' });
+    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
     return res.json({
       success: true,
@@ -246,9 +267,8 @@ router.post("/forgot-password", forgotPasswordLimiter, async (req, res) => {
     );
 
     if (users.length === 0) {
-      // Untuk keamanan, jangan beritahu apakah email terdaftar atau tidak
-      // Tapi untuk testing, kita lihat saja
-      return res.status(404).json({ success: false, message: "Email tidak terdaftar atau akun ini login via Google" });
+      // Security: Jangan ungkapkan apakah email terdaftar atau tidak
+      return res.json({ success: true, message: "Jika email terdaftar, tautan reset password akan dikirim. Periksa kotak masuk Anda." });
     }
 
     const user = users[0];

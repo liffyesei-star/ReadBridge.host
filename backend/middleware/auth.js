@@ -22,7 +22,7 @@ const verifyToken = async (req, res, next) => {
     
     // Coba verifikasi sebagai JWT lokal dulu
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET || 'readbridge_secret_key');
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
       const [rows] = await db.execute(
         "SELECT id, firebase_uid, nama, email, role, foto_profil, poin FROM users WHERE id = ? AND aktif = 1",
         [decoded.id]
@@ -70,7 +70,7 @@ const optionalAuth = async (req, res, next) => {
 
     // Coba verifikasi sebagai JWT lokal dulu
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET || 'readbridge_secret_key');
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
       const [rows] = await db.execute(
         "SELECT id, firebase_uid, nama, email, role, foto_profil, poin FROM users WHERE id = ? AND aktif = 1",
         [decoded.id]

@@ -23,6 +23,17 @@ function httpErr(status, msg) {
   const e = new Error(msg); e.status = status; return e;
 }
 
+// Security: Strip semua HTML tags untuk mencegah Stored XSS
+function stripHtmlTags(str) {
+  if (!str || typeof str !== 'string') return '';
+  return str
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>') // decode lalu re-strip
+    .replace(/<[^>]*>/g, '')
+    .trim();
+}
+
 async function resolveClubId({ club_id, destination }) {
   if (club_id) return parseInt(club_id, 10) || null;
   if (!destination || destination === "Public Feed") return null;
@@ -45,13 +56,17 @@ async function resolveClubId({ club_id, destination }) {
 async function createDiskusi({ userId, judul, konten, buku_id, club_id, destination, media_url, media_type }) {
   if (!judul || !konten) throw httpErr(400, "Judul dan konten wajib diisi");
 
+  // Security: Sanitasi input HTML untuk mencegah Stored XSS
+  const safeJudul = stripHtmlTags(judul).slice(0, 255);
+  const safeKonten = stripHtmlTags(konten).slice(0, 5000);
+
   const validMediaType = ['image','video'].includes(media_type) ? media_type : null;
   const safeMediaUrl = media_url && validMediaType ? media_url : null;
   const resolvedClubId = await resolveClubId({ club_id, destination });
 
   const [result] = await db.execute(
     "INSERT INTO diskusi (club_id, user_id, judul, konten, buku_id, media_url, media_type) VALUES (?, ?, ?, ?, ?, ?, ?)",
-    [resolvedClubId, userId, judul, konten, buku_id || null, safeMediaUrl, validMediaType]
+    [resolvedClubId, userId, safeJudul, safeKonten, buku_id || null, safeMediaUrl, validMediaType]
   );
 
   await db.execute(

@@ -11,6 +11,14 @@ const DRAFT_KEY = 'readbridge_draft';
 const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 const API_BASE = localStorage.getItem('rb_api_base_url') || (isLocal ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
 
+// Security: HTML escape untuk mencegah Stored XSS pada user-generated content
+function escapeHtml(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+}
+
 // 7 Daftar Klub Belajar & Diskusi ReadBridge
 const ALL_CLUBS = {
   'pejuang-snbt': {
@@ -542,8 +550,8 @@ function renderPostCard(p) {
   return `<article data-post-id="${p.id}" class="bg-surface-container-lowest rounded-2xl p-lg flex flex-col gap-md shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300 border border-outline-variant/20 hover:-translate-y-0.5 ${isTrending ? 'border-l-4 border-l-amber-500/85 bg-gradient-to-r from-amber-500/[0.01] to-transparent' : ''}">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-sm text-on-surface-variant font-label-sm text-label-sm">
-        <img src="${avatar}" alt="${p.username}" class="w-10 h-10 rounded-full object-cover border border-outline-variant/50 bg-surface-container-high"/>
-        <div class="flex flex-col"><div class="flex items-center"><span class="font-bold text-on-surface text-label-md">${p.username}</span>${badge}${trendingBadge}${destBadge}</div><span class="text-on-surface-variant/80">${formatWaktu(p.waktu)}${editedBadge}</span></div>
+        <img src="${avatar}" alt="${escapeHtml(p.username)}" class="w-10 h-10 rounded-full object-cover border border-outline-variant/50 bg-surface-container-high"/>
+        <div class="flex flex-col"><div class="flex items-center"><span class="font-bold text-on-surface text-label-md">${escapeHtml(p.username)}</span>${badge}${trendingBadge}${destBadge}</div><span class="text-on-surface-variant/80">${formatWaktu(p.waktu)}${editedBadge}</span></div>
       </div>
       <div class="relative">
         <button onclick="window.togglePostMenu(event, '${p.id}')" class="text-on-surface-variant hover:bg-surface-container p-2 rounded-full transition-colors"><span class="material-symbols-outlined">more_horiz</span></button>
@@ -559,8 +567,8 @@ function renderPostCard(p) {
       </div>
     </div>
     <div class="flex flex-col gap-2">
-      <a href="detail-diskusi.html?id=${p.id}" class="group"><h2 class="font-title-lg text-title-lg text-on-surface font-bold leading-tight group-hover:text-primary transition-colors cursor-pointer">${p.judul}</h2></a>
-      <p class="font-body-md text-body-md text-on-surface-variant line-clamp-3 leading-relaxed">${p.isi}</p>
+      <a href="detail-diskusi.html?id=${p.id}" class="group"><h2 class="font-title-lg text-title-lg text-on-surface font-bold leading-tight group-hover:text-primary transition-colors cursor-pointer">${escapeHtml(p.judul)}</h2></a>
+      <p class="font-body-md text-body-md text-on-surface-variant line-clamp-3 leading-relaxed">${escapeHtml(p.isi)}</p>
       ${pollHTML}
       ${attachmentHTML}
       ${p.media_url ? (

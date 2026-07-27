@@ -21,7 +21,7 @@ router.get("/", verifyToken, async (req, res) => {
     res.json({ success: true, has_toko: true, data: toko[0] });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Gagal mengambil data toko", error: error.message });
+    res.status(500).json({ success: false, message: "Gagal mengambil data toko" });
   }
 });
 
@@ -61,7 +61,7 @@ router.post("/", verifyToken, async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Gagal membuat toko", error: error.message });
+    res.status(500).json({ success: false, message: "Gagal membuat toko" });
   }
 });
 
@@ -88,7 +88,7 @@ router.get("/books", verifyToken, async (req, res) => {
     res.json({ success: true, data: books });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Gagal mengambil daftar buku toko", error: error.message });
+    res.status(500).json({ success: false, message: "Gagal mengambil daftar buku toko" });
   }
 });
 

@@ -11,7 +11,7 @@ const db = require("../config/db");
 const { verifyToken } = require("../middleware/auth");
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5500";
-const QRISLY_API_KEY = process.env.QRISLY_API_KEY || process.env.PAYMENT_API_KEY || "QKC8zpPS0ebd0136939bbd78M7odS4dQ";
+const QRISLY_API_KEY = process.env.QRISLY_API_KEY || process.env.PAYMENT_API_KEY || "";
 
 // Generate kode transaksi unik
 function generateKodeTransaksi() {

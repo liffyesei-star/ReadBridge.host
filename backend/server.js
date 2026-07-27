@@ -45,21 +45,23 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
-// CORS - izinkan frontend mengakses
+// CORS - izinkan frontend mengakses (diperketat untuk keamanan)
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:5500,http://127.0.0.1:5500,https://liffyesei-star.github.io").split(",");
 app.use(cors({
   origin: (origin, callback) => {
-    // Mengizinkan tanpa origin, file:// preview (Origin: null), localhost, github.io, atau origin spesifik
-    if (!origin || origin === 'null' || allowedOrigins.includes('*')) {
+    // Mengizinkan tanpa origin (server-to-server, mobile apps)
+    if (!origin) {
       return callback(null, true);
     }
     try {
       const url = new URL(origin);
       const hostname = url.hostname;
-      if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.github.io') || allowedOrigins.includes(origin)) {
+      // Security: Hanya izinkan localhost, domain spesifik, atau origin di whitelist
+      if (hostname === 'localhost' || hostname === '127.0.0.1' || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error("CORS tidak diizinkan untuk origin: " + origin));
+        console.warn(`CORS blocked origin: ${origin}`);
+        callback(new Error("CORS tidak diizinkan untuk origin ini"));
       }
     } catch (e) {
       callback(new Error("CORS invalid origin"));
@@ -81,10 +83,10 @@ if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
 
-// Rate limiter umum - 100 request per 15 menit
+// Rate limiter umum — 300 request per 15 menit (dinaikkan agar user aktif tidak terkena block)
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 300,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: "Terlalu banyak request, coba lagi nanti." },
