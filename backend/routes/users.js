@@ -22,13 +22,45 @@ router.put("/profile", verifyToken, async (req, res) => {
     const { nama, bio, foto_profil, minat } = req.body;
     if (!nama) return res.status(400).json({ success: false, message: "Nama tidak boleh kosong" });
 
+    // Dapatkan data user saat ini
+    const [rows] = await db.execute("SELECT nama, last_name_change FROM users WHERE id = ?", [req.user.id]);
+    if (rows.length === 0) return res.status(404).json({ success: false, message: "User tidak ditemukan" });
+    const user = rows[0];
+
+    let queryUpdates = "bio = ?, foto_profil = ?, minat = ?";
+    let queryParams = [bio || null, foto_profil || null, minat ? JSON.stringify(minat) : null];
+
+    // Jika mencoba mengubah nama
+    if (nama !== user.nama) {
+      if (user.last_name_change) {
+        const lastChange = new Date(user.last_name_change);
+        const now = new Date();
+        const diffTime = Math.abs(now - lastChange);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays <= 30) {
+          const sisaHari = 30 - diffDays + 1; // +1 to ensure it shows at least 1 if < 1
+          return res.status(400).json({ 
+            success: false, 
+            message: `Nama hanya bisa diganti 1x dalam 30 hari. Anda harus menunggu ${sisaHari} hari lagi.` 
+          });
+        }
+      }
+      // Boleh ganti nama
+      queryUpdates = "nama = ?, last_name_change = NOW(), " + queryUpdates;
+      queryParams.unshift(nama);
+    }
+
+    queryParams.push(req.user.id);
+
     await db.execute(
-      "UPDATE users SET nama = ?, bio = ?, foto_profil = ?, minat = ? WHERE id = ?",
-      [nama, bio || null, foto_profil || null, minat ? JSON.stringify(minat) : null, req.user.id]
+      `UPDATE users SET ${queryUpdates} WHERE id = ?`,
+      queryParams
     );
 
     res.json({ success: true, message: "Profil berhasil diperbarui" });
   } catch (error) {
+    console.error("Profile update error:", error);
     res.status(500).json({ success: false, message: "Gagal memperbarui profil" });
   }
 });
