@@ -451,6 +451,13 @@
             data-icon="leaderboard">leaderboard</span>
           XP Progress & Leaderboard
         </a>
+        <a id="sidebar-tab-riwayat"
+          class="flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all"
+          href="javascript:void(0)" onclick="document.getElementById('tab-riwayat').click()">
+          <span class="material-symbols-outlined text-on-surface-variant dark:text-outline-variant"
+            data-icon="receipt_long">receipt_long</span>
+          Riwayat & Transaksi
+        </a>
         <a class="flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all"
           href="javascript:void(0)" onclick="window.showStreakModal()">
           <span class="material-symbols-outlined text-secondary dark:text-secondary-fixed-dim"
@@ -495,13 +502,18 @@
     <!-- Main Content Area -->
     <main class="flex-1 md:ml-64 pt-20 p-margin pb-xxl flex flex-col gap-lg">
       <!-- Tabs -->
-      <div class="flex items-center gap-md border-b border-outline-variant w-full">
+      <div class="flex items-center gap-md border-b border-outline-variant w-full overflow-x-auto scrollbar-none">
         <button id="tab-detail"
-          class="font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors">Detail
+          class="font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors shrink-0">Detail
           Akun</button>
         <button id="tab-leaderboard"
-          class="font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors">Leaderboard
+          class="font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors shrink-0">Leaderboard
           & Quests</button>
+        <button id="tab-riwayat"
+          class="font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors shrink-0 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">receipt_long</span>
+          Riwayat & Transaksi
+        </button>
       </div>
 
       <div id="content-detail" class="grid grid-cols-1 lg:grid-cols-3 gap-lg w-full">
@@ -655,33 +667,7 @@
             </div>
           </div>
 
-          <!-- 2. Aktivitas User Section (Below Achievements) -->
-          <section class="bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden flex flex-col">
-            <div class="px-lg py-md border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-low dark:bg-slate-900">
-              <h2 class="font-headline-md text-lg md:text-headline-md leading-tight text-on-surface dark:text-white font-extrabold">Aktivitas User</h2>
-              <a href="komunitas.html" class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-xs">
-                Semua Aktivitas
-                <span class="material-symbols-outlined text-sm">arrow_forward</span>
-              </a>
-            </div>
-            <div class="p-0" id="activity-list-container">
-              <!-- Diisi dinamis -->
-            </div>
-          </section>
-
-          <!-- 3. Riwayat Transaksi Section (Below Aktivitas) -->
-          <section class="bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden flex flex-col">
-            <div class="px-lg py-md border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-low dark:bg-slate-900">
-              <h2 class="font-headline-md text-lg md:text-headline-md leading-tight text-on-surface dark:text-white font-extrabold">Riwayat Transaksi</h2>
-              <a href="javascript:void(0)" onclick="document.getElementById('tab-leaderboard').click()" class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-xs">
-                Lihat Semua
-                <span class="material-symbols-outlined text-sm">arrow_forward</span>
-              </a>
-            </div>
-            <div class="p-lg grid grid-cols-1 md:grid-cols-2 gap-md" id="transaction-list-container">
-              <!-- Diisi dinamis -->
-            </div>
-          </section>
+          </div>
         </div>
       </div>
 
@@ -733,6 +719,55 @@
               <!-- Logged-in User Live Card Sticky Container -->
               <div id="leaderboard-user-card-container" class="border-t-2 border-primary bg-primary/5 dark:bg-slate-900/90 p-md flex items-center justify-between">
                 <!-- Injected via JS -->
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Content Riwayat & Transaksi -->
+      <div id="content-riwayat" class="hidden flex-col gap-lg w-full">
+        <div>
+          <h1 class="font-display-lg text-[32px] md:text-display-lg leading-tight text-on-surface dark:text-white font-black mb-xs">Riwayat & Aktivitas</h1>
+          <p class="font-body-lg text-body-lg text-on-surface-variant dark:text-slate-400">Pantau semua transaksi pembelian, sewa buku, dan rekam jejak aktivitas komunitas Anda secara terpusat.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-lg w-full">
+          <!-- Left Column: Aktivitas User -->
+          <div class="lg:col-span-1 flex flex-col gap-lg">
+            <section class="bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden flex flex-col">
+              <div class="px-lg py-md border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-low dark:bg-slate-900">
+                <h2 class="font-headline-md text-base font-extrabold text-on-surface dark:text-white flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary">history</span>
+                  Aktivitas Komunitas
+                </h2>
+                <a href="komunitas.html" class="text-primary text-xs font-bold hover:underline flex items-center gap-0.5">
+                  Komunitas →
+                </a>
+              </div>
+              <div class="p-0" id="activity-list-container">
+                <!-- Diisi dinamis -->
+              </div>
+            </section>
+          </div>
+
+          <!-- Right Column: Riwayat Transaksi -->
+          <div class="lg:col-span-2 flex flex-col gap-lg">
+            <section class="bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden flex flex-col">
+              <div class="px-lg py-md border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-low dark:bg-slate-900">
+                <div>
+                  <h2 class="font-headline-md text-lg font-extrabold text-on-surface dark:text-white flex items-center gap-2">
+                    <span class="material-symbols-outlined text-emerald-500">receipt_long</span>
+                    Riwayat Pembelian & Sewa Buku
+                  </h2>
+                  <p class="text-xs text-on-surface-variant dark:text-slate-400 mt-0.5">Daftar transaksi sah yang telah diselesaikan maupun sedang berjalan.</p>
+                </div>
+                <a href="marketplace.html" class="text-primary text-xs font-bold hover:underline">
+                  + Beli Buku Lagi
+                </a>
+              </div>
+              <div class="p-lg grid grid-cols-1 md:grid-cols-2 gap-md" id="transaction-list-container">
+                <!-- Diisi dinamis -->
               </div>
             </section>
           </div>
@@ -1329,61 +1364,89 @@
       // --- Dynamic Gamification Logic ---
       calculateGamification(savedName);
 
-      // ── Main Tab Logic (Detail Akun / Leaderboard) ──
+      // ── Main Tab Logic (Detail Akun / Leaderboard / Riwayat) ──
       const tabDetail = document.getElementById('tab-detail');
       const tabLeaderboard = document.getElementById('tab-leaderboard');
+      const tabRiwayat = document.getElementById('tab-riwayat');
+
       const contentDetail = document.getElementById('content-detail');
       const contentLeaderboard = document.getElementById('content-leaderboard');
+      const contentRiwayat = document.getElementById('content-riwayat');
+
       const sidebarTabDetail = document.getElementById('sidebar-tab-detail');
       const sidebarTabLeaderboard = document.getElementById('sidebar-tab-leaderboard');
+      const sidebarTabRiwayat = document.getElementById('sidebar-tab-riwayat');
+
+      function resetTabs() {
+        [tabDetail, tabLeaderboard, tabRiwayat].forEach(t => {
+          if (t) t.className = "font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors shrink-0 flex items-center gap-1.5";
+        });
+        [contentDetail, contentLeaderboard, contentRiwayat].forEach(c => {
+          if (c) {
+            c.classList.add('hidden');
+            c.classList.remove('grid', 'flex');
+          }
+        });
+        [sidebarTabDetail, sidebarTabLeaderboard, sidebarTabRiwayat].forEach(s => {
+          if (s) {
+            s.className = "flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all";
+            const icon = s.querySelector('span');
+            if (icon) icon.className = "material-symbols-outlined text-on-surface-variant dark:text-outline-variant";
+          }
+        });
+      }
 
       function showDetail() {
-        tabDetail.className = "font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors";
-        tabLeaderboard.className = "font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors";
-        contentDetail.classList.remove('hidden');
-        contentDetail.classList.add('grid');
-        contentLeaderboard.classList.add('hidden');
-        contentLeaderboard.classList.remove('flex');
-
-        if (sidebarTabDetail && sidebarTabLeaderboard) {
+        resetTabs();
+        if (tabDetail) tabDetail.className = "font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors shrink-0 flex items-center gap-1.5";
+        if (contentDetail) {
+          contentDetail.classList.remove('hidden');
+          contentDetail.classList.add('grid');
+        }
+        if (sidebarTabDetail) {
           sidebarTabDetail.className = "flex items-center gap-md px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all";
-          const iconDet = sidebarTabDetail.querySelector('span');
-          if (iconDet) iconDet.className = "material-symbols-outlined text-on-primary-container";
-
-          sidebarTabLeaderboard.className = "flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all";
-          const iconLead = sidebarTabLeaderboard.querySelector('span');
-          if (iconLead) iconLead.className = "material-symbols-outlined text-on-surface-variant dark:text-outline-variant";
+          const icon = sidebarTabDetail.querySelector('span');
+          if (icon) icon.className = "material-symbols-outlined text-on-primary-container";
         }
       }
 
       function showLeaderboard() {
-        tabLeaderboard.className = "font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors";
-        tabDetail.className = "font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors";
-        contentLeaderboard.classList.remove('hidden');
-        contentLeaderboard.classList.add('flex');
-        contentDetail.classList.add('hidden');
-        contentDetail.classList.remove('grid');
-
-        if (sidebarTabDetail && sidebarTabLeaderboard) {
-          sidebarTabLeaderboard.className = "flex items-center gap-md px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all";
-          const iconLead = sidebarTabLeaderboard.querySelector('span');
-          if (iconLead) iconLead.className = "material-symbols-outlined text-on-primary-container";
-
-          sidebarTabDetail.className = "flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all";
-          const iconDet = sidebarTabDetail.querySelector('span');
-          if (iconDet) iconDet.className = "material-symbols-outlined text-on-surface-variant dark:text-outline-variant";
+        resetTabs();
+        if (tabLeaderboard) tabLeaderboard.className = "font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors shrink-0 flex items-center gap-1.5";
+        if (contentLeaderboard) {
+          contentLeaderboard.classList.remove('hidden');
+          contentLeaderboard.classList.add('flex');
         }
-
+        if (sidebarTabLeaderboard) {
+          sidebarTabLeaderboard.className = "flex items-center gap-md px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all";
+          const icon = sidebarTabLeaderboard.querySelector('span');
+          if (icon) icon.className = "material-symbols-outlined text-on-primary-container";
+        }
         loadRealLeaderboard();
       }
 
-      if (tabDetail && tabLeaderboard) {
-        tabDetail.addEventListener('click', showDetail);
-        tabLeaderboard.addEventListener('click', showLeaderboard);
+      function showRiwayat() {
+        resetTabs();
+        if (tabRiwayat) tabRiwayat.className = "font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors shrink-0 flex items-center gap-1.5";
+        if (contentRiwayat) {
+          contentRiwayat.classList.remove('hidden');
+          contentRiwayat.classList.add('flex');
+        }
+        if (sidebarTabRiwayat) {
+          sidebarTabRiwayat.className = "flex items-center gap-md px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all";
+          const icon = sidebarTabRiwayat.querySelector('span');
+          if (icon) icon.className = "material-symbols-outlined text-on-primary-container";
+        }
       }
+
+      if (tabDetail) tabDetail.addEventListener('click', showDetail);
+      if (tabLeaderboard) tabLeaderboard.addEventListener('click', showLeaderboard);
+      if (tabRiwayat) tabRiwayat.addEventListener('click', showRiwayat);
 
       if (window.location.hash === '#leaderboard') {
         showLeaderboard();
+      } else if (window.location.hash === '#riwayat' || window.location.hash === '#transaksi') {
+        showRiwayat();
       }
 
       // ── BridgePass Status Logic ──
