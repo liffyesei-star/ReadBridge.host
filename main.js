@@ -330,7 +330,7 @@ document.addEventListener("DOMContentLoaded", function () {
              <article class="bg-surface-container-lowest col-span-full rounded-2xl p-lg flex flex-col gap-md shadow-sm border border-outline-variant/20 hover:shadow-md transition-shadow">
                <div class="flex items-center justify-between">
                  <div class="flex items-center gap-sm text-on-surface-variant font-label-sm text-label-sm">
-                   <div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center"><span class="material-symbols-outlined text-outline">person</span></div>
+                   <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(item.author)}&background=e0f2fe&color=0284c7" class="w-10 h-10 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-primary transition-all" data-profile-uid="disc_${item.id}" data-profile-name="${item.author}" data-profile-avatar="https://ui-avatars.com/api/?name=${encodeURIComponent(item.author)}&background=e0f2fe&color=0284c7" data-profile-status="active">
                    <div class="flex flex-col"><span class="font-bold text-on-surface text-label-md">${item.author}</span><span class="text-on-surface-variant/80">${item.timeAgo}</span></div>
                  </div>
                  <button class="text-on-surface-variant hover:bg-surface-container p-2 rounded-full transition-colors"><span class="material-symbols-outlined">more_horiz</span></button>
