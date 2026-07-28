@@ -6,6 +6,12 @@
   var API = localStorage.getItem('rb_api_base_url') || (isLocal ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
   var BUSY_KEY = "rb_google_busy";
   var COOLDOWN_MS = 2500;
+  var redirectCheckStarted = false;
+
+  function isOAuthReturn() {
+    var blob = location.search + location.hash;
+    return /apiKey=|authType=|state=|mode=signIn/i.test(blob);
+  }
 
   function status(msg) {
     var el = document.getElementById("rb-auth-status");
@@ -93,10 +99,10 @@
     var provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: "select_account" });
 
-    // FIX FOR SAFARI/iOS: Avoid popup entirely to prevent ITP issues
+    // Safari/iOS: redirect hanya lewat auth-handler.html (satu halaman untuk start + finish)
     if (checkSafariOrIOS()) {
       status("Mengalihkan ke Google (Safari)...");
-      auth.signInWithRedirect(provider);
+      window.rbUseRedirectLogin();
       return;
     }
 
@@ -193,31 +199,68 @@
       return;
     }
 
+    if (redirectCheckStarted) return;
+    var pendingRedirect =
+      isOAuthReturn() || !!sessionStorage.getItem(BUSY_KEY);
+    if (!pendingRedirect) {
+      status("Masuk dengan Google");
+      return;
+    }
+    redirectCheckStarted = true;
+
     try {
       var auth = getAuth();
+      
+      var handleAuthUser = function(user) {
+        if (!user || localStorage.getItem("rb_is_logged_in") === "true") return;
+        status("Menyinkronkan akun...");
+        var email = user.email || "";
+        var allowedEmails = ['liffy_sei@liffy-seis-MacBook-Air.local', 'tester@readbridge.com', 'admin@readbridge.com', 'rafanrizqoni@gmail.com', 'liffyesei@gmail.com'];
+        if (!allowedEmails.includes(email.toLowerCase()) && !email.toLowerCase().endsWith('@readbridge.com')) {
+            auth.signOut();
+            status("Akun belum terdaftar.");
+            alert("Mohon maaf, akun Google Anda belum terdaftar dalam daftar putih (Closed Alpha).");
+            return;
+        }
+        user.getIdToken().then(function (token) {
+          syncBackend(token).then(function () {
+            saveSession(user, token);
+            sessionStorage.removeItem(BUSY_KEY);
+            goAppSoon(450);
+          });
+        });
+      };
+
+      // 1. Fallback: Listen to auth state changes (in case redirect result is null but user is logged in)
+      var unsubscribe = auth.onAuthStateChanged(function(user) {
+        if (user) {
+           handleAuthUser(user);
+           unsubscribe();
+        }
+      });
+
+      // 2. Primary: Check redirect result
       auth.getRedirectResult()
         .then(function(result) {
           if (result && result.user) {
-            status("Menyinkronkan akun...");
-            var email = result.user.email || "";
-            var allowedEmails = ['liffy_sei@liffy-seis-MacBook-Air.local', 'tester@readbridge.com', 'admin@readbridge.com', 'rafanrizqoni@gmail.com', 'liffyesei@gmail.com'];
-            if (!allowedEmails.includes(email.toLowerCase()) && !email.toLowerCase().endsWith('@readbridge.com')) {
-                auth.signOut();
-                status("Akun belum terdaftar.");
-                alert("Mohon maaf, akun Google Anda belum terdaftar dalam daftar putih (Closed Alpha).");
-                return;
-            }
-            return result.user.getIdToken().then(function (token) {
-              return syncBackend(token).then(function () {
-                saveSession(result.user, token);
+            handleAuthUser(result.user);
+          } else {
+             // If redirect result is null but BUSY_KEY is still there, we might just be waiting for onAuthStateChanged
+             var isStillBusy = sessionStorage.getItem(BUSY_KEY);
+             if (isStillBusy && (Date.now() - parseInt(isStillBusy, 10) > 10000)) {
+                // If it's been busy for over 10 seconds and we returned with no result, clear it
                 sessionStorage.removeItem(BUSY_KEY);
-                goAppSoon(450);
-              });
-            });
+             }
           }
         })
         .catch(function(err) {
           console.error("Redirect Result Error:", err);
+          if (err.code !== "auth/redirect-cancelled-by-user") {
+             // Try to show error to user if they return from redirect with an error
+             if (sessionStorage.getItem(BUSY_KEY)) {
+                alert("Terjadi kesalahan saat otentikasi Google: " + err.message);
+             }
+          }
           sessionStorage.removeItem(BUSY_KEY);
         });
     } catch(e) {
@@ -225,10 +268,14 @@
     }
   };
 
-  // Sync sesi secara real-time saat pengguna kembali ke PWA
+  // Jangan panggil getRedirectResult lagi saat tab visible (Firebase hanya sekali)
   document.addEventListener("visibilitychange", function () {
-    if (document.visibilityState === "visible") {
-      window.rbCheckExistingSession();
+    if (document.visibilityState !== "visible") return;
+    if (
+      localStorage.getItem("rb_is_logged_in") === "true" &&
+      localStorage.getItem("rb_token")
+    ) {
+      goAppSoon(200);
     }
   });
 

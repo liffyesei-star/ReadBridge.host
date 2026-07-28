@@ -305,7 +305,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-    <script src="rb-google-login.js?v=4"></script>
+    <script src="rb-google-login.js?v=6"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             if (typeof rbCheckExistingSession === 'function') rbCheckExistingSession();
@@ -399,7 +399,14 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
 
     
-    <!-- Service Worker tidak didaftarkan di halaman login agar OAuth redirect tidak terganggu -->
+    <!-- Service Worker tidak didaftarkan di halaman login; lepaskan SW lama agar OAuth redirect aman -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (regs) {
+          regs.forEach(function (reg) { reg.unregister(); });
+        });
+      }
+    </script>
 </body>
 
 </html>

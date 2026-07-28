@@ -1,4 +1,4 @@
-const CACHE_NAME = 'readbridge-pwa-cache-v19';
+const CACHE_NAME = 'readbridge-pwa-cache-v20';
 
 // Terima perintah SKIP_WAITING dari halaman (tombol "Perbarui" di banner)
 self.addEventListener('message', event => {
@@ -54,6 +54,13 @@ self.addEventListener('fetch', event => {
 
   const isStaticAsset = /\.(png|jpg|jpeg|webp|svg|ico|woff2?|ttf)$/i.test(url.pathname);
   const isNavigate = event.request.mode === 'navigate';
+  const isAuthPage = /\/(login|auth-handler|google-login|register|reset-password)\.html$/i.test(url.pathname);
+
+  // OAuth redirect: jangan cache / intercept halaman auth
+  if (isAuthPage) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
 
   if (isStaticAsset) {
     // Cache-first untuk gambar & font (jarang berubah)
