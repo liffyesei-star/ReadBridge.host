@@ -642,7 +642,7 @@ function renderPostCard(p) {
         `}).join('')}
       </div>
       <div class="flex gap-3 items-center mt-2">
-        <img src="${getAvatarForUser('@SiswaIndonesia')}" alt="User" class="w-8 h-8 rounded-full border border-outline-variant/50"/>
+        <img src="${getAvatarForUser(CURRENT_USER_PROFILE)}" alt="User" class="w-8 h-8 rounded-full border border-outline-variant/50"/>
         <div class="flex-1 relative">
           <input type="text" id="input-comment-${p.id}" placeholder="Tulis komentar..." class="w-full bg-surface-container-low border border-outline-variant/30 rounded-full px-4 py-2.5 text-[14px] focus:ring-1 focus:ring-primary focus:border-primary outline-none pr-12 transition-all" onkeypress="if(event.key==='Enter') window.addComment('${p.id}')"/>
           <button onclick="window.addComment('${p.id}')" class="absolute right-2 top-1/2 -translate-y-1/2 text-primary hover:bg-primary/10 p-1.5 rounded-full transition-colors flex items-center justify-center">
@@ -882,6 +882,39 @@ window.addComment = async function (id) {
     return;
   }
 
+  // Clear input immediately to prevent double-clicks
+  input.value = '';
+  input.disabled = true;
+
+  // Optimistic UI update
+  const posts = getPosts();
+  const p = posts.find(x => String(x.id) === String(id));
+  if (p) {
+    p.commentsList = p.commentsList || [];
+    p.commentsList.push({ username: CURRENT_USER_PROFILE, text, waktu: new Date().toISOString() });
+    p.komentar = (p.komentar || 0) + 1;
+
+    const isPostAuthor = (CURRENT_USER_PROFILE === p.username);
+    const newBadge = isPostAuthor
+      ? `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda Author</span>`
+      : `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda</span>`;
+
+    const list = document.getElementById(`comments-list-${id}`);
+    if (list) {
+      list.insertAdjacentHTML('beforeend', `
+        <div class="flex gap-3 text-sm">
+          <img src="${getAvatarForUser(CURRENT_USER_PROFILE)}" alt="${CURRENT_USER_PROFILE}" class="w-8 h-8 rounded-full border border-outline-variant/50 bg-surface-container-high"/>
+          <div class="bg-surface-container-lowest border border-outline-variant/20 p-3 rounded-2xl rounded-tl-none flex-1 shadow-sm">
+            <div class="flex items-center gap-2 mb-1"><span class="font-bold text-on-surface text-[13px]">${CURRENT_USER_PROFILE}</span>${newBadge}<span class="text-on-surface-variant/60 text-[11px]">Baru saja</span></div>
+            <p class="text-on-surface-variant text-[14px] leading-relaxed">${text}</p>
+          </div>
+        </div>
+      `);
+    }
+    const countEl = document.getElementById(`komentar-count-${id}`);
+    if (countEl) countEl.textContent = p.komentar;
+  }
+
   try {
     const res = await fetch(`${API_BASE}/api/community/diskusi/${id}/balasan`, {
       method: 'POST',
@@ -893,43 +926,16 @@ window.addComment = async function (id) {
     });
 
     if (res.ok) {
-      const posts = getPosts();
-      const p = posts.find(x => x.id === id);
-      if (p) {
-        p.commentsList = p.commentsList || [];
-        p.commentsList.push({ username: CURRENT_USER_PROFILE, text, waktu: new Date().toISOString() });
-        p.komentar = (p.komentar || 0) + 1;
-
-        const isPostAuthor = (CURRENT_USER_PROFILE === p.username);
-        const newBadge = isPostAuthor
-          ? `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda Author</span>`
-          : `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-1 tracking-wider">Anda</span>`;
-
-        // Update UI directly for seamless experience
-        const list = document.getElementById(`comments-list-${id}`);
-        if (list) {
-          list.insertAdjacentHTML('beforeend', `
-            <div class="flex gap-3 text-sm">
-              <img src="${getAvatarForUser(CURRENT_USER_PROFILE)}" alt="${CURRENT_USER_PROFILE}" class="w-8 h-8 rounded-full border border-outline-variant/50 bg-surface-container-high"/>
-              <div class="bg-surface-container-lowest border border-outline-variant/20 p-3 rounded-2xl rounded-tl-none flex-1 shadow-sm">
-                <div class="flex items-center gap-2 mb-1"><span class="font-bold text-on-surface text-[13px]">${CURRENT_USER_PROFILE}</span>${newBadge}<span class="text-on-surface-variant/60 text-[11px]">Baru saja</span></div>
-                <p class="text-on-surface-variant text-[14px] leading-relaxed">${text}</p>
-              </div>
-            </div>
-          `);
-        }
-        const countEl = document.getElementById(`komentar-count-${id}`);
-        if (countEl) countEl.textContent = p.komentar;
-        input.value = '';
-
-        // Notify user their comment was posted
-        showToastNotification('💬 Komentar berhasil ditambahkan!');
-      }
+      showToastNotification('💬 Komentar berhasil ditambahkan!');
     } else {
-      alert("Gagal menambahkan komentar.");
+      showToastNotification('Gagal menambahkan komentar.', 'error');
     }
   } catch (e) {
     console.error(e);
+    showToastNotification('Terjadi kesalahan jaringan.', 'error');
+  } finally {
+    input.disabled = false;
+    input.focus();
   }
 };
 
@@ -1361,7 +1367,7 @@ function renderActivityFeed() {
     }
     if (p.commentsList) {
       p.commentsList.forEach(c => {
-        if (c.username === CURRENT_USER_PROFILE || c.username === '@SiswaIndonesia') {
+        if (c.username === CURRENT_USER_PROFILE) {
           activities.push({
             type: 'comment',
             waktu: c.waktu,
@@ -2575,7 +2581,7 @@ function renderBookRecommendations() {
                       <div class="flex flex-col">
                         <div class="flex items-center gap-2">
                           <span class="font-bold text-[13px] text-on-surface">${rev.username}</span>
-                          ${rev.username === '@SiswaIndonesia' ? `<span class="bg-primary/20 text-primary text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">Anda</span>` : ''}
+                          ${rev.username === CURRENT_USER_PROFILE ? `<span class="bg-primary/20 text-primary text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">Anda</span>` : ''}
                         </div>
                         <span class="text-[11px] text-on-surface-variant/70">Ulasan Terverifikasi</span>
                       </div>
@@ -2619,7 +2625,7 @@ function renderBookRecommendations() {
                           <div class="bg-surface-container-low border border-outline-variant/10 p-2.5 rounded-2xl rounded-tl-none flex-1 shadow-sm">
                             <div class="flex items-center gap-1.5 mb-0.5">
                               <span class="font-bold text-on-surface text-[12px]">${c.username}</span>
-                              ${c.username === '@SiswaIndonesia' ? `<span class="bg-primary/20 text-primary text-[8px] font-bold px-1 py-0.2 rounded uppercase">Anda</span>` : ''}
+                              ${c.username === CURRENT_USER_PROFILE ? `<span class="bg-primary/20 text-primary text-[8px] font-bold px-1 py-0.2 rounded uppercase">Anda</span>` : ''}
                               <span class="text-on-surface-variant/50 text-[10px]">${c.waktu || 'Baru saja'}</span>
                             </div>
                             <p class="text-on-surface-variant text-[13px] leading-relaxed">${c.text}</p>
@@ -2630,7 +2636,7 @@ function renderBookRecommendations() {
                     
                     <!-- Input Form Balasan -->
                     <div class="flex gap-2.5 items-center mt-1 pl-4">
-                      <img src="${getAvatarForUser('@SiswaIndonesia')}" alt="User" class="w-6 h-6 rounded-full border border-outline-variant/30"/>
+                      <img src="${getAvatarForUser(CURRENT_USER_PROFILE)}" alt="User" class="w-6 h-6 rounded-full border border-outline-variant/30"/>
                       <div class="flex-1 relative flex">
                         <input type="text" id="input-review-reply-${rev.id}" placeholder="Tulis balasan untuk ${rev.username}..." class="w-full bg-surface-container-low border border-outline-variant/30 rounded-full px-3.5 py-1.5 text-[13px] focus:ring-1 focus:ring-primary focus:border-primary outline-none pr-10 text-on-surface" onkeypress="if(event.key==='Enter') window.submitReviewReply('${rec.id}', '${rev.id}')"/>
                         <button onclick="window.submitReviewReply('${rec.id}', '${rev.id}')" class="absolute right-1 top-1/2 -translate-y-1/2 text-primary hover:bg-primary/10 p-1 rounded-full transition-colors flex items-center justify-center">
@@ -2686,7 +2692,7 @@ window.submitBookRecommendation = function (event) {
 
   const newReview = {
     id: 'rev-user-' + Date.now(),
-    username: '@SiswaIndonesia',
+    username: CURRENT_USER_PROFILE,
     rating: rating,
     reviewText: reviewText,
     upvotes: 0,
@@ -2780,7 +2786,7 @@ window.submitReviewReply = function (bookId, reviewId) {
 
   rev.comments = rev.comments || [];
   rev.comments.push({
-    username: '@SiswaIndonesia',
+    username: CURRENT_USER_PROFILE,
     text: text,
     waktu: 'Baru saja'
   });
