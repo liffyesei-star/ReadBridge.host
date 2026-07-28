@@ -4,8 +4,8 @@
  * Menyediakan tombol akses cepat untuk mengirim Direct Message (DM).
  */
 
-function injectProfileModal() {
-    if (document.getElementById('global-profile-modal')) return;
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Inject HTML Modal ke dalam Body
     const modalHTML = `
     <!-- Global Profile Card Modal -->
     <div id="global-profile-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300">
@@ -52,30 +52,40 @@ function injectProfileModal() {
         </div>
     </div>
     `;
+
     document.body.insertAdjacentHTML('beforeend', modalHTML);
-}
+});
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', injectProfileModal);
-} else {
-    injectProfileModal();
-}
-
+// Variabel global sementara untuk menyimpan data target chat
+let currentTargetData = null;
 
 // Fungsi Global untuk memanggil Card
-window.showProfileCard = function(element, name, username, avatarSrc) {
+window.showProfileCard = function(element, name, username, avatarSrc, targetUid) {
     const modal = document.getElementById('global-profile-modal');
     const card = document.getElementById('global-profile-card');
     
-    // Set Data
+    // Default UID jika tidak diberikan (fallback menggunakan username)
+    const uid = targetUid || username.replace('@', '');
+    
+    let resolvedAvatar = avatarSrc;
+    if(!resolvedAvatar && element && element.querySelector('img')) {
+        resolvedAvatar = element.querySelector('img').src;
+    }
+    if(!resolvedAvatar) {
+        resolvedAvatar = "https://i.pravatar.cc/150";
+    }
+
+    // Set Data UI
     document.getElementById('gpc-name').innerText = name || "Pengguna ReadBridge";
     document.getElementById('gpc-username').innerText = username || "@user";
+    document.getElementById('gpc-avatar').src = resolvedAvatar;
     
-    if(avatarSrc) {
-        document.getElementById('gpc-avatar').src = avatarSrc;
-    } else if (element && element.querySelector('img')) {
-        document.getElementById('gpc-avatar').src = element.querySelector('img').src;
-    }
+    // Simpan data target
+    currentTargetData = {
+        uid: uid,
+        name: name || "Pengguna ReadBridge",
+        avatar: resolvedAvatar
+    };
     
     // Animate In
     modal.classList.remove('hidden');
@@ -101,24 +111,23 @@ window.closeProfileCard = function() {
     setTimeout(() => {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+        currentTargetData = null;
     }, 300);
 }
 
-// Navigasi ke Pesan dengan Parameter Dinamis
+// Navigasi ke Pesan dengan Data URL
 window.startDM = function() {
-    const name = document.getElementById('gpc-name').innerText;
-    const username = document.getElementById('gpc-username').innerText;
-    // Generate a dummy UID based on username for routing purposes
-    const uid = 'UID' + Math.floor(Math.random() * 1000); 
-    
-    // Encode parameters
-    const params = new URLSearchParams({
-        to: uid,
-        name: name,
-        username: username
-    });
-    
-    window.location.href = 'pesan.html?' + params.toString();
+    if (currentTargetData) {
+        // Enkode parameter agar aman di URL
+        const params = new URLSearchParams({
+            uid: currentTargetData.uid,
+            name: currentTargetData.name,
+            avatar: currentTargetData.avatar
+        });
+        window.location.href = 'pesan.html?' + params.toString();
+    } else {
+        window.location.href = 'pesan.html';
+    }
 }
 
 // Tutup modal jika area luar diklik

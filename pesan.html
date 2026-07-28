@@ -291,9 +291,9 @@
                 <button class="p-2 text-on-surface-variant hover:text-primary transition-colors flex-shrink-0">
                     <span class="material-symbols-outlined">mood</span>
                 </button>
-                <textarea rows="1" placeholder="Ketik pesan dengan aman..." class="w-full bg-transparent border-none focus:ring-0 text-sm resize-none py-2.5 px-2 max-h-32 outline-none hide-scrollbar"></textarea>
+                <textarea id="chat-input-text" rows="1" placeholder="Ketik pesan dengan aman..." class="w-full bg-transparent border-none focus:ring-0 text-sm resize-none py-2.5 px-2 max-h-32 outline-none hide-scrollbar"></textarea>
             </div>
-            <button class="p-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors shadow-sm flex items-center justify-center flex-shrink-0">
+            <button id="btn-send-message" onclick="handleSendMessage()" class="p-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors shadow-sm flex items-center justify-center flex-shrink-0">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
             </button>
         </div>
@@ -547,6 +547,204 @@
             });
         });
     </script>
+
+
+<!-- E2E Chat Controller -->
+<script type="module">
+    import { sendEncryptedMessage, listenToMessages, getUserPublicKey } from './chat-db.js';
+    import { encryptMessage, decryptMessage, deriveSharedSecret } from './e2e-crypto.js';
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyDUfiy2BHYhHh1wql6uM5UvsF6hpNTVvhY",
+        authDomain: "readbridge-8934c.firebaseapp.com",
+        projectId: "readbridge-8934c",
+        storageBucket: "readbridge-8934c.firebasestorage.app",
+        messagingSenderId: "900450201794",
+        appId: "1:900450201794:web:8d65f989e7fefe590d8b5b",
+    };
+    const app = initializeApp(firebaseConfig);
+    const authInstance = getAuth(app);
+    
+    let activeRecipientId = null;
+    let activeRecipientName = null;
+    let activeRecipientAvatar = null;
+    let activeSharedSecret = null;
+    
+    // Parse URL Parameters
+    function parseURLParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const uid = urlParams.get('uid');
+        const name = urlParams.get('name');
+        const avatar = urlParams.get('avatar');
+        
+        if (uid) {
+            activeRecipientId = uid;
+            activeRecipientName = name || uid;
+            activeRecipientAvatar = avatar || 'https://i.pravatar.cc/150';
+            
+            // Update UI Header
+            document.getElementById('chat-header-name').innerText = activeRecipientName;
+            document.getElementById('chat-header-avatar').src = activeRecipientAvatar;
+            
+            // Clear dummy chat history
+            document.getElementById('chat-history').innerHTML = '';
+            
+            // Setup Secure Connection
+            setupSecureConnection(uid);
+        }
+    }
+    
+    async function setupSecureConnection(recipientId) {
+        try {
+            if(!authInstance.currentUser) {
+                console.warn("User belum login, menunda koneksi E2EE.");
+                // Jika auth belum siap, tunggu state change
+                authInstance.onAuthStateChanged(async (user) => {
+                    if(user) await doSetup(user.uid, recipientId);
+                });
+                return;
+            }
+            await doSetup(authInstance.currentUser.uid, recipientId);
+        } catch(e) {
+            console.error("Gagal setup koneksi aman:", e);
+        }
+    }
+    
+    async function doSetup(myUid, recipientId) {
+        try {
+            // Ambil public key penerima dari DB
+            const recipientPubKeyBase64 = await getUserPublicKey(recipientId);
+            if(!recipientPubKeyBase64) {
+                console.warn("Kunci publik penerima tidak ditemukan. Mungkin dia belum pernah login.");
+                // Buat peringatan di UI
+                const sysMsg = `<div class="flex justify-center my-2"><span class="text-[10px] font-bold text-red-500 bg-red-50 px-3 py-1 rounded-full border border-red-200">Pengguna belum mengaktifkan Enkripsi E2EE</span></div>`;
+                document.getElementById('chat-history').insertAdjacentHTML('beforeend', sysMsg);
+                return;
+            }
+            
+            // Derive shared secret
+            activeSharedSecret = await deriveSharedSecret(recipientPubKeyBase64);
+            console.log("Shared Secret ECDH berhasil dibuat dengan:", recipientId);
+            
+            // Mulai dengarkan pesan dari dia
+            listenToMessages(recipientId, handleIncomingMessage);
+            
+        } catch(e) {
+            console.error("Error doSetup:", e);
+        }
+    }
+    
+    function formatTime(date) {
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    
+    function renderOutgoingBubble(text, timeStr) {
+        const chatHistory = document.getElementById('chat-history');
+        const bubble = `
+        <div class="flex items-end justify-end gap-2 max-w-[85%] self-end mt-2 animate-[slideUp_0.3s_ease-out]">
+            <div class="bg-primary text-white px-4 py-2.5 rounded-2xl rounded-br-sm shadow-sm">
+                <p class="text-sm">${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
+                <span class="text-[9px] text-primary-fixed-dim mt-1 flex items-center justify-end gap-1">
+                    ${timeStr} <span class="material-symbols-outlined text-[12px]" style="font-variation-settings:'wght' 700;">done</span>
+                </span>
+            </div>
+        </div>
+        `;
+        chatHistory.insertAdjacentHTML('beforeend', bubble);
+        scrollToBottom();
+    }
+    
+    function renderIncomingBubble(text, timeStr) {
+        const chatHistory = document.getElementById('chat-history');
+        const bubble = `
+        <div class="flex items-end gap-2 max-w-[85%] self-start mt-2 animate-[slideUp_0.3s_ease-out]">
+            <img src="${activeRecipientAvatar}" class="w-6 h-6 rounded-full mb-1 border border-outline-variant/30">
+            <div class="bg-surface-container text-on-surface px-4 py-2.5 rounded-2xl rounded-bl-sm shadow-sm border border-outline-variant/20">
+                <p class="text-sm">${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
+                <span class="text-[9px] text-on-surface-variant mt-1 block text-right">${timeStr}</span>
+            </div>
+        </div>
+        `;
+        chatHistory.insertAdjacentHTML('beforeend', bubble);
+        scrollToBottom();
+    }
+    
+    function scrollToBottom() {
+        const anchor = document.getElementById('chat-bottom');
+        if(anchor) anchor.scrollIntoView({behavior: "smooth"});
+    }
+    
+    window.handleSendMessage = async function() {
+        const inputEl = document.getElementById('chat-input-text');
+        const text = inputEl.value.trim();
+        
+        if(!text) return;
+        if(!activeRecipientId) {
+            alert("Pilih teman untuk memulai obrolan.");
+            return;
+        }
+        if(!activeSharedSecret) {
+            alert("Tidak dapat mengirim pesan. Kunci enkripsi belum siap atau pengguna tersebut offline selamanya.");
+            return;
+        }
+        
+        // Render optimistik UI
+        const timeStr = formatTime(new Date());
+        renderOutgoingBubble(text, timeStr);
+        inputEl.value = ''; // clear
+        
+        try {
+            // 1. Enkripsi pesan
+            const { ciphertextBase64, ivBase64 } = await encryptMessage(activeSharedSecret, text);
+            
+            // 2. Kirim ke DB
+            const myUid = authInstance.currentUser.uid;
+            await sendEncryptedMessage(myUid, activeRecipientId, ciphertextBase64, ivBase64, 'personal');
+            
+        } catch(e) {
+            console.error("Gagal mengirim pesan:", e);
+            // Revert or show error indicator
+        }
+    }
+    
+    // Listener callback untuk pesan baru dari Firestore
+    async function handleIncomingMessage(docData) {
+        try {
+            if(!activeSharedSecret) return; // Belum siap
+            
+            // Pesan ini dari DB. Periksa apakah saya pengirimnya atau bukan.
+            // Jika saya pengirimnya, abaikan saja karena kita sudah pakai Optimistic UI di handleSendMessage
+            if(docData.senderId === authInstance.currentUser.uid) {
+                return;
+            }
+            
+            // Dekripsi
+            const plaintext = await decryptMessage(activeSharedSecret, docData.ciphertext, docData.iv);
+            
+            // Tampilkan
+            const timeObj = docData.timestamp ? docData.timestamp.toDate() : new Date();
+            renderIncomingBubble(plaintext, formatTime(timeObj));
+            
+        } catch(e) {
+            console.error("Gagal mendekripsi pesan masuk:", e);
+        }
+    }
+
+    // Eksekusi saat load
+    window.addEventListener('load', () => {
+        parseURLParams();
+        
+        // Tekan Enter untuk mengirim
+        document.getElementById('chat-input-text')?.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage();
+            }
+        });
+    });
+</script>
 
 </body>
 </html>
