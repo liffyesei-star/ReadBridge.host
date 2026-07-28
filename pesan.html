@@ -552,7 +552,7 @@
 <!-- E2E Chat Controller -->
 <script type="module">
     import { sendEncryptedMessage, listenToMessages, getUserPublicKey } from './chat-db.js';
-    import { encryptMessage, decryptMessage, deriveSharedSecret } from './e2e-crypto.js';
+    const { encryptMessage, decryptMessage, deriveSharedSecret } = window.E2ECrypto || E2ECrypto;
     import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     

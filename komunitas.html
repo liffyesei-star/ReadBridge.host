@@ -774,10 +774,16 @@ document.addEventListener("DOMContentLoaded", function() {
     <!-- Profile Card Global Modal -->
     <script src="profile-card.js"></script>
 
-    <!-- Real-time Voting Engine -->
+    <!-- Real-time Voting & Post Engine -->
     <script type="module">
         import { castVote, listenToPostVotes } from './vote-db.js';
+        import { listenToFeed, createPost, addComment } from './post-db.js';
+        
         window.castVoteToDB = castVote;
+        window.listenToPostVotes = listenToPostVotes;
+        window.listenToFeed = listenToFeed;
+        window.createPostDB = createPost;
+        window.addCommentDB = addComment;
         window.listenToPostVotes = listenToPostVotes;
         
         // Setup MutationObserver to attach real-time listeners dynamically when posts are rendered
