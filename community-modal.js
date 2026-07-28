@@ -557,7 +557,7 @@ function renderPostCard(p) {
   return `<article data-post-id="${p.id}" class="bg-surface-container-lowest rounded-2xl p-lg flex flex-col gap-md shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300 border border-outline-variant/20 hover:-translate-y-0.5 ${isTrending ? 'border-l-4 border-l-amber-500/85 bg-gradient-to-r from-amber-500/[0.01] to-transparent' : ''}">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-sm text-on-surface-variant font-label-sm text-label-sm">
-        <img src="${avatar}" alt="${safeUsername}" class="w-10 h-10 rounded-full object-cover border border-outline-variant/50 bg-surface-container-high"/>
+        <img src="${avatar}" alt="${safeUsername}" onclick="window.showProfileCard && window.showProfileCard(this, \'${p.authorId || p.username}\', \'${safeUsername}\', \'${avatar}\')" class="w-10 h-10 rounded-full object-cover border border-outline-variant/50 bg-surface-container-high cursor-pointer"/>
         <div class="flex flex-col"><div class="flex items-center"><span class="font-bold text-on-surface text-label-md">${safeUsername}</span>${badge}${trendingBadge}${destBadge}</div><span class="text-on-surface-variant/80">${formatWaktu(p.waktu)}${editedBadge}</span></div>
       </div>
       <div class="relative">

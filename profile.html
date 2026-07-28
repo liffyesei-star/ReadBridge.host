@@ -3193,5 +3193,26 @@
 
     <!-- Profile Card Global Modal -->
     <script src="profile-card.js"></script>
+
+    <!-- Firebase Social Engine -->
+    <script type="module">
+        import { addFriend, removeFriend, listenToFriends } from './user-db.js';
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        
+        const app = getApps().length > 0 ? getApp() : null;
+        if(app) {
+            const auth = getAuth(app);
+            onAuthStateChanged(auth, (user) => {
+                if(user) {
+                    window.CURRENT_USER_ID = user.uid;
+                }
+            });
+        }
+        
+        window.addFriendToDB = addFriend;
+        window.removeFriendFromDB = removeFriend;
+    </script>
+
 </body>
 </html>
