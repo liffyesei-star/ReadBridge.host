@@ -488,6 +488,11 @@ function formatWaktu(s) {
   if (m < 1) return 'Baru saja'; if (h < 1) return `${m} menit yang lalu`; if (dy < 1) return `${h} jam yang lalu`; return `${dy} hari yang lalu`;
 }
 function getAvatarForUser(u) {
+  const currentUname = localStorage.getItem('rb_username') || '@SiswaIndonesia';
+  if (u === currentUname) {
+    const saved = localStorage.getItem('rb_avatar') || localStorage.getItem('rb_profile_pic');
+    if (saved) return saved;
+  }
   if (u === '@SiswaIndonesia') return "https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4";
   return `https://api.dicebear.com/9.x/avataaars/svg?seed=${u.replace('@', '')}&backgroundColor=e5eeff`;
 }
