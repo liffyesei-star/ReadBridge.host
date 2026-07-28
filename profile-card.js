@@ -4,8 +4,8 @@
  * Menyediakan tombol akses cepat untuk mengirim Direct Message (DM).
  */
 
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Inject HTML Modal ke dalam Body
+function injectProfileModal() {
+    if (document.getElementById('global-profile-modal')) return;
     const modalHTML = `
     <!-- Global Profile Card Modal -->
     <div id="global-profile-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300">
@@ -52,9 +52,15 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
     </div>
     `;
-
     document.body.insertAdjacentHTML('beforeend', modalHTML);
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectProfileModal);
+} else {
+    injectProfileModal();
+}
+
 
 // Fungsi Global untuk memanggil Card
 window.showProfileCard = function(element, name, username, avatarSrc) {
