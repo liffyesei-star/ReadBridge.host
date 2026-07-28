@@ -293,7 +293,7 @@ document.addEventListener("DOMContentLoaded", function () {
                       <h3 class="font-headline-md text-[22px] leading-tight text-on-surface font-bold group-hover:text-primary transition-colors">${safeTitle}</h3>
                     </a>
                     <div class="flex flex-wrap items-center gap-sm text-label-md font-label-md text-on-surface-variant">
-                      <span class="font-bold text-primary">${safeAuthor}</span>
+                      <span class="font-bold text-primary cursor-pointer hover:underline" data-profile-uid="author_${item.id}" data-profile-name="${safeAuthor}" data-profile-avatar="https://ui-avatars.com/api/?name=${encodeURIComponent(item.author)}&background=dbeafe&color=2563eb&size=80" data-profile-status="active">${safeAuthor}</span>
                       <span class="hidden sm:block w-1 h-1 rounded-full bg-outline-variant"></span>
                       <span>${safePublishDate}</span>
                       ${editedHTML}
