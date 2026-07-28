@@ -98,12 +98,21 @@ window.closeProfileCard = function() {
     }, 300);
 }
 
-// Navigasi ke Pesan
+// Navigasi ke Pesan dengan Parameter Dinamis
 window.startDM = function() {
-    // Di sini kita bisa menambahkan logika pengecekan privasi DM:
-    // "Apakah akun ini mengizinkan DM dari non-teman?"
-    // Untuk saat ini, kita langsung arahkan ke pesan.html
-    window.location.href = 'pesan.html';
+    const name = document.getElementById('gpc-name').innerText;
+    const username = document.getElementById('gpc-username').innerText;
+    // Generate a dummy UID based on username for routing purposes
+    const uid = 'UID' + Math.floor(Math.random() * 1000); 
+    
+    // Encode parameters
+    const params = new URLSearchParams({
+        to: uid,
+        name: name,
+        username: username
+    });
+    
+    window.location.href = 'pesan.html?' + params.toString();
 }
 
 // Tutup modal jika area luar diklik

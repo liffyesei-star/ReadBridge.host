@@ -746,6 +746,51 @@
         </div>
 
         <div class="bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden flex flex-col p-lg">
+
+        <!-- Permintaan Masuk (Friend Requests) -->
+        <div class="mb-lg">
+            <h2 class="font-title-lg text-title-lg font-bold text-on-surface dark:text-on-primary-container mb-sm flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">person_add</span> Permintaan Pertemanan
+                <span class="bg-error text-white text-[10px] font-bold px-2 py-0.5 rounded-full ml-1">2</span>
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+                <!-- Request 1 -->
+                <div class="flex flex-col p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30">
+                    <div class="flex items-center gap-3 relative cursor-pointer mb-4" onclick="showProfileCard(this, 'Budi Santoso', '@budis')">
+                        <img src="https://ui-avatars.com/api/?name=Budi+Santoso&background=f59e0b&color=fff" alt="Profile" class="w-12 h-12 rounded-full object-cover">
+                        <div>
+                            <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm">Budi Santoso</h4>
+                            <p class="text-[11px] text-on-surface-variant dark:text-slate-400">Pecinta Fiksi Sejarah</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="flex-1 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-container transition-colors">Terima</button>
+                        <button class="flex-1 py-2 bg-surface-container-highest dark:bg-slate-700 text-on-surface dark:text-white text-xs font-bold rounded-lg hover:bg-outline-variant transition-colors">Abaikan</button>
+                    </div>
+                </div>
+
+                <!-- Request 2 -->
+                <div class="flex flex-col p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30">
+                    <div class="flex items-center gap-3 relative cursor-pointer mb-4" onclick="showProfileCard(this, 'Dewi Lestari', '@dewilest')">
+                        <img src="https://ui-avatars.com/api/?name=Dewi+Lestari&background=ec4899&color=fff" alt="Profile" class="w-12 h-12 rounded-full object-cover">
+                        <div>
+                            <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm">Dewi Lestari</h4>
+                            <p class="text-[11px] text-on-surface-variant dark:text-slate-400">Suka Kumpulan Puisi</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="flex-1 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-container transition-colors">Terima</button>
+                        <button class="flex-1 py-2 bg-surface-container-highest dark:bg-slate-700 text-on-surface dark:text-white text-xs font-bold rounded-lg hover:bg-outline-variant transition-colors">Abaikan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Teman Anda -->
+        <h2 class="font-title-lg text-title-lg font-bold text-on-surface dark:text-on-primary-container mb-sm flex items-center gap-2 mt-4">
+            <span class="material-symbols-outlined text-primary">group</span> Teman Anda
+        </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md" id="friend-list-container">
             <!-- Dummy Friend 1 -->
             <div class="flex items-center justify-between p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30 hover:border-primary/50 transition-colors">
