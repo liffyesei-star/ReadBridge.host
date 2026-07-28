@@ -751,39 +751,11 @@
         <div class="mb-lg">
             <h2 class="font-title-lg text-title-lg font-bold text-on-surface dark:text-on-primary-container mb-sm flex items-center gap-2">
                 <span class="material-symbols-outlined text-primary">person_add</span> Permintaan Pertemanan
-                <span class="bg-error text-white text-[10px] font-bold px-2 py-0.5 rounded-full ml-1">2</span>
+                <span id="friend-request-badge" class="bg-error text-white text-[10px] font-bold px-2 py-0.5 rounded-full ml-1 hidden">0</span>
             </h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
-                <!-- Request 1 -->
-                <div class="flex flex-col p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30">
-                    <div class="flex items-center gap-3 relative cursor-pointer mb-4" onclick="showProfileCard(this, 'Budi Santoso', '@budis')">
-                        <img src="https://ui-avatars.com/api/?name=Budi+Santoso&background=f59e0b&color=fff" alt="Profile" class="w-12 h-12 rounded-full object-cover">
-                        <div>
-                            <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm">Budi Santoso</h4>
-                            <p class="text-[11px] text-on-surface-variant dark:text-slate-400">Pecinta Fiksi Sejarah</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <button class="flex-1 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-container transition-colors">Terima</button>
-                        <button class="flex-1 py-2 bg-surface-container-highest dark:bg-slate-700 text-on-surface dark:text-white text-xs font-bold rounded-lg hover:bg-outline-variant transition-colors">Abaikan</button>
-                    </div>
-                </div>
-
-                <!-- Request 2 -->
-                <div class="flex flex-col p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30">
-                    <div class="flex items-center gap-3 relative cursor-pointer mb-4" onclick="showProfileCard(this, 'Dewi Lestari', '@dewilest')">
-                        <img src="https://ui-avatars.com/api/?name=Dewi+Lestari&background=ec4899&color=fff" alt="Profile" class="w-12 h-12 rounded-full object-cover">
-                        <div>
-                            <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm">Dewi Lestari</h4>
-                            <p class="text-[11px] text-on-surface-variant dark:text-slate-400">Suka Kumpulan Puisi</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <button class="flex-1 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-container transition-colors">Terima</button>
-                        <button class="flex-1 py-2 bg-surface-container-highest dark:bg-slate-700 text-on-surface dark:text-white text-xs font-bold rounded-lg hover:bg-outline-variant transition-colors">Abaikan</button>
-                    </div>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-md" id="friend-request-container">
+                <!-- Will be dynamically populated -->
             </div>
         </div>
         
@@ -3153,6 +3125,64 @@
     <script src="profile-card.js"></script>
     <script src="mock-users.js"></script>
     <script>
+      // Simulation State
+      // In a real app, this would be fetched from the database
+      window.MY_FRIENDS = [];
+      window.FRIEND_REQUESTS = [];
+
+      function initializeSimulationState() {
+          if (!window.ALL_USERS) return;
+          // Assign initial states for demonstration
+          const userSarah = window.ALL_USERS.find(u => u.username === '@sarahj');
+          const userMichael = window.ALL_USERS.find(u => u.username === '@mchen99');
+          const userBudi = window.ALL_USERS.find(u => u.username === '@budis');
+          const userDewi = window.ALL_USERS.find(u => u.username === '@dewilest');
+
+          if (userSarah) window.MY_FRIENDS.push(userSarah.id);
+          if (userMichael) window.MY_FRIENDS.push(userMichael.id);
+          
+          if (userBudi) window.FRIEND_REQUESTS.push(userBudi.id);
+          if (userDewi) window.FRIEND_REQUESTS.push(userDewi.id);
+      }
+
+      function renderFriendRequests() {
+          const container = document.getElementById('friend-request-container');
+          const badge = document.getElementById('friend-request-badge');
+          if (!container || !window.ALL_USERS) return;
+
+          const requestUsers = window.ALL_USERS.filter(u => window.FRIEND_REQUESTS.includes(u.id));
+
+          if (badge) {
+              if (requestUsers.length > 0) {
+                  badge.textContent = requestUsers.length;
+                  badge.classList.remove('hidden');
+              } else {
+                  badge.classList.add('hidden');
+              }
+          }
+
+          if (requestUsers.length === 0) {
+              container.innerHTML = `<div class="col-span-full py-6 text-center text-on-surface-variant text-sm">Tidak ada permintaan pertemanan saat ini.</div>`;
+              return;
+          }
+
+          container.innerHTML = requestUsers.map(u => `
+              <div class="flex flex-col p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30">
+                  <div class="flex items-center gap-3 relative cursor-pointer mb-4" onclick="showProfileCard(this, '${u.name}', '${u.username}')">
+                      <img src="${u.avatar}" alt="Profile" class="w-12 h-12 rounded-full object-cover">
+                      <div>
+                          <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm">${u.name}</h4>
+                          <p class="text-[11px] text-on-surface-variant dark:text-slate-400">@${u.username.substring(1)}</p>
+                      </div>
+                  </div>
+                  <div class="flex gap-2">
+                      <button onclick="acceptRequest('${u.id}')" class="flex-1 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-container transition-colors">Terima</button>
+                      <button onclick="ignoreRequest('${u.id}')" class="flex-1 py-2 bg-surface-container-highest dark:bg-slate-700 text-on-surface dark:text-white text-xs font-bold rounded-lg hover:bg-outline-variant transition-colors">Abaikan</button>
+                  </div>
+              </div>
+          `).join('');
+      }
+
       function renderFriends() {
           const container = document.getElementById('friend-list-container');
           if (!container || !window.ALL_USERS) return;
@@ -3160,51 +3190,105 @@
           const searchInput = document.getElementById('friend-search-input');
           const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
-          let filteredUsers = window.ALL_USERS;
+          let displayUsers = [];
           
           if (query) {
-              filteredUsers = window.ALL_USERS.filter(u => 
+              // Jika ada kata pencarian, tampilkan hasil pencarian dari SEMUA user terdaftar (Global Search)
+              displayUsers = window.ALL_USERS.filter(u => 
                   u.username.toLowerCase().includes(query) || 
                   u.id.toLowerCase().includes(query)
               );
+          } else {
+              // Jika tidak ada pencarian, hanya tampilkan teman kita
+              displayUsers = window.ALL_USERS.filter(u => window.MY_FRIENDS.includes(u.id));
           }
 
-          if (filteredUsers.length === 0) {
-              container.innerHTML = `<div class="col-span-full py-8 text-center text-on-surface-variant">Tidak ada teman yang cocok dengan pencarian Anda.</div>`;
+          if (displayUsers.length === 0) {
+              container.innerHTML = `<div class="col-span-full py-8 text-center text-on-surface-variant">${query ? 'Tidak ada pengguna yang cocok dengan pencarian Anda.' : 'Anda belum menambahkan teman apapun.'}</div>`;
               return;
           }
 
-          container.innerHTML = filteredUsers.map(u => `
-            <div class="flex flex-col p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30 hover:border-primary/50 transition-colors">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center gap-3 cursor-pointer" onclick="showProfileCard(this, '${u.name}', '${u.username}')">
-                        <div class="relative w-12 h-12 shrink-0">
-                            <img src="${u.avatar}" alt="Profile" class="w-12 h-12 rounded-full object-cover ${!u.online ? 'grayscale opacity-70' : ''}">
-                            <div class="absolute bottom-0 right-0 w-3.5 h-3.5 ${u.online ? 'bg-green-500' : 'bg-slate-400'} border-2 border-surface-container-lowest dark:border-inverse-surface rounded-full friend-status-indicator"></div>
-                        </div>
-                        <div>
-                            <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm">${u.name}</h4>
-                            <p class="text-[11px] text-on-surface-variant dark:text-slate-400">${u.username}</p>
-                        </div>
-                    </div>
+          container.innerHTML = displayUsers.map(u => {
+              const isFriend = window.MY_FRIENDS.includes(u.id);
+              const isPending = window.FRIEND_REQUESTS.includes(u.id);
+              
+              let actionButtonHtml = '';
+              
+              if (isFriend) {
+                  actionButtonHtml = `
                     <button onclick="window.location.href='pesan.html'" class="w-9 h-9 flex items-center justify-center bg-primary/10 text-primary rounded-full hover:bg-primary hover:text-white transition-colors" title="Chat">
                         <span class="material-symbols-outlined text-[18px]">chat</span>
-                    </button>
-                </div>
-                <!-- ID di sini (hidden atau subtle info, tapi bisa dicari) -->
-                <div class="mt-auto border-t border-outline-variant/20 pt-2 flex justify-between items-center">
-                    <span class="text-[10px] text-on-surface-variant font-mono">ID: ${u.id}</span>
-                    <button class="text-[11px] font-bold text-primary hover:bg-primary/10 px-2 py-1 rounded transition-colors flex items-center gap-1">
+                    </button>`;
+              } else if (isPending) {
+                   actionButtonHtml = `
+                    <button class="text-[11px] font-bold text-on-surface-variant bg-surface-container-highest px-3 py-1.5 rounded cursor-not-allowed flex items-center gap-1">
+                        Menunggu...
+                    </button>`;
+              } else {
+                  actionButtonHtml = `
+                    <button onclick="sendFriendRequest('${u.id}')" class="text-[11px] font-bold text-white bg-primary hover:bg-primary-container px-3 py-1.5 rounded transition-colors flex items-center gap-1">
                         <span class="material-symbols-outlined text-[14px]">person_add</span> Tambah
-                    </button>
+                    </button>`;
+              }
+
+              return `
+                <div class="flex flex-col p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30 hover:border-primary/50 transition-colors">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3 cursor-pointer" onclick="showProfileCard(this, '${u.name}', '${u.username}')">
+                            <div class="relative w-12 h-12 shrink-0">
+                                <img src="${u.avatar}" alt="Profile" class="w-12 h-12 rounded-full object-cover ${!u.online ? 'grayscale opacity-70' : ''}">
+                                <div class="absolute bottom-0 right-0 w-3.5 h-3.5 ${u.online ? 'bg-green-500' : 'bg-slate-400'} border-2 border-surface-container-lowest dark:border-inverse-surface rounded-full friend-status-indicator"></div>
+                            </div>
+                            <div>
+                                <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm truncate max-w-[120px]">${u.name}</h4>
+                                <p class="text-[11px] text-on-surface-variant dark:text-slate-400">${u.username}</p>
+                            </div>
+                        </div>
+                        ${actionButtonHtml}
+                    </div>
+                    <div class="mt-auto border-t border-outline-variant/20 pt-2 flex justify-between items-center">
+                        <span class="text-[10px] text-on-surface-variant font-mono">ID: ${u.id}</span>
+                        ${isFriend ? `<span class="text-[10px] font-bold text-primary">Teman Anda</span>` : ''}
+                    </div>
                 </div>
-            </div>
-          `).join('');
+              `;
+          }).join('');
       }
+
+      // Actions
+      window.sendFriendRequest = function(id) {
+          if (!window.FRIEND_REQUESTS.includes(id)) {
+              window.FRIEND_REQUESTS.push(id);
+              alertFeedback('Permintaan pertemanan terkirim!');
+              renderFriends();
+              renderFriendRequests();
+          }
+      };
+
+      window.acceptRequest = function(id) {
+          window.FRIEND_REQUESTS = window.FRIEND_REQUESTS.filter(reqId => reqId !== id);
+          if (!window.MY_FRIENDS.includes(id)) {
+              window.MY_FRIENDS.push(id);
+          }
+          alertFeedback('Permintaan pertemanan diterima!');
+          renderFriends();
+          renderFriendRequests();
+      };
+
+      window.ignoreRequest = function(id) {
+          window.FRIEND_REQUESTS = window.FRIEND_REQUESTS.filter(reqId => reqId !== id);
+          alertFeedback('Permintaan diabaikan.');
+          renderFriends();
+          renderFriendRequests();
+      };
 
       // Initial render when the script loads
       document.addEventListener('DOMContentLoaded', () => {
-          setTimeout(renderFriends, 100);
+          setTimeout(() => {
+              initializeSimulationState();
+              renderFriends();
+              renderFriendRequests();
+          }, 200);
       });
     </script>
     <script src="script.js"></script>
