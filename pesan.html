@@ -408,7 +408,7 @@
 <!-- Real Chat Logic -->
 <script type="module">
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { saveUserPublicKey, getUserPublicKey, sendEncryptedMessage, listenToMessages } from "./chat-db.js";
 
     const firebaseConfig = {
@@ -420,7 +420,7 @@
         appId: "1:900450201794:web:8d65f989e7fefe590d8b5b",
     };
     
-    const app = initializeApp(firebaseConfig);
+    const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
     const auth = getAuth(app);
 
     let currentUserId = null;
@@ -554,7 +554,7 @@
     import { sendEncryptedMessage, listenToMessages, getUserPublicKey } from './chat-db.js';
     import { encryptMessage, decryptMessage, deriveSharedSecret } from './e2e-crypto.js';
     import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     
     const firebaseConfig = {
         apiKey: "AIzaSyDUfiy2BHYhHh1wql6uM5UvsF6hpNTVvhY",
@@ -564,7 +564,7 @@
         messagingSenderId: "900450201794",
         appId: "1:900450201794:web:8d65f989e7fefe590d8b5b",
     };
-    const app = initializeApp(firebaseConfig);
+    const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
     const authInstance = getAuth(app);
     
     let activeRecipientId = null;

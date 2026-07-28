@@ -1,7 +1,7 @@
 /**
  * ReadBridge — logout & util sesi (login Google ada di auth-handler.html)
  */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -32,7 +32,7 @@ let authInstance = null;
 
 function getAuthInstance() {
   if (!authInstance) {
-    const app = initializeApp(firebaseConfig);
+    const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
     authInstance = getAuth(app);
   }
   return authInstance;
