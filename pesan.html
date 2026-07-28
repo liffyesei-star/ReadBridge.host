@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <!-- Global Preference Controller Script to prevent FOUC -->
+    <script id="global-preferences-controller">
+        (function() {
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+            function applyFontSize(size) {
+                if (size === 'kecil') {
+                    document.documentElement.style.fontSize = '14px';
+                } else if (size === 'besar') {
+                    document.documentElement.style.fontSize = '18px';
+                } else {
+                    document.documentElement.style.fontSize = '16px';
+                }
+            }
+            function applyFontFamily(family) {
+                let style = document.getElementById('global-font-override');
+                if (family === 'serif') {
+                    if (!style) {
+                        style = document.createElement('style');
+                        style.id = 'global-font-override';
+                        style.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span:not(.material-symbols-outlined), a:not(.material-symbols-outlined), button:not(.material-symbols-outlined), input, select, textarea { font-family: Georgia, serif !important; } .material-symbols-outlined { font-family: 'Material Symbols Outlined' !important; }`;
+                        document.head.appendChild(style);
+                    }
+                } else {
+                    if (style) style.remove();
+                }
+            }
+            applyTheme(localStorage.getItem('rb_theme'));
+            applyFontSize(localStorage.getItem('rb_font_size') || 'sedang');
+            applyFontFamily(localStorage.getItem('rb_font_family') || 'sans');
+        })();
+    </script>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Pesan - ReadBridge</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#004ac6", "on-primary": "#ffffff", "primary-container": "#2563eb", "on-primary-container": "#eeefff",
+                        "secondary": "#006c49", "on-secondary": "#ffffff", "secondary-container": "#6cf8bb", "on-secondary-container": "#00714d",
+                        "surface": "#f8f9ff", "on-surface": "#0b1c30", "surface-variant": "#d3e4fe", "on-surface-variant": "#434655",
+                        "outline": "#737686", "outline-variant": "#c3c6d7", "background": "#f8f9ff", "on-background": "#0b1c30",
+                        "surface-container-lowest": "#ffffff", "surface-container-low": "#eff4ff", "surface-container": "#e5eeff", 
+                        "surface-container-high": "#dce9ff", "surface-container-highest": "#d3e4fe", "inverse-surface": "#213145",
+                        "error": "#ba1a1a", "on-error": "#ffffff", "error-container": "#ffdad6", "on-error-container": "#93000a"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
+</head>
+<body class="bg-background text-on-surface flex flex-col h-screen overflow-hidden">
+
+<!-- TopNavBar -->
+<nav class="bg-surface shadow-sm sticky top-0 z-50 border-b border-outline-variant/30 flex-shrink-0">
+  <div class="flex justify-between items-center w-full px-4 md:px-6 py-3 max-w-[1280px] mx-auto">
+    <div class="flex items-center gap-6">
+      <a href="index.html" class="font-headline-md text-[20px] font-bold text-primary flex items-center gap-2">
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+        ReadBridge
+      </a>
+      <div class="hidden md:flex gap-6 font-medium text-sm">
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="eksplor.html">Eksplor</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="komunitas.html">Komunitas</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="marketplace.html">Marketplace</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="perpustakaan.html">Perpustakaan</a>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <a href="pesan.html" class="flex items-center justify-center p-2 bg-primary/10 text-primary rounded-full transition-colors relative">
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">chat</span>
+        <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-error rounded-full border-2 border-surface"></span>
+      </a>
+      <a href="notifikasi.html" class="flex items-center justify-center p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
+        <span class="material-symbols-outlined">notifications</span>
+      </a>
+
+      <div class="relative" id="profile-menu-container">
+        <button id="profile-avatar-btn" class="focus:outline-none flex rounded-full" onclick="toggleProfileDropdown()">
+          <img alt="User Profile Avatar" class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4"/>
+        </button>
+        <!-- Dropdown Menu -->
+        <div id="profile-dropdown" class="hidden absolute right-0 mt-3 w-56 bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl shadow-xl border border-outline-variant/30 py-2 z-50">
+          <a href="profile.html" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low dark:hover:bg-on-background transition-colors font-label-md text-label-md text-on-surface dark:text-on-primary-container">
+              <span class="material-symbols-outlined text-[20px]">person</span> Profil Saya
+          </a>
+          <a href="pengaturan.html" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low dark:hover:bg-on-background transition-colors font-label-md text-label-md text-on-surface dark:text-on-primary-container">
+              <span class="material-symbols-outlined text-[20px]">settings</span> Pengaturan
+          </a>
+          <div class="h-px bg-outline-variant/30 my-1 w-full"></div>
+          <a href="login.html" class="flex items-center gap-3 px-4 py-3 hover:bg-error-container transition-colors font-label-md text-label-md text-error">
+              <span class="material-symbols-outlined text-[20px]">logout</span> Keluar
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</nav>
+
+<!-- Chat Main Area -->
+<main class="flex-grow flex w-full max-w-[1280px] mx-auto overflow-hidden bg-surface-container-lowest relative">
+    
+    <!-- Left Sidebar: Chat List -->
+    <aside id="chat-sidebar" class="w-full md:w-80 lg:w-96 border-r border-outline-variant/30 flex flex-col bg-surface-container-lowest h-full absolute md:relative z-20 md:z-auto transition-transform duration-300">
+        <!-- Tabs & Header -->
+        <div class="p-4 border-b border-outline-variant/30 flex flex-col gap-4">
+            <h1 class="text-2xl font-bold text-on-surface">Pesan</h1>
+            
+            <!-- Custom Toggle -->
+            <div class="flex p-1 bg-surface-container rounded-xl">
+                <button id="tab-personal" class="flex-1 py-2 text-sm font-bold bg-primary text-white rounded-lg shadow-sm transition-all" onclick="switchChatCategory('personal')">
+                    💬 Biasa
+                </button>
+                <button id="tab-transaksi" class="flex-1 py-2 text-sm font-bold text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-all" onclick="switchChatCategory('transaksi')">
+                    🛍️ Transaksi
+                </button>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+                <input type="text" id="search-chat-input" onkeyup="filterChatList()" placeholder="Cari percakapan..." class="w-full pl-10 pr-4 py-2.5 bg-surface dark:bg-on-background border border-outline-variant/50 rounded-full text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-on-surface dark:text-white">
+            </div>
+        </div>
+
+        <!-- Chat List Items (Personal) -->
+        <div id="list-personal" class="flex-1 overflow-y-auto">
+            <div class="p-4 text-center text-on-surface-variant text-sm mt-10">
+                Belum ada percakapan pribadi.
+            </div>
+        </div>
+
+        <!-- Chat List Items (Transaksi) - Initially Hidden -->
+        <div id="list-transaksi" class="flex-1 overflow-y-auto hidden">
+            <div class="flex items-center gap-3 p-4 hover:bg-surface-container-low cursor-pointer border-b border-outline-variant/10 transition-colors bg-primary/5" onclick="openChat('Toko Buku Merdeka', 'transaksi')">
+                <img src="https://ui-avatars.com/api/?name=Toko+Merdeka&background=10b981&color=fff" class="w-12 h-12 rounded-lg object-cover">
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-baseline mb-1">
+                        <h3 class="font-bold text-on-surface truncate text-sm">Toko Buku Merdeka</h3>
+                        <span class="text-[10px] text-on-surface-variant">09:12</span>
+                    </div>
+                    <p class="text-xs text-on-surface-variant truncate">Halo Kak, pesanan sudah dikirim ya.</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Right Content: Active Chat Window -->
+    <section id="chat-window" class="flex-1 flex flex-col bg-surface relative h-full w-full hidden md:flex">
+        
+        <!-- Header -->
+        <header class="h-[72px] px-6 border-b border-outline-variant/30 flex items-center justify-between bg-surface-container-lowest flex-shrink-0">
+            <div class="flex items-center gap-3">
+                <button class="md:hidden p-2 -ml-2 text-on-surface-variant" onclick="closeChatMobile()">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </button>
+                <img id="chat-header-avatar" src="https://ui-avatars.com/api/?name=Dika+Pratama&background=2563eb&color=fff" class="w-10 h-10 rounded-full object-cover">
+                <div>
+                    <h2 id="chat-header-name" class="font-bold text-on-surface text-base">Dika Pratama</h2>
+                    <p id="chat-header-status" class="text-xs text-secondary font-medium flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 bg-secondary rounded-full"></span> Online
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 text-on-surface-variant relative">
+                <!-- Inline search toggle -->
+                <div id="inline-search-container" class="hidden absolute right-14 top-1/2 -translate-y-1/2 bg-surface-container-lowest rounded-full shadow-sm border border-outline-variant/30 overflow-hidden">
+                    <input type="text" placeholder="Cari dalam obrolan..." class="w-48 px-3 py-1.5 text-xs outline-none bg-transparent dark:text-white">
+                </div>
+                <button onclick="document.getElementById('inline-search-container').classList.toggle('hidden')" class="p-2 hover:bg-surface-container rounded-full transition-colors"><span class="material-symbols-outlined">search</span></button>
+                
+                <!-- Action Menu Dropdown -->
+                <button onclick="document.getElementById('chat-action-menu').classList.toggle('hidden')" class="p-2 hover:bg-surface-container rounded-full transition-colors"><span class="material-symbols-outlined">more_vert</span></button>
+                <div id="chat-action-menu" class="hidden absolute top-10 right-0 bg-surface-container-lowest dark:bg-inverse-surface rounded-xl shadow-lg border border-outline-variant/30 py-2 w-48 z-50">
+                    <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low transition-colors">Lihat Profil</a>
+                    <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low transition-colors">Senyapkan Notifikasi</a>
+                    <div class="h-px w-full bg-outline-variant/30 my-1"></div>
+                    <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-error hover:bg-error-container transition-colors">Hapus Obrolan</a>
+                    <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-error hover:bg-error-container transition-colors font-bold">Blokir Pengguna</a>
+                </div>
+            </div>
+
+        </header>
+
+        <!-- Transaction Snippet (Only visible on Transaksi tab) -->
+        <div id="chat-transaction-snippet" class="hidden p-3 bg-surface-container-low border-b border-outline-variant/30 flex items-center justify-between flex-shrink-0">
+            <div class="flex items-center gap-3">
+                <img src="snbt_cover.png" class="w-10 h-12 object-cover rounded shadow-sm border border-outline-variant/50">
+                <div>
+                    <h4 class="text-xs font-bold text-on-surface">Buku Panduan SNBT 2026</h4>
+                    <p class="text-[10px] text-on-surface-variant">Rp 120.000 • Order #INV-88219</p>
+                </div>
+            </div>
+            <a href="invoice.html" class="text-xs font-bold text-primary hover:underline bg-primary/10 px-3 py-1.5 rounded-full">Cek Pesanan</a>
+        </div>
+
+        <!-- Messages Area -->
+        <div class="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col gap-4 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-surface dark:bg-inverse-surface relative">
+            
+            <!-- E2EE Security Badge -->
+            <div class="flex justify-center mb-4">
+                <div class="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 text-[10px] font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-sm max-w-sm text-center">
+                    <span class="material-symbols-outlined text-[14px]">lock</span>
+                    Pesan ini dilindungi oleh Enkripsi End-to-End. Pihak ketiga termasuk ReadBridge tidak dapat membaca isi pesan.
+                </div>
+            </div>
+
+            <!-- Date Divider -->
+            <div class="flex justify-center my-2">
+                <span class="text-[10px] font-bold text-on-surface-variant bg-surface-container px-3 py-1 rounded-full border border-outline-variant/30">Hari ini</span>
+            </div>
+
+            <div id="chat-history" class="flex flex-col gap-4">
+                <!-- Incoming Bubble -->
+                <div class="flex items-end gap-2 max-w-[85%] self-start">
+                    <img id="chat-bubble-avatar" src="https://ui-avatars.com/api/?name=Dika+Pratama&background=2563eb&color=fff" class="w-6 h-6 rounded-full mb-1">
+                    <div class="bg-surface-container text-on-surface px-4 py-2.5 rounded-2xl rounded-bl-sm shadow-sm border border-outline-variant/20">
+                        <p class="text-sm" id="chat-msg-1">Halo! Gue liat review lo tentang buku Fiksi Metropop itu. Keren banget bahasanya!</p>
+                        <span class="text-[9px] text-on-surface-variant mt-1 block text-right">10:40</span>
+                    </div>
+                </div>
+
+                <!-- Incoming Bubble 2 -->
+                <div class="flex items-end gap-2 max-w-[85%] self-start mt-[-8px]">
+                    <div class="w-6 h-6 mb-1 invisible"></div> <!-- placeholder -->
+                    <div class="bg-surface-container text-on-surface px-4 py-2.5 rounded-2xl rounded-bl-sm shadow-sm border border-outline-variant/20">
+                        <p class="text-sm" id="chat-msg-2">Boleh nanya nggak, bab 3 itu endingnya gimana sih detailnya?</p>
+                        <span class="text-[9px] text-on-surface-variant mt-1 block text-right">10:41</span>
+                    </div>
+                </div>
+
+                <!-- Outgoing Bubble -->
+                <div class="flex items-end justify-end gap-2 max-w-[85%] self-end">
+                    <div class="bg-primary text-white px-4 py-2.5 rounded-2xl rounded-br-sm shadow-sm">
+                        <p class="text-sm" id="chat-msg-3">Wah makasih Dika! Bab 3 itu plot twist banget, si karakter utama ternyata... hahaha nanti aja deh baca sendiri biar surprise!</p>
+                        <span class="text-[9px] text-primary-fixed-dim mt-1 flex items-center justify-end gap-1">
+                            10:45 <span class="material-symbols-outlined text-[12px]" style="font-variation-settings:'wght' 700;">done_all</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dummy scroll anchor -->
+            <div id="chat-bottom"></div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="p-4 bg-surface-container-lowest border-t border-outline-variant/30 flex items-end gap-2 flex-shrink-0 z-10 shadow-[0_-4px_12px_rgba(0,0,0,0.02)]">
+            <button class="p-2.5 text-on-surface-variant hover:bg-surface-container hover:text-primary rounded-full transition-colors flex-shrink-0">
+                <span class="material-symbols-outlined">attach_file</span>
+            </button>
+            <div class="flex-1 bg-surface border border-outline-variant/50 rounded-2xl flex items-end px-2 py-1 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+                <button class="p-2 text-on-surface-variant hover:text-primary transition-colors flex-shrink-0">
+                    <span class="material-symbols-outlined">mood</span>
+                </button>
+                <textarea id="chat-input-text" rows="1" placeholder="Ketik pesan dengan aman..." class="w-full bg-transparent border-none focus:ring-0 text-sm resize-none py-2.5 px-2 max-h-32 outline-none hide-scrollbar"></textarea>
+            </div>
+            <button id="btn-send-message" onclick="handleSendMessage()" class="p-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors shadow-sm flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
+            </button>
+        </div>
+    </section>
+</main>
+
+<script>
+    // URL param parser to select tab
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        if (tab === 'transaksi') {
+            switchChatCategory('transaksi');
+        } else {
+            switchChatCategory('personal');
+        }
+    });
+
+    // Tab Switching Logic
+    function switchChatCategory(category) {
+        const btnPersonal = document.getElementById('tab-personal');
+        const btnTransaksi = document.getElementById('tab-transaksi');
+        const listPersonal = document.getElementById('list-personal');
+        const listTransaksi = document.getElementById('list-transaksi');
+        const transactionSnippet = document.getElementById('chat-transaction-snippet');
+
+        // Reset styling
+        btnPersonal.className = "flex-1 py-2 text-sm font-bold text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-all";
+        btnTransaksi.className = "flex-1 py-2 text-sm font-bold text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-all";
+        listPersonal.classList.add('hidden');
+        listTransaksi.classList.add('hidden');
+
+        if(category === 'personal') {
+            btnPersonal.className = "flex-1 py-2 text-sm font-bold bg-primary text-white rounded-lg shadow-sm transition-all";
+            listPersonal.classList.remove('hidden');
+            transactionSnippet.classList.add('hidden');
+            
+            // Mock opening first chat
+            openChat('Dika Pratama', 'personal');
+        } else {
+            btnTransaksi.className = "flex-1 py-2 text-sm font-bold bg-primary text-white rounded-lg shadow-sm transition-all";
+            listTransaksi.classList.remove('hidden');
+            transactionSnippet.classList.remove('hidden');
+            transactionSnippet.classList.add('flex');
+
+            // Mock opening first chat
+            openChat('Toko Buku Merdeka', 'transaksi');
+        }
+    }
+
+    // Chat Opening Logic
+    function openChat(name, category) {
+        // Update header
+        document.getElementById('chat-header-name').innerText = name;
+        
+        // Update avatar based on name (mock)
+        const nameParam = name.replace(/ /g, '+');
+        let bg = category === 'personal' ? '2563eb' : '10b981';
+        let shape = category === 'transaksi' ? 'rounded-lg' : 'rounded-full';
+        
+        const avatarEl = document.getElementById('chat-header-avatar');
+        const chatBubbleAvatar = document.getElementById('chat-bubble-avatar');
+        
+        avatarEl.src = \`https://ui-avatars.com/api/?name=\${nameParam}&background=\${bg}&color=fff\`;
+        avatarEl.className = \`w-10 h-10 object-cover \${shape}\`;
+        
+        if(chatBubbleAvatar) {
+            chatBubbleAvatar.src = \`https://ui-avatars.com/api/?name=\${nameParam}&background=\${bg}&color=fff\`;
+            chatBubbleAvatar.className = \`w-6 h-6 mb-1 object-cover \${shape}\`;
+        }
+
+        // Update transaction snippet visibility
+        const snippet = document.getElementById('chat-transaction-snippet');
+        if(category === 'transaksi') {
+            snippet.classList.remove('hidden');
+            snippet.classList.add('flex');
+            document.getElementById('chat-header-status').innerHTML = \`<span class="w-1.5 h-1.5 bg-amber-500 rounded-full"></span> Penjual\`;
+            
+            // Mock transaction messages
+            document.getElementById('chat-msg-1').innerText = "Halo Kak, pesanan sudah dikirim ya.";
+            document.getElementById('chat-msg-2').innerText = "Resi JNE: 832948924. Terima kasih!";
+            document.getElementById('chat-msg-3').innerText = "Oke siap min, makasih update-nya!";
+        } else {
+            snippet.classList.add('hidden');
+            snippet.classList.remove('flex');
+            document.getElementById('chat-header-status').innerHTML = \`<span class="w-1.5 h-1.5 bg-secondary rounded-full"></span> Online\`;
+            
+            // Mock personal messages
+            document.getElementById('chat-msg-1').innerText = "Halo! Gue liat review lo tentang buku Fiksi Metropop itu. Keren banget bahasanya!";
+            document.getElementById('chat-msg-2').innerText = "Boleh nanya nggak, bab 3 itu endingnya gimana sih detailnya?";
+            document.getElementById('chat-msg-3').innerText = "Wah makasih Dika! Bab 3 itu plot twist banget, si karakter utama ternyata... hahaha nanti aja deh baca sendiri biar surprise!";
+        }
+
+        // Mobile handling (slide in chat window)
+        if(window.innerWidth < 768) {
+            document.getElementById('chat-sidebar').classList.add('-translate-x-full');
+            document.getElementById('chat-window').classList.remove('hidden');
+            document.getElementById('chat-window').classList.add('flex');
+        }
+    }
+
+    function closeChatMobile() {
+        document.getElementById('chat-sidebar').classList.remove('-translate-x-full');
+        document.getElementById('chat-window').classList.add('hidden');
+        document.getElementById('chat-window').classList.remove('flex');
+    }
+</script>
+
+<!-- E2E Crypto Engine -->
+<script src="e2e-crypto.js"></script>
+
+<!-- Real Chat Logic -->
+<script type="module">
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { saveUserPublicKey, getUserPublicKey, sendEncryptedMessage, listenToMessages } from "./chat-db.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDUfiy2BHYhHh1wql6uM5UvsF6hpNTVvhY",
+        authDomain: "readbridge-8934c.firebaseapp.com",
+        projectId: "readbridge-8934c",
+        storageBucket: "readbridge-8934c.firebasestorage.app",
+        messagingSenderId: "900450201794",
+        appId: "1:900450201794:web:8d65f989e7fefe590d8b5b",
+    };
+    
+    const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+    const auth = getAuth(app);
+
+    let currentUserId = null;
+    let myPrivateKey = null;
+
+    // Inisialisasi E2EE saat user terdeteksi Login
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            currentUserId = user.uid;
+            console.log("Logged in as:", user.displayName || user.email);
+
+            // Coba ambil private key dari Local Storage (IndexedDB)
+            let privateKey = await E2ECrypto.getLocalPrivateKey(currentUserId);
+            
+            if (!privateKey) {
+                console.log("Membangkitkan pasangan Kunci E2EE baru...");
+                const keyPair = await E2ECrypto.generateKeyPair();
+                
+                // Simpan Private Key ke HP/Browser
+                await E2ECrypto.storePrivateKeyLocally(currentUserId, keyPair.privateKey);
+                myPrivateKey = keyPair.privateKey;
+
+                // Export dan Simpan Public Key ke Firestore
+                const publicKeyBase64 = await E2ECrypto.exportPublicKey(keyPair.publicKey);
+                await saveUserPublicKey(currentUserId, publicKeyBase64);
+                console.log("Kunci E2EE berhasil dibuat dan didaftarkan!");
+            } else {
+                myPrivateKey = privateKey;
+                console.log("Kunci E2EE dimuat dari penyimpanan lokal perangkat.");
+            }
+        } else {
+            console.log("Silakan login untuk menggunakan chat E2EE.");
+            // Bisa redirect ke login.html
+        }
+    });
+
+    // Ekspos fungsi ke global untuk percobaan/testing dari console atau tombol dummy
+    window.testSendE2EEMessage = async function(recipientId, text) {
+        if (!currentUserId || !myPrivateKey) {
+            alert("Harap tunggu inisialisasi kunci selesai.");
+            return;
+        }
+
+        const recipientPublicKeyBase64 = await getUserPublicKey(recipientId);
+        if (!recipientPublicKeyBase64) {
+            alert("Pengguna ini belum terdaftar di sistem E2EE.");
+            return;
+        }
+
+        const recipientPublicKey = await E2ECrypto.importPublicKey(recipientPublicKeyBase64);
+        const sharedSecret = await E2ECrypto.deriveSharedSecret(myPrivateKey, recipientPublicKey);
+        
+        // Enkripsi
+        const { ciphertext, iv } = await E2ECrypto.encryptMessage(text, sharedSecret);
+        
+        // Kirim
+        await sendEncryptedMessage(currentUserId, recipientId, ciphertext, iv, 'personal');
+        console.log("Pesan berhasil dikirim!");
+    };
+</script>
+
+<script src="profile-modal.js"></script>
+
+    <!-- UI Bug Fixes & Dynamic Routing Script -->
+    <script>
+        // 1. Profile Dropdown Logic
+        function toggleProfileDropdown() {
+            const menu = document.getElementById('profile-dropdown');
+            if(menu) menu.classList.toggle('hidden');
+        }
+
+        // 2. Filter Chat List Logic
+        function filterChatList() {
+            const query = document.getElementById('search-chat-input').value.toLowerCase();
+            const activeList = document.getElementById('list-personal').classList.contains('hidden') ? 
+                               document.getElementById('list-transaksi') : 
+                               document.getElementById('list-personal');
+            
+            const chatItems = activeList.children;
+            for(let i = 0; i < chatItems.length; i++) {
+                const nameEl = chatItems[i].querySelector('h3');
+                if(nameEl) {
+                    if(nameEl.innerText.toLowerCase().includes(query)) {
+                        chatItems[i].style.display = 'flex';
+                    } else {
+                        chatItems[i].style.display = 'none';
+                    }
+                }
+            }
+        }
+
+        // 3. Dynamic Chat Routing (URL Params)
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const toUid = urlParams.get('to');
+            const toName = urlParams.get('name');
+            
+            if (toName) {
+                // Set Header
+                document.getElementById('chat-header-name').innerText = toName;
+                document.getElementById('chat-header-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(toName)}&background=2563eb&color=fff`;
+                
+                // Clear Chat History Dummy Data & Display empty view
+                document.getElementById('chat-history').innerHTML = `
+                    <div class="flex justify-center mt-10">
+                        <div class="bg-surface-container text-on-surface-variant px-4 py-2 rounded-xl text-xs text-center border border-outline-variant/30">
+                            Ini adalah awal mula obrolan Anda dengan <strong>${toName}</strong>.
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Close dropdowns on outside click
+            document.addEventListener('click', (e) => {
+                const profileMenu = document.getElementById('profile-dropdown');
+                const actionMenu = document.getElementById('chat-action-menu');
+                
+                if (profileMenu && !profileMenu.contains(e.target) && e.target.closest('#profile-menu-container') === null) {
+                    profileMenu.classList.add('hidden');
+                }
+                if (actionMenu && !actionMenu.contains(e.target) && e.target.closest('.text-on-surface-variant') === null) {
+                    actionMenu.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+
+
+<!-- E2E Chat Controller -->
+<script type="module">
+    import { sendEncryptedMessage, listenToMessages, getUserPublicKey } from './chat-db.js';
+    const { encryptMessage, decryptMessage, deriveSharedSecret } = window.E2ECrypto || E2ECrypto;
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyDUfiy2BHYhHh1wql6uM5UvsF6hpNTVvhY",
+        authDomain: "readbridge-8934c.firebaseapp.com",
+        projectId: "readbridge-8934c",
+        storageBucket: "readbridge-8934c.firebasestorage.app",
+        messagingSenderId: "900450201794",
+        appId: "1:900450201794:web:8d65f989e7fefe590d8b5b",
+    };
+    const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+    const authInstance = getAuth(app);
+    
+    let activeRecipientId = null;
+    let activeRecipientName = null;
+    let activeRecipientAvatar = null;
+    let activeSharedSecret = null;
+    
+    // Parse URL Parameters
+    function parseURLParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const uid = urlParams.get('uid');
+        const name = urlParams.get('name');
+        const avatar = urlParams.get('avatar');
+        
+        if (uid) {
+            activeRecipientId = uid;
+            activeRecipientName = name || uid;
+            activeRecipientAvatar = avatar || 'https://i.pravatar.cc/150';
+            
+            // Update UI Header
+            document.getElementById('chat-header-name').innerText = activeRecipientName;
+            document.getElementById('chat-header-avatar').src = activeRecipientAvatar;
+            
+            // Clear dummy chat history
+            document.getElementById('chat-history').innerHTML = '';
+            
+            // Setup Secure Connection
+            setupSecureConnection(uid);
+        }
+    }
+    
+    async function setupSecureConnection(recipientId) {
+        try {
+            if(!authInstance.currentUser) {
+                console.warn("User belum login, menunda koneksi E2EE.");
+                // Jika auth belum siap, tunggu state change
+                authInstance.onAuthStateChanged(async (user) => {
+                    if(user) await doSetup(user.uid, recipientId);
+                });
+                return;
+            }
+            await doSetup(authInstance.currentUser.uid, recipientId);
+        } catch(e) {
+            console.error("Gagal setup koneksi aman:", e);
+        }
+    }
+    
+    async function doSetup(myUid, recipientId) {
+        try {
+            // Ambil public key penerima dari DB
+            let recipientPubKeyBase64 = await getUserPublicKey(recipientId);
+            if(!recipientPubKeyBase64) {
+                console.warn("Kunci publik penerima tidak ditemukan. Membangkitkan Dummy Key untuk simulasi!");
+                
+                // MOCK GENERATOR UNTUK SIMULASI UI (Jika target adalah dummy user)
+                const dummyPair = await window.crypto.subtle.generateKey(
+                    { name: "ECDH", namedCurve: "P-256" },
+                    true, 
+                    ["deriveKey", "deriveBits"]
+                );
+                const raw = await window.crypto.subtle.exportKey("raw", dummyPair.publicKey);
+                // Konversi ArrayBuffer ke Base64
+                const bytes = new Uint8Array(raw);
+                let binary = '';
+                for (let i = 0; i < bytes.byteLength; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                recipientPubKeyBase64 = window.btoa(binary);
+                
+                // Peringatan Halus
+                const sysMsg = `<div class="flex justify-center my-2"><span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 shadow-sm">Menggunakan Mode Simulasi (Pengguna Offline/Dummy)</span></div>`;
+                document.getElementById('chat-history').insertAdjacentHTML('beforeend', sysMsg);
+            }
+            
+            // Derive shared secret
+            activeSharedSecret = await deriveSharedSecret(recipientPubKeyBase64);
+            console.log("Shared Secret ECDH berhasil disiapkan dengan:", recipientId);
+            
+            // Mulai dengarkan pesan dari dia
+            listenToMessages(recipientId, handleIncomingMessage);
+            
+        } catch(e) {
+            console.error("Error doSetup:", e);
+        }
+    }
+    
+    function formatTime(date) {
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    
+    function renderOutgoingBubble(text, timeStr) {
+        const chatHistory = document.getElementById('chat-history');
+        const bubble = `
+        <div class="flex items-end justify-end gap-2 max-w-[85%] self-end mt-2 animate-[slideUp_0.3s_ease-out]">
+            <div class="bg-primary text-white px-4 py-2.5 rounded-2xl rounded-br-sm shadow-sm">
+                <p class="text-sm">${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
+                <span class="text-[9px] text-primary-fixed-dim mt-1 flex items-center justify-end gap-1">
+                    ${timeStr} <span class="material-symbols-outlined text-[12px]" style="font-variation-settings:'wght' 700;">done</span>
+                </span>
+            </div>
+        </div>
+        `;
+        chatHistory.insertAdjacentHTML('beforeend', bubble);
+        scrollToBottom();
+    }
+    
+    function renderIncomingBubble(text, timeStr) {
+        const chatHistory = document.getElementById('chat-history');
+        const bubble = `
+        <div class="flex items-end gap-2 max-w-[85%] self-start mt-2 animate-[slideUp_0.3s_ease-out]">
+            <img src="${activeRecipientAvatar}" class="w-6 h-6 rounded-full mb-1 border border-outline-variant/30">
+            <div class="bg-surface-container text-on-surface px-4 py-2.5 rounded-2xl rounded-bl-sm shadow-sm border border-outline-variant/20">
+                <p class="text-sm">${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
+                <span class="text-[9px] text-on-surface-variant mt-1 block text-right">${timeStr}</span>
+            </div>
+        </div>
+        `;
+        chatHistory.insertAdjacentHTML('beforeend', bubble);
+        scrollToBottom();
+    }
+    
+    function scrollToBottom() {
+        const anchor = document.getElementById('chat-bottom');
+        if(anchor) anchor.scrollIntoView({behavior: "smooth"});
+    }
+    
+    window.handleSendMessage = async function() {
+        const inputEl = document.getElementById('chat-input-text');
+        const text = inputEl.value.trim();
+        
+        if(!text) return;
+        if(!activeRecipientId) {
+            alert("Pilih teman untuk memulai obrolan.");
+            return;
+        }
+        if(!activeSharedSecret) {
+            alert("Tidak dapat mengirim pesan. Kunci enkripsi belum siap atau pengguna tersebut offline selamanya.");
+            return;
+        }
+        
+        // Render optimistik UI
+        const timeStr = formatTime(new Date());
+        renderOutgoingBubble(text, timeStr);
+        inputEl.value = ''; // clear
+        
+        try {
+            // 1. Enkripsi pesan
+            const { ciphertextBase64, ivBase64 } = await encryptMessage(activeSharedSecret, text);
+            
+            // 2. Kirim ke DB
+            const myUid = authInstance.currentUser.uid;
+            await sendEncryptedMessage(myUid, activeRecipientId, ciphertextBase64, ivBase64, 'personal');
+            
+        } catch(e) {
+            console.error("Gagal mengirim pesan:", e);
+            // Revert or show error indicator
+        }
+    }
+    
+    // Listener callback untuk pesan baru dari Firestore
+    async function handleIncomingMessage(docData) {
+        try {
+            if(!activeSharedSecret) return; // Belum siap
+            
+            // Pesan ini dari DB. Periksa apakah saya pengirimnya atau bukan.
+            // Jika saya pengirimnya, abaikan saja karena kita sudah pakai Optimistic UI di handleSendMessage
+            if(docData.senderId === authInstance.currentUser.uid) {
+                return;
+            }
+            
+            // Dekripsi
+            const plaintext = await decryptMessage(activeSharedSecret, docData.ciphertext, docData.iv);
+            
+            // Tampilkan
+            const timeObj = docData.timestamp ? docData.timestamp.toDate() : new Date();
+            renderIncomingBubble(plaintext, formatTime(timeObj));
+            
+        } catch(e) {
+            console.error("Gagal mendekripsi pesan masuk:", e);
+        }
+    }
+
+    // Eksekusi saat load
+    window.addEventListener('load', () => {
+        parseURLParams();
+        
+        // Tekan Enter untuk mengirim
+        document.getElementById('chat-input-text')?.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage();
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
