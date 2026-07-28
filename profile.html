@@ -787,63 +787,21 @@
             </div>
         </div>
         
-        <!-- Teman Anda -->
-        <h2 class="font-title-lg text-title-lg font-bold text-on-surface dark:text-on-primary-container mb-sm flex items-center gap-2 mt-4">
-            <span class="material-symbols-outlined text-primary">group</span> Teman Anda
-        </h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md" id="friend-list-container">
-            <!-- Dummy Friend 1 -->
-            <div class="flex items-center justify-between p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30 hover:border-primary/50 transition-colors">
-                <div class="flex items-center gap-3 cursor-pointer" onclick="showProfileCard(this, 'Sarah Jenkins', '@sarahj')">
-                    <div class="relative w-12 h-12 shrink-0">
-                        <img src="https://i.pravatar.cc/150?u=a042581f4e29026024d" alt="Profile" class="w-12 h-12 rounded-full object-cover">
-                        <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-surface-container-lowest dark:border-inverse-surface rounded-full friend-status-indicator" data-status="online"></div>
-                    </div>
-                    <div>
-                        <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm">Sarah Jenkins</h4>
-                        <p class="text-[11px] text-on-surface-variant dark:text-slate-400">Sedang Online</p>
-                    </div>
-                </div>
-                <button onclick="window.location.href='pesan.html'" class="w-9 h-9 flex items-center justify-center bg-primary/10 text-primary rounded-full hover:bg-primary hover:text-white transition-colors">
-                    <span class="material-symbols-outlined text-[18px]">chat</span>
-                </button>
-            </div>
+        <!-- Teman Anda & Pencarian -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-4 mb-sm">
+            <h2 class="font-title-lg text-title-lg font-bold text-on-surface dark:text-on-primary-container flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">group</span> Teman Anda
+            </h2>
             
-            <!-- Dummy Friend 2 -->
-            <div class="flex items-center justify-between p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30 hover:border-primary/50 transition-colors">
-                <div class="flex items-center gap-3 cursor-pointer" onclick="showProfileCard(this, 'Michael Chen', '@mchen99')">
-                    <div class="relative w-12 h-12 shrink-0">
-                        <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Profile" class="w-12 h-12 rounded-full object-cover grayscale opacity-70">
-                        <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-slate-400 border-2 border-surface-container-lowest dark:border-inverse-surface rounded-full friend-status-indicator" data-status="offline"></div>
-                    </div>
-                    <div>
-                        <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm">Michael Chen</h4>
-                        <p class="text-[11px] text-on-surface-variant dark:text-slate-400">Offline</p>
-                    </div>
-                </div>
-                <button onclick="window.location.href='pesan.html'" class="w-9 h-9 flex items-center justify-center bg-primary/10 text-primary rounded-full hover:bg-primary hover:text-white transition-colors">
-                    <span class="material-symbols-outlined text-[18px]">chat</span>
-                </button>
+            <div class="relative w-full sm:w-64">
+                <input type="text" id="friend-search-input" onkeyup="renderFriends()" placeholder="Cari by Username / ID..." class="w-full pl-10 pr-4 py-2 bg-surface-container-low dark:bg-slate-800 border border-outline-variant/30 rounded-full focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface dark:text-on-primary-container transition-all">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
             </div>
+        </div>
 
-            <!-- Dummy Friend 3 -->
-            <div class="flex items-center justify-between p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30 hover:border-primary/50 transition-colors">
-                <div class="flex items-center gap-3 cursor-pointer" onclick="showProfileCard(this, 'Emily Davis', '@emilyd_')">
-                    <div class="relative w-12 h-12 shrink-0">
-                        <img src="https://i.pravatar.cc/150?u=a04258114e29026702d" alt="Profile" class="w-12 h-12 rounded-full object-cover">
-                        <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-surface-container-lowest dark:border-inverse-surface rounded-full friend-status-indicator" data-status="online"></div>
-                    </div>
-                    <div>
-                        <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm">Emily Davis</h4>
-                        <p class="text-[11px] text-on-surface-variant dark:text-slate-400">Sedang Online</p>
-                    </div>
-                </div>
-                <button onclick="window.location.href='pesan.html'" class="w-9 h-9 flex items-center justify-center bg-primary/10 text-primary rounded-full hover:bg-primary hover:text-white transition-colors">
-                    <span class="material-symbols-outlined text-[18px]">chat</span>
-                </button>
-            </div>
-            
-          </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md" id="friend-list-container">
+            <!-- Will be dynamically populated by mock-users.js -->
+        </div>
         </div>
       </div>
 
@@ -3193,6 +3151,63 @@
 
     <!-- Profile Card Global Modal -->
     <script src="profile-card.js"></script>
+    <script src="mock-users.js"></script>
+    <script>
+      function renderFriends() {
+          const container = document.getElementById('friend-list-container');
+          if (!container || !window.ALL_USERS) return;
+
+          const searchInput = document.getElementById('friend-search-input');
+          const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+          let filteredUsers = window.ALL_USERS;
+          
+          if (query) {
+              filteredUsers = window.ALL_USERS.filter(u => 
+                  u.username.toLowerCase().includes(query) || 
+                  u.id.toLowerCase().includes(query)
+              );
+          }
+
+          if (filteredUsers.length === 0) {
+              container.innerHTML = `<div class="col-span-full py-8 text-center text-on-surface-variant">Tidak ada teman yang cocok dengan pencarian Anda.</div>`;
+              return;
+          }
+
+          container.innerHTML = filteredUsers.map(u => `
+            <div class="flex flex-col p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30 hover:border-primary/50 transition-colors">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-3 cursor-pointer" onclick="showProfileCard(this, '${u.name}', '${u.username}')">
+                        <div class="relative w-12 h-12 shrink-0">
+                            <img src="${u.avatar}" alt="Profile" class="w-12 h-12 rounded-full object-cover ${!u.online ? 'grayscale opacity-70' : ''}">
+                            <div class="absolute bottom-0 right-0 w-3.5 h-3.5 ${u.online ? 'bg-green-500' : 'bg-slate-400'} border-2 border-surface-container-lowest dark:border-inverse-surface rounded-full friend-status-indicator"></div>
+                        </div>
+                        <div>
+                            <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm">${u.name}</h4>
+                            <p class="text-[11px] text-on-surface-variant dark:text-slate-400">${u.username}</p>
+                        </div>
+                    </div>
+                    <button onclick="window.location.href='pesan.html'" class="w-9 h-9 flex items-center justify-center bg-primary/10 text-primary rounded-full hover:bg-primary hover:text-white transition-colors" title="Chat">
+                        <span class="material-symbols-outlined text-[18px]">chat</span>
+                    </button>
+                </div>
+                <!-- ID di sini (hidden atau subtle info, tapi bisa dicari) -->
+                <div class="mt-auto border-t border-outline-variant/20 pt-2 flex justify-between items-center">
+                    <span class="text-[10px] text-on-surface-variant font-mono">ID: ${u.id}</span>
+                    <button class="text-[11px] font-bold text-primary hover:bg-primary/10 px-2 py-1 rounded transition-colors flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">person_add</span> Tambah
+                    </button>
+                </div>
+            </div>
+          `).join('');
+      }
+
+      // Initial render when the script loads
+      document.addEventListener('DOMContentLoaded', () => {
+          setTimeout(renderFriends, 100);
+      });
+    </script>
+    <script src="script.js"></script>
 
     <!-- Firebase Social Engine -->
     <script type="module">
