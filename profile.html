@@ -3131,8 +3131,9 @@
       let pendingRequestsList = [];
       let searchResultsList = [];
       let isSearching = false;
+      let lastSearchQuery = '';
 
-      async function fetchFriendsData() {
+      async function fetchFriendsData(isSilent = false) {
           const token = localStorage.getItem('rb_token');
           if (!token) return;
 
@@ -3142,13 +3143,36 @@
               });
               const json = await res.json();
               if (json.success) {
+                  const previousPendingCount = pendingRequestsList.length;
                   myFriendsList = json.data.my_friends || [];
                   pendingRequestsList = json.data.pending_requests || [];
+                  const sentRequestsList = json.data.sent_requests || [];
+                  
+                  // If we are currently searching, update the friend_status in searchResultsList based on latest data
+                  if (isSearching && searchResultsList.length > 0) {
+                      searchResultsList = searchResultsList.map(u => {
+                          const uid = u.id || u.user_id;
+                          if (myFriendsList.find(f => f.user_id === uid)) {
+                              u.friend_status = 'accepted';
+                          } else if (pendingRequestsList.find(f => f.user_id === uid) || sentRequestsList.find(f => f.user_id === uid)) {
+                              u.friend_status = 'pending';
+                          } else {
+                              u.friend_status = 'none';
+                          }
+                          return u;
+                      });
+                  }
+
                   renderFriends();
                   renderFriendRequests();
+                  
+                  // Optional: Play a tiny sound or toast if new request arrived
+                  if (isSilent && pendingRequestsList.length > previousPendingCount) {
+                      alertFeedback("Anda mendapat permintaan pertemanan baru!");
+                  }
               }
           } catch(e) {
-              console.error("Gagal load friends", e);
+              if(!isSilent) console.error("Gagal load friends", e);
           }
       }
 
@@ -3265,11 +3289,13 @@
           
           if (!query) {
               isSearching = false;
+              lastSearchQuery = '';
               renderFriends();
               return;
           }
 
           isSearching = true;
+          lastSearchQuery = query;
           const token = localStorage.getItem('rb_token');
           if (!token) return;
 
@@ -3347,10 +3373,15 @@
           }
       };
 
-      // Initial render when the script loads
+          // Initial render when the script loads
       document.addEventListener('DOMContentLoaded', () => {
           setTimeout(() => {
               fetchFriendsData();
+              
+              // Polling for real-time fluid experience
+              setInterval(() => {
+                  fetchFriendsData(true); 
+              }, 5000);
           }, 200);
       });
     </script>
