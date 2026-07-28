@@ -794,9 +794,11 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md" id="friend-list-container">
             <!-- Dummy Friend 1 -->
             <div class="flex items-center justify-between p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30 hover:border-primary/50 transition-colors">
-                <div class="flex items-center gap-3 relative cursor-pointer" onclick="showProfileCard(this, 'Sarah Jenkins', '@sarahj')">
-                    <img src="https://i.pravatar.cc/150?u=a042581f4e29026024d" alt="Profile" class="w-12 h-12 rounded-full object-cover">
-                    <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-surface-container-lowest dark:border-inverse-surface rounded-full friend-status-indicator" data-status="online"></div>
+                <div class="flex items-center gap-3 cursor-pointer" onclick="showProfileCard(this, 'Sarah Jenkins', '@sarahj')">
+                    <div class="relative w-12 h-12 shrink-0">
+                        <img src="https://i.pravatar.cc/150?u=a042581f4e29026024d" alt="Profile" class="w-12 h-12 rounded-full object-cover">
+                        <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-surface-container-lowest dark:border-inverse-surface rounded-full friend-status-indicator" data-status="online"></div>
+                    </div>
                     <div>
                         <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm">Sarah Jenkins</h4>
                         <p class="text-[11px] text-on-surface-variant dark:text-slate-400">Sedang Online</p>
@@ -809,9 +811,11 @@
             
             <!-- Dummy Friend 2 -->
             <div class="flex items-center justify-between p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30 hover:border-primary/50 transition-colors">
-                <div class="flex items-center gap-3 relative cursor-pointer" onclick="showProfileCard(this, 'Michael Chen', '@mchen99')">
-                    <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Profile" class="w-12 h-12 rounded-full object-cover grayscale opacity-70">
-                    <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-slate-400 border-2 border-surface-container-lowest dark:border-inverse-surface rounded-full friend-status-indicator" data-status="offline"></div>
+                <div class="flex items-center gap-3 cursor-pointer" onclick="showProfileCard(this, 'Michael Chen', '@mchen99')">
+                    <div class="relative w-12 h-12 shrink-0">
+                        <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Profile" class="w-12 h-12 rounded-full object-cover grayscale opacity-70">
+                        <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-slate-400 border-2 border-surface-container-lowest dark:border-inverse-surface rounded-full friend-status-indicator" data-status="offline"></div>
+                    </div>
                     <div>
                         <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm">Michael Chen</h4>
                         <p class="text-[11px] text-on-surface-variant dark:text-slate-400">Offline</p>
@@ -824,9 +828,11 @@
 
             <!-- Dummy Friend 3 -->
             <div class="flex items-center justify-between p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30 hover:border-primary/50 transition-colors">
-                <div class="flex items-center gap-3 relative cursor-pointer" onclick="showProfileCard(this, 'Emily Davis', '@emilyd_')">
-                    <img src="https://i.pravatar.cc/150?u=a04258114e29026702d" alt="Profile" class="w-12 h-12 rounded-full object-cover">
-                    <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-surface-container-lowest dark:border-inverse-surface rounded-full friend-status-indicator" data-status="online"></div>
+                <div class="flex items-center gap-3 cursor-pointer" onclick="showProfileCard(this, 'Emily Davis', '@emilyd_')">
+                    <div class="relative w-12 h-12 shrink-0">
+                        <img src="https://i.pravatar.cc/150?u=a04258114e29026702d" alt="Profile" class="w-12 h-12 rounded-full object-cover">
+                        <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-surface-container-lowest dark:border-inverse-surface rounded-full friend-status-indicator" data-status="online"></div>
+                    </div>
                     <div>
                         <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm">Emily Davis</h4>
                         <p class="text-[11px] text-on-surface-variant dark:text-slate-400">Sedang Online</p>
@@ -1781,7 +1787,7 @@
               // Pilih satu teman secara acak untuk diubah statusnya (Simulasi)
               const randomIndex = Math.floor(Math.random() * indicators.length);
               const ind = indicators[randomIndex];
-              const p = ind.nextElementSibling.querySelector('p');
+              const p = ind.parentElement.nextElementSibling.querySelector('p');
               const img = ind.previousElementSibling;
               
               // 10% chance to flip status for realism
