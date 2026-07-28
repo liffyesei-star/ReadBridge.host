@@ -718,23 +718,20 @@ window.ubahVote = async function (id, delta) {
   const voteStorageKey = `rb_post_vote_${id}`;
   const storedVote = Number(localStorage.getItem(voteStorageKey)) || 0;
   p.userVote = Number(p.userVote || storedVote || 0);
-  const previousVote = p.userVote;
   const previousVotes = Number(p.votes) || 0;
 
-  if (p.userVote === delta) {
-    // If clicking the same button again, it cancels the vote
-    p.votes -= delta;
-    p.userVote = 0;
-  } else {
-    // If changing from upvote to downvote, or downvote to upvote
-    // First, revert the previous vote (if any)
-    if (p.userVote !== 0) {
-      p.votes -= p.userVote;
+  if (p.userVote !== 0) {
+    if (typeof showToastNotification === 'function') {
+      showToastNotification('Anda hanya bisa memberikan vote satu kali.', 'info');
+    } else {
+      alert('Anda hanya bisa memberikan vote satu kali.');
     }
-    // Then apply the new vote
-    p.votes += delta;
-    p.userVote = delta;
+    return;
   }
+
+  // Apply new vote
+  p.votes += delta;
+  p.userVote = delta;
 
   // Ensure total votes do not drop below 0
   p.votes = Math.max(0, p.votes);
@@ -762,9 +759,8 @@ window.ubahVote = async function (id, delta) {
 
   savePosts(posts);
 
-  const voteDelta = p.userVote - previousVote;
-  if (voteDelta !== 0 && typeof window.castVoteToDB === 'function') {
-    await window.castVoteToDB(id, voteDelta, { initialScore: previousVotes });
+  if (typeof window.castVoteToDB === 'function') {
+    await window.castVoteToDB(id, delta, { initialScore: previousVotes });
   }
 
   if (!token) {
