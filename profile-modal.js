@@ -68,10 +68,7 @@
     </div>
   </div>`;
 
-  // Only inject if not already present
-  if (!document.getElementById('global-profile-modal')) {
-    document.body.insertAdjacentHTML('beforeend', MODAL_HTML);
-  }
+
 
   // ── 2. Modal Functions ──
   window.showProfileModal = function (uid, name, avatarUrl, status) {
@@ -181,15 +178,25 @@
     });
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', bindClickableAvatars);
-  } else {
+  function initProfileModal() {
+    // Only inject if not already present
+    if (!document.getElementById('global-profile-modal') && document.body) {
+      document.body.insertAdjacentHTML('beforeend', MODAL_HTML);
+    }
     bindClickableAvatars();
+    
+    // Observe for dynamically added avatars
+    if (document.body) {
+      const observer = new MutationObserver(bindClickableAvatars);
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
   }
 
-  // Observe for dynamically added avatars
-  const observer = new MutationObserver(bindClickableAvatars);
-  observer.observe(document.body, { childList: true, subtree: true });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initProfileModal);
+  } else {
+    initProfileModal();
+  }
 
   // Close on Escape key
   document.addEventListener('keydown', function (e) {
