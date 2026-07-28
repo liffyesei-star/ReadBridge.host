@@ -454,6 +454,13 @@
             data-icon="leaderboard">leaderboard</span>
           XP Progress & Leaderboard
         </a>
+        <a id="sidebar-tab-teman"
+          class="flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all"
+          href="javascript:void(0)" onclick="document.getElementById('tab-teman').click()">
+          <span class="material-symbols-outlined text-on-surface-variant dark:text-outline-variant"
+            data-icon="group">group</span>
+          Daftar Teman
+        </a>
         <a id="sidebar-tab-riwayat"
           class="flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all"
           href="javascript:void(0)" onclick="document.getElementById('tab-riwayat').click()">
@@ -512,15 +519,14 @@
         <button id="tab-leaderboard"
           class="font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors shrink-0">Leaderboard
           & Quests</button>
+        <button id="tab-teman"
+          class="font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors shrink-0 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">group</span>
+          Daftar Teman</button>
         <button id="tab-riwayat"
           class="font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors shrink-0 flex items-center gap-1.5">
           <span class="material-symbols-outlined text-sm">receipt_long</span>
           Riwayat & Transaksi
-        </button>
-        <button id="tab-teman"
-          class="font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors shrink-0 flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-sm">group</span>
-          Daftar Teman
         </button>
       </div>
 
@@ -732,6 +738,64 @@
         </div>
       </div>
 
+      <!-- Tab 4: Content Daftar Teman -->
+      <div id="content-teman" class="hidden flex-col gap-lg w-full">
+        <div>
+          <h1 class="font-display-lg text-[32px] md:text-display-lg leading-tight text-on-surface dark:text-white font-black mb-xs">Daftar Teman</h1>
+          <p class="font-body-lg text-body-lg text-on-surface-variant dark:text-slate-400">Lihat siapa saja yang sedang online, dan mulai mengobrol dengan teman-teman Anda secara langsung.</p>
+        </div>
+
+        <div class="bg-surface-container-lowest dark:bg-inverse-surface rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden flex flex-col p-lg">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md" id="friend-list-container">
+            <!-- Dummy Friend 1 -->
+            <div class="flex items-center justify-between p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30 hover:border-primary/50 transition-colors">
+                <div class="flex items-center gap-3 relative cursor-pointer" onclick="showProfileCard(this, 'Sarah Jenkins', '@sarahj')">
+                    <img src="https://i.pravatar.cc/150?u=a042581f4e29026024d" alt="Profile" class="w-12 h-12 rounded-full object-cover">
+                    <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-surface-container-lowest dark:border-inverse-surface rounded-full friend-status-indicator" data-status="online"></div>
+                    <div>
+                        <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm">Sarah Jenkins</h4>
+                        <p class="text-[11px] text-on-surface-variant dark:text-slate-400">Sedang Online</p>
+                    </div>
+                </div>
+                <button onclick="window.location.href='pesan.html'" class="w-9 h-9 flex items-center justify-center bg-primary/10 text-primary rounded-full hover:bg-primary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">chat</span>
+                </button>
+            </div>
+            
+            <!-- Dummy Friend 2 -->
+            <div class="flex items-center justify-between p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30 hover:border-primary/50 transition-colors">
+                <div class="flex items-center gap-3 relative cursor-pointer" onclick="showProfileCard(this, 'Michael Chen', '@mchen99')">
+                    <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Profile" class="w-12 h-12 rounded-full object-cover grayscale opacity-70">
+                    <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-slate-400 border-2 border-surface-container-lowest dark:border-inverse-surface rounded-full friend-status-indicator" data-status="offline"></div>
+                    <div>
+                        <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm">Michael Chen</h4>
+                        <p class="text-[11px] text-on-surface-variant dark:text-slate-400">Offline</p>
+                    </div>
+                </div>
+                <button onclick="window.location.href='pesan.html'" class="w-9 h-9 flex items-center justify-center bg-primary/10 text-primary rounded-full hover:bg-primary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">chat</span>
+                </button>
+            </div>
+
+            <!-- Dummy Friend 3 -->
+            <div class="flex items-center justify-between p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30 hover:border-primary/50 transition-colors">
+                <div class="flex items-center gap-3 relative cursor-pointer" onclick="showProfileCard(this, 'Emily Davis', '@emilyd_')">
+                    <img src="https://i.pravatar.cc/150?u=a04258114e29026702d" alt="Profile" class="w-12 h-12 rounded-full object-cover">
+                    <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-surface-container-lowest dark:border-inverse-surface rounded-full friend-status-indicator" data-status="online"></div>
+                    <div>
+                        <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm">Emily Davis</h4>
+                        <p class="text-[11px] text-on-surface-variant dark:text-slate-400">Sedang Online</p>
+                    </div>
+                </div>
+                <button onclick="window.location.href='pesan.html'" class="w-9 h-9 flex items-center justify-center bg-primary/10 text-primary rounded-full hover:bg-primary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">chat</span>
+                </button>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+
       <!-- Tab 3: Content Riwayat & Transaksi -->
       <div id="content-riwayat" class="hidden flex-col gap-lg w-full">
         <div>
@@ -779,75 +843,7 @@
             </section>
           </div>
         </div>
-      </div>      <!-- Tab 4: Content Daftar Teman -->
-      <div id="content-teman" class="hidden flex-col gap-lg w-full">
-        <div class="flex justify-between items-end mb-xs">
-          <div>
-            <h1 class="font-display-lg text-[32px] md:text-display-lg leading-tight text-on-surface dark:text-white font-black mb-xs">Daftar Teman</h1>
-            <p class="font-body-lg text-body-lg text-on-surface-variant dark:text-slate-400">Temukan teman yang sedang online dan sapa mereka secara langsung.</p>
-          </div>
-          <div class="hidden md:flex gap-2">
-            <input type="text" placeholder="Cari teman..." class="px-4 py-2 text-sm border border-outline-variant rounded-full bg-surface dark:bg-slate-900 outline-none focus:border-primary">
-          </div>
-        </div>
-
-        <!-- Friend List Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md w-full">
-          
-          <!-- Online Friend Card 1 -->
-          <div class="bg-surface-container-lowest dark:bg-inverse-surface border border-outline-variant/30 rounded-2xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
-            <div class="flex items-center gap-3">
-              <div class="relative">
-                <img src="https://ui-avatars.com/api/?name=Alex+B&background=e0f2fe&color=0284c7" class="w-12 h-12 rounded-full object-cover border-2 border-transparent hover:border-primary transition-colors cursor-pointer" data-profile-uid="UID123" data-profile-name="Alex Bhaskara" data-profile-avatar="https://ui-avatars.com/api/?name=Alex+B&background=e0f2fe&color=0284c7" data-profile-status="active">
-                <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white dark:border-slate-900 shadow-sm pointer-events-none"></div>
-              </div>
-              <div>
-                <h3 class="font-bold text-on-surface dark:text-white text-sm">Alex Bhaskara</h3>
-                <p class="text-xs text-on-surface-variant flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Online sekarang</p>
-              </div>
-            </div>
-            <button onclick="window.location.href='pesan.html'" class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors" title="Kirim Pesan">
-              <span class="material-symbols-outlined text-[20px]">chat</span>
-            </button>
-          </div>
-
-          <!-- Offline Friend Card 2 -->
-          <div class="bg-surface-container-lowest dark:bg-inverse-surface border border-outline-variant/30 rounded-2xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
-            <div class="flex items-center gap-3">
-              <div class="relative">
-                <img src="https://ui-avatars.com/api/?name=Sarah+M&background=fce7f3&color=db2777" class="w-12 h-12 rounded-full object-cover grayscale opacity-80 cursor-pointer hover:grayscale-0 hover:opacity-100 transition-all" data-profile-uid="UID124" data-profile-name="Sarah Meilani" data-profile-avatar="https://ui-avatars.com/api/?name=Sarah+M&background=fce7f3&color=db2777" data-profile-status="offline">
-                <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-slate-400 rounded-full border-2 border-white dark:border-slate-900 shadow-sm pointer-events-none"></div>
-              </div>
-              <div>
-                <h3 class="font-bold text-on-surface dark:text-white text-sm">Sarah Meilani</h3>
-                <p class="text-xs text-on-surface-variant">Terakhir aktif 2j lalu</p>
-              </div>
-            </div>
-            <button class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-red-500 transition-colors" title="Hapus Teman">
-              <span class="material-symbols-outlined text-[20px]">person_remove</span>
-            </button>
-          </div>
-
-          <!-- Online Friend Card 3 -->
-          <div class="bg-surface-container-lowest dark:bg-inverse-surface border border-outline-variant/30 rounded-2xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
-            <div class="flex items-center gap-3">
-              <div class="relative">
-                <img src="https://ui-avatars.com/api/?name=Budi+S&background=dcfce3&color=16a34a" class="w-12 h-12 rounded-full object-cover border-2 border-transparent hover:border-primary transition-colors cursor-pointer" data-profile-uid="UID125" data-profile-name="Budi Santoso" data-profile-avatar="https://ui-avatars.com/api/?name=Budi+S&background=dcfce3&color=16a34a" data-profile-status="active">
-                <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white dark:border-slate-900 shadow-sm pointer-events-none"></div>
-              </div>
-              <div>
-                <h3 class="font-bold text-on-surface dark:text-white text-sm">Budi Santoso</h3>
-                <p class="text-xs text-on-surface-variant flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Online sekarang</p>
-              </div>
-            </div>
-            <button onclick="window.location.href='pesan.html'" class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors" title="Kirim Pesan">
-              <span class="material-symbols-outlined text-[20px]">chat</span>
-            </button>
-          </div>
-
-        </div>
       </div>
-
     </main>
   </div>
 
@@ -1443,16 +1439,17 @@
       const tabDetail = document.getElementById('tab-detail');
       const tabLeaderboard = document.getElementById('tab-leaderboard');
       const tabRiwayat = document.getElementById('tab-riwayat');
+      const tabTeman = document.getElementById('tab-teman');
 
       const contentDetail = document.getElementById('content-detail');
       const contentLeaderboard = document.getElementById('content-leaderboard');
       const contentRiwayat = document.getElementById('content-riwayat');
-      const tabTeman = document.getElementById('tab-teman');
       const contentTeman = document.getElementById('content-teman');
 
       const sidebarTabDetail = document.getElementById('sidebar-tab-detail');
       const sidebarTabLeaderboard = document.getElementById('sidebar-tab-leaderboard');
       const sidebarTabRiwayat = document.getElementById('sidebar-tab-riwayat');
+      const sidebarTabTeman = document.getElementById('sidebar-tab-teman');
 
       function resetTabs() {
         [tabDetail, tabLeaderboard, tabRiwayat, tabTeman].forEach(t => {
@@ -1464,7 +1461,7 @@
             c.classList.remove('grid', 'flex');
           }
         });
-        [sidebarTabDetail, sidebarTabLeaderboard, sidebarTabRiwayat].forEach(s => {
+        [sidebarTabDetail, sidebarTabLeaderboard, sidebarTabRiwayat, sidebarTabTeman].forEach(s => {
           if (s) {
             s.className = "flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all";
             const icon = s.querySelector('span');
@@ -1516,12 +1513,18 @@
         }
       }
 
+
       function showTeman() {
         resetTabs();
         if (tabTeman) tabTeman.className = "font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors shrink-0 flex items-center gap-1.5";
         if (contentTeman) {
           contentTeman.classList.remove('hidden');
           contentTeman.classList.add('flex');
+        }
+        if (sidebarTabTeman) {
+          sidebarTabTeman.className = "flex items-center gap-md px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all";
+          const icon = sidebarTabTeman.querySelector('span');
+          if (icon) icon.className = "material-symbols-outlined text-on-primary-container";
         }
       }
 
@@ -1724,6 +1727,34 @@
       let baseXP = 0; // XP awal murni 0
       let xpFromTransactions = transactions.length * 150; // +150 XP per transaksi
       let xpFromActivities = combinedActivities.length * 50; // +50 XP per diskusi/komentar
+
+      
+      // ── SIMULASI REAL-TIME PRESENCE (ONLINE/OFFLINE) ──
+      setInterval(() => {
+          const indicators = document.querySelectorAll('.friend-status-indicator');
+          if(indicators.length > 0) {
+              // Pilih satu teman secara acak untuk diubah statusnya (Simulasi)
+              const randomIndex = Math.floor(Math.random() * indicators.length);
+              const ind = indicators[randomIndex];
+              const p = ind.nextElementSibling.querySelector('p');
+              const img = ind.previousElementSibling;
+              
+              // 10% chance to flip status for realism
+              if(Math.random() > 0.8) {
+                  if(ind.dataset.status === 'online') {
+                      ind.dataset.status = 'offline';
+                      ind.className = 'absolute bottom-0 right-0 w-3.5 h-3.5 bg-slate-400 border-2 border-surface-container-lowest dark:border-inverse-surface rounded-full friend-status-indicator transition-colors';
+                      p.innerText = 'Offline';
+                      img.classList.add('grayscale', 'opacity-70');
+                  } else {
+                      ind.dataset.status = 'online';
+                      ind.className = 'absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-surface-container-lowest dark:border-inverse-surface rounded-full friend-status-indicator transition-colors';
+                      p.innerText = 'Sedang Online';
+                      img.classList.remove('grayscale', 'opacity-70');
+                  }
+              }
+          }
+      }, 5000); // Cek perubahan tiap 5 detik
 
       // ─── DYNAMIC QUESTS CHECKING ───
       // Daily reset: clear quests if it's a new calendar day
@@ -3108,7 +3139,8 @@
     </div>
   </div>
 
-<script src="profile-modal.js"></script>
 
+    <!-- Profile Card Global Modal -->
+    <script src="profile-card.js"></script>
 </body>
 </html>
