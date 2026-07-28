@@ -557,8 +557,8 @@ function renderPostCard(p) {
   return `<article data-post-id="${p.id}" class="bg-surface-container-lowest rounded-2xl p-lg flex flex-col gap-md shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300 border border-outline-variant/20 hover:-translate-y-0.5 ${isTrending ? 'border-l-4 border-l-amber-500/85 bg-gradient-to-r from-amber-500/[0.01] to-transparent' : ''}">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-sm text-on-surface-variant font-label-sm text-label-sm">
-        <img src="${avatar}" alt="${safeUsername}" class="w-10 h-10 rounded-full object-cover border border-outline-variant/50 bg-surface-container-high cursor-pointer hover:opacity-80 transition-opacity" data-profile-uid="user_${safeUsername}" data-profile-name="${safeUsername}" data-profile-avatar="${avatar}" data-profile-status="active"/>
-        <div class="flex flex-col"><div class="flex items-center"><span class="font-bold text-on-surface text-label-md cursor-pointer hover:underline" data-profile-uid="user_${safeUsername}" data-profile-name="${safeUsername}" data-profile-avatar="${avatar}" data-profile-status="active">${safeUsername}</span>${badge}${trendingBadge}${destBadge}</div><span class="text-on-surface-variant/80">${formatWaktu(p.waktu)}${editedBadge}</span></div>
+        <img onclick="showProfileCard(this, '${safeUsername}', '@${safeUsername.replace(/\\s+/g, '').toLowerCase()}', '${avatar}')" src="${avatar}" alt="${safeUsername}" class="w-10 h-10 rounded-full object-cover border border-outline-variant/50 bg-surface-container-high cursor-pointer hover:opacity-80 transition-opacity"/>
+        <div class="flex flex-col"><div class="flex items-center"><span onclick="showProfileCard(this, '${safeUsername}', '@${safeUsername.replace(/\\s+/g, '').toLowerCase()}', '${avatar}')" class="font-bold text-on-surface text-label-md cursor-pointer hover:text-primary transition-colors hover:underline">${safeUsername}</span>${badge}${trendingBadge}${destBadge}</div><span class="text-on-surface-variant/80">${formatWaktu(p.waktu)}${editedBadge}</span></div>
       </div>
       <div class="relative">
         <button onclick="window.togglePostMenu(event, '${p.id}')" class="text-on-surface-variant hover:bg-surface-container p-2 rounded-full transition-colors"><span class="material-symbols-outlined">more_horiz</span></button>
@@ -613,9 +613,9 @@ function renderPostCard(p) {
 
       return `
           <div class="flex gap-3 text-sm">
-            <img src="${c.avatar || getAvatarForUser(c.username)}" alt="${c.username}" class="w-8 h-8 rounded-full border border-outline-variant/50 bg-surface-container-high cursor-pointer hover:opacity-80 transition-opacity" data-profile-uid="user_${c.username}" data-profile-name="${c.username}" data-profile-avatar="${c.avatar || getAvatarForUser(c.username)}" data-profile-status="active"/>
+            <img src="${c.avatar || getAvatarForUser(c.username)}" alt="${c.username}" class="w-8 h-8 rounded-full border border-outline-variant/50 bg-surface-container-high"/>
             <div class="bg-surface-container-lowest border border-outline-variant/20 p-3 rounded-2xl rounded-tl-none flex-1 shadow-sm">
-              <div class="flex items-center gap-2 mb-1"><span class="font-bold text-on-surface text-[13px] cursor-pointer hover:underline" data-profile-uid="user_${c.username}" data-profile-name="${c.username}" data-profile-avatar="${c.avatar || getAvatarForUser(c.username)}" data-profile-status="active">${c.username}</span>${cBadge}<span class="text-on-surface-variant/60 text-[11px]">${formatWaktu(c.waktu)}</span></div>
+              <div class="flex items-center gap-2 mb-1"><span class="font-bold text-on-surface text-[13px]">${c.username}</span>${cBadge}<span class="text-on-surface-variant/60 text-[11px]">${formatWaktu(c.waktu)}</span></div>
               <p class="text-on-surface-variant text-[14px] leading-relaxed">${c.text}</p>
             </div>
           </div>
@@ -1161,7 +1161,7 @@ window.renderDynamicMembersList = function () {
       </p>
       <div class="flex flex-col gap-2 mb-4" id="member-online-list">
         ${onlineMembers.map(m => `
-          <div class="flex items-center gap-3 hover:bg-surface-container-low p-2 rounded-lg cursor-pointer transition-colors group" data-profile-uid="user_${m.name}" data-profile-name="${m.name}" data-profile-avatar="${m.avatar}" data-profile-status="active">
+          <div class="flex items-center gap-3 hover:bg-surface-container-low p-2 rounded-lg cursor-pointer transition-colors group">
             <div class="relative shrink-0 flex">
               <img src="${m.avatar}" class="w-8 h-8 rounded-full object-cover group-hover:scale-105 transition-transform duration-200">
               <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-surface rounded-full shadow-[0_0_6px_#22c55e]"></div>
@@ -1176,7 +1176,7 @@ window.renderDynamicMembersList = function () {
       </p>
       <div class="flex flex-col gap-2" id="member-offline-list">
         ${offlineMembers.map(m => `
-          <div class="flex items-center gap-3 opacity-60 hover:opacity-100 hover:bg-surface-container-low p-2 rounded-lg cursor-pointer transition-all group" data-profile-uid="user_${m.name}" data-profile-name="${m.name}" data-profile-avatar="${m.avatar}" data-profile-status="offline">
+          <div class="flex items-center gap-3 opacity-60 hover:opacity-100 hover:bg-surface-container-low p-2 rounded-lg cursor-pointer transition-all group">
             <div class="relative shrink-0 flex">
               <img src="${m.avatar}" class="w-8 h-8 rounded-full object-cover grayscale group-hover:scale-105 transition-transform duration-200">
               <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-gray-400 border-2 border-surface rounded-full"></div>
@@ -2131,10 +2131,10 @@ function renderCommentItemHtml(c, postAuthor) {
 
   return `
     <div class="flex gap-3 text-sm">
-      <img src="${c.avatar || getAvatarForUser(c.username)}" alt="${c.username}" class="w-8 h-8 rounded-full border border-outline-variant/50 bg-surface-container-high cursor-pointer hover:opacity-80 transition-opacity" data-profile-uid="user_${c.username}" data-profile-name="${c.username}" data-profile-avatar="${c.avatar || getAvatarForUser(c.username)}" data-profile-status="active"/>
+      <img src="${c.avatar || getAvatarForUser(c.username)}" alt="${c.username}" class="w-8 h-8 rounded-full border border-outline-variant/50 bg-surface-container-high"/>
       <div class="${bubble} p-3 rounded-2xl rounded-tl-none flex-1 shadow-sm">
         <div class="flex items-center gap-2 mb-1 flex-wrap">
-          <span class="font-bold text-on-surface text-[13px] cursor-pointer hover:underline" data-profile-uid="user_${c.username}" data-profile-name="${c.username}" data-profile-avatar="${c.avatar || getAvatarForUser(c.username)}" data-profile-status="active">${c.username}</span>${cBadge}
+          <span class="font-bold text-on-surface text-[13px]">${c.username}</span>${cBadge}
           <span class="text-on-surface-variant/60 text-[11px]">${formatWaktu(c.waktu)}</span>
         </div>
         <p class="text-on-surface-variant text-[14px] leading-relaxed">${c.text}</p>
