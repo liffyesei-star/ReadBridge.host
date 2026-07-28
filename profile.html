@@ -517,6 +517,11 @@
           <span class="material-symbols-outlined text-sm">receipt_long</span>
           Riwayat & Transaksi
         </button>
+        <button id="tab-teman"
+          class="font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors shrink-0 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">group</span>
+          Daftar Teman
+        </button>
       </div>
 
       <div id="content-detail" class="grid grid-cols-1 lg:grid-cols-3 gap-lg w-full">
@@ -774,7 +779,75 @@
             </section>
           </div>
         </div>
+      </div>      <!-- Tab 4: Content Daftar Teman -->
+      <div id="content-teman" class="hidden flex-col gap-lg w-full">
+        <div class="flex justify-between items-end mb-xs">
+          <div>
+            <h1 class="font-display-lg text-[32px] md:text-display-lg leading-tight text-on-surface dark:text-white font-black mb-xs">Daftar Teman</h1>
+            <p class="font-body-lg text-body-lg text-on-surface-variant dark:text-slate-400">Temukan teman yang sedang online dan sapa mereka secara langsung.</p>
+          </div>
+          <div class="hidden md:flex gap-2">
+            <input type="text" placeholder="Cari teman..." class="px-4 py-2 text-sm border border-outline-variant rounded-full bg-surface dark:bg-slate-900 outline-none focus:border-primary">
+          </div>
+        </div>
+
+        <!-- Friend List Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md w-full">
+          
+          <!-- Online Friend Card 1 -->
+          <div class="bg-surface-container-lowest dark:bg-inverse-surface border border-outline-variant/30 rounded-2xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="showProfileModal('UID123', 'Alex Bhaskara', 'https://ui-avatars.com/api/?name=Alex+B&background=e0f2fe&color=0284c7', 'active')">
+              <div class="relative">
+                <img src="https://ui-avatars.com/api/?name=Alex+B&background=e0f2fe&color=0284c7" class="w-12 h-12 rounded-full object-cover border-2 border-transparent group-hover:border-primary transition-colors">
+                <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white dark:border-slate-900 shadow-sm"></div>
+              </div>
+              <div>
+                <h3 class="font-bold text-on-surface dark:text-white text-sm">Alex Bhaskara</h3>
+                <p class="text-xs text-on-surface-variant flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Online sekarang</p>
+              </div>
+            </div>
+            <button onclick="window.location.href='pesan.html'" class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors" title="Kirim Pesan">
+              <span class="material-symbols-outlined text-[20px]">chat</span>
+            </button>
+          </div>
+
+          <!-- Offline Friend Card 2 -->
+          <div class="bg-surface-container-lowest dark:bg-inverse-surface border border-outline-variant/30 rounded-2xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="showProfileModal('UID124', 'Sarah M', 'https://ui-avatars.com/api/?name=Sarah+M&background=fce7f3&color=db2777', 'offline')">
+              <div class="relative">
+                <img src="https://ui-avatars.com/api/?name=Sarah+M&background=fce7f3&color=db2777" class="w-12 h-12 rounded-full object-cover grayscale opacity-80">
+                <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-slate-400 rounded-full border-2 border-white dark:border-slate-900 shadow-sm"></div>
+              </div>
+              <div>
+                <h3 class="font-bold text-on-surface dark:text-white text-sm">Sarah Meilani</h3>
+                <p class="text-xs text-on-surface-variant">Terakhir aktif 2j lalu</p>
+              </div>
+            </div>
+            <button class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-red-500 transition-colors" title="Hapus Teman">
+              <span class="material-symbols-outlined text-[20px]">person_remove</span>
+            </button>
+          </div>
+
+          <!-- Online Friend Card 3 -->
+          <div class="bg-surface-container-lowest dark:bg-inverse-surface border border-outline-variant/30 rounded-2xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="showProfileModal('UID125', 'Budi Santoso', 'https://ui-avatars.com/api/?name=Budi+S&background=dcfce3&color=16a34a', 'active')">
+              <div class="relative">
+                <img src="https://ui-avatars.com/api/?name=Budi+S&background=dcfce3&color=16a34a" class="w-12 h-12 rounded-full object-cover border-2 border-transparent group-hover:border-primary transition-colors">
+                <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white dark:border-slate-900 shadow-sm"></div>
+              </div>
+              <div>
+                <h3 class="font-bold text-on-surface dark:text-white text-sm">Budi Santoso</h3>
+                <p class="text-xs text-on-surface-variant flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Online sekarang</p>
+              </div>
+            </div>
+            <button onclick="window.location.href='pesan.html'" class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors" title="Kirim Pesan">
+              <span class="material-symbols-outlined text-[20px]">chat</span>
+            </button>
+          </div>
+
+        </div>
       </div>
+
     </main>
   </div>
 
@@ -1374,16 +1447,18 @@
       const contentDetail = document.getElementById('content-detail');
       const contentLeaderboard = document.getElementById('content-leaderboard');
       const contentRiwayat = document.getElementById('content-riwayat');
+      const tabTeman = document.getElementById('tab-teman');
+      const contentTeman = document.getElementById('content-teman');
 
       const sidebarTabDetail = document.getElementById('sidebar-tab-detail');
       const sidebarTabLeaderboard = document.getElementById('sidebar-tab-leaderboard');
       const sidebarTabRiwayat = document.getElementById('sidebar-tab-riwayat');
 
       function resetTabs() {
-        [tabDetail, tabLeaderboard, tabRiwayat].forEach(t => {
+        [tabDetail, tabLeaderboard, tabRiwayat, tabTeman].forEach(t => {
           if (t) t.className = "font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors shrink-0 flex items-center gap-1.5";
         });
-        [contentDetail, contentLeaderboard, contentRiwayat].forEach(c => {
+        [contentDetail, contentLeaderboard, contentRiwayat, contentTeman].forEach(c => {
           if (c) {
             c.classList.add('hidden');
             c.classList.remove('grid', 'flex');
@@ -1441,9 +1516,19 @@
         }
       }
 
+      function showTeman() {
+        resetTabs();
+        if (tabTeman) tabTeman.className = "font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors shrink-0 flex items-center gap-1.5";
+        if (contentTeman) {
+          contentTeman.classList.remove('hidden');
+          contentTeman.classList.add('flex');
+        }
+      }
+
       if (tabDetail) tabDetail.addEventListener('click', showDetail);
       if (tabLeaderboard) tabLeaderboard.addEventListener('click', showLeaderboard);
       if (tabRiwayat) tabRiwayat.addEventListener('click', showRiwayat);
+      if (tabTeman) tabTeman.addEventListener('click', showTeman);
 
       if (window.location.hash === '#leaderboard') {
         showLeaderboard();

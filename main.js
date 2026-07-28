@@ -1582,8 +1582,105 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // ==========================================
-  // INJECT CONFIRM UNTUK MARKETPLACE CHECKOUT
+  // INJECT GLOBAL PROFILE MODAL DYNAMICALLY
   // ==========================================
-  // (Sinkronisasi dengan task lain bila diperlukan)
+  const modalHTML = `
+    <!-- Global Profile Modal -->
+    <div id="global-profile-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
+      <div id="global-profile-overlay" class="absolute inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm transition-opacity opacity-0" onclick="closeProfileModal()"></div>
+      <div id="global-profile-card" class="bg-surface-container-lowest dark:bg-inverse-surface w-full max-w-sm rounded-[24px] shadow-2xl relative z-10 scale-95 opacity-0 transition-all duration-300 overflow-hidden border border-outline-variant/30">
+        <!-- Banner -->
+        <div class="h-24 bg-gradient-to-r from-primary to-indigo-600 relative"></div>
+        <!-- Close button -->
+        <button onclick="closeProfileModal()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/20 text-white flex items-center justify-center hover:bg-black/40 transition-colors backdrop-blur-md">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+        <!-- Content -->
+        <div class="px-6 pb-6 pt-0 relative flex flex-col items-center text-center">
+          <!-- Avatar -->
+          <div class="relative -mt-12 mb-3">
+            <img id="modal-profile-avatar" src="" class="w-24 h-24 rounded-full border-4 border-surface-container-lowest dark:border-inverse-surface object-cover bg-white shadow-md">
+            <div id="modal-profile-status" class="absolute bottom-1 right-1 w-5 h-5 rounded-full border-2 border-surface-container-lowest dark:border-inverse-surface shadow-sm"></div>
+          </div>
+          
+          <h2 id="modal-profile-name" class="font-title-lg text-xl font-black text-on-surface dark:text-white leading-tight">Name</h2>
+          <p id="modal-profile-username" class="text-xs font-bold text-primary mb-3">@username</p>
+          
+          <div class="flex gap-2 justify-center w-full mt-2">
+            <button onclick="checkAndSendDM()" class="flex-1 bg-primary text-white py-2.5 rounded-xl font-bold text-sm shadow-md hover:bg-primary-container transition-all flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined text-[18px]">chat</span> Kirim Pesan
+            </button>
+            <button class="w-12 h-10 bg-surface-container border border-outline-variant/30 text-on-surface hover:bg-surface-container-high rounded-xl flex items-center justify-center transition-colors">
+              <span class="material-symbols-outlined text-[20px]">person_add</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+  window.showProfileModal = function(uid, name, avatarUrl, status) {
+    const modal = document.getElementById('global-profile-modal');
+    const overlay = document.getElementById('global-profile-overlay');
+    const card = document.getElementById('global-profile-card');
+    
+    document.getElementById('modal-profile-name').innerText = name;
+    document.getElementById('modal-profile-username').innerText = '@' + name.toLowerCase().replace(/\s+/g, '');
+    document.getElementById('modal-profile-avatar').src = avatarUrl;
+    
+    const statusDot = document.getElementById('modal-profile-status');
+    if(status === 'active') {
+      statusDot.className = 'absolute bottom-1 right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-surface-container-lowest dark:border-inverse-surface shadow-sm';
+    } else {
+      statusDot.className = 'absolute bottom-1 right-1 w-5 h-5 bg-slate-400 rounded-full border-2 border-surface-container-lowest dark:border-inverse-surface shadow-sm';
+    }
+
+    // Set dataset for DM check
+    document.getElementById('global-profile-card').dataset.targetUid = uid;
+    document.getElementById('global-profile-card').dataset.targetName = name;
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    requestAnimationFrame(() => {
+      overlay.classList.remove('opacity-0');
+      card.classList.remove('scale-95', 'opacity-0');
+      card.classList.add('scale-100', 'opacity-100');
+    });
+  }
+
+  window.closeProfileModal = function() {
+    const modal = document.getElementById('global-profile-modal');
+    const overlay = document.getElementById('global-profile-overlay');
+    const card = document.getElementById('global-profile-card');
+    
+    overlay.classList.add('opacity-0');
+    card.classList.remove('scale-100', 'opacity-100');
+    card.classList.add('scale-95', 'opacity-0');
+    
+    setTimeout(() => {
+      modal.classList.remove('flex');
+      modal.classList.add('hidden');
+    }, 300);
+  }
+
+  window.checkAndSendDM = function() {
+    const card = document.getElementById('global-profile-card');
+    const targetName = card.dataset.targetName;
+    
+    // Simulate reading the target's privacy settings (mock)
+    // For demo purposes, if name contains "Sarah", pretend she has Close Friends Only
+    if (targetName.includes('Sarah')) {
+       alert("Pesan dibatalkan: " + targetName + " mengatur privasi DM menjadi 'Hanya Teman Dekat'.");
+       return;
+    }
+
+    // Check my own preference (just to simulate)
+    const myPrivacy = localStorage.getItem('rb_dm_privacy') || 'all';
+    
+    // Redirect to pesan.html
+    window.location.href = 'pesan.html';
+  }
 
 });

@@ -430,6 +430,37 @@
                         </div>
                     </div>
 
+                    <div class="mt-4">
+                        <h2 class="font-title-lg text-title-lg font-extrabold text-on-surface dark:text-on-primary-container border-b border-outline-variant/20 pb-2 mb-md mt-md">Privasi Pesan (Direct Message)</h2>
+                        <div class="flex flex-col gap-sm mb-md">
+                            <p class="text-xs text-on-surface-variant dark:text-outline-variant">Siapa yang dapat mengirimi Anda pesan (DM)?</p>
+                            
+                            <label class="flex items-center gap-3 p-3 border border-outline-variant rounded-xl cursor-pointer hover:bg-surface-container transition-colors">
+                                <input type="radio" name="dm_privacy" value="all" class="w-4 h-4 text-primary focus:ring-primary border-outline-variant" onchange="saveDMPrivacy()" checked>
+                                <div>
+                                    <p class="font-bold text-sm text-on-surface">🌐 Terbuka untuk semua</p>
+                                    <p class="text-[10px] text-on-surface-variant">Siapa pun di ReadBridge bisa mengirimi Anda pesan langsung.</p>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 border border-outline-variant rounded-xl cursor-pointer hover:bg-surface-container transition-colors">
+                                <input type="radio" name="dm_privacy" value="request" class="w-4 h-4 text-primary focus:ring-primary border-outline-variant" onchange="saveDMPrivacy()">
+                                <div>
+                                    <p class="font-bold text-sm text-on-surface">📩 Permintaan Pesan (Requests)</p>
+                                    <p class="text-[10px] text-on-surface-variant">Orang yang bukan teman Anda akan masuk ke folder Permintaan (Harus disetujui).</p>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 border border-outline-variant rounded-xl cursor-pointer hover:bg-surface-container transition-colors">
+                                <input type="radio" name="dm_privacy" value="friends" class="w-4 h-4 text-primary focus:ring-primary border-outline-variant" onchange="saveDMPrivacy()">
+                                <div>
+                                    <p class="font-bold text-sm text-on-surface">🔒 Hanya Teman Dekat</p>
+                                    <p class="text-[10px] text-on-surface-variant">Hanya orang yang ada di Daftar Teman Anda yang bisa mengirim pesan.</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
                     <div class="pt-4 mt-4 border-t border-outline-variant/30 flex justify-end">
                         <button onclick="saveProfile()" class="px-6 py-3 bg-primary text-on-primary rounded-full font-bold shadow-md hover:bg-primary-container transition-all hover:-translate-y-0.5">Simpan Perubahan</button>
                     </div>
@@ -1527,6 +1558,28 @@ previewBox.style.fontFamily = 'inherit';
     </div>
 
     <!-- PWA Service Worker Registration -->
+    <script>
+        // DM Privacy Settings Logic
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedPrivacy = localStorage.getItem('rb_dm_privacy') || 'all';
+            const radios = document.querySelectorAll('input[name="dm_privacy"]');
+            radios.forEach(r => {
+                if(r.value === savedPrivacy) r.checked = true;
+            });
+        });
+
+        function saveDMPrivacy() {
+            const selected = document.querySelector('input[name="dm_privacy"]:checked').value;
+            localStorage.setItem('rb_dm_privacy', selected);
+            
+            // Show toast/alert feedback if function exists
+            if(typeof alertFeedback === 'function') {
+                alertFeedback('✅ Setelan Privasi Pesan berhasil diperbarui');
+            } else {
+                console.log("DM Privacy saved:", selected);
+            }
+        }
+    </script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
