@@ -592,9 +592,9 @@ function renderPostCard(p) {
     ${tags ? `<div class="flex flex-wrap gap-2 mt-1">${tags}</div>` : ''}
     <div class="flex gap-4 mt-2 pt-4 border-t border-outline-variant/30 text-on-surface-variant items-center justify-between">
       <div class="flex items-center gap-1 bg-surface-container-low rounded-full px-1 py-1 border border-outline-variant/20">
-        <button onclick="ubahVote('${p.id}',1)" class="hover:text-primary hover:bg-surface-container-high p-1.5 rounded-full transition-colors"><span class="material-symbols-outlined text-[20px]">arrow_upward</span></button>
+        <button id="upvote-btn-${p.id}" onclick="ubahVote('${p.id}',1)" class="${p.userVote === 1 ? 'text-primary bg-surface-container-high' : ''} hover:text-primary hover:bg-surface-container-high p-1.5 rounded-full transition-colors"><span class="material-symbols-outlined text-[20px]">arrow_upward</span></button>
         <span id="vote-${p.id}" class="font-label-md text-label-md font-bold px-2 text-on-surface">${formatVotes(p.votes)}</span>
-        <button onclick="ubahVote('${p.id}',-1)" class="hover:text-error hover:bg-surface-container-high p-1.5 rounded-full transition-colors"><span class="material-symbols-outlined text-[20px]">arrow_downward</span></button>
+        <button id="downvote-btn-${p.id}" onclick="ubahVote('${p.id}',-1)" class="${p.userVote === -1 ? 'text-error bg-surface-container-high' : ''} hover:text-error hover:bg-surface-container-high p-1.5 rounded-full transition-colors"><span class="material-symbols-outlined text-[20px]">arrow_downward</span></button>
       </div>
       <div class="flex gap-2">
         <button onclick="window.toggleComments('${p.id}')" class="flex items-center gap-sm hover:bg-surface-container-low px-4 py-2 rounded-full transition-colors font-label-md text-label-md text-on-surface"><span class="material-symbols-outlined text-[20px]">chat_bubble</span> <span id="komentar-count-${p.id}">${p.komentar}</span></button>
@@ -700,21 +700,64 @@ window.ubahVote = async function (id, delta) {
     window.location.href = 'login.html';
     return;
   }
+  
+  const posts = getPosts();
+  const p = posts.find(x => x.id === id);
+  if (!p) return;
+
+  // Initialize userVote tracking if it doesn't exist
+  p.userVote = p.userVote || 0;
+
+  if (p.userVote === delta) {
+    // If clicking the same button again, it cancels the vote
+    p.votes -= delta;
+    p.userVote = 0;
+  } else {
+    // If changing from upvote to downvote, or downvote to upvote
+    // First, revert the previous vote (if any)
+    if (p.userVote !== 0) {
+      p.votes -= p.userVote;
+    }
+    // Then apply the new vote
+    p.votes += delta;
+    p.userVote = delta;
+  }
+
+  // Ensure total votes do not drop below 0
+  p.votes = Math.max(0, p.votes);
+
+  // Update DOM explicitly
+  const el = document.getElementById(`vote-${id}`);
+  if (el) el.textContent = formatVotes(p.votes);
+
+  const upBtn = document.getElementById(`upvote-btn-${id}`);
+  const downBtn = document.getElementById(`downvote-btn-${id}`);
+  
+  if (upBtn) {
+    if (p.userVote === 1) upBtn.classList.add('text-primary', 'bg-surface-container-high');
+    else upBtn.classList.remove('text-primary', 'bg-surface-container-high');
+  }
+  
+  if (downBtn) {
+    if (p.userVote === -1) downBtn.classList.add('text-error', 'bg-surface-container-high');
+    else downBtn.classList.remove('text-error', 'bg-surface-container-high');
+  }
+
+  // Update localStorage with new state
+  savePosts(posts);
+
+  // Note: the backend API call is commented out because it's a dummy app, 
+  // but if needed we can re-enable it.
+  /*
   try {
     const res = await fetch(`${API_BASE}/api/community/diskusi/${id}/like`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    if (res.ok) {
-      const posts = getPosts(), p = posts.find(x => x.id === id);
-      if (p) {
-        p.votes = Math.max(0, (p.votes || 0) + delta);
-        const el = document.getElementById(`vote-${id}`); if (el) el.textContent = formatVotes(p.votes);
-      }
-    }
   } catch (e) {
     console.error("Gagal like", e);
   }
+  */
 }
 
 window.sharePost = async function (id) {
