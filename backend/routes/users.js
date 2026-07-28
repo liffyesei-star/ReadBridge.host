@@ -22,7 +22,7 @@ const { addNotification } = require("../utils/notification");
  */
 router.put("/profile", verifyToken, async (req, res) => {
   try {
-    const { nama, bio, foto_profil, minat, email } = req.body;
+    const { nama, bio, foto_profil, minat, email, username } = req.body;
     if (!nama) return res.status(400).json({ success: false, message: "Nama tidak boleh kosong" });
 
     // Dapatkan data user saat ini
@@ -32,6 +32,7 @@ router.put("/profile", verifyToken, async (req, res) => {
 
     let isNameChanged = false;
     let isEmailChanged = false;
+    let isUsernameChanged = false;
 
     let queryUpdates = "bio = ?, foto_profil = ?, minat = ?";
     let queryParams = [bio || null, foto_profil || null, minat ? JSON.stringify(minat) : null];
@@ -46,6 +47,21 @@ router.put("/profile", verifyToken, async (req, res) => {
       queryUpdates = "email = ?, " + queryUpdates;
       queryParams.unshift(cleanEmail);
       isEmailChanged = true;
+    }
+
+    // Jika mencoba mengubah username
+    if (username && username.trim() !== '') {
+      let cleanUsername = username.trim();
+      if (!cleanUsername.startsWith('@')) {
+         cleanUsername = '@' + cleanUsername;
+      }
+      const [existingUser] = await db.execute("SELECT id FROM users WHERE username = ? AND id != ?", [cleanUsername, req.user.id]);
+      if (existingUser.length > 0) {
+        return res.status(400).json({ success: false, message: "Username sudah digunakan oleh akun lain" });
+      }
+      queryUpdates = "username = ?, " + queryUpdates;
+      queryParams.unshift(cleanUsername);
+      isUsernameChanged = true;
     }
 
     // Jika mencoba mengubah nama
@@ -94,6 +110,16 @@ router.put("/profile", verifyToken, async (req, res) => {
         'sistem',
         'Alamat Email Diperbarui ✉️',
         `Email akun ReadBridge Anda berhasil diperbarui menjadi ${email.trim().toLowerCase()}.`,
+        'pengaturan.html'
+      );
+    }
+
+    if (isUsernameChanged) {
+      await addNotification(
+        req.user.id,
+        'sistem',
+        'Username Diperbarui 👤',
+        `Username Anda berhasil diubah.`,
         'pengaturan.html'
       );
     }
@@ -467,3 +493,189 @@ router.put("/notifikasi/:id/baca", verifyToken, async (req, res) => {
 });
 
 module.exports = router;
+
+// ============================================================
+// FRIENDS (PERTEMANAN)
+// ============================================================
+
+/**
+ * GET /api/users/search
+ * Cari pengguna berdasarkan query
+ */
+router.get("/search", verifyToken, async (req, res) => {
+  try {
+    const { q } = req.query;
+    if (!q) return res.json({ success: true, data: [] });
+
+    // Jangan tampilkan diri sendiri
+    const searchQuery = `%${q}%`;
+    const [users] = await db.execute(
+      `SELECT id, rb_id, username, nama, foto_profil 
+       FROM users 
+       WHERE id != ? AND (nama LIKE ? OR username LIKE ? OR rb_id LIKE ?)
+       LIMIT 20`,
+      [req.user.id, searchQuery, searchQuery, searchQuery]
+    );
+
+    // Ambil status pertemanan
+    for (let u of users) {
+      const [friendData] = await db.execute(
+        `SELECT status, action_user_id FROM friends 
+         WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?) LIMIT 1`,
+        [req.user.id, u.id, u.id, req.user.id]
+      );
+
+      if (friendData.length > 0) {
+        u.friend_status = friendData[0].status; // pending / accepted / rejected
+        u.action_user_id = friendData[0].action_user_id;
+      } else {
+        u.friend_status = 'none';
+      }
+    }
+
+    res.json({ success: true, data: users });
+  } catch (error) {
+    console.error("Search error:", error);
+    res.status(500).json({ success: false, message: "Gagal mencari pengguna" });
+  }
+});
+
+/**
+ * GET /api/users/friends
+ * Ambil daftar teman (accepted) dan permintaan (pending)
+ */
+router.get("/friends", verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Ambil semua record friends yang melibatkan user_id ini
+    const [friendsData] = await db.execute(
+      `SELECT f.id as friend_row_id, f.status, f.action_user_id,
+              u.id as user_id, u.rb_id, u.username, u.nama, u.foto_profil
+       FROM friends f
+       JOIN users u ON (u.id = IF(f.user_id1 = ?, f.user_id2, f.user_id1))
+       WHERE (f.user_id1 = ? OR f.user_id2 = ?) AND f.status != 'rejected'`,
+      [userId, userId, userId]
+    );
+
+    const my_friends = friendsData.filter(f => f.status === 'accepted');
+    const pending_requests = friendsData.filter(f => f.status === 'pending' && f.action_user_id !== userId);
+    const sent_requests = friendsData.filter(f => f.status === 'pending' && f.action_user_id === userId);
+
+    res.json({
+      success: true,
+      data: {
+        my_friends,
+        pending_requests,
+        sent_requests
+      }
+    });
+  } catch (error) {
+    console.error("Get friends error:", error);
+    res.status(500).json({ success: false, message: "Gagal mengambil data pertemanan" });
+  }
+});
+
+/**
+ * POST /api/users/friends/request
+ * Kirim permintaan pertemanan
+ */
+router.post("/friends/request", verifyToken, async (req, res) => {
+  try {
+    const { target_user_id } = req.body;
+    const userId = req.user.id;
+
+    if (userId == target_user_id) {
+      return res.status(400).json({ success: false, message: "Tidak dapat mengirim permintaan ke diri sendiri" });
+    }
+
+    // Cek user tujuan
+    const [targetUser] = await db.execute("SELECT id FROM users WHERE id = ?", [target_user_id]);
+    if (targetUser.length === 0) {
+      return res.status(404).json({ success: false, message: "Pengguna tidak ditemukan" });
+    }
+
+    // Cek apakah sudah berteman / pending
+    const [existing] = await db.execute(
+      `SELECT id, status FROM friends 
+       WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?) LIMIT 1`,
+      [userId, target_user_id, target_user_id, userId]
+    );
+
+    if (existing.length > 0) {
+       if (existing[0].status === 'accepted') {
+          return res.status(400).json({ success: false, message: "Anda sudah berteman dengan pengguna ini" });
+       }
+       if (existing[0].status === 'pending') {
+          return res.status(400).json({ success: false, message: "Permintaan pertemanan sedang menunggu" });
+       }
+       // Jika rejected, update menjadi pending
+       await db.execute("UPDATE friends SET status = 'pending', action_user_id = ? WHERE id = ?", [userId, existing[0].id]);
+    } else {
+       // Insert baru
+       const u1 = Math.min(userId, target_user_id);
+       const u2 = Math.max(userId, target_user_id);
+       await db.execute(
+         "INSERT INTO friends (user_id1, user_id2, status, action_user_id) VALUES (?, ?, 'pending', ?)",
+         [u1, u2, userId]
+       );
+    }
+
+    // Notifikasi
+    await addNotification(
+      target_user_id,
+      'komunitas',
+      'Permintaan Pertemanan Baru',
+      'Seseorang mengirimkan permintaan pertemanan. Cek tab Daftar Teman Anda.',
+      'profile.html'
+    );
+
+    res.json({ success: true, message: "Permintaan pertemanan terkirim" });
+  } catch (error) {
+    console.error("Send request error:", error);
+    res.status(500).json({ success: false, message: "Gagal mengirim permintaan pertemanan" });
+  }
+});
+
+/**
+ * PUT /api/users/friends/respond
+ * Terima atau tolak pertemanan
+ */
+router.put("/friends/respond", verifyToken, async (req, res) => {
+  try {
+    const { target_user_id, action } = req.body; // action: 'accept' atau 'reject'
+    const userId = req.user.id;
+
+    if (!['accept', 'reject'].includes(action)) {
+      return res.status(400).json({ success: false, message: "Aksi tidak valid" });
+    }
+
+    const [existing] = await db.execute(
+      `SELECT id, status, action_user_id FROM friends 
+       WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?) LIMIT 1`,
+      [userId, target_user_id, target_user_id, userId]
+    );
+
+    if (existing.length === 0 || existing[0].status !== 'pending' || existing[0].action_user_id === userId) {
+      return res.status(400).json({ success: false, message: "Permintaan tidak ditemukan atau tidak valid" });
+    }
+
+    const newStatus = action === 'accept' ? 'accepted' : 'rejected';
+    await db.execute("UPDATE friends SET status = ? WHERE id = ?", [newStatus, existing[0].id]);
+
+    if (action === 'accept') {
+       await addNotification(
+         target_user_id,
+         'komunitas',
+         'Permintaan Pertemanan Diterima',
+         'Seseorang menerima permintaan pertemanan Anda. Cek tab Daftar Teman.',
+         'profile.html'
+       );
+    }
+
+    res.json({ success: true, message: `Permintaan pertemanan di${action === 'accept' ? 'terima' : 'tolak'}` });
+  } catch (error) {
+    console.error("Respond request error:", error);
+    res.status(500).json({ success: false, message: "Gagal memproses permintaan pertemanan" });
+  }
+});

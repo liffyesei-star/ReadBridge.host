@@ -10,8 +10,10 @@
 -- =============================================
 CREATE TABLE IF NOT EXISTS users (
   id            INT PRIMARY KEY AUTO_INCREMENT,
+  rb_id         VARCHAR(20) UNIQUE DEFAULT NULL,
   firebase_uid  VARCHAR(128) UNIQUE DEFAULT NULL,
   nama          VARCHAR(100) NOT NULL,
+  username      VARCHAR(50) UNIQUE DEFAULT NULL,
   email         VARCHAR(150) UNIQUE NOT NULL,
   password      VARCHAR(255) DEFAULT NULL,
   foto_profil   VARCHAR(255) DEFAULT NULL,
@@ -23,6 +25,23 @@ CREATE TABLE IF NOT EXISTS users (
   aktif         TINYINT(1) DEFAULT 1,
   created_at    DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at    DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- =============================================
+-- 1.5 FRIENDS (Pertemanan)
+-- =============================================
+CREATE TABLE IF NOT EXISTS friends (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  user_id1 INT NOT NULL,
+  user_id2 INT NOT NULL,
+  status ENUM('pending', 'accepted', 'rejected') DEFAULT 'pending',
+  action_user_id INT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id1) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id2) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (action_user_id) REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE KEY uk_friends (user_id1, user_id2)
 );
 
 -- =============================================

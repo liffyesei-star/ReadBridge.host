@@ -16,6 +16,30 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const { addNotification } = require("../utils/notification");
 
+async function generateUniqueUserData(nama) {
+  let baseName = (nama || 'user').toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (!baseName) baseName = 'user';
+
+  // Generate RB-ID
+  let hash = 0;
+  for (let i = 0; i < baseName.length; i++) {
+    hash = baseName.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const absHash = Math.abs(hash).toString().padStart(6, '0').substring(0, 6);
+  const rb_id = `RB-${absHash}`;
+
+  // Generate Unique Username
+  let finalUsername = '@' + baseName;
+  let [check] = await db.execute("SELECT id FROM users WHERE username = ?", [finalUsername]);
+  let counter = 1;
+  while (check.length > 0) {
+    finalUsername = '@' + baseName + counter;
+    [check] = await db.execute("SELECT id FROM users WHERE username = ?", [finalUsername]);
+    counter++;
+  }
+  return { username: finalUsername, rb_id };
+}
+
 const JWT_SECRET = process.env.JWT_SECRET || 'readbridge_jwt_secret_key_production_2026';
 if (!process.env.JWT_SECRET) {
   console.warn("⚠️ WARNING: JWT_SECRET environment variable is not set. Using default secret.");
@@ -77,10 +101,12 @@ router.post("/register", authLimiter, async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    const { username, rb_id } = await generateUniqueUserData(nama);
+
     const [result] = await db.execute(
-      `INSERT INTO users (nama, email, password, role, poin, level)
-       VALUES (?, ?, ?, 'user', 0, 'Pembaca Pemula')`,
-      [nama, email, hashedPassword]
+      `INSERT INTO users (nama, email, password, role, poin, level, username, rb_id)
+       VALUES (?, ?, ?, 'user', 0, 'Pembaca Pemula', ?, ?)`,
+      [nama, email, hashedPassword, username, rb_id]
     );
 
     const token = jwt.sign({ id: result.insertId, email }, JWT_SECRET, { expiresIn: '7d' });
@@ -89,7 +115,7 @@ router.post("/register", authLimiter, async (req, res) => {
       success: true,
       message: "Registrasi berhasil",
       token,
-      data: { id: result.insertId, nama, email }
+      data: { id: result.insertId, nama, email, username, rb_id }
     });
   } catch (error) {
     console.error("Register error:", error);
@@ -125,11 +151,22 @@ router.post("/login", authLimiter, async (req, res) => {
 
     const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
 
+    let finalUsername = user.username;
+    let finalRbId = user.rb_id;
+
+    // Backward compatibility for old users
+    if (!finalUsername || !finalRbId) {
+      const generated = await generateUniqueUserData(user.nama);
+      finalUsername = generated.username;
+      finalRbId = generated.rb_id;
+      await db.execute("UPDATE users SET username = ?, rb_id = ? WHERE id = ?", [finalUsername, finalRbId, user.id]);
+    }
+
     return res.json({
       success: true,
       message: "Login berhasil",
       token,
-      data: { id: user.id, nama: user.nama, email: user.email, role: user.role }
+      data: { id: user.id, nama: user.nama, email: user.email, role: user.role, username: finalUsername, rb_id: finalRbId }
     });
   } catch (error) {
     console.error("Login error:", error);
@@ -161,7 +198,7 @@ router.post("/sync", async (req, res) => {
     // Cek apakah user sudah ada, baik dari login Google sebelumnya
     // maupun akun lokal lama dengan email yang sama.
     const [existing] = await db.execute(
-      "SELECT id, firebase_uid, nama, email, foto_profil FROM users WHERE firebase_uid = ? OR email = ? LIMIT 1",
+      "SELECT id, firebase_uid, nama, email, foto_profil, username, rb_id FROM users WHERE firebase_uid = ? OR email = ? LIMIT 1",
       [uid, email]
     );
 
@@ -184,18 +221,29 @@ router.post("/sync", async (req, res) => {
          WHERE id = ?`,
         [uid, picture || null, user.id]
       );
+      let finalUsername = user.username;
+      let finalRbId = user.rb_id;
+
+      if (!finalUsername || !finalRbId) {
+         const generated = await generateUniqueUserData(user.nama);
+         finalUsername = generated.username;
+         finalRbId = generated.rb_id;
+         await db.execute("UPDATE users SET username = ?, rb_id = ? WHERE id = ?", [finalUsername, finalRbId, user.id]);
+      }
+
       return res.json({
         success: true,
         message: "Login berhasil",
-        data: { ...user, email, firebase_uid: uid },
+        data: { ...user, email, firebase_uid: uid, username: finalUsername, rb_id: finalRbId },
       });
     }
 
     // Buat user baru
+    const { username, rb_id } = await generateUniqueUserData(nama);
     const [result] = await db.execute(
-      `INSERT INTO users (firebase_uid, nama, email, foto_profil, role, poin, level)
-       VALUES (?, ?, ?, ?, 'user', 0, 'Pembaca Pemula')`,
-      [uid, nama, email, picture || null]
+      `INSERT INTO users (firebase_uid, nama, email, foto_profil, role, poin, level, username, rb_id)
+       VALUES (?, ?, ?, ?, 'user', 0, 'Pembaca Pemula', ?, ?)`,
+      [uid, nama, email, picture || null, username, rb_id]
     );
 
     // Kirim notifikasi selamat datang
@@ -207,7 +255,7 @@ router.post("/sync", async (req, res) => {
     return res.status(201).json({
       success: true,
       message: "Akun berhasil dibuat",
-      data: { id: result.insertId, firebase_uid: uid, nama, email },
+      data: { id: result.insertId, firebase_uid: uid, nama, email, username, rb_id },
     });
   } catch (error) {
     console.error("Auth sync error:", error);
@@ -222,7 +270,7 @@ router.post("/sync", async (req, res) => {
 router.get("/me", verifyToken, async (req, res) => {
   try {
     const [rows] = await db.execute(
-      `SELECT id, firebase_uid, nama, email, foto_profil, bio, role, poin, level, minat, created_at, last_name_change
+      `SELECT id, rb_id, firebase_uid, nama, username, email, foto_profil, bio, role, poin, level, minat, created_at, last_name_change
        FROM users WHERE id = ?`,
       [req.user.id]
     );

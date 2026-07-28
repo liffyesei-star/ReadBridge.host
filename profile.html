@@ -772,7 +772,7 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md" id="friend-list-container">
-            <!-- Will be dynamically populated by mock-users.js -->
+            <!-- Will be dynamically populated by API -->
         </div>
         </div>
       </div>
@@ -3123,103 +3123,105 @@
 
     <!-- Profile Card Global Modal -->
     <script src="profile-card.js"></script>
-    <script src="mock-users.js"></script>
     <script>
-      // Simulation State
-      // In a real app, this would be fetched from the database
-      window.MY_FRIENDS = [];
-      window.FRIEND_REQUESTS = [];
+      const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+      const backendBaseUrl = localStorage.getItem('rb_api_base_url') || (isLocalHost ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
 
-      function initializeSimulationState() {
-          if (!window.ALL_USERS) return;
-          // Assign initial states for demonstration
-          const userSarah = window.ALL_USERS.find(u => u.username === '@sarahj');
-          const userMichael = window.ALL_USERS.find(u => u.username === '@mchen99');
-          const userBudi = window.ALL_USERS.find(u => u.username === '@budis');
-          const userDewi = window.ALL_USERS.find(u => u.username === '@dewilest');
+      let myFriendsList = [];
+      let pendingRequestsList = [];
+      let searchResultsList = [];
+      let isSearching = false;
 
-          if (userSarah) window.MY_FRIENDS.push(userSarah.id);
-          if (userMichael) window.MY_FRIENDS.push(userMichael.id);
-          
-          if (userBudi) window.FRIEND_REQUESTS.push(userBudi.id);
-          if (userDewi) window.FRIEND_REQUESTS.push(userDewi.id);
+      async function fetchFriendsData() {
+          const token = localStorage.getItem('rb_token');
+          if (!token) return;
+
+          try {
+              const res = await fetch(`${backendBaseUrl}/api/users/friends`, {
+                  headers: { 'Authorization': `Bearer ${token}` }
+              });
+              const json = await res.json();
+              if (json.success) {
+                  myFriendsList = json.data.my_friends || [];
+                  pendingRequestsList = json.data.pending_requests || [];
+                  renderFriends();
+                  renderFriendRequests();
+              }
+          } catch(e) {
+              console.error("Gagal load friends", e);
+          }
       }
 
       function renderFriendRequests() {
           const container = document.getElementById('friend-request-container');
           const badge = document.getElementById('friend-request-badge');
-          if (!container || !window.ALL_USERS) return;
-
-          const requestUsers = window.ALL_USERS.filter(u => window.FRIEND_REQUESTS.includes(u.id));
+          if (!container) return;
 
           if (badge) {
-              if (requestUsers.length > 0) {
-                  badge.textContent = requestUsers.length;
+              if (pendingRequestsList.length > 0) {
+                  badge.textContent = pendingRequestsList.length;
                   badge.classList.remove('hidden');
               } else {
                   badge.classList.add('hidden');
               }
           }
 
-          if (requestUsers.length === 0) {
+          if (pendingRequestsList.length === 0) {
               container.innerHTML = `<div class="col-span-full py-6 text-center text-on-surface-variant text-sm">Tidak ada permintaan pertemanan saat ini.</div>`;
               return;
           }
 
-          container.innerHTML = requestUsers.map(u => `
+          container.innerHTML = pendingRequestsList.map(u => {
+              const avatarUrl = u.foto_profil || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + u.username;
+              return `
               <div class="flex flex-col p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30">
-                  <div class="flex items-center gap-3 relative cursor-pointer mb-4" onclick="showProfileCard(this, '${u.name}', '${u.username}')">
-                      <img src="${u.avatar}" alt="Profile" class="w-12 h-12 rounded-full object-cover">
+                  <div class="flex items-center gap-3 relative cursor-pointer mb-4" onclick="showProfileCard(this, '${u.nama}', '${u.username}')">
+                      <img src="${avatarUrl}" alt="Profile" class="w-12 h-12 rounded-full object-cover">
                       <div>
-                          <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm">${u.name}</h4>
-                          <p class="text-[11px] text-on-surface-variant dark:text-slate-400">@${u.username.substring(1)}</p>
+                          <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm">${u.nama}</h4>
+                          <p class="text-[11px] text-on-surface-variant dark:text-slate-400">${u.username}</p>
                       </div>
                   </div>
                   <div class="flex gap-2">
-                      <button onclick="acceptRequest('${u.id}')" class="flex-1 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-container transition-colors">Terima</button>
-                      <button onclick="ignoreRequest('${u.id}')" class="flex-1 py-2 bg-surface-container-highest dark:bg-slate-700 text-on-surface dark:text-white text-xs font-bold rounded-lg hover:bg-outline-variant transition-colors">Abaikan</button>
+                      <button onclick="respondRequest('${u.user_id}', 'accept')" class="flex-1 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-container transition-colors">Terima</button>
+                      <button onclick="respondRequest('${u.user_id}', 'reject')" class="flex-1 py-2 bg-surface-container-highest dark:bg-slate-700 text-on-surface dark:text-white text-xs font-bold rounded-lg hover:bg-outline-variant transition-colors">Abaikan</button>
                   </div>
               </div>
-          `).join('');
+          `}).join('');
       }
 
       function renderFriends() {
           const container = document.getElementById('friend-list-container');
-          if (!container || !window.ALL_USERS) return;
+          if (!container) return;
 
           const searchInput = document.getElementById('friend-search-input');
           const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
           let displayUsers = [];
           
-          if (query) {
-              // Jika ada kata pencarian, tampilkan hasil pencarian dari SEMUA user terdaftar (Global Search)
-              displayUsers = window.ALL_USERS.filter(u => 
-                  u.username.toLowerCase().includes(query) || 
-                  u.id.toLowerCase().includes(query)
-              );
+          if (query && isSearching) {
+              displayUsers = searchResultsList;
           } else {
-              // Jika tidak ada pencarian, hanya tampilkan teman kita
-              displayUsers = window.ALL_USERS.filter(u => window.MY_FRIENDS.includes(u.id));
+              displayUsers = myFriendsList;
           }
 
           if (displayUsers.length === 0) {
-              container.innerHTML = `<div class="col-span-full py-8 text-center text-on-surface-variant">${query ? 'Tidak ada pengguna yang cocok dengan pencarian Anda.' : 'Anda belum menambahkan teman apapun.'}</div>`;
+              container.innerHTML = `<div class="col-span-full py-8 text-center text-on-surface-variant">${(query && isSearching) ? 'Tidak ada pengguna yang cocok dengan pencarian Anda.' : 'Anda belum menambahkan teman apapun.'}</div>`;
               return;
           }
 
           container.innerHTML = displayUsers.map(u => {
-              const isFriend = window.MY_FRIENDS.includes(u.id);
-              const isPending = window.FRIEND_REQUESTS.includes(u.id);
-              
               let actionButtonHtml = '';
+              let friendStatus = u.friend_status; // from search
               
-              if (isFriend) {
+              if (!isSearching) friendStatus = 'accepted';
+
+              if (friendStatus === 'accepted') {
                   actionButtonHtml = `
                     <button onclick="window.location.href='pesan.html'" class="w-9 h-9 flex items-center justify-center bg-primary/10 text-primary rounded-full hover:bg-primary hover:text-white transition-colors" title="Chat">
                         <span class="material-symbols-outlined text-[18px]">chat</span>
                     </button>`;
-              } else if (isPending) {
+              } else if (friendStatus === 'pending') {
                    actionButtonHtml = `
                     <button class="text-[11px] font-bold text-on-surface-variant bg-surface-container-highest px-3 py-1.5 rounded cursor-not-allowed flex items-center gap-1">
                         Menunggu...
@@ -3231,63 +3233,124 @@
                     </button>`;
               }
 
+              const avatarUrl = u.foto_profil || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + u.username;
+              const uniqueId = u.rb_id || u.id;
+
               return `
                 <div class="flex flex-col p-4 bg-surface-container-low dark:bg-slate-800/50 rounded-xl border border-outline-variant/30 hover:border-primary/50 transition-colors">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-3 cursor-pointer" onclick="showProfileCard(this, '${u.name}', '${u.username}')">
+                        <div class="flex items-center gap-3 cursor-pointer" onclick="showProfileCard(this, '${u.nama}', '${u.username}')">
                             <div class="relative w-12 h-12 shrink-0">
-                                <img src="${u.avatar}" alt="Profile" class="w-12 h-12 rounded-full object-cover ${!u.online ? 'grayscale opacity-70' : ''}">
-                                <div class="absolute bottom-0 right-0 w-3.5 h-3.5 ${u.online ? 'bg-green-500' : 'bg-slate-400'} border-2 border-surface-container-lowest dark:border-inverse-surface rounded-full friend-status-indicator"></div>
+                                <img src="${avatarUrl}" alt="Profile" class="w-12 h-12 rounded-full object-cover">
                             </div>
                             <div>
-                                <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm truncate max-w-[120px]">${u.name}</h4>
+                                <h4 class="font-title-md font-bold text-on-surface dark:text-on-primary-container text-sm truncate max-w-[120px]">${u.nama}</h4>
                                 <p class="text-[11px] text-on-surface-variant dark:text-slate-400">${u.username}</p>
                             </div>
                         </div>
                         ${actionButtonHtml}
                     </div>
                     <div class="mt-auto border-t border-outline-variant/20 pt-2 flex justify-between items-center">
-                        <span class="text-[10px] text-on-surface-variant font-mono">ID: ${u.id}</span>
-                        ${isFriend ? `<span class="text-[10px] font-bold text-primary">Teman Anda</span>` : ''}
+                        <span class="text-[10px] text-on-surface-variant font-mono">ID: ${uniqueId}</span>
+                        ${friendStatus === 'accepted' ? `<span class="text-[10px] font-bold text-primary">Teman Anda</span>` : ''}
                     </div>
                 </div>
               `;
           }).join('');
       }
 
-      // Actions
-      window.sendFriendRequest = function(id) {
-          if (!window.FRIEND_REQUESTS.includes(id)) {
-              window.FRIEND_REQUESTS.push(id);
-              alertFeedback('Permintaan pertemanan terkirim!');
+      async function handleSearch() {
+          const searchInput = document.getElementById('friend-search-input');
+          const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+          
+          if (!query) {
+              isSearching = false;
               renderFriends();
-              renderFriendRequests();
+              return;
+          }
+
+          isSearching = true;
+          const token = localStorage.getItem('rb_token');
+          if (!token) return;
+
+          try {
+              const res = await fetch(`${backendBaseUrl}/api/users/search?q=${encodeURIComponent(query)}`, {
+                  headers: { 'Authorization': `Bearer ${token}` }
+              });
+              const json = await res.json();
+              if (json.success) {
+                  searchResultsList = json.data || [];
+                  renderFriends();
+              }
+          } catch(e) {
+              console.error("Gagal mencari user", e);
+          }
+      }
+
+      if (document.getElementById('friend-search-input')) {
+          document.getElementById('friend-search-input').addEventListener('input', (e) => {
+             clearTimeout(window.searchTimeout);
+             window.searchTimeout = setTimeout(() => handleSearch(), 500);
+          });
+      }
+
+      // Actions
+      window.sendFriendRequest = async function(id) {
+          const token = localStorage.getItem('rb_token');
+          if (!token) return;
+          try {
+              const res = await fetch(`${backendBaseUrl}/api/users/friends/request`, {
+                  method: 'POST',
+                  headers: { 
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ target_user_id: id })
+              });
+              const json = await res.json();
+              if (json.success) {
+                  alertFeedback('Permintaan pertemanan terkirim!');
+                  if (isSearching) {
+                      handleSearch();
+                  } else {
+                      fetchFriendsData();
+                  }
+              } else {
+                  alertFeedback(json.message || 'Gagal mengirim permintaan');
+              }
+          } catch (e) {
+              alertFeedback('Terjadi kesalahan');
           }
       };
 
-      window.acceptRequest = function(id) {
-          window.FRIEND_REQUESTS = window.FRIEND_REQUESTS.filter(reqId => reqId !== id);
-          if (!window.MY_FRIENDS.includes(id)) {
-              window.MY_FRIENDS.push(id);
+      window.respondRequest = async function(id, action) {
+          const token = localStorage.getItem('rb_token');
+          if (!token) return;
+          try {
+              const res = await fetch(`${backendBaseUrl}/api/users/friends/respond`, {
+                  method: 'PUT',
+                  headers: { 
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ target_user_id: id, action })
+              });
+              const json = await res.json();
+              if (json.success) {
+                  alertFeedback(action === 'accept' ? 'Permintaan pertemanan diterima!' : 'Permintaan diabaikan.');
+                  fetchFriendsData();
+              } else {
+                  alertFeedback(json.message || 'Gagal merespons permintaan');
+              }
+          } catch (e) {
+              alertFeedback('Terjadi kesalahan');
           }
-          alertFeedback('Permintaan pertemanan diterima!');
-          renderFriends();
-          renderFriendRequests();
-      };
-
-      window.ignoreRequest = function(id) {
-          window.FRIEND_REQUESTS = window.FRIEND_REQUESTS.filter(reqId => reqId !== id);
-          alertFeedback('Permintaan diabaikan.');
-          renderFriends();
-          renderFriendRequests();
       };
 
       // Initial render when the script loads
       document.addEventListener('DOMContentLoaded', () => {
           setTimeout(() => {
-              initializeSimulationState();
-              renderFriends();
-              renderFriendRequests();
+              fetchFriendsData();
           }, 200);
       });
     </script>

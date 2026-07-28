@@ -462,7 +462,23 @@
         document.getElementById('detail-title').textContent = diskusi.title || diskusi.judul;
         document.getElementById('detail-author').textContent = diskusi.author || diskusi.username;
         document.getElementById('detail-time').textContent = diskusi.timeAgo || diskusi.waktu || "Baru saja";
-        document.getElementById('detail-upvotes').textContent = diskusi.upvotes || diskusi.votes || 0;
+        const voteCountEl = document.getElementById('detail-upvotes');
+        const displayVotes = Number(diskusi.upvotes ?? diskusi.votes ?? 0) || 0;
+        voteCountEl.textContent = displayVotes;
+        voteCountEl.dataset.initialVotes = displayVotes;
+
+        const upvoteBtn = document.getElementById('upvote-btn');
+        const storedVote = Number(localStorage.getItem(`rb_post_vote_${rawId}`)) || 0;
+        const activeVote = Number(diskusi.userVote || storedVote || 0);
+        if (upvoteBtn) {
+            if (activeVote === 1) {
+                upvoteBtn.classList.add('text-primary');
+                upvoteBtn.classList.remove('text-on-surface-variant');
+            } else {
+                upvoteBtn.classList.remove('text-primary');
+                upvoteBtn.classList.add('text-on-surface-variant');
+            }
+        }
         
         if (diskusi.isRichText) {
           document.getElementById('detail-content').innerHTML = diskusi.content || diskusi.isi || '';
@@ -563,6 +579,7 @@
                     avatar: json.data.foto_profil,
                     timeAgo: json.data.created_at,
                     upvotes: json.data.total_likes,
+                    userVote: json.data.sudahLike ? 1 : 0,
                     content: json.data.konten,
                     tags: [],
                     isRichText: false,
@@ -612,30 +629,63 @@
     }
 
     renderDiscussion();
+    if (typeof window.bindDetailVoteCounter === 'function') {
+        window.bindDetailVoteCounter();
+    }
 
     // Setup Upvote
     const upvoteBtn = document.getElementById('upvote-btn');
     if (upvoteBtn) {
         upvoteBtn.addEventListener('click', async () => {
             if (!diskusi) return;
+            const voteStorageKey = `rb_post_vote_${rawId}`;
+            const previousVote = Number(diskusi.userVote || localStorage.getItem(voteStorageKey) || 0);
+            const previousVotes = Number(diskusi.upvotes ?? diskusi.votes ?? 0) || 0;
+            const nextVote = previousVote === 1 ? 0 : 1;
+            const voteDelta = nextVote - previousVote;
+
             if (isBackendPost && token) {
                 try {
                     const res = await fetch(`${apiBaseUrl}/api/community/diskusi/${rawId}/like`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }});
                     const json = await res.json();
                     if (json.success) {
-                        diskusi.upvotes = (diskusi.upvotes || 0) + 1;
+                        const backendVote = json.liked ? 1 : 0;
+                        const backendDelta = backendVote - previousVote;
+                        diskusi.userVote = backendVote;
+                        diskusi.upvotes = Math.max(0, previousVotes + backendDelta);
                         document.getElementById('detail-upvotes').textContent = diskusi.upvotes;
-                        upvoteBtn.classList.add('text-primary');
-                        upvoteBtn.classList.remove('text-on-surface-variant');
+                        if (backendVote === 1) {
+                            localStorage.setItem(voteStorageKey, '1');
+                            upvoteBtn.classList.add('text-primary');
+                            upvoteBtn.classList.remove('text-on-surface-variant');
+                        } else {
+                            localStorage.removeItem(voteStorageKey);
+                            upvoteBtn.classList.remove('text-primary');
+                            upvoteBtn.classList.add('text-on-surface-variant');
+                        }
+                        if (backendDelta !== 0 && typeof window.castVoteToDB === 'function') {
+                            await window.castVoteToDB(rawId, backendDelta, { initialScore: previousVotes });
+                        }
                     }
                 } catch(e) { console.error(e); }
             } else {
                 // Local upvote
-                diskusi.votes = (diskusi.votes || diskusi.upvotes || 0) + 1;
+                diskusi.userVote = nextVote;
+                diskusi.votes = Math.max(0, previousVotes + voteDelta);
                 diskusi.upvotes = diskusi.votes;
                 document.getElementById('detail-upvotes').textContent = diskusi.upvotes;
-                upvoteBtn.classList.add('text-primary');
-                upvoteBtn.classList.remove('text-on-surface-variant');
+                if (nextVote === 1) {
+                    localStorage.setItem(voteStorageKey, '1');
+                    upvoteBtn.classList.add('text-primary');
+                    upvoteBtn.classList.remove('text-on-surface-variant');
+                } else {
+                    localStorage.removeItem(voteStorageKey);
+                    upvoteBtn.classList.remove('text-primary');
+                    upvoteBtn.classList.add('text-on-surface-variant');
+                }
+                if (voteDelta !== 0 && typeof window.castVoteToDB === 'function') {
+                    await window.castVoteToDB(rawId, voteDelta, { initialScore: previousVotes });
+                }
                 
                 // save if stored locally
                 const stored = localStorage.getItem('readbridge_community_posts_v2');
@@ -867,32 +917,55 @@ document.addEventListener("DOMContentLoaded", function() {
         import { castVote, listenToPostVotes } from './vote-db.js';
         window.castVoteToDB = castVote;
         window.listenToPostVotes = listenToPostVotes;
+
+        function parseInitialVotes(counter) {
+            const raw = counter.dataset.initialVotes || counter.textContent || '0';
+            const normalized = raw.trim().toLowerCase();
+            const multiplier = normalized.endsWith('k') ? 1000 : 1;
+            const parsed = Number(normalized.replace(/k$/, '').replace(',', '.').replace(/[^\d.]/g, ''));
+            return Number.isFinite(parsed) ? Math.round(parsed * multiplier) : 0;
+        }
+
+        function bindVoteCounter(counter) {
+            if (!counter || counter.dataset.voteRealtimeBound === 'true') return;
+
+            const postId = counter.id.replace('vote-', '');
+            counter.dataset.voteRealtimeBound = 'true';
+            window.listenToPostVotes(postId, (upvotes, downvotes, score) => {
+                const displayVotes = typeof score === 'number' ? score : upvotes;
+                const formatted = typeof formatVotes === 'function' ? formatVotes(displayVotes) : displayVotes;
+                counter.textContent = formatted;
+            }, { initialScore: parseInitialVotes(counter) });
+        }
+
+        window.bindDetailVoteCounter = function () {
+            const counter = document.getElementById('detail-upvotes');
+            const postId = new URLSearchParams(window.location.search).get('id');
+            if (!counter || !postId || counter.dataset.voteRealtimeBound === 'true') return;
+
+            counter.dataset.voteRealtimeBound = 'true';
+            window.listenToPostVotes(postId, (upvotes, downvotes, score) => {
+                const displayVotes = typeof score === 'number' ? score : upvotes;
+                const formatted = typeof formatVotes === 'function' ? formatVotes(displayVotes) : displayVotes;
+                counter.textContent = formatted;
+            }, { initialScore: parseInitialVotes(counter) });
+        };
         
         // Setup MutationObserver to attach real-time listeners dynamically when posts are rendered
         window.addEventListener('load', () => {
+            window.bindDetailVoteCounter();
+
             const observer = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
                     mutation.addedNodes.forEach((node) => {
                         if(node.nodeType === 1) { // Element node
                             // Check if this node is a post or contains votes
                             const voteCounters = node.querySelectorAll ? node.querySelectorAll('[id^="vote-"]') : [];
-                            voteCounters.forEach(counter => {
-                                const postId = counter.id.replace('vote-', '');
-                                window.listenToPostVotes(postId, (upvotes, downvotes) => {
-                                    // Hanya render upvotes sesuai aturan (tidak berkurang oleh downvote)
-                                    // Jika kita punya formatVotes dari modal, gunakan itu
-                                    const formatted = typeof formatVotes === 'function' ? formatVotes(upvotes) : upvotes;
-                                    counter.textContent = formatted;
-                                });
-                            });
+                            voteCounters.forEach(bindVoteCounter);
                             
                             // If the node itself is a counter
                             if(node.id && node.id.startsWith('vote-')) {
-                                const postId = node.id.replace('vote-', '');
-                                window.listenToPostVotes(postId, (upvotes, downvotes) => {
-                                    const formatted = typeof formatVotes === 'function' ? formatVotes(upvotes) : upvotes;
-                                    node.textContent = formatted;
-                                });
+                                bindVoteCounter(node);
                             }
                         }
                     });
@@ -904,13 +977,7 @@ document.addEventListener("DOMContentLoaded", function() {
             observer.observe(feed, { childList: true, subtree: true });
             
             // Attach to already existing elements on load
-            document.querySelectorAll('[id^="vote-"]').forEach(counter => {
-                const postId = counter.id.replace('vote-', '');
-                window.listenToPostVotes(postId, (upvotes, downvotes) => {
-                    const formatted = typeof formatVotes === 'function' ? formatVotes(upvotes) : upvotes;
-                    counter.textContent = formatted;
-                });
-            });
+            document.querySelectorAll('[id^="vote-"]').forEach(bindVoteCounter);
         });
     </script>
 
