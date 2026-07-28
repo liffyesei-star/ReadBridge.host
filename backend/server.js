@@ -8,6 +8,9 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const http = require("http");
+const { Server } = require("socket.io");
+const jwt = require("jsonwebtoken");
 
 // Polyfill fetch untuk versi Node.js yang lebih lama di Render
 if (!globalThis.fetch) {
@@ -28,13 +31,98 @@ const helpdeskRoutes = require("./routes/helpdesk");
 const tokoRoutes = require("./routes/toko");
 const uploadRoutes = require("./routes/upload");
 const shippingRoutes = require("./routes/shipping");
+const messageRoutes = require("./routes/messages");
 
 // Initialize Firebase (side effect)
 require("./config/firebase");
 const db = require("./config/db");
 
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 5000;
+
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:5500,http://127.0.0.1:5500,https://liffyesei-star.github.io").split(",");
+
+// Initialize Socket.IO
+const io = new Server(server, {
+  cors: {
+    origin: (origin, callback) => {
+        if (!origin || origin === 'null' || allowedOrigins.includes('*')) {
+          return callback(null, true);
+        }
+        try {
+          const url = new URL(origin);
+          const hostname = url.hostname;
+          if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.github.io') || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+          }
+          return callback(null, true);
+        } catch (e) {
+          return callback(null, true);
+        }
+    },
+    methods: ["GET", "POST"]
+  }
+});
+
+// Middleware Socket.IO untuk Autentikasi
+io.use((socket, next) => {
+    const token = socket.handshake.auth.token;
+    if (!token) return next(new Error("Authentication error"));
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret-key-super-aman');
+        socket.user = decoded;
+        next();
+    } catch (err) {
+        next(new Error("Authentication error"));
+    }
+});
+
+io.on('connection', (socket) => {
+    console.log(`User connected: ${socket.user.id} (${socket.user.username})`);
+    
+    // Bergabung ke room khusus user ini (berdasarkan ID user)
+    socket.join(`user_${socket.user.id}`);
+
+    // Event ketika mengirim pesan
+    socket.on('send_message', async (data) => {
+        // data: { receiverId, encryptedContentForReceiver, encryptedContentForSender }
+        try {
+            // 1. Simpan ke Database MySQL
+            const [result] = await db.execute(
+                `INSERT INTO messages (sender_id, receiver_id, encrypted_content_for_receiver, encrypted_content_for_sender)
+                 VALUES (?, ?, ?, ?)`,
+                [socket.user.id, data.receiverId, data.encryptedContentForReceiver, data.encryptedContentForSender]
+            );
+
+            const insertedId = result.insertId;
+
+            const messageObj = {
+                id: insertedId,
+                sender_id: socket.user.id,
+                receiver_id: data.receiverId,
+                encrypted_content_for_receiver: data.encryptedContentForReceiver,
+                encrypted_content_for_sender: data.encryptedContentForSender,
+                created_at: new Date().toISOString()
+            };
+
+            // 2. Kirim pesan ke penerima secara real-time
+            io.to(`user_${data.receiverId}`).emit('receive_message', messageObj);
+            
+            // 3. Konfirmasi ke pengirim bahwa pesan berhasil disimpan
+            socket.emit('message_sent_success', messageObj);
+
+        } catch (err) {
+            console.error('Error saving/sending message via socket:', err);
+            socket.emit('message_error', { error: 'Gagal mengirim pesan.' });
+        }
+    });
+
+    socket.on('disconnect', () => {
+        console.log(`User disconnected: ${socket.user.id}`);
+    });
+});
+
 
 // =============================================
 // MIDDLEWARE GLOBAL
@@ -45,8 +133,7 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
-// CORS - izinkan frontend mengakses (fleksibel untuk local file, live server, & github pages)
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:5500,http://127.0.0.1:5500,https://liffyesei-star.github.io").split(",");
+// CORS - izinkan frontend mengakses
 app.use(cors({
   origin: (origin, callback) => {
     // Mengizinkan request tanpa origin (curl/mobile) atau file:// (Origin: 'null')
@@ -102,6 +189,7 @@ app.use("/api/helpdesk", helpdeskRoutes);
 app.use("/api/toko", tokoRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/shipping", shippingRoutes);
+app.use("/api/messages", messageRoutes);
 
 // Health check
 app.get("/", (req, res) => {
@@ -141,10 +229,10 @@ app.use((err, req, res, next) => {
 // =============================================
 // START SERVER
 // =============================================
-app.listen(PORT, () => {
-  console.log(`\n🚀 ReadBridge Backend berjalan di http://localhost:${PORT}`);
+server.listen(PORT, () => {
+  console.log(`\n🚀 ReadBridge Backend & Socket.IO berjalan di http://localhost:${PORT}`);
   console.log(`📦 Environment: ${process.env.NODE_ENV || "development"}`);
   console.log(`📋 Dokumentasi API: http://localhost:${PORT}/\n`);
 });
 
-module.exports = app;
+module.exports = { app, server };

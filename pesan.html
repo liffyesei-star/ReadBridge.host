@@ -217,9 +217,9 @@
             
             <!-- E2EE Security Badge -->
             <div class="flex justify-center mb-4">
-                <div class="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 text-[10px] font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-sm max-w-sm text-center">
+                <div class="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 text-[10px] font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-sm max-w-sm text-center border border-amber-300 dark:border-amber-700/50">
                     <span class="material-symbols-outlined text-[14px]">lock</span>
-                    Pesan ini dilindungi oleh Enkripsi End-to-End. Pihak ketiga termasuk ReadBridge tidak dapat membaca isi pesan.
+                    <span>Pesan ini diamankan dengan <strong>End-to-End Encryption</strong>.<br/>Peringatan: Kunci privat tersimpan di perangkat Anda. Jika Anda menghapus data browser, <strong>riwayat obrolan tidak akan dapat dibaca kembali</strong>.</span>
                 </div>
             </div>
 
@@ -529,108 +529,196 @@
     </script>
 
 
+<!-- External Libraries for Chat -->
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="e2ee.js"></script>
+
 <!-- E2E Chat Controller -->
-<script type="module">
-    import { sendEncryptedMessage, listenToMessages, getUserPublicKey } from './chat-db.js';
-    const { encryptMessage, decryptMessage, deriveSharedSecret } = window.E2ECrypto || E2ECrypto;
-    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    
-    const firebaseConfig = {
-        apiKey: "AIzaSyDUfiy2BHYhHh1wql6uM5UvsF6hpNTVvhY",
-        authDomain: "readbridge-8934c.firebaseapp.com",
-        projectId: "readbridge-8934c",
-        storageBucket: "readbridge-8934c.firebasestorage.app",
-        messagingSenderId: "900450201794",
-        appId: "1:900450201794:web:8d65f989e7fefe590d8b5b",
-    };
-    const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-    const authInstance = getAuth(app);
+<script>
+    const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    const backendBaseUrl = localStorage.getItem('rb_api_base_url') || (isLocalHost ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+    const token = localStorage.getItem('rb_token');
     
     let activeRecipientId = null;
     let activeRecipientName = null;
     let activeRecipientAvatar = null;
-    let activeSharedSecret = null;
-    
-    // Parse URL Parameters
-    function parseURLParams() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const uid = urlParams.get('uid');
-        const name = urlParams.get('name');
-        const avatar = urlParams.get('avatar');
+    let activeRecipientPublicKey = null;
+    let socket = null;
+
+    if (!token) {
+        window.location.href = 'login.html';
+    }
+
+    // 1. Inisialisasi Kriptografi E2EE
+    async function initializeCrypto() {
+        let privateKey = await window.E2EE.loadPrivateKey();
         
-        if (uid) {
-            activeRecipientId = uid;
-            activeRecipientName = name || uid;
-            activeRecipientAvatar = avatar || 'https://i.pravatar.cc/150';
+        if (!privateKey) {
+            console.log("Membangkitkan RSA Key Pair baru untuk E2EE...");
+            const { publicKeyBase64 } = await window.E2EE.generateKeyPair();
             
-            // Update UI Header
-            document.getElementById('chat-header-name').innerText = activeRecipientName;
-            document.getElementById('chat-header-avatar').src = activeRecipientAvatar;
-            
-            // Clear dummy chat history
-            document.getElementById('chat-history').innerHTML = '';
-            
-            // Setup Secure Connection
-            setupSecureConnection(uid);
+            // Simpan Public Key ke Server
+            await fetch(`${backendBaseUrl}/api/messages/keys`, {
+                method: 'POST',
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify({ publicKey: publicKeyBase64 })
+            });
+            console.log("Public Key berhasil diunggah ke server.");
+        } else {
+            console.log("Private Key ditemukan di localStorage.");
         }
     }
-    
-    async function setupSecureConnection(recipientId) {
+
+    // 2. Setup Socket.IO
+    function setupSocket() {
+        socket = io(backendBaseUrl, {
+            auth: { token: token }
+        });
+
+        socket.on('connect', () => {
+            console.log("Terhubung ke Socket.IO server");
+        });
+
+        socket.on('receive_message', async (data) => {
+            if (activeRecipientId && (data.sender_id.toString() === activeRecipientId.toString())) {
+                try {
+                    const decrypted = await window.E2EE.decryptMessage(data.encrypted_content_for_receiver);
+                    renderIncomingBubble(decrypted, formatTime(new Date(data.created_at)));
+                } catch(e) {
+                    console.error("Gagal mendekripsi pesan masuk:", e);
+                    renderIncomingBubble("🔒 [Pesan tidak dapat didekripsi]", formatTime(new Date(data.created_at)));
+                }
+            } else {
+                // Notifikasi pesan baru jika tidak sedang membuka chat
+                alertFeedback("Anda menerima pesan baru.");
+            }
+        });
+
+        socket.on('message_sent_success', (data) => {
+            console.log("Pesan berhasil dikirim dan tersimpan di DB.");
+        });
+        
+        socket.on('message_error', (data) => {
+            alertFeedback(data.error);
+        });
+    }
+
+    // 3. Load Daftar Teman di Sidebar
+    async function loadChatList() {
         try {
-            if(!authInstance.currentUser) {
-                console.warn("User belum login, menunda koneksi E2EE.");
-                // Jika auth belum siap, tunggu state change
-                authInstance.onAuthStateChanged(async (user) => {
-                    if(user) await doSetup(user.uid, recipientId);
-                });
+            const res = await fetch(`${backendBaseUrl}/api/users/friends`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const json = await res.json();
+            if (json.success && json.data.my_friends) {
+                const listContainer = document.getElementById('list-personal');
+                if (json.data.my_friends.length === 0) {
+                    listContainer.innerHTML = `<div class="p-4 text-center text-on-surface-variant text-sm mt-10">Belum ada teman. Tambahkan teman di halaman Komunitas.</div>`;
+                    return;
+                }
+                
+                listContainer.innerHTML = json.data.my_friends.map(f => {
+                    const avatarUrl = f.foto_profil || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + f.username;
+                    return `
+                    <div class="flex items-center gap-3 p-4 hover:bg-surface-container-low cursor-pointer border-b border-outline-variant/10 transition-colors" onclick="openChat('${f.user_id}', '${f.nama}', '${avatarUrl}')">
+                        <img src="${avatarUrl}" class="w-12 h-12 rounded-full object-cover">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-baseline mb-1">
+                                <h3 class="font-bold text-on-surface truncate text-sm">${f.nama}</h3>
+                            </div>
+                            <p class="text-xs text-on-surface-variant truncate">@${f.username}</p>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            }
+        } catch(e) {
+            console.error("Gagal memuat daftar teman:", e);
+        }
+    }
+
+    // 4. Buka Percakapan
+    window.openChat = async function(friendId, friendName, friendAvatar) {
+        if(window.innerWidth < 768) {
+            document.getElementById('chat-sidebar').classList.add('-translate-x-full');
+            document.getElementById('chat-window').classList.remove('hidden');
+        }
+
+        activeRecipientId = friendId;
+        activeRecipientName = friendName;
+        activeRecipientAvatar = friendAvatar;
+        
+        document.getElementById('chat-header-name').innerText = friendName;
+        document.getElementById('chat-header-avatar').src = friendAvatar;
+        document.getElementById('chat-history').innerHTML = `
+            <div class="flex justify-center mt-10">
+                <div class="bg-surface-container text-on-surface-variant px-4 py-2 rounded-xl text-xs text-center border border-outline-variant/30">
+                    Memuat riwayat obrolan aman...
+                </div>
+            </div>
+        `;
+
+        try {
+            // Ambil Public Key Teman
+            const keyRes = await fetch(`${backendBaseUrl}/api/messages/keys/${friendId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const keyJson = await keyRes.json();
+            
+            if(!keyJson.success) {
+                document.getElementById('chat-history').innerHTML = `
+                    <div class="flex justify-center mt-10">
+                        <div class="bg-error-container text-error px-4 py-2 rounded-xl text-xs text-center border border-error/30">
+                            Teman ini belum mengatur E2EE. Pesan tidak dapat dikirim.
+                        </div>
+                    </div>
+                `;
+                activeRecipientPublicKey = null;
                 return;
             }
-            await doSetup(authInstance.currentUser.uid, recipientId);
-        } catch(e) {
-            console.error("Gagal setup koneksi aman:", e);
-        }
-    }
-    
-    async function doSetup(myUid, recipientId) {
-        try {
-            // Ambil public key penerima dari DB
-            let recipientPubKeyBase64 = await getUserPublicKey(recipientId);
-            if(!recipientPubKeyBase64) {
-                console.warn("Kunci publik penerima tidak ditemukan. Membangkitkan Dummy Key untuk simulasi!");
-                
-                // MOCK GENERATOR UNTUK SIMULASI UI (Jika target adalah dummy user)
-                const dummyPair = await window.crypto.subtle.generateKey(
-                    { name: "ECDH", namedCurve: "P-256" },
-                    true, 
-                    ["deriveKey", "deriveBits"]
-                );
-                const raw = await window.crypto.subtle.exportKey("raw", dummyPair.publicKey);
-                // Konversi ArrayBuffer ke Base64
-                const bytes = new Uint8Array(raw);
-                let binary = '';
-                for (let i = 0; i < bytes.byteLength; i++) {
-                    binary += String.fromCharCode(bytes[i]);
+            activeRecipientPublicKey = keyJson.public_key;
+
+            // Load History
+            const histRes = await fetch(`${backendBaseUrl}/api/messages/history/${friendId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const histJson = await histRes.json();
+            
+            document.getElementById('chat-history').innerHTML = ''; // Clear loader
+            
+            if (histJson.success && histJson.data) {
+                for (let msg of histJson.data) {
+                    try {
+                        let plaintext = "";
+                        if (msg.sender_id.toString() === friendId.toString()) {
+                            // Ini pesan masuk, dekripsi `encrypted_content_for_receiver`
+                            plaintext = await window.E2EE.decryptMessage(msg.encrypted_content_for_receiver);
+                            renderIncomingBubble(plaintext, formatTime(new Date(msg.created_at)));
+                        } else {
+                            // Ini pesan keluar, dekripsi `encrypted_content_for_sender`
+                            plaintext = await window.E2EE.decryptMessage(msg.encrypted_content_for_sender);
+                            renderOutgoingBubble(plaintext, formatTime(new Date(msg.created_at)));
+                        }
+                    } catch(e) {
+                        console.error("Gagal dekripsi historis:", e);
+                    }
                 }
-                recipientPubKeyBase64 = window.btoa(binary);
-                
-                // Peringatan Halus
-                const sysMsg = `<div class="flex justify-center my-2"><span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 shadow-sm">Menggunakan Mode Simulasi (Pengguna Offline/Dummy)</span></div>`;
-                document.getElementById('chat-history').insertAdjacentHTML('beforeend', sysMsg);
             }
-            
-            // Derive shared secret
-            activeSharedSecret = await deriveSharedSecret(recipientPubKeyBase64);
-            console.log("Shared Secret ECDH berhasil disiapkan dengan:", recipientId);
-            
-            // Mulai dengarkan pesan dari dia
-            listenToMessages(recipientId, handleIncomingMessage);
-            
+
         } catch(e) {
-            console.error("Error doSetup:", e);
+            console.error("Gagal load obrolan:", e);
         }
-    }
-    
+    };
+
+    window.closeChatMobile = function() {
+        document.getElementById('chat-sidebar').classList.remove('-translate-x-full');
+        document.getElementById('chat-window').classList.add('hidden');
+    };
+
+    // Helper UI render
     function formatTime(date) {
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
@@ -671,65 +759,54 @@
         if(anchor) anchor.scrollIntoView({behavior: "smooth"});
     }
     
+    // Kirim Pesan via Socket
     window.handleSendMessage = async function() {
         const inputEl = document.getElementById('chat-input-text');
         const text = inputEl.value.trim();
         
         if(!text) return;
-        if(!activeRecipientId) {
-            alert("Pilih teman untuk memulai obrolan.");
-            return;
-        }
-        if(!activeSharedSecret) {
-            alert("Tidak dapat mengirim pesan. Kunci enkripsi belum siap atau pengguna tersebut offline selamanya.");
+        if(!activeRecipientId || !activeRecipientPublicKey) {
+            alert("Tidak dapat mengirim pesan. Anda harus membuka obrolan dan penerima harus sudah mengatur Kunci E2EE.");
             return;
         }
         
         // Render optimistik UI
         const timeStr = formatTime(new Date());
         renderOutgoingBubble(text, timeStr);
-        inputEl.value = ''; // clear
+        inputEl.value = ''; // clear input field
         
         try {
-            // 1. Enkripsi pesan
-            const { ciphertextBase64, ivBase64 } = await encryptMessage(activeSharedSecret, text);
+            // Enkripsi untuk penerima
+            const encryptedForReceiver = await window.E2EE.encryptMessage(text, activeRecipientPublicKey);
             
-            // 2. Kirim ke DB
-            const myUid = authInstance.currentUser.uid;
-            await sendEncryptedMessage(myUid, activeRecipientId, ciphertextBase64, ivBase64, 'personal');
+            // Enkripsi untuk pengirim (diri sendiri) agar bisa dibaca nanti
+            const encryptedForSender = await window.E2EE.encryptMessage(text, window.E2EE.myPublicKeyBase64);
+            
+            // Kirim melalui socket.io
+            socket.emit('send_message', {
+                receiverId: activeRecipientId,
+                encryptedContentForReceiver: encryptedForReceiver,
+                encryptedContentForSender: encryptedForSender
+            });
             
         } catch(e) {
-            console.error("Gagal mengirim pesan:", e);
-            // Revert or show error indicator
+            console.error("Gagal mengenkripsi/mengirim pesan:", e);
+            alertFeedback("Gagal mengenkripsi pesan.");
         }
     }
     
-    // Listener callback untuk pesan baru dari Firestore
-    async function handleIncomingMessage(docData) {
-        try {
-            if(!activeSharedSecret) return; // Belum siap
-            
-            // Pesan ini dari DB. Periksa apakah saya pengirimnya atau bukan.
-            // Jika saya pengirimnya, abaikan saja karena kita sudah pakai Optimistic UI di handleSendMessage
-            if(docData.senderId === authInstance.currentUser.uid) {
-                return;
-            }
-            
-            // Dekripsi
-            const plaintext = await decryptMessage(activeSharedSecret, docData.ciphertext, docData.iv);
-            
-            // Tampilkan
-            const timeObj = docData.timestamp ? docData.timestamp.toDate() : new Date();
-            renderIncomingBubble(plaintext, formatTime(timeObj));
-            
-        } catch(e) {
-            console.error("Gagal mendekripsi pesan masuk:", e);
-        }
-    }
-
     // Eksekusi saat load
-    window.addEventListener('load', () => {
-        parseURLParams();
+    window.addEventListener('load', async () => {
+        await initializeCrypto();
+        setupSocket();
+        loadChatList();
+        
+        // Emoji Picker Insert (Quick Hack)
+        window.insertEmoji = function(emoji) {
+            const input = document.getElementById('chat-input-text');
+            input.value += emoji;
+            input.focus();
+        };
         
         // Tekan Enter untuk mengirim
         document.getElementById('chat-input-text')?.addEventListener('keypress', (e) => {
