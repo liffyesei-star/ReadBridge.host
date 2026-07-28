@@ -466,10 +466,22 @@ function getPosts() {
 }
 
 function savePosts(p) {
-  // No longer used for saving to localStorage, but we keep it to update local cache
-  apiPosts = p;
+  // Keep the in-memory API cache intact when the visible list is filtered.
+  if (!Array.isArray(p)) return;
+
+  const updates = new Map(p.map(post => [String(post.id), post]));
+  apiPosts = apiPosts.map(post => {
+    const updated = updates.get(String(post.id));
+    return updated ? { ...post, ...updated } : post;
+  });
+
+  p.forEach(post => {
+    if (!apiPosts.some(existing => String(existing.id) === String(post.id))) {
+      apiPosts.push(post);
+    }
+  });
 }
-function formatVotes(n) { return n >= 1000 ? (n / 1000).toFixed(1).replace('.0', '') + 'k' : String(n); }
+function formatVotes(n) { return n >= 10000 ? (n / 1000).toFixed(1).replace('.0', '') + 'k' : n.toLocaleString('id-ID'); }
 function formatWaktu(s) {
   if (!s || s.includes('jam') || s.includes('hari')) return s;
   const d = Date.now() - new Date(s).getTime(), m = Math.floor(d / 60000), h = Math.floor(d / 3600000), dy = Math.floor(d / 86400000);
@@ -481,6 +493,8 @@ function getAvatarForUser(u) {
 }
 
 function renderPostCard(p) {
+  const storedUserVote = Number(localStorage.getItem(`rb_post_vote_${p.id}`)) || 0;
+  const currentUserVote = Number(p.userVote || storedUserVote || 0);
   const tags = (p.tags || []).map(t => `<span onclick="window.showTrendingTopicDetail('${t}')" class="bg-surface-container-high text-on-surface px-3 py-1 rounded-md font-label-sm text-label-sm cursor-pointer hover:bg-primary hover:text-on-primary transition-colors">${t}</span>`).join('');
   const badge = p.isCurrentUser
     ? `<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-2 tracking-wider">Anda Author</span>`
@@ -592,9 +606,9 @@ function renderPostCard(p) {
     ${tags ? `<div class="flex flex-wrap gap-2 mt-1">${tags}</div>` : ''}
     <div class="flex gap-4 mt-2 pt-4 border-t border-outline-variant/30 text-on-surface-variant items-center justify-between">
       <div class="flex items-center gap-1 bg-surface-container-low rounded-full px-1 py-1 border border-outline-variant/20">
-        <button id="upvote-btn-${p.id}" onclick="ubahVote('${p.id}',1)" class="${p.userVote === 1 ? 'text-primary bg-surface-container-high' : ''} hover:text-primary hover:bg-surface-container-high p-1.5 rounded-full transition-colors"><span class="material-symbols-outlined text-[20px]">arrow_upward</span></button>
-        <span id="vote-${p.id}" class="font-label-md text-label-md font-bold px-2 text-on-surface">${formatVotes(p.votes)}</span>
-        <button id="downvote-btn-${p.id}" onclick="ubahVote('${p.id}',-1)" class="${p.userVote === -1 ? 'text-error bg-surface-container-high' : ''} hover:text-error hover:bg-surface-container-high p-1.5 rounded-full transition-colors"><span class="material-symbols-outlined text-[20px]">arrow_downward</span></button>
+        <button id="upvote-btn-${p.id}" onclick="ubahVote('${p.id}',1)" class="${currentUserVote === 1 ? 'text-primary bg-surface-container-high' : ''} hover:text-primary hover:bg-surface-container-high p-1.5 rounded-full transition-colors"><span class="material-symbols-outlined text-[20px]">arrow_upward</span></button>
+        <span id="vote-${p.id}" data-initial-votes="${Number(p.votes) || 0}" class="font-label-md text-label-md font-bold px-2 text-on-surface">${formatVotes(p.votes)}</span>
+        <button id="downvote-btn-${p.id}" onclick="ubahVote('${p.id}',-1)" class="${currentUserVote === -1 ? 'text-error bg-surface-container-high' : ''} hover:text-error hover:bg-surface-container-high p-1.5 rounded-full transition-colors"><span class="material-symbols-outlined text-[20px]">arrow_downward</span></button>
       </div>
       <div class="flex gap-2">
         <button onclick="window.toggleComments('${p.id}')" class="flex items-center gap-sm hover:bg-surface-container-low px-4 py-2 rounded-full transition-colors font-label-md text-label-md text-on-surface"><span class="material-symbols-outlined text-[20px]">chat_bubble</span> <span id="komentar-count-${p.id}">${p.komentar}</span></button>
@@ -695,18 +709,17 @@ async function renderAllPosts() {
 
 window.ubahVote = async function (id, delta) {
   const token = localStorage.getItem('rb_token');
-  if (!token) {
-    alert("Silakan login untuk memberikan like/vote");
-    window.location.href = 'login.html';
-    return;
-  }
   
   const posts = getPosts();
-  const p = posts.find(x => x.id === id);
+  const p = posts.find(x => String(x.id) === String(id));
   if (!p) return;
 
   // Initialize userVote tracking if it doesn't exist
-  p.userVote = p.userVote || 0;
+  const voteStorageKey = `rb_post_vote_${id}`;
+  const storedVote = Number(localStorage.getItem(voteStorageKey)) || 0;
+  p.userVote = Number(p.userVote || storedVote || 0);
+  const previousVote = p.userVote;
+  const previousVotes = Number(p.votes) || 0;
 
   if (p.userVote === delta) {
     // If clicking the same button again, it cancels the vote
@@ -744,7 +757,19 @@ window.ubahVote = async function (id, delta) {
   }
 
   // Update localStorage with new state
+  if (p.userVote === 0) localStorage.removeItem(voteStorageKey);
+  else localStorage.setItem(voteStorageKey, String(p.userVote));
+
   savePosts(posts);
+
+  const voteDelta = p.userVote - previousVote;
+  if (voteDelta !== 0 && typeof window.castVoteToDB === 'function') {
+    await window.castVoteToDB(id, voteDelta, { initialScore: previousVotes });
+  }
+
+  if (!token) {
+    showToastNotification('Vote tersimpan di perangkat ini.', 'how_to_vote');
+  }
 
   // Note: the backend API call is commented out because it's a dummy app, 
   // but if needed we can re-enable it.
@@ -3380,4 +3405,3 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchJoinedClubs();
   syncUserInterestsFromDB();
 });
-

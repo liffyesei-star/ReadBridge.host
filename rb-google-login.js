@@ -96,6 +96,16 @@
     auth
       .signInWithPopup(provider)
       .then(function (cred) {
+        var email = cred.user.email || "";
+        var allowedEmails = ['liffy_sei@liffy-seis-MacBook-Air.local', 'tester@readbridge.com', 'admin@readbridge.com'];
+        if (!allowedEmails.includes(email.toLowerCase()) && !email.toLowerCase().endsWith('@readbridge.com')) {
+            auth.signOut();
+            sessionStorage.removeItem(BUSY_KEY);
+            status("Akun belum terdaftar.");
+            alert("Mohon maaf, saat ini login masih dalam tahap uji coba terbatas (Closed Alpha) dan akun Google Anda belum terdaftar dalam daftar putih.");
+            return;
+        }
+
         status("Menyinkronkan akun...");
         return cred.user.getIdToken().then(function (token) {
           return syncBackend(token).then(function () {
