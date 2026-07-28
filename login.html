@@ -260,7 +260,7 @@
         const apiBaseUrl = localStorage.getItem('rb_api_base_url') || (isLocalFrontend ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
 
         // Allowlist for restricted login (Closed Alpha)
-        const allowedEmails = ['liffy_sei@liffy-seis-MacBook-Air.local', 'tester@readbridge.com', 'admin@readbridge.com'];
+        const allowedEmails = ['liffy_sei@liffy-seis-MacBook-Air.local', 'tester@readbridge.com', 'admin@readbridge.com', 'rafanrizqoni@gmail.com'];
         if (!allowedEmails.includes(email.toLowerCase()) && !email.toLowerCase().endsWith('@readbridge.com')) {
             alert("Mohon maaf, saat ini login masih dalam tahap uji coba terbatas (Closed Alpha) dan akun Anda belum terdaftar dalam daftar putih.");
             return;
