@@ -97,7 +97,7 @@
       .signInWithPopup(provider)
       .then(function (cred) {
         var email = cred.user.email || "";
-        var allowedEmails = ['liffy_sei@liffy-seis-MacBook-Air.local', 'tester@readbridge.com', 'admin@readbridge.com', 'rafanrizqoni@gmail.com'];
+        var allowedEmails = ['liffy_sei@liffy-seis-MacBook-Air.local', 'tester@readbridge.com', 'admin@readbridge.com', 'rafanrizqoni@gmail.com', 'liffyesei@gmail.com'];
         if (!allowedEmails.includes(email.toLowerCase()) && !email.toLowerCase().endsWith('@readbridge.com')) {
             auth.signOut();
             sessionStorage.removeItem(BUSY_KEY);
