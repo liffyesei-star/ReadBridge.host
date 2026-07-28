@@ -785,6 +785,37 @@ document.addEventListener("DOMContentLoaded", function() {
         window.createPostDB = createPost;
         window.addCommentDB = addComment;
         window.listenToPostVotes = listenToPostVotes;
+
+        function parseInitialVotes(counter) {
+            const raw = counter.dataset.initialVotes || counter.textContent || '0';
+            const normalized = raw.trim().toLowerCase();
+            const multiplier = normalized.endsWith('k') ? 1000 : 1;
+            const parsed = Number(normalized.replace(/k$/, '').replace(',', '.').replace(/[^\d.]/g, ''));
+            return Number.isFinite(parsed) ? Math.round(parsed * multiplier) : 0;
+        }
+
+        function bindVoteCounter(container) {
+            if (!container || container.dataset.voteRealtimeBound === 'true') return;
+            const postId = container.dataset.postId;
+            if (!postId) return;
+            
+            container.dataset.voteRealtimeBound = 'true';
+            
+            const upEl = container.querySelector(`[id^="upvote-count-"]`);
+            const downEl = container.querySelector(`[id^="downvote-count-"]`);
+            
+            window.listenToPostVotes(postId, (upvotes, downvotes, score) => {
+                if (upEl) {
+                    upEl.textContent = typeof formatVotes === 'function' ? formatVotes(upvotes) : upvotes;
+                }
+                if (downEl) {
+                    downEl.textContent = typeof formatVotes === 'function' ? formatVotes(downvotes) : downvotes;
+                }
+            }, { 
+                initialUpvotes: upEl ? parseInitialVotes(upEl) : 0,
+                initialDownvotes: downEl ? parseInitialVotes(downEl) : 0
+            });
+        }
         
         // Setup MutationObserver to attach real-time listeners dynamically when posts are rendered
         window.addEventListener('load', () => {
@@ -792,43 +823,21 @@ document.addEventListener("DOMContentLoaded", function() {
                 mutations.forEach((mutation) => {
                     mutation.addedNodes.forEach((node) => {
                         if(node.nodeType === 1) { // Element node
-                            // Check if this node is a post or contains votes
-                            const voteCounters = node.querySelectorAll ? node.querySelectorAll('[id^="vote-"]') : [];
-                            voteCounters.forEach(counter => {
-                                const postId = counter.id.replace('vote-', '');
-                                window.listenToPostVotes(postId, (upvotes, downvotes) => {
-                                    // Hanya render upvotes sesuai aturan (tidak berkurang oleh downvote)
-                                    // Jika kita punya formatVotes dari modal, gunakan itu
-                                    const formatted = typeof formatVotes === 'function' ? formatVotes(upvotes) : upvotes;
-                                    counter.textContent = formatted;
-                                });
-                            });
-                            
-                            // If the node itself is a counter
-                            if(node.id && node.id.startsWith('vote-')) {
-                                const postId = node.id.replace('vote-', '');
-                                window.listenToPostVotes(postId, (upvotes, downvotes) => {
-                                    const formatted = typeof formatVotes === 'function' ? formatVotes(upvotes) : upvotes;
-                                    node.textContent = formatted;
-                                });
+                            const posts = node.querySelectorAll ? node.querySelectorAll('article[data-post-id]') : [];
+                            posts.forEach(bindVoteCounter);
+                            if (node.tagName === 'ARTICLE' && node.dataset.postId) {
+                                bindVoteCounter(node);
                             }
                         }
                     });
                 });
             });
             
-            // Observe the feed container
             const feed = document.getElementById('community-feed') || document.body;
             observer.observe(feed, { childList: true, subtree: true });
             
             // Attach to already existing elements on load
-            document.querySelectorAll('[id^="vote-"]').forEach(counter => {
-                const postId = counter.id.replace('vote-', '');
-                window.listenToPostVotes(postId, (upvotes, downvotes) => {
-                    const formatted = typeof formatVotes === 'function' ? formatVotes(upvotes) : upvotes;
-                    counter.textContent = formatted;
-                });
-            });
+            document.querySelectorAll('article[data-post-id]').forEach(bindVoteCounter);
         });
     </script>
 

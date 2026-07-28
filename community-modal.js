@@ -605,10 +605,16 @@ function renderPostCard(p) {
     </div>
     ${tags ? `<div class="flex flex-wrap gap-2 mt-1">${tags}</div>` : ''}
     <div class="flex gap-4 mt-2 pt-4 border-t border-outline-variant/30 text-on-surface-variant items-center justify-between">
-      <div class="flex items-center gap-1 bg-surface-container-low rounded-full px-1 py-1 border border-outline-variant/20">
-        <button id="upvote-btn-${p.id}" onclick="ubahVote('${p.id}',1)" class="${currentUserVote === 1 ? 'text-primary bg-surface-container-high' : ''} hover:text-primary hover:bg-surface-container-high p-1.5 rounded-full transition-colors"><span class="material-symbols-outlined text-[20px]">arrow_upward</span></button>
-        <span id="vote-${p.id}" data-initial-votes="${Number(p.votes) || 0}" class="font-label-md text-label-md font-bold px-2 text-on-surface">${formatVotes(p.votes)}</span>
-        <button id="downvote-btn-${p.id}" onclick="ubahVote('${p.id}',-1)" class="${currentUserVote === -1 ? 'text-error bg-surface-container-high' : ''} hover:text-error hover:bg-surface-container-high p-1.5 rounded-full transition-colors"><span class="material-symbols-outlined text-[20px]">arrow_downward</span></button>
+      <div class="flex items-center gap-2 bg-surface-container-low rounded-full px-2 py-1 border border-outline-variant/20">
+        <div class="flex items-center gap-1">
+          <button id="upvote-btn-${p.id}" onclick="ubahVote('${p.id}',1)" class="${currentUserVote === 1 ? 'text-primary bg-surface-container-high' : ''} hover:text-primary hover:bg-surface-container-high p-1.5 rounded-full transition-colors"><span class="material-symbols-outlined text-[20px]">arrow_upward</span></button>
+          <span id="upvote-count-${p.id}" class="font-label-md text-label-md font-bold pr-1 text-on-surface">${formatVotes(Number(p.upvotes || p.votes || 0))}</span>
+        </div>
+        <div class="w-px h-4 bg-outline-variant/50"></div>
+        <div class="flex items-center gap-1">
+          <button id="downvote-btn-${p.id}" onclick="ubahVote('${p.id}',-1)" class="${currentUserVote === -1 ? 'text-error bg-surface-container-high' : ''} hover:text-error hover:bg-surface-container-high p-1.5 rounded-full transition-colors"><span class="material-symbols-outlined text-[20px]">arrow_downward</span></button>
+          <span id="downvote-count-${p.id}" class="font-label-md text-label-md font-bold pr-1 text-on-surface">${formatVotes(Number(p.downvotes || 0))}</span>
+        </div>
       </div>
       <div class="flex gap-2">
         <button onclick="window.toggleComments('${p.id}')" class="flex items-center gap-sm hover:bg-surface-container-low px-4 py-2 rounded-full transition-colors font-label-md text-label-md text-on-surface"><span class="material-symbols-outlined text-[20px]">chat_bubble</span> <span id="komentar-count-${p.id}">${p.komentar}</span></button>
@@ -714,31 +720,51 @@ window.ubahVote = async function (id, delta) {
   const p = posts.find(x => String(x.id) === String(id));
   if (!p) return;
 
+  // Ensure upvotes and downvotes properties exist
+  p.upvotes = Number(p.upvotes || p.votes || 0);
+  p.downvotes = Number(p.downvotes || 0);
+
   // Initialize userVote tracking if it doesn't exist
   const voteStorageKey = `rb_post_vote_${id}`;
   const storedVote = Number(localStorage.getItem(voteStorageKey)) || 0;
   p.userVote = Number(p.userVote || storedVote || 0);
-  const previousVotes = Number(p.votes) || 0;
+  const previousUserVote = p.userVote;
 
-  if (p.userVote !== 0) {
-    if (typeof showToastNotification === 'function') {
-      showToastNotification('Anda hanya bisa memberikan vote satu kali.', 'info');
-    } else {
-      alert('Anda hanya bisa memberikan vote satu kali.');
-    }
-    return;
+  let upDelta = 0;
+  let downDelta = 0;
+
+  if (p.userVote === delta) {
+    // Cancel vote
+    if (delta === 1) { p.upvotes -= 1; upDelta = -1; }
+    if (delta === -1) { p.downvotes -= 1; downDelta = -1; }
+    p.userVote = 0;
+  } else {
+    // Revert previous vote if any
+    if (p.userVote === 1) { p.upvotes -= 1; upDelta -= 1; }
+    if (p.userVote === -1) { p.downvotes -= 1; downDelta -= 1; }
+    
+    // Apply new vote
+    if (delta === 1) { p.upvotes += 1; upDelta += 1; }
+    if (delta === -1) { p.downvotes += 1; downDelta += 1; }
+    p.userVote = delta;
   }
 
-  // Apply new vote
-  p.votes += delta;
-  p.userVote = delta;
-
-  // Ensure total votes do not drop below 0
-  p.votes = Math.max(0, p.votes);
+  // Ensure counts do not drop below 0
+  p.upvotes = Math.max(0, p.upvotes);
+  p.downvotes = Math.max(0, p.downvotes);
+  
+  // Sync the combined score just in case other parts of the app rely on it
+  p.votes = p.upvotes;
 
   // Update DOM explicitly
-  const el = document.getElementById(`vote-${id}`);
-  if (el) el.textContent = formatVotes(p.votes);
+  const elUp = document.getElementById(`upvote-count-${id}`);
+  if (elUp) elUp.textContent = formatVotes(p.upvotes);
+  
+  const elDown = document.getElementById(`downvote-count-${id}`);
+  if (elDown) elDown.textContent = formatVotes(p.downvotes);
+
+  const elCombined = document.getElementById(`vote-${id}`);
+  if (elCombined) elCombined.textContent = formatVotes(p.upvotes);
 
   const upBtn = document.getElementById(`upvote-btn-${id}`);
   const downBtn = document.getElementById(`downvote-btn-${id}`);
@@ -759,8 +785,8 @@ window.ubahVote = async function (id, delta) {
 
   savePosts(posts);
 
-  if (typeof window.castVoteToDB === 'function') {
-    await window.castVoteToDB(id, delta, { initialScore: previousVotes });
+  if ((upDelta !== 0 || downDelta !== 0) && typeof window.castVoteToDB === 'function') {
+    await window.castVoteToDB(id, { upDelta, downDelta });
   }
 
   if (!token) {
