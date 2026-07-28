@@ -569,6 +569,25 @@
             console.log("Public Key berhasil diunggah ke server.");
         } else {
             console.log("Private Key ditemukan di localStorage.");
+            // Jika public key tidak ada di localStorage (kasus migrasi), ambil dari server
+            if (!window.E2EE.myPublicKeyBase64) {
+                try {
+                    const res = await fetch(`${backendBaseUrl}/api/auth/me`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const json = await res.json();
+                    if (json.success && json.data.public_key) {
+                        window.E2EE.myPublicKeyBase64 = json.data.public_key;
+                        localStorage.setItem('rb_public_key', json.data.public_key);
+                        console.log("Public Key berhasil dipulihkan dari server.");
+                    } else {
+                        // Kritis: Public key hilang di server juga.
+                        alertFeedback("Error kritis: Kunci publik Anda tidak ditemukan. Harap login ulang.");
+                    }
+                } catch(e) {
+                    console.error("Gagal memulihkan public key dari server:", e);
+                }
+            }
         }
     }
 

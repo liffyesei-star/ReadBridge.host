@@ -270,7 +270,7 @@ router.post("/sync", async (req, res) => {
 router.get("/me", verifyToken, async (req, res) => {
   try {
     const [rows] = await db.execute(
-      `SELECT id, rb_id, firebase_uid, nama, username, email, foto_profil, bio, role, poin, level, minat, created_at, last_name_change
+      `SELECT id, rb_id, firebase_uid, nama, username, email, foto_profil, bio, role, poin, level, minat, created_at, last_name_change, public_key
        FROM users WHERE id = ?`,
       [req.user.id]
     );

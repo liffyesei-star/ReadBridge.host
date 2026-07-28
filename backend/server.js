@@ -66,14 +66,31 @@ const io = new Server(server, {
 });
 
 // Middleware Socket.IO untuk Autentikasi
-io.use((socket, next) => {
+io.use(async (socket, next) => {
     const token = socket.handshake.auth.token;
     if (!token) return next(new Error("Authentication error"));
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret-key-super-aman');
-        socket.user = decoded;
-        next();
+        // Coba verifikasi dengan local JWT
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret-key-super-aman');
+            socket.user = decoded;
+            return next();
+        } catch (localErr) {
+            // Jika gagal, mungkin ini Firebase Token
+            const admin = require("firebase-admin");
+            if (admin.apps.length > 0) {
+                const decodedFirebase = await admin.auth().verifyIdToken(token);
+                // Dapatkan ID MySQL dari Firebase UID atau email
+                const [users] = await db.execute("SELECT id, username FROM users WHERE firebase_uid = ? OR email = ? LIMIT 1", [decodedFirebase.uid, decodedFirebase.email]);
+                if (users.length > 0) {
+                    socket.user = { id: users[0].id, username: users[0].username, email: decodedFirebase.email };
+                    return next();
+                }
+            }
+            throw new Error("Invalid token");
+        }
     } catch (err) {
+        console.error("Socket auth error:", err.message);
         next(new Error("Authentication error"));
     }
 });

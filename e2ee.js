@@ -47,6 +47,7 @@ const E2EE = {
         
         const exportedPublicKey = await window.crypto.subtle.exportKey("spki", keyPair.publicKey);
         E2EE.myPublicKeyBase64 = E2EE._arrayBufferToBase64(exportedPublicKey);
+        localStorage.setItem('rb_public_key', E2EE.myPublicKeyBase64);
         
         E2EE.keyPair = keyPair;
         return { keyPair, publicKeyBase64: E2EE.myPublicKeyBase64 };
@@ -55,7 +56,10 @@ const E2EE = {
     // Load private key dari localStorage
     loadPrivateKey: async () => {
         const storedKey = localStorage.getItem('rb_private_key');
+        const storedPubKey = localStorage.getItem('rb_public_key');
         if (!storedKey) return null;
+
+        E2EE.myPublicKeyBase64 = storedPubKey || null;
 
         const binaryDer = E2EE._base64ToArrayBuffer(storedKey);
         try {

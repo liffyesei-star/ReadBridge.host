@@ -93,6 +93,13 @@
     var provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: "select_account" });
 
+    // FIX FOR SAFARI/iOS: Avoid popup entirely to prevent ITP issues
+    if (checkSafariOrIOS()) {
+      status("Mengalihkan ke Google (Safari)...");
+      auth.signInWithRedirect(provider);
+      return;
+    }
+
     auth
       .signInWithPopup(provider)
       .then(function (cred) {
@@ -183,6 +190,38 @@
     ) {
       status("Sudah masuk, mengalihkan...");
       goAppSoon(350);
+      return;
+    }
+
+    try {
+      var auth = getAuth();
+      auth.getRedirectResult()
+        .then(function(result) {
+          if (result && result.user) {
+            status("Menyinkronkan akun...");
+            var email = result.user.email || "";
+            var allowedEmails = ['liffy_sei@liffy-seis-MacBook-Air.local', 'tester@readbridge.com', 'admin@readbridge.com', 'rafanrizqoni@gmail.com', 'liffyesei@gmail.com'];
+            if (!allowedEmails.includes(email.toLowerCase()) && !email.toLowerCase().endsWith('@readbridge.com')) {
+                auth.signOut();
+                status("Akun belum terdaftar.");
+                alert("Mohon maaf, akun Google Anda belum terdaftar dalam daftar putih (Closed Alpha).");
+                return;
+            }
+            return result.user.getIdToken().then(function (token) {
+              return syncBackend(token).then(function () {
+                saveSession(result.user, token);
+                sessionStorage.removeItem(BUSY_KEY);
+                goAppSoon(450);
+              });
+            });
+          }
+        })
+        .catch(function(err) {
+          console.error("Redirect Result Error:", err);
+          sessionStorage.removeItem(BUSY_KEY);
+        });
+    } catch(e) {
+      console.warn("getRedirectResult init failed", e);
     }
   };
 
