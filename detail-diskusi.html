@@ -861,5 +861,58 @@ document.addEventListener("DOMContentLoaded", function() {
 
     <!-- Profile Card Global Modal -->
     <script src="profile-card.js"></script>
+
+    <!-- Real-time Voting Engine -->
+    <script type="module">
+        import { castVote, listenToPostVotes } from './vote-db.js';
+        window.castVoteToDB = castVote;
+        window.listenToPostVotes = listenToPostVotes;
+        
+        // Setup MutationObserver to attach real-time listeners dynamically when posts are rendered
+        window.addEventListener('load', () => {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    mutation.addedNodes.forEach((node) => {
+                        if(node.nodeType === 1) { // Element node
+                            // Check if this node is a post or contains votes
+                            const voteCounters = node.querySelectorAll ? node.querySelectorAll('[id^="vote-"]') : [];
+                            voteCounters.forEach(counter => {
+                                const postId = counter.id.replace('vote-', '');
+                                window.listenToPostVotes(postId, (upvotes, downvotes) => {
+                                    // Hanya render upvotes sesuai aturan (tidak berkurang oleh downvote)
+                                    // Jika kita punya formatVotes dari modal, gunakan itu
+                                    const formatted = typeof formatVotes === 'function' ? formatVotes(upvotes) : upvotes;
+                                    counter.textContent = formatted;
+                                });
+                            });
+                            
+                            // If the node itself is a counter
+                            if(node.id && node.id.startsWith('vote-')) {
+                                const postId = node.id.replace('vote-', '');
+                                window.listenToPostVotes(postId, (upvotes, downvotes) => {
+                                    const formatted = typeof formatVotes === 'function' ? formatVotes(upvotes) : upvotes;
+                                    node.textContent = formatted;
+                                });
+                            }
+                        }
+                    });
+                });
+            });
+            
+            // Observe the feed container
+            const feed = document.getElementById('community-feed') || document.body;
+            observer.observe(feed, { childList: true, subtree: true });
+            
+            // Attach to already existing elements on load
+            document.querySelectorAll('[id^="vote-"]').forEach(counter => {
+                const postId = counter.id.replace('vote-', '');
+                window.listenToPostVotes(postId, (upvotes, downvotes) => {
+                    const formatted = typeof formatVotes === 'function' ? formatVotes(upvotes) : upvotes;
+                    counter.textContent = formatted;
+                });
+            });
+        });
+    </script>
+
 </body>
 </html>

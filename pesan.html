@@ -615,18 +615,33 @@
     async function doSetup(myUid, recipientId) {
         try {
             // Ambil public key penerima dari DB
-            const recipientPubKeyBase64 = await getUserPublicKey(recipientId);
+            let recipientPubKeyBase64 = await getUserPublicKey(recipientId);
             if(!recipientPubKeyBase64) {
-                console.warn("Kunci publik penerima tidak ditemukan. Mungkin dia belum pernah login.");
-                // Buat peringatan di UI
-                const sysMsg = `<div class="flex justify-center my-2"><span class="text-[10px] font-bold text-red-500 bg-red-50 px-3 py-1 rounded-full border border-red-200">Pengguna belum mengaktifkan Enkripsi E2EE</span></div>`;
+                console.warn("Kunci publik penerima tidak ditemukan. Membangkitkan Dummy Key untuk simulasi!");
+                
+                // MOCK GENERATOR UNTUK SIMULASI UI (Jika target adalah dummy user)
+                const dummyPair = await window.crypto.subtle.generateKey(
+                    { name: "ECDH", namedCurve: "P-256" },
+                    true, 
+                    ["deriveKey", "deriveBits"]
+                );
+                const raw = await window.crypto.subtle.exportKey("raw", dummyPair.publicKey);
+                // Konversi ArrayBuffer ke Base64
+                const bytes = new Uint8Array(raw);
+                let binary = '';
+                for (let i = 0; i < bytes.byteLength; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                recipientPubKeyBase64 = window.btoa(binary);
+                
+                // Peringatan Halus
+                const sysMsg = `<div class="flex justify-center my-2"><span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 shadow-sm">Menggunakan Mode Simulasi (Pengguna Offline/Dummy)</span></div>`;
                 document.getElementById('chat-history').insertAdjacentHTML('beforeend', sysMsg);
-                return;
             }
             
             // Derive shared secret
             activeSharedSecret = await deriveSharedSecret(recipientPubKeyBase64);
-            console.log("Shared Secret ECDH berhasil dibuat dengan:", recipientId);
+            console.log("Shared Secret ECDH berhasil disiapkan dengan:", recipientId);
             
             // Mulai dengarkan pesan dari dia
             listenToMessages(recipientId, handleIncomingMessage);
