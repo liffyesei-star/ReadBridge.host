@@ -454,6 +454,7 @@
 <!-- External Libraries for Chat -->
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script src="e2ee.js"></script>
+<script src="local-chat-db.js"></script>
 
 <!-- E2E Chat Controller -->
 <script>
@@ -494,17 +495,20 @@
             // Jika public key tidak ada di localStorage (kasus migrasi), ambil dari server
             if (!window.E2EE.myPublicKeyBase64) {
                 try {
-                    const res = await fetch(`${backendBaseUrl}/api/auth/me`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    const json = await res.json();
-                    if (json.success && json.data.public_key) {
-                        window.E2EE.myPublicKeyBase64 = json.data.public_key;
-                        localStorage.setItem('rb_public_key', json.data.public_key);
-                        console.log("Public Key berhasil dipulihkan dari server.");
-                    } else {
-                        // Kritis: Public key hilang di server juga.
-                        alertFeedback("Error kritis: Kunci publik Anda tidak ditemukan. Harap login ulang.");
+                    const currentUserObj = JSON.parse(localStorage.getItem('rb_user') || '{}');
+                    if (currentUserObj.id) {
+                        const res = await fetch(`${backendBaseUrl}/api/messages/keys/${currentUserObj.id}`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        const json = await res.json();
+                        if (json.success && json.public_key) {
+                            window.E2EE.myPublicKeyBase64 = json.public_key;
+                            localStorage.setItem('rb_public_key', json.public_key);
+                            console.log("Public Key berhasil dipulihkan dari server.");
+                        } else {
+                            // Kritis: Public key hilang di server juga.
+                            alertFeedback("Error kritis: Kunci publik Anda tidak ditemukan. Harap login ulang.");
+                        }
                     }
                 } catch(e) {
                     console.error("Gagal memulihkan public key dari server:", e);
@@ -527,19 +531,52 @@
             if (activeRecipientId && (data.sender_id.toString() === activeRecipientId.toString())) {
                 try {
                     const decrypted = await window.E2EE.decryptMessage(data.encrypted_content_for_receiver);
+                    
+                    // Simpan pesan masuk ke IndexedDB (Pendekatan WhatsApp Web)
+                    await window.LocalChatDB.saveMessage({
+                        senderId: data.sender_id,
+                        receiverId: data.receiver_id,
+                        text: decrypted,
+                        timestamp: data.created_at,
+                        isMine: false
+                    });
+
                     renderIncomingBubble(decrypted, formatTime(new Date(data.created_at)));
                 } catch(e) {
                     console.error("Gagal mendekripsi pesan masuk:", e);
                     renderIncomingBubble("🔒 [Pesan tidak dapat didekripsi]", formatTime(new Date(data.created_at)));
                 }
             } else {
-                // Notifikasi pesan baru jika tidak sedang membuka chat
-                alertFeedback("Anda menerima pesan baru.");
+                // Simpan pesan masuk ke IndexedDB (Background)
+                try {
+                    const decrypted = await window.E2EE.decryptMessage(data.encrypted_content_for_receiver);
+                    await window.LocalChatDB.saveMessage({
+                        senderId: data.sender_id,
+                        receiverId: data.receiver_id,
+                        text: decrypted,
+                        timestamp: data.created_at,
+                        isMine: false
+                    });
+                } catch(e) {
+                    console.error("Gagal mendekripsi/menyimpan pesan masuk (background):", e);
+                }
+                // Notifikasi pesan baru
+                if (typeof alertFeedback === 'function') {
+                    alertFeedback("Anda menerima pesan baru.");
+                } else {
+                    alert("Anda menerima pesan baru.");
+                }
             }
         });
 
         socket.on('message_sent_success', (data) => {
             console.log("Pesan berhasil dikirim dan tersimpan di DB.");
+            // Ubah centang tunggal menjadi centang ganda pada pesan terakhir
+            const icons = document.querySelectorAll('.outgoing-bubble .message-status-icon');
+            if (icons.length > 0) {
+                const lastIcon = icons[icons.length - 1];
+                lastIcon.innerText = 'done_all';
+            }
         });
         
         socket.on('message_error', (data) => {
@@ -622,29 +659,59 @@
             }
             activeRecipientPublicKey = keyJson.public_key;
 
-            // Load History
-            const histRes = await fetch(`${backendBaseUrl}/api/messages/history/${friendId}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const histJson = await histRes.json();
-            
+            // 1. Coba Load History dari IndexedDB (WhatsApp Web Approach)
             document.getElementById('chat-history').innerHTML = ''; // Clear loader
             
-            if (histJson.success && histJson.data) {
-                for (let msg of histJson.data) {
-                    try {
-                        let plaintext = "";
-                        if (msg.sender_id.toString() === friendId.toString()) {
-                            // Ini pesan masuk, dekripsi `encrypted_content_for_receiver`
-                            plaintext = await window.E2EE.decryptMessage(msg.encrypted_content_for_receiver);
-                            renderIncomingBubble(plaintext, formatTime(new Date(msg.created_at)));
-                        } else {
-                            // Ini pesan keluar, dekripsi `encrypted_content_for_sender`
-                            plaintext = await window.E2EE.decryptMessage(msg.encrypted_content_for_sender);
-                            renderOutgoingBubble(plaintext, formatTime(new Date(msg.created_at)));
+            const localMsgs = await window.LocalChatDB.getMessages(friendId);
+            
+            if (localMsgs && localMsgs.length > 0) {
+                // Render dari lokal (cepat)
+                for (let msg of localMsgs) {
+                    if (msg.isMine) {
+                        renderOutgoingBubble(msg.text, formatTime(new Date(msg.timestamp)));
+                    } else {
+                        renderIncomingBubble(msg.text, formatTime(new Date(msg.timestamp)));
+                    }
+                }
+            } else {
+                // 2. Jika kosong, tarik dari Server (Sinkronisasi awal)
+                const histRes = await fetch(`${backendBaseUrl}/api/messages/history/${friendId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const histJson = await histRes.json();
+                
+                if (histJson.success && histJson.data) {
+                    for (let msg of histJson.data) {
+                        try {
+                            let plaintext = "";
+                            let isMine = false;
+                            if (msg.sender_id.toString() === friendId.toString()) {
+                                // Pesan masuk
+                                plaintext = await window.E2EE.decryptMessage(msg.encrypted_content_for_receiver);
+                            } else {
+                                // Pesan keluar
+                                isMine = true;
+                                plaintext = await window.E2EE.decryptMessage(msg.encrypted_content_for_sender);
+                            }
+                            
+                            // Simpan ke IndexedDB agar tidak perlu fetch lagi di kemudian hari
+                            await window.LocalChatDB.saveMessage({
+                                senderId: msg.sender_id,
+                                receiverId: msg.receiver_id,
+                                text: plaintext,
+                                timestamp: msg.created_at,
+                                isMine: isMine
+                            });
+
+                            // Render ke UI
+                            if (isMine) {
+                                renderOutgoingBubble(plaintext, formatTime(new Date(msg.created_at)));
+                            } else {
+                                renderIncomingBubble(plaintext, formatTime(new Date(msg.created_at)));
+                            }
+                        } catch(e) {
+                            console.error("Gagal dekripsi historis:", e);
                         }
-                    } catch(e) {
-                        console.error("Gagal dekripsi historis:", e);
                     }
                 }
             }
@@ -664,14 +731,15 @@
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
     
-    function renderOutgoingBubble(text, timeStr) {
+    function renderOutgoingBubble(text, timeStr, isDelivered = false) {
         const chatHistory = document.getElementById('chat-history');
+        const checkIcon = isDelivered ? 'done_all' : 'done';
         const bubble = `
-        <div class="flex items-end justify-end gap-2 max-w-[85%] self-end mt-2 animate-[slideUp_0.3s_ease-out]">
+        <div class="flex items-end justify-end gap-2 max-w-[85%] self-end mt-2 animate-[slideUp_0.3s_ease-out] outgoing-bubble">
             <div class="bg-primary text-white px-4 py-2.5 rounded-2xl rounded-br-sm shadow-sm">
                 <p class="text-sm">${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
                 <span class="text-[9px] text-primary-fixed-dim mt-1 flex items-center justify-end gap-1">
-                    ${timeStr} <span class="material-symbols-outlined text-[12px]" style="font-variation-settings:'wght' 700;">done</span>
+                    ${timeStr} <span class="material-symbols-outlined text-[12px] message-status-icon" style="font-variation-settings:'wght' 700;">${checkIcon}</span>
                 </span>
             </div>
         </div>
@@ -717,6 +785,15 @@
         inputEl.value = ''; // clear input field
         
         try {
+            // Simpan pesan ke IndexedDB lokal (WhatsApp Web Approach)
+            await window.LocalChatDB.saveMessage({
+                senderId: 'ME', // Atau id pengirim jika diambil dari state
+                receiverId: activeRecipientId,
+                text: text,
+                timestamp: new Date().toISOString(),
+                isMine: true
+            });
+
             // Enkripsi untuk penerima
             const encryptedForReceiver = await window.E2EE.encryptMessage(text, activeRecipientPublicKey);
             
@@ -738,6 +815,11 @@
     
     // Eksekusi saat load
     window.addEventListener('load', async () => {
+        try {
+            await window.LocalChatDB.init(); // Inisialisasi IndexedDB
+        } catch (e) {
+            console.error("LocalChatDB failed to initialize:", e);
+        }
         await initializeCrypto();
         setupSocket();
         loadChatList();

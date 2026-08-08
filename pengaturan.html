@@ -1081,10 +1081,11 @@ previewBox.style.fontFamily = 'inherit';
         });
 
         function fallbackProfile() {
-            const savedName = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+            const user = window.Auth ? window.Auth.getUser() : null;
+            const savedName = user ? (user.nama || user.username) : (localStorage.getItem('rb_username') || 'Siswa Indonesia');
             document.getElementById('input-nama').value = savedName;
             
-            const savedAvatar = localStorage.getItem('rb_avatar');
+            const savedAvatar = user ? user.foto_profil : localStorage.getItem('rb_avatar');
             if (savedAvatar) {
                 document.getElementById('avatar-preview').src = savedAvatar;
                 document.getElementById('avatar-showcase').src = savedAvatar;
@@ -1095,6 +1096,13 @@ previewBox.style.fontFamily = 'inherit';
             const els = document.querySelectorAll('.rb-username-fill');
             for (let i = 0; i < els.length; i++) {
                 els[i].textContent = savedName;
+            }
+            
+            if (user && document.getElementById('input-email-settings')) {
+                document.getElementById('input-email-settings').value = user.email || '';
+            }
+            if (user && document.getElementById('input-username')) {
+                document.getElementById('input-username').value = user.username || '';
             }
         }
 

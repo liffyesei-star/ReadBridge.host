@@ -42,6 +42,9 @@ const Auth = {
   setToken: (token, user) => {
     localStorage.setItem('rb_token', token);
     localStorage.setItem('rb_user', JSON.stringify(user));
+    if (user && user.foto_profil) localStorage.setItem('rb_profile_pic', user.foto_profil);
+    if (user && (user.nama || user.username)) localStorage.setItem('rb_username', user.nama || user.username);
+    localStorage.setItem('rb_is_logged_in', 'true');
   },
 
   // Mendapatkan token
@@ -118,6 +121,9 @@ const Auth = {
   logout: () => {
     localStorage.removeItem('rb_token');
     localStorage.removeItem('rb_user');
+    localStorage.removeItem('rb_profile_pic');
+    localStorage.removeItem('rb_username');
+    localStorage.removeItem('rb_is_logged_in');
     window.location.href = 'login.html';
   },
 
@@ -160,9 +166,9 @@ const Auth = {
       }
 
       // Sync avatar on nav header (if any element has an avatar class or id)
-      const navAvatar = document.querySelector('#profile-menu-container img, .nav-user-avatar');
-      if (navAvatar && user.foto_profil) {
-          navAvatar.src = user.foto_profil;
+      const navAvatars = document.querySelectorAll('#profile-menu-container img, #profile-menu-container-nav img, .nav-user-avatar, #profile-avatar-btn img, #profile-avatar-btn-nav img');
+      if (user.foto_profil) {
+          navAvatars.forEach(img => img.src = user.foto_profil);
       }
 
       // Sync specific inputs (e.g. for pengaturan.html and checkout.html)

@@ -53,6 +53,17 @@ class AuthController {
       return res.status(401).json({ success: false, message: error.message || "Gagal login dengan Google" });
     }
   }
+
+  async getMe(req, res) {
+    try {
+      const userRepository = require('../repositories/userRepository');
+      const user = await userRepository.findById(req.user.id);
+      return res.json({ success: true, data: user });
+    } catch (error) {
+      console.error("GetMe Error:", error.message);
+      return res.status(500).json({ success: false, message: "Gagal mengambil data user" });
+    }
+  }
 }
 
 module.exports = new AuthController();

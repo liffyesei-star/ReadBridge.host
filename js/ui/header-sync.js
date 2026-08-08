@@ -2,8 +2,10 @@
  * ReadBridge — UI Header Sync
  * Tanggung Jawab: Update navigasi/header berdasarkan status login dan izin toko.
  */
-import { getApiBaseUrl } from '../auth/api.js';
-
+function getApiBaseUrl() {
+    const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    return localStorage.getItem('rb_api_base_url') || (isLocalHost ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
+}
 function injectCreatorWriteMenu() {
   const dropdowns = document.querySelectorAll('[id^="profile-dropdown"]');
   dropdowns.forEach(dropdown => {
@@ -144,8 +146,18 @@ export function syncHeader() {
   if (isLoggedIn && token) {
     injectCreatorWriteMenu();
 
-    const savedPic = localStorage.getItem("rb_profile_pic");
-    const savedName = localStorage.getItem("rb_username");
+    let savedPic = localStorage.getItem("rb_profile_pic");
+    let savedName = localStorage.getItem("rb_username");
+    
+    if (!savedPic || !savedName) {
+        try {
+            const userObj = JSON.parse(localStorage.getItem("rb_user"));
+            if (userObj) {
+                if (!savedPic) savedPic = userObj.foto_profil;
+                if (!savedName) savedName = userObj.nama || userObj.username;
+            }
+        } catch(e) {}
+    }
     
     if (savedPic) {
       document.querySelectorAll("#profile-avatar-btn img, #profile-avatar-btn-nav img, #nav-avatar").forEach(img => {

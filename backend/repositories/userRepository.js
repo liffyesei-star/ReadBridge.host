@@ -11,6 +11,11 @@ class UserRepository {
     return users.length ? users[0] : null;
   }
 
+  async findById(userId) {
+    const [users] = await db.execute("SELECT id, rb_id, firebase_uid, nama, username, email, foto_profil, bio, role, poin, level, minat, created_at, public_key FROM users WHERE id = ? LIMIT 1", [userId]);
+    return users.length ? users[0] : null;
+  }
+
   async createUser(data) {
     const { nama, email, password, username, rb_id, foto_profil } = data;
     const [result] = await db.execute(
