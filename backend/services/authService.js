@@ -1,6 +1,7 @@
 const userRepository = require('../repositories/userRepository');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const admin = require('../config/firebase'); // Firebase Admin SDK
 
 const JWT_SECRET = process.env.JWT_SECRET || 'readbridge_jwt_secret_key_production_2026';
 
@@ -79,6 +80,69 @@ class AuthService {
         level: user.level,
         username: user.username,
         rb_id: user.rb_id
+      }
+    };
+  }
+
+  async googleLogin(firebaseToken) {
+    if (!admin.apps.length) {
+      throw new Error('Firebase Admin SDK belum dikonfigurasi di server');
+    }
+
+    // 1. Verifikasi token Firebase secara sepihak
+    let decodedFirebase;
+    try {
+      decodedFirebase = await admin.auth().verifyIdToken(firebaseToken);
+    } catch (err) {
+      throw new Error('Token Google tidak valid atau telah kedaluwarsa');
+    }
+
+    const { email, name, picture, uid } = decodedFirebase;
+    if (!email) throw new Error('Email tidak ditemukan dari akun Google');
+
+    // 2. Cek apakah user sudah ada di database MySQL
+    let user = await userRepository.findByEmail(email);
+    let userId;
+
+    if (!user) {
+      // 3. Jika belum, registrasi user secara otomatis (tanpa password)
+      const { username, rb_id } = await this.generateUniqueUserData(name);
+      userId = await userRepository.createUser({
+        nama: name || email.split('@')[0],
+        email,
+        password: null, // Tanpa password
+        username,
+        rb_id,
+        foto_profil: picture || null
+      });
+      // Cari ulang untuk mendapatkan role, poin, level dari default database
+      user = await userRepository.findByEmail(email);
+    } else {
+      userId = user.id;
+      // Jika user sudah ada tapi daftar secara manual sebelumnya, tidak masalah
+      // kita biarkan password yang ada.
+    }
+
+    // 4. Update last_login
+    if(userRepository.updateLastLogin) {
+        try { await userRepository.updateLastLogin(userId); } catch(e) {}
+    }
+
+    // 5. Generate dan kembalikan Local JWT
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+
+    return {
+      token,
+      user: {
+        id: user.id,
+        nama: user.nama,
+        email: user.email,
+        role: user.role,
+        poin: user.poin,
+        level: user.level,
+        username: user.username,
+        rb_id: user.rb_id,
+        foto_profil: user.foto_profil || picture
       }
     };
   }

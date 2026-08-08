@@ -38,6 +38,21 @@ class AuthController {
       return res.status(401).json({ success: false, message: error.message });
     }
   }
+
+  async googleLogin(req, res) {
+    try {
+      const { token } = req.body;
+      if (!token) {
+        return res.status(400).json({ success: false, message: "Token Google tidak ditemukan" });
+      }
+
+      const result = await authService.googleLogin(token);
+      return res.json({ success: true, message: "Login Google berhasil", ...result });
+    } catch (error) {
+      console.error("Google Login Error:", error.message);
+      return res.status(401).json({ success: false, message: error.message || "Gagal login dengan Google" });
+    }
+  }
 }
 
 module.exports = new AuthController();

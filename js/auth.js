@@ -152,6 +152,27 @@ const Auth = {
       if (loginBtn) loginBtn.classList.remove('hidden');
       if (profileMenu) profileMenu.classList.add('hidden');
     }
+  },
+
+  async googleLogin(firebaseToken) {
+    try {
+      const response = await fetch(`${API_URL}/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: firebaseToken })
+      });
+      const data = await response.json();
+      
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Gagal login via Google');
+      }
+
+      this.saveSession(data.token, data.user);
+      return data;
+    } catch (error) {
+      console.error('API Google Login Error:', error);
+      throw error;
+    }
   }
 };
 
