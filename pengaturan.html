@@ -458,24 +458,17 @@
 
                         // Initialize user ID on load
                         document.addEventListener('DOMContentLoaded', () => {
-                            if (typeof generateStructuredID !== 'undefined') {
-                                const currentUname = localStorage.getItem('rb_username') || '@SiswaIndonesia';
+                            const initId = () => {
+                                const user = window.Auth ? window.Auth.getUser() : null;
                                 const idEl = document.getElementById('input-user-id');
-                                if (idEl) {
-                                    idEl.value = generateStructuredID(currentUname.toLowerCase());
+                                if (idEl && user) {
+                                    idEl.value = user.rb_id || user.user_id || user.id || "ID-TIDAK-DITEMUKAN";
                                 }
-                            } else {
-                                // Fallback wait for script load
-                                setTimeout(() => {
-                                    if (typeof generateStructuredID !== 'undefined') {
-                                        const currentUname = localStorage.getItem('rb_username') || '@SiswaIndonesia';
-                                        const idEl = document.getElementById('input-user-id');
-                                        if (idEl) {
-                                            idEl.value = generateStructuredID(currentUname.toLowerCase());
-                                        }
-                                    }
-                                }, 500);
-                            }
+                            };
+                            
+                            // Call immediately, but also set a timeout in case Auth is loaded slightly later
+                            initId();
+                            setTimeout(initId, 500);
                         });
                     </script>
 

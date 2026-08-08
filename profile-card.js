@@ -41,11 +41,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 <!-- Action Buttons -->
                 <div class="flex w-full gap-3">
-                    <button onclick="startDM()" class="flex-1 py-3 bg-primary text-white rounded-xl font-bold font-label-md hover:bg-primary-container hover:text-on-primary-container transition-colors flex items-center justify-center gap-2 shadow-sm">
-                        <span class="material-symbols-outlined text-[18px]">chat</span> Kirim Pesan
+                    <button onclick="viewProfile()" class="flex-1 py-3 bg-primary text-white rounded-xl font-bold font-label-md hover:bg-primary-container transition-colors flex items-center justify-center gap-2 shadow-sm">
+                        <span class="material-symbols-outlined text-[18px]">person</span> Profil
                     </button>
-                    <button class="w-12 h-12 flex items-center justify-center bg-surface-container-high dark:bg-slate-800 text-on-surface dark:text-white rounded-xl hover:bg-surface-container-highest transition-colors">
-                        <span class="material-symbols-outlined text-[20px]">person_add</span>
+                    <button onclick="startDM()" class="flex-1 py-3 bg-surface-container-high dark:bg-slate-800 text-on-surface dark:text-white rounded-xl font-bold font-label-md hover:bg-surface-container-highest transition-colors flex items-center justify-center gap-2 shadow-sm">
+                        <span class="material-symbols-outlined text-[18px]">chat</span> Chat
                     </button>
                 </div>
             </div>
@@ -120,13 +120,27 @@ window.startDM = function() {
     if (currentTargetData) {
         // Enkode parameter agar aman di URL
         const params = new URLSearchParams({
-            uid: currentTargetData.uid,
+            to: currentTargetData.uid,
             name: currentTargetData.name,
             avatar: currentTargetData.avatar
         });
         window.location.href = 'pesan.html?' + params.toString();
     } else {
         window.location.href = 'pesan.html';
+    }
+}
+
+// Navigasi ke Profil dengan Data URL
+window.viewProfile = function() {
+    if (currentTargetData) {
+        const params = new URLSearchParams({
+            uid: currentTargetData.uid,
+            name: currentTargetData.name,
+            avatar: currentTargetData.avatar
+        });
+        window.location.href = 'profile.html?' + params.toString();
+    } else {
+        window.location.href = 'profile.html';
     }
 }
 

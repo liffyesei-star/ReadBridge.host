@@ -387,30 +387,23 @@
 
 <!-- Real Chat Logic -->
 <script type="module">
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { saveUserPublicKey, getUserPublicKey, sendEncryptedMessage, listenToMessages } from "./chat-db.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyDUfiy2BHYhHh1wql6uM5UvsF6hpNTVvhY",
-        authDomain: "readbridge-8934c.firebaseapp.com",
-        projectId: "readbridge-8934c",
-        storageBucket: "readbridge-8934c.firebasestorage.app",
-        messagingSenderId: "900450201794",
-        appId: "1:900450201794:web:8d65f989e7fefe590d8b5b",
-    };
-    
-    const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-    const auth = getAuth(app);
 
     let currentUserId = null;
     let myPrivateKey = null;
 
-    // Inisialisasi E2EE saat user terdeteksi Login
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            currentUserId = user.uid;
-            console.log("Logged in as:", user.displayName || user.email);
+    // JWT Check for E2EE initialization
+    const initE2EE = async () => {
+        if (!token) {
+            console.log("Silakan login untuk menggunakan chat E2EE.");
+            return;
+        }
+        
+        try {
+            // Decode token JWT manually for user_id
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            currentUserId = payload.user_id || payload.id;
+            console.log("Logged in as ID:", currentUserId);
 
             // Coba ambil private key dari Local Storage (IndexedDB)
             let privateKey = await E2ECrypto.getLocalPrivateKey(currentUserId);
@@ -423,7 +416,7 @@
                 await E2ECrypto.storePrivateKeyLocally(currentUserId, keyPair.privateKey);
                 myPrivateKey = keyPair.privateKey;
 
-                // Export dan Simpan Public Key ke Firestore
+                // Export dan Simpan Public Key ke Firestore (Fallback to MySQL Server)
                 const publicKeyBase64 = await E2ECrypto.exportPublicKey(keyPair.publicKey);
                 await saveUserPublicKey(currentUserId, publicKeyBase64);
                 console.log("Kunci E2EE berhasil dibuat dan didaftarkan!");
@@ -431,11 +424,13 @@
                 myPrivateKey = privateKey;
                 console.log("Kunci E2EE dimuat dari penyimpanan lokal perangkat.");
             }
-        } else {
-            console.log("Silakan login untuk menggunakan chat E2EE.");
-            // Bisa redirect ke login.html
+        } catch (e) {
+            console.error("Gagal inisialisasi E2EE:", e);
         }
-    });
+    };
+
+    // Panggil fungsi inisialisasi
+    initE2EE();
 
     // Ekspos fungsi ke global untuk percobaan/testing dari console atau tombol dummy
     window.testSendE2EEMessage = async function(recipientId, text) {

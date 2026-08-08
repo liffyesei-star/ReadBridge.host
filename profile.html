@@ -1399,21 +1399,54 @@
     ];
 
     document.addEventListener("DOMContentLoaded", function () {
+      // ── Dynamic Profile Logic (Read URL Params) ──
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetUid = urlParams.get('uid');
+      const targetName = urlParams.get('name');
+      const targetAvatar = urlParams.get('avatar');
+
+      let savedName = 'Siswa Indonesia';
+      let profileAvatarUrl = 'https://ui-avatars.com/api/?name=Siswa+Indonesia&background=004ac6&color=fff';
+      
+      window.rb_dynamic_profile_name = null;
+
+      const currentUser = window.Auth ? window.Auth.getUser() : null;
+
+      if (targetUid && targetName) {
+          // Viewing someone else's profile
+          savedName = targetName;
+          profileAvatarUrl = targetAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(targetName)}&background=004ac6&color=fff`;
+          
+          // Sembunyikan tombol Edit Profil, Ganti dengan Follow / Chat
+          const btnEdit = document.getElementById('btn-edit-profile');
+          if (btnEdit) {
+              btnEdit.innerHTML = `<span class="material-symbols-outlined text-[18px]">chat</span> Kirim Pesan`;
+              btnEdit.onclick = function() {
+                  window.location.href = `pesan.html?to=${targetUid}&name=${encodeURIComponent(targetName)}`;
+              };
+          }
+      } else if (currentUser) {
+          // Viewing own profile
+          savedName = currentUser.nama || currentUser.username || 'Pengguna';
+          profileAvatarUrl = currentUser.foto_profil || `https://ui-avatars.com/api/?name=${encodeURIComponent(savedName)}&background=004ac6&color=fff`;
+      } else {
+          savedName = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+          profileAvatarUrl = localStorage.getItem('rb_profile_pic') || `https://ui-avatars.com/api/?name=${encodeURIComponent(savedName)}&background=004ac6&color=fff`;
+      }
+      
+      window.rb_dynamic_profile_name = savedName;
+
       // ── Username Fill ──
-      const savedName = localStorage.getItem('rb_username') || 'Siswa Indonesia';
       const els = document.querySelectorAll('.rb-username-fill');
       for (let i = 0; i < els.length; i++) {
         els[i].textContent = savedName;
       }
 
-      // ── Early Avatar Load: Apply Google profile pic immediately ──
-      const earlyGooglePic = localStorage.getItem('rb_profile_pic');
-      if (earlyGooglePic) {
-        ['nav-user-avatar', 'sidebar-user-avatar', 'leaderboard-user-avatar'].forEach(id => {
-          const el = document.getElementById(id);
-          if (el) el.src = earlyGooglePic;
-        });
-      }
+      // ── Apply Profile Pic ──
+      ['nav-user-avatar', 'sidebar-user-avatar', 'leaderboard-user-avatar'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.src = profileAvatarUrl;
+      });
 
       // --- Dynamic Gamification Logic ---
       calculateGamification(savedName);
@@ -2315,7 +2348,7 @@
       const userCardContainer = document.getElementById('leaderboard-user-card-container');
       if (!container) return;
 
-      const currentUserName = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+      const currentUserName = (window.rb_dynamic_profile_name || localStorage.getItem('rb_username') || 'Siswa Indonesia');
       const currentUserAvatar = localStorage.getItem('rb_avatar') || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4';
 
       try {
@@ -2402,7 +2435,7 @@
     function fallbackRealLeaderboard() {
       const container = document.getElementById('leaderboard-list-container');
       const userCardContainer = document.getElementById('leaderboard-user-card-container');
-      const currentUserName = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+      const currentUserName = (window.rb_dynamic_profile_name || localStorage.getItem('rb_username') || 'Siswa Indonesia');
       const currentUserAvatar = localStorage.getItem('rb_avatar') || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBPWVVaGXkWQMBFLEpn-ySDPe0WKEHOcwl3-OYRAtEikh9crzUun0qzUObSdGEHcwvyc9jFEAKphqQYxPEF9eMC8210T0_jOuDtMLTPukgg3X-9OTaAg4uNqzd-daKojg_muON5j9-f8PktO1QuJ2ZZvMj_rRpSkPkMgO8kDbq4mh_-TUjzZjgOpSVcYmdxgdhYj3iSrmcEISU8czkDBS4sF8INQet-of3Y1HG2QqWAKwfvS0FNmOGGbu9A8s8TO9MszaYnlZjY5F4';
 
       const userXPText = document.getElementById('level-card-xp-min')?.textContent || '0 XP';
@@ -2638,7 +2671,7 @@
               localStorage.setItem('rb_completed_quests', JSON.stringify(completed));
               showToast('Klaim berhasil! +50 XP dari quest Membaca.');
               // Refresh gamification UI
-              const savedName = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+              const savedName = (window.rb_dynamic_profile_name || localStorage.getItem('rb_username') || 'Siswa Indonesia');
               calculateGamification(savedName);
             }
           };
@@ -2661,7 +2694,7 @@
         completed.push('login_streak');
         localStorage.setItem('rb_completed_quests', JSON.stringify(completed));
         showToast('Klaim berhasil! +20 XP dari quest Login.');
-        const savedName = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+        const savedName = (window.rb_dynamic_profile_name || localStorage.getItem('rb_username') || 'Siswa Indonesia');
         calculateGamification(savedName);
       }
     };
@@ -2694,7 +2727,7 @@
           return;
         }
 
-        const savedName = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+        const savedName = (window.rb_dynamic_profile_name || localStorage.getItem('rb_username') || 'Siswa Indonesia');
         
         // Add to community posts list comments
         let posts = [];
@@ -2756,7 +2789,7 @@
 
         const bookName = bookSelect.value;
         const rating = parseInt(ratingSelect.value);
-        const savedName = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+        const savedName = (window.rb_dynamic_profile_name || localStorage.getItem('rb_username') || 'Siswa Indonesia');
 
         // Add to book recommendations reviews
         let recs = [];
@@ -2908,7 +2941,7 @@
         // Perbarui semua UI BridgePass
         updateBridgePassUI();
         // recalculate profile achievement for Premium Scholar
-        const savedName = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+        const savedName = (window.rb_dynamic_profile_name || localStorage.getItem('rb_username') || 'Siswa Indonesia');
         calculateGamification(savedName);
       } else {
         errMsg.classList.remove('hidden');
