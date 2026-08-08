@@ -11,13 +11,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font: 500 15px/1.5 system-ui, sans-serif;
+      font: 500 15px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: #f8fafc;
       color: #0f172a;
     }
-    .box { text-align: center; max-width: 360px; padding: 24px; }
+    .box { text-align: center; max-width: 380px; width: 90%; padding: 32px 24px; background: #ffffff; border-radius: 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
     .spin {
-      width: 40px; height: 40px; margin: 0 auto 20px;
+      width: 44px; height: 44px; margin: 0 auto 20px;
       border: 4px solid #2563eb;
       border-top-color: transparent;
       border-radius: 50%;
@@ -41,9 +41,17 @@
       border-radius: 999px;
       text-decoration: none;
       font-weight: 600;
+      transition: background 0.2s;
     }
-    .err { color: #dc2626; font-size: 13px; margin-top: 12px; }
+    .btn:hover { background: #1d4ed8; }
+    .err { color: #dc2626; font-size: 13px; margin-top: 14px; line-height: 1.5; white-space: pre-line; }
   </style>
+
+  <!-- Firebase Compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <!-- New modular redirect handler -->
+  <script type="module" src="js/auth/redirect-handler.js"></script>
 </head>
 <body>
   <div class="box">
@@ -53,203 +61,11 @@
     <div id="rb-done" hidden>
       <a class="btn" id="rb-continue-btn" href="eksplor.html">Lanjut ke ReadBridge</a>
     </div>
-    <p style="font-size:12px;margin-top:20px">
+    <p style="font-size:12px;margin-top:24px;color:#64748b">
       <a href="login.html">← Kembali ke login</a>
       ·
-      <button type="button" class="link" onclick="location.href='login.html'">Pakai popup (Chrome)</button>
+      <button type="button" class="link" onclick="location.href='login.html'">Coba Popup (Chrome)</button>
     </p>
   </div>
-
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  <script>
-    (function () {
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function (regs) {
-          regs.forEach(function (reg) { reg.unregister(); });
-        });
-      }
-
-      var isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-      var API = localStorage.getItem('rb_api_base_url') || (isLocal ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
-      var BUSY_KEY = "rb_google_busy";
-      var COOLDOWN_MS = 2500;
-
-      firebase.initializeApp({
-        apiKey: "AIzaSyDUfiy2BHYhHh1wql6uM5UvsF6hpNTVvhY",
-        authDomain: "readbridge-8934c.firebaseapp.com",
-        projectId: "readbridge-8934c",
-        storageBucket: "readbridge-8934c.firebasestorage.app",
-        messagingSenderId: "900450201794",
-        appId: "1:900450201794:web:8d65f989e7fefe590d8b5b",
-      });
-
-      var auth = firebase.auth();
-      var params = new URLSearchParams(location.search);
-      var shouldStart = params.get("go") === "1";
-
-      function status(msg) {
-        document.getElementById("rb-auth-status").textContent = msg;
-        console.log("[ReadBridge Redirect]", msg);
-      }
-
-      function isOAuthReturn() {
-        var blob = location.search + location.hash;
-        return /apiKey=|authType=|state=|mode=signIn/i.test(blob);
-      }
-
-      function dest() {
-        return localStorage.getItem("rb_interests") ? "eksplor.html" : "minat.html";
-      }
-
-      function isBusy() {
-        var t = sessionStorage.getItem(BUSY_KEY);
-        return t && Date.now() - parseInt(t, 10) < COOLDOWN_MS;
-      }
-
-      function showDone(user) {
-        document.getElementById("spin").style.display = "none";
-        if (window.history.replaceState) {
-          window.history.replaceState({}, "", location.pathname);
-        }
-        status("Halo, " + (user.displayName || "pengguna") + "! Mengalihkan...");
-        setTimeout(function () {
-          location.replace(dest());
-        }, 500);
-      }
-
-      var ALLOWED_EMAILS = [
-        "liffy_sei@liffy-seis-MacBook-Air.local",
-        "tester@readbridge.com",
-        "admin@readbridge.com",
-        "rafanrizqoni@gmail.com",
-        "liffyesei@gmail.com",
-      ];
-
-      function isAllowedEmail(email) {
-        var e = (email || "").toLowerCase();
-        return ALLOWED_EMAILS.indexOf(e) !== -1 || e.endsWith("@readbridge.com");
-      }
-
-      function saveAndFinish(user) {
-        sessionStorage.removeItem(BUSY_KEY);
-        var email = user.email || "";
-        if (!isAllowedEmail(email)) {
-          auth.signOut();
-          fail("Akun Google belum terdaftar (Closed Alpha). Gunakan email & sandi di login.html.");
-          return Promise.resolve();
-        }
-        status("Menyimpan sesi...");
-        return user.getIdToken().then(function (token) {
-          return fetch(API + "/api/auth/sync", {
-            method: "POST",
-            headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
-          })
-            .catch(function () {})
-            .then(function () {
-              localStorage.removeItem("rb_explicit_logout");
-              localStorage.setItem("rb_is_logged_in", "true");
-              localStorage.setItem("rb_token", token);
-              localStorage.setItem("rb_username", user.displayName || "Google User");
-              localStorage.setItem("rb_email", user.email || "");
-              localStorage.setItem("rb_uid", user.uid);
-              if (user.photoURL) localStorage.setItem("rb_profile_pic", user.photoURL);
-              showDone(user);
-            });
-        });
-      }
-
-      function fail(msg) {
-        sessionStorage.removeItem(BUSY_KEY);
-        document.getElementById("spin").style.display = "none";
-        document.getElementById("rb-auth-error").hidden = false;
-
-        var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-        var isIOS = /iPad|iPhone|iPod/.test(navigator.platform) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        if (isSafari || isIOS) {
-          msg = "Masuk lewat Google (Redirect) diblokir oleh sistem privasi Safari (ITP).\n\n" +
-                "Solusi:\n" +
-                "1. Silakan masuk menggunakan Email & Password di halaman login (Sangat Direkomendasikan).\n" +
-                "2. Atau, buka pengaturan iOS/macOS -> Safari -> matikan 'Cegah Pelacakan Lintas Situs' (Prevent Cross-Site Tracking), lalu coba lagi.";
-        }
-
-        document.getElementById("rb-auth-error").textContent = msg;
-        status("Gagal");
-      }
-
-      // Sudah login — jangan redirect otomatis
-      if (
-        !isOAuthReturn() &&
-        !shouldStart &&
-        localStorage.getItem("rb_is_logged_in") === "true" &&
-        localStorage.getItem("rb_token")
-      ) {
-        status("Sudah masuk, mengalihkan...");
-        setTimeout(function () { location.replace(dest()); }, 350);
-        return;
-      }
-
-      if (isOAuthReturn()) {
-        status("Menyelesaikan login...");
-
-        var oauthFinished = false;
-        function finishOAuth(user) {
-          if (oauthFinished || !user) return;
-          oauthFinished = true;
-          saveAndFinish(user);
-        }
-
-        var unsubAuth = auth.onAuthStateChanged(function (user) {
-          if (user) {
-            unsubAuth();
-            finishOAuth(user);
-          }
-        });
-
-        setTimeout(function () {
-          if (oauthFinished) return;
-          unsubAuth();
-          var user = auth.currentUser;
-          if (user) {
-            finishOAuth(user);
-            return;
-          }
-          console.warn("[ReadBridge Redirect] OAuth completion timed out after 12s");
-          fail(
-            "Proses masuk memakan waktu terlalu lama. Coba lagi lewat login.html → Safari/iPhone, atau masuk dengan email & sandi."
-          );
-        }, 12000);
-
-        auth
-          .getRedirectResult()
-          .then(function (result) {
-            var user = (result && result.user) || auth.currentUser;
-            if (user) finishOAuth(user);
-          })
-          .catch(function (err) {
-            console.warn("[ReadBridge Redirect] getRedirectResult:", err);
-          });
-        return;
-      }
-
-      if (shouldStart) {
-        // Hapus parameter "go=1" dari URL segera sebelum redirect untuk mencegah loop saat kembali
-        if (window.history.replaceState) {
-          var cleanSearch = location.search.replace(/([?&])go=1(&?)/, function(match, p1, p2) {
-            return p2 ? p1 : '';
-          });
-          window.history.replaceState({}, "", location.pathname + cleanSearch + location.hash);
-        }
-
-        status("Mengalihkan ke Google...");
-        var provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: "select_account" });
-        auth.signInWithRedirect(provider);
-        return;
-      }
-
-      location.replace("login.html");
-    })();
-  </script>
 </body>
 </html>

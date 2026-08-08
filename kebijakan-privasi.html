@@ -283,7 +283,9 @@
   </div>
 </footer>
 
-<script src="auth-logout.js?v=4"></script>
+<script type="module" src="js/auth/logout.js?v=6"></script>
+    <script type="module" src="js/ui/header-sync.js?v=6"></script>
+    <script src="js/ui/sandbox-warning.js?v=6"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const isLoggedIn = localStorage.getItem('rb_is_logged_in') === 'true';

@@ -155,7 +155,14 @@
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#004ac6" />
     <link rel="apple-touch-icon" href="icon-192.png" />
-    <script src="auth-logout.js?v=2"></script>
+    <!-- Firebase Compat SDK HARUS dimuat paling awal -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <!-- rb-auth.js mendefinisikan window._rbAuth (HARUS sebelum auth-logout.js) -->
+    <script src="rb-auth.js?v=5"></script>
+    <script type="module" src="js/auth/logout.js?v=6"></script>
+    <script type="module" src="js/ui/header-sync.js?v=6"></script>
+    <script src="js/ui/sandbox-warning.js?v=6"></script>
 </head>
 <body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
 <!-- Main Content Canvas -->
@@ -250,67 +257,7 @@
   </div>
 </footer>
 
-<script>
-    document.getElementById('login-form').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-
-        const isLocalFrontend = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-        const apiBaseUrl = localStorage.getItem('rb_api_base_url') || (isLocalFrontend ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
-
-        // Allowlist for restricted login (Closed Alpha)
-        const allowedEmails = ['liffy_sei@liffy-seis-MacBook-Air.local', 'tester@readbridge.com', 'admin@readbridge.com', 'rafanrizqoni@gmail.com', 'liffyesei@gmail.com'];
-        if (!allowedEmails.includes(email.toLowerCase()) && !email.toLowerCase().endsWith('@readbridge.com')) {
-            alert("Mohon maaf, saat ini login masih dalam tahap uji coba terbatas (Closed Alpha) dan akun Anda belum terdaftar dalam daftar putih.");
-            return;
-        }
-
-        try {
-            const response = await fetch(`${apiBaseUrl}/api/auth/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password })
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                // Simpan token dan data user
-                localStorage.setItem('rb_is_logged_in', 'true');
-                localStorage.setItem('rb_token', data.token);
-                localStorage.setItem('rb_username', data.data.nama);
-                localStorage.setItem('rb_user_email', data.data.email);
-                
-                const redirectUrl = localStorage.getItem('rb_redirect_after_login');
-                if (redirectUrl) {
-                    localStorage.removeItem('rb_redirect_after_login');
-                    alert("Login berhasil! Mengalihkan kembali ke halaman transaksi...");
-                    window.location.href = redirectUrl;
-                } else {
-                    alert("Login berhasil!");
-                    window.location.href = 'eksplor.html';
-                }
-            } else {
-                alert(data.message || "Email/Username atau Kata Sandi salah!");
-            }
-        } catch (error) {
-            console.error("Login error:", error);
-            alert("Gagal terhubung ke server. Pastikan backend sudah menyala.");
-        }
-    });
-</script>
-
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-    <script src="rb-google-login.js?v=6"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            if (typeof rbCheckExistingSession === 'function') rbCheckExistingSession();
-        });
-    </script>
+<script type="module" src="js/auth/login-ui.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -399,14 +346,7 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
 
     
-    <!-- Service Worker tidak didaftarkan di halaman login; lepaskan SW lama agar OAuth redirect aman -->
-    <script>
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function (regs) {
-          regs.forEach(function (reg) { reg.unregister(); });
-        });
-      }
-    </script>
+    <!-- Service Worker tidak didaftarkan di halaman login agar OAuth redirect tidak terganggu -->
 </body>
 
 </html>
