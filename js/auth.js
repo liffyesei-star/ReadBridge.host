@@ -148,6 +148,37 @@ const Auth = {
         const nameEl = document.getElementById('nav-user-name');
         if (nameEl) nameEl.textContent = user.nama || user.username || 'User';
       }
+
+      const displayName = user.nama || user.username || 'Pengguna';
+
+      // Global text replacement for "Siswa Indonesia" (Decoy data fix)
+      const textEls = document.querySelectorAll('span.text-on-surface, p.text-on-surface, p.truncate, h1, h2, h3, h4, h5, h6, .rb-username-fill');
+      for (let i = 0; i < textEls.length; i++) {
+          if (textEls[i].textContent.trim() === 'Siswa Indonesia') {
+              textEls[i].textContent = displayName;
+          }
+      }
+
+      // Sync avatar on nav header (if any element has an avatar class or id)
+      const navAvatar = document.querySelector('#profile-menu-container img, .nav-user-avatar');
+      if (navAvatar && user.foto_profil) {
+          navAvatar.src = user.foto_profil;
+      }
+
+      // Sync specific inputs (e.g. for pengaturan.html and checkout.html)
+      const inputNama = document.getElementById('input-nama');
+      if (inputNama && inputNama.value === 'Siswa Indonesia') inputNama.value = displayName;
+      else if (inputNama && !inputNama.value) inputNama.value = displayName;
+      
+      const inputUsername = document.getElementById('input-username');
+      if (inputUsername && (!inputUsername.value || inputUsername.value === '')) inputUsername.value = user.username || '';
+      
+      const inputEmail = document.getElementById('input-email-settings');
+      if (inputEmail && (!inputEmail.value || inputEmail.value === 'nama@email.com')) inputEmail.value = user.email || '';
+      
+      const avatarPreview = document.getElementById('avatar-preview');
+      if (avatarPreview && user.foto_profil) avatarPreview.src = user.foto_profil;
+
     } else {
       if (loginBtn) loginBtn.classList.remove('hidden');
       if (profileMenu) profileMenu.classList.add('hidden');
