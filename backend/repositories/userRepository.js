@@ -22,7 +22,11 @@ class UserRepository {
   }
 
   async updateLastLogin(userId) {
-    await db.execute("UPDATE users SET last_login = NOW() WHERE id = ?", [userId]);
+    try {
+      await db.execute("UPDATE users SET last_login = NOW() WHERE id = ?", [userId]);
+    } catch (err) {
+      console.warn("Could not update last_login (column might be missing):", err.message);
+    }
   }
 
   async update(userId, data) {
