@@ -12,17 +12,26 @@ class UserRepository {
   }
 
   async createUser(data) {
-    const { nama, email, password, username, rb_id, photo_url } = data;
+    const { nama, email, password, username, rb_id, foto_profil } = data;
     const [result] = await db.execute(
-      `INSERT INTO users (nama, email, password, role, poin, level, username, rb_id, photo_url)
+      `INSERT INTO users (nama, email, password, role, poin, level, username, rb_id, foto_profil)
        VALUES (?, ?, ?, 'user', 0, 'Pembaca Pemula', ?, ?, ?)`,
-      [nama, email, password, username, rb_id, photo_url || null]
+      [nama, email, password, username, rb_id, foto_profil || null]
     );
     return result.insertId;
   }
 
   async updateLastLogin(userId) {
     await db.execute("UPDATE users SET last_login = NOW() WHERE id = ?", [userId]);
+  }
+
+  async update(userId, data) {
+    const keys = Object.keys(data);
+    if (keys.length === 0) return;
+    const setClause = keys.map(k => `${k} = ?`).join(', ');
+    const values = keys.map(k => data[k]);
+    values.push(userId);
+    await db.execute(`UPDATE users SET ${setClause} WHERE id = ?`, values);
   }
 
   async saveResetToken(userId, hashedToken, expiresAt) {

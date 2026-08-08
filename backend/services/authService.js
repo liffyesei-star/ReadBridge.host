@@ -101,7 +101,7 @@ class AuthService {
         password: null, // No local password
         username,
         rb_id,
-        photo_url: firebaseUser.picture || null
+        foto_profil: firebaseUser.picture || null
       });
       user = await userRepository.findByEmail(firebaseUser.email);
       isNewUser = true;
