@@ -64,4 +64,17 @@ testConnection();
 
 pool.isReady = () => dbReady;
 
+// Keep-alive ping / "cronjob" internal untuk mencegah Aiven MySQL mati
+setInterval(async () => {
+  if (!dbReady) return;
+  try {
+    const conn = await pool.getConnection();
+    await conn.query("SELECT 1"); // Ping query
+    conn.release();
+    // console.log("Ping keep-alive sukses (mencegah DB mati)");
+  } catch (err) {
+    console.error("Gagal melakukan ping keep-alive ke database:", err.message);
+  }
+}, 10 * 60 * 1000); // Setiap 10 menit
+
 module.exports = pool;
