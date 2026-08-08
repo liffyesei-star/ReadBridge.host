@@ -337,12 +337,12 @@
         const avatarEl = document.getElementById('chat-header-avatar');
         const chatBubbleAvatar = document.getElementById('chat-bubble-avatar');
         
-        avatarEl.src = \`https://ui-avatars.com/api/?name=\${nameParam}&background=\${bg}&color=fff\`;
-        avatarEl.className = \`w-10 h-10 object-cover \${shape}\`;
+        avatarEl.src = `https://ui-avatars.com/api/?name=\${nameParam}&background=\${bg}&color=fff`;
+        avatarEl.className = `w-10 h-10 object-cover \${shape}`;
         
         if(chatBubbleAvatar) {
-            chatBubbleAvatar.src = \`https://ui-avatars.com/api/?name=\${nameParam}&background=\${bg}&color=fff\`;
-            chatBubbleAvatar.className = \`w-6 h-6 mb-1 object-cover \${shape}\`;
+            chatBubbleAvatar.src = `https://ui-avatars.com/api/?name=\${nameParam}&background=\${bg}&color=fff`;
+            chatBubbleAvatar.className = `w-6 h-6 mb-1 object-cover \${shape}`;
         }
 
         // Update transaction snippet visibility
@@ -350,7 +350,7 @@
         if(category === 'transaksi') {
             snippet.classList.remove('hidden');
             snippet.classList.add('flex');
-            document.getElementById('chat-header-status').innerHTML = \`<span class="w-1.5 h-1.5 bg-amber-500 rounded-full"></span> Penjual\`;
+            document.getElementById('chat-header-status').innerHTML = `<span class="w-1.5 h-1.5 bg-amber-500 rounded-full"></span> Penjual`;
             
             // Mock transaction messages
             document.getElementById('chat-msg-1').innerText = "Halo Kak, pesanan sudah dikirim ya.";
@@ -359,7 +359,7 @@
         } else {
             snippet.classList.add('hidden');
             snippet.classList.remove('flex');
-            document.getElementById('chat-header-status').innerHTML = \`<span class="w-1.5 h-1.5 bg-secondary rounded-full"></span> Online\`;
+            document.getElementById('chat-header-status').innerHTML = `<span class="w-1.5 h-1.5 bg-secondary rounded-full"></span> Online`;
             
             // Mock personal messages
             document.getElementById('chat-msg-1').innerText = "Halo! Gue liat review lo tentang buku Fiksi Metropop itu. Keren banget bahasanya!";
