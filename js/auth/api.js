@@ -58,12 +58,14 @@ export async function syncGoogleToken(firebaseIdToken) {
     headers: { Authorization: `Bearer ${firebaseIdToken}` }
   });
   if (!res.ok) {
+    let errMsg = `Sync failed with status ${res.status}`;
     try {
       const errData = await res.json();
-      throw new Error(errData.message || "Sync failed");
+      if (errData.message) errMsg = errData.message;
     } catch(e) {
-      throw new Error(`Sync failed with status ${res.status}`);
+      // Response wasn't JSON, ignore
     }
+    throw new Error(errMsg);
   }
   return res.json();
 }
