@@ -33,8 +33,7 @@ const uploadRoutes = require("./routes/upload");
 const shippingRoutes = require("./routes/shipping");
 const messageRoutes = require("./routes/messages");
 
-// Initialize Firebase (side effect)
-require("./config/firebase");
+// Firebase removed
 const db = require("./config/db");
 
 const app = express();
@@ -76,17 +75,6 @@ io.use(async (socket, next) => {
             socket.user = decoded;
             return next();
         } catch (localErr) {
-            // Jika gagal, mungkin ini Firebase Token
-            const admin = require("firebase-admin");
-            if (admin.apps.length > 0) {
-                const decodedFirebase = await admin.auth().verifyIdToken(token);
-                // Dapatkan ID MySQL dari Firebase UID atau email
-                const [users] = await db.execute("SELECT id, username FROM users WHERE firebase_uid = ? OR email = ? LIMIT 1", [decodedFirebase.uid, decodedFirebase.email]);
-                if (users.length > 0) {
-                    socket.user = { id: users[0].id, username: users[0].username, email: decodedFirebase.email };
-                    return next();
-                }
-            }
             throw new Error("Invalid token");
         }
     } catch (err) {

@@ -1,377 +1,178 @@
 <!DOCTYPE html>
-<!--
-  Project: ReadBridge
-  Author: Liffy Sei / Affan
-  Date: May 2026
-  Role: Lead Developer & UI/UX Designer
--->
-
-<html class="light" lang="id">
+<html lang="id">
 <head>
-    <!-- Global Preference Controller Script to prevent FOUC -->
-    <script id="global-preferences-controller">
-        (function() {
-            // Function to apply theme
-            function applyTheme(theme) {
-                if (theme === 'dark') {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
-            }
-            
-            // Function to apply font size
-            function applyFontSize(size) {
-                if (size === 'kecil') {
-                    document.documentElement.style.fontSize = '14px';
-                } else if (size === 'besar') {
-                    document.documentElement.style.fontSize = '18px';
-                } else {
-                    document.documentElement.style.fontSize = '16px';
-                }
-            }
-            
-            // Function to apply font family
-            function applyFontFamily(family) {
-                let style = document.getElementById('global-font-override');
-                if (family === 'serif') {
-                    if (!style) {
-                        style = document.createElement('style');
-                        style.id = 'global-font-override';
-                        style.innerHTML = `body, p, h1, h2, h3, h4, h5, h6, span:not(.material-symbols-outlined), a:not(.material-symbols-outlined), button:not(.material-symbols-outlined), input, select, textarea { font-family: Georgia, serif !important; }`;
-                        document.head.appendChild(style);
-                    }
-                } else {
-                    if (style) style.remove();
-                }
-            }
-
-            // Initial apply
-            applyTheme(localStorage.getItem('rb_theme'));
-            applyFontSize(localStorage.getItem('rb_font_size') || 'sedang');
-            applyFontFamily(localStorage.getItem('rb_font_family') || 'sans');
-
-            // Listen for storage events to sync across tabs
-            window.addEventListener('storage', function(e) {
-                if (e.key === 'rb_theme') {
-                    applyTheme(e.newValue);
-                } else if (e.key === 'rb_font_size') {
-                    applyFontSize(e.newValue || 'sedang');
-                } else if (e.key === 'rb_font_family') {
-                    applyFontFamily(e.newValue || 'sans');
-                }
-            });
-        })();
-    </script>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Daftar - ReadBridge</title>
-    <!-- Google Fonts: Plus Jakarta Sans -->
-    <link href="https://fonts.googleapis.com" rel="preconnect"/>
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="style.css"/>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script id="tailwind-config">
         tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "primary": "#2563EB",
-                        "on-primary": "#ffffff",
-                        "primary-container": "#DBEAFE",
-                        "on-primary-container": "#1E3A8A",
-                        "primary-fixed": "#DBEAFE",
-                        "secondary": "#10B981",
-                        "on-secondary": "#ffffff",
-                        "secondary-container": "#D1FAE5",
-                        "on-secondary-container": "#064E3B",
-                        "secondary-fixed": "#D1FAE5",
-                        "tertiary": "#F97316",
-                        "on-tertiary": "#ffffff",
-                        "tertiary-container": "#FFEDD5",
-                        "on-tertiary-container": "#7C2D12",
-                        "tertiary-fixed-dim": "#FED7AA",
-                        "surface": "#F8FAFC",
-                        "surface-variant": "#F1F5F9",
-                        "on-surface": "#0F172A",
-                        "on-surface-variant": "#64748B",
-                        "outline": "#94A3B8",
-                        "outline-variant": "#CBD5E1",
-                        "background": "#F8FAFC",
-                        "on-background": "#0F172A",
-                        "surface-container-lowest": "#ffffff",
-                        "surface-container-low": "#F8FAFC",
-                        "surface-container": "#F1F5F9",
-                        "surface-container-high": "#E2E8F0",
-                        "surface-container-highest": "#CBD5E1",
-                        "error": "#EF4444",
-                        "on-error": "#ffffff"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "md": "16px",
-                        "lg": "24px",
-                        "margin": "24px",
-                        "gutter": "16px",
-                        "sm": "8px",
-                        "base": "8px",
-                        "xl": "32px",
-                        "xxl": "48px",
-                        "xs": "4px"
-                    },
-                    "fontFamily": {
-                        "headline-lg": ["Plus Jakarta Sans"],
-                        "label-md": ["Plus Jakarta Sans"],
-                        "body-lg": ["Plus Jakarta Sans"],
-                        "title-lg": ["Plus Jakarta Sans"],
-                        "headline-md": ["Plus Jakarta Sans"],
-                        "display-lg": ["Plus Jakarta Sans"],
-                        "body-md": ["Plus Jakarta Sans"],
-                        "label-sm": ["Plus Jakarta Sans"]
-                    },
-                    "fontSize": {
-                        "label-sm": ["12px", { "lineHeight": "1.2", "fontWeight": "600" }],
-                        "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "700" }],
-                        "display-lg": ["48px", { "lineHeight": "1.2", "fontWeight": "700" }],
-                        "title-lg": ["20px", { "lineHeight": "1.5", "fontWeight": "600" }],
-                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "headline-md": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
-                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "label-md": ["14px", { "lineHeight": "1.4", "fontWeight": "500" }]
-                    }
-                }
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "background": "#f8f9ff",
+                      "on-background": "#0b1c30",
+                      "surface-container-lowest": "#ffffff",
+                      "primary": "#004ac6",
+                      "on-primary": "#ffffff",
+                      "surface-tint": "#0053db",
+                      "outline-variant": "#c3c6d7",
+                      "on-surface": "#0b1c30",
+                      "on-surface-variant": "#434655",
+                      "surface-container-low": "#eff4ff",
+                      "error": "#ba1a1a",
+                      "on-error": "#ffffff"
+              },
+              "fontFamily": {
+                      "sans": ["Plus Jakarta Sans", "sans-serif"]
+              }
             }
+          }
         }
     </script>
-
-    <!-- PWA Tags -->
-    <link rel="manifest" href="manifest.json" />
-    <meta name="theme-color" content="#004ac6" />
-    <link rel="apple-touch-icon" href="icon-192.png" />
+    <style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
 </head>
-<body class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen flex flex-col w-full">
-<main class="flex-grow flex w-full">
-<!-- Left Split Screen -->
-<div class="hidden md:flex w-1/2 lg:w-5/12 relative items-center justify-center overflow-hidden">
-    <!-- Background Image -->
-    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCPoffFDraUIA--lgOlC22XQ84ukb00BsMC2c8asm7tdB4mJHr8_yuLpfcs4I_2Co9m_R4gwHmQg1lSpTqgZJqfzyukbzD6EKNtEkfjD8xg3nWawbwI1XcGiAZV9yIWKpbiJpzwLqsYmd9q7HBGIXt1VmoYhWxBHp1BOaAWsaHBoX6fCDnOipsrh741HjOekfnR8g3dDn_eBjv9GXvdHsOMmcscY4KM8TMCbMXohIrRrBJckXGFCGRp0reUEzT1eYgKfz-hnyKiJMc');"></div>
-    <div class="absolute inset-0 bg-primary/20 backdrop-blur-[2px]"></div>
-    <div class="relative z-10 w-full h-full flex flex-col justify-end p-xxl bg-gradient-to-t from-on-background/90 via-on-background/40 to-transparent">
-        <div class="flex items-center gap-sm mb-lg">
-            <span class="material-symbols-outlined text-secondary-container text-[40px]" style="font-variation-settings: 'FILL' 1;">local_library</span>
-            <span class="font-headline-lg text-[24px] md:text-headline-lg leading-tight text-surface-container-lowest">ReadBridge</span>
-        </div>
-        <h1 class="font-display-lg text-[32px] md:text-display-lg leading-tight text-surface-container-lowest mb-md">Membangun Generasi Literasi.</h1>
-        <p class="font-body-lg text-body-lg text-surface-container-low max-w-md">Bergabunglah dengan komunitas pembaca pelajar terbesar di Indonesia. Jelajahi ribuan buku, tingkatkan level membaca Anda, dan raih prestasi bersama.</p>
-    </div>
-</div>
-<!-- Right Split Screen: Registration Form -->
-<div class="w-full md:w-1/2 lg:w-7/12 flex items-center justify-center p-margin sm:p-xl bg-surface">
-    <div class="w-full max-w-[440px] flex flex-col gap-xl">
-        <div class="md:hidden flex items-center gap-sm justify-center mb-md">
-            <span class="material-symbols-outlined text-primary font-headline-md text-[20px] md:text-headline-md leading-tight" style="font-variation-settings: 'FILL' 1;">local_library</span>
-            <span class="font-headline-md text-[20px] md:text-headline-md leading-tight text-primary">ReadBridge</span>
-        </div>
-        <div class="text-center md:text-left flex flex-col gap-sm">
-            <h2 class="font-headline-lg text-[24px] md:text-headline-lg leading-tight text-on-surface">Buat Akun Baru</h2>
-            <p class="font-body-md text-body-md text-on-surface-variant">Lengkapi data di bawah ini untuk memulai perjalanan literasi Anda.</p>
-        </div>
-        <div class="bg-surface-container-lowest rounded-xl p-lg sm:p-xl shadow-sm border border-outline-variant/40 flex flex-col gap-lg">
-            <form id="register-form" class="flex flex-col gap-md">
-                <!-- Nama Lengkap -->
-                <div class="flex flex-col gap-xs">
-                    <label class="font-label-md text-label-md text-on-surface" for="fullName">Nama Lengkap</label>
+<body class="antialiased min-h-screen flex items-center justify-center relative overflow-hidden">
+    
+    <!-- Background Elements -->
+    <div class="absolute -top-20 -right-20 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-20 -left-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="w-full max-w-md p-6 z-10 animate-fade-in-up">
+        <!-- Back Button -->
+        <a href="index.html" class="inline-flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors mb-6 font-medium">
+            <span class="material-symbols-outlined text-[20px]">arrow_back</span> Kembali ke Beranda
+        </a>
+
+        <!-- Auth Card -->
+        <div class="glass-panel rounded-2xl shadow-xl border border-white/50 p-8 sm:p-10 relative overflow-hidden">
+            <!-- Decorative line -->
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-blue-500"></div>
+
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-on-surface tracking-tight mb-2">Buat Akun</h1>
+                <p class="text-on-surface-variant text-sm">Bergabunglah dengan ribuan pembaca lainnya</p>
+            </div>
+
+            <form id="register-form" class="flex flex-col gap-5">
+                <div>
+                    <label for="name" class="block text-sm font-semibold text-on-surface mb-1.5">Nama Lengkap</label>
                     <div class="relative">
-                        <span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline">person</span>
-                        <input required minlength="3" class="w-full pl-[44px] pr-md py-sm rounded-xl border border-outline-variant bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-body-md text-on-surface placeholder:text-outline-variant" id="fullName" placeholder="Masukkan nama lengkap Anda" type="text"/>
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">person</span>
+                        <input type="text" id="name" required placeholder="Nama Anda" 
+                            class="w-full pl-10 pr-4 py-3 bg-surface-container-low border border-outline-variant/50 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant/70 text-on-surface">
                     </div>
                 </div>
-                <!-- Email -->
-                <div class="flex flex-col gap-xs">
-                    <label class="font-label-md text-label-md text-on-surface" for="email">Email</label>
+
+                <div>
+                    <label for="email" class="block text-sm font-semibold text-on-surface mb-1.5">Email</label>
                     <div class="relative">
-                        <span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline">mail</span>
-                        <input required class="w-full pl-[44px] pr-md py-sm rounded-xl border border-outline-variant bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-body-md text-on-surface placeholder:text-outline-variant" id="email" placeholder="contoh@sekolah.id" type="email"/>
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">mail</span>
+                        <input type="email" id="email" required placeholder="nama@email.com" 
+                            class="w-full pl-10 pr-4 py-3 bg-surface-container-low border border-outline-variant/50 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant/70 text-on-surface">
                     </div>
                 </div>
-                <!-- Password -->
-                <div class="flex flex-col gap-xs">
-                    <label class="font-label-md text-label-md text-on-surface" for="password">Kata Sandi</label>
+
+                <div>
+                    <label for="password" class="block text-sm font-semibold text-on-surface mb-1.5">Kata Sandi</label>
                     <div class="relative">
-                        <span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline">lock</span>
-                        <input required minlength="8" class="w-full pl-[44px] pr-[44px] py-sm rounded-xl border border-outline-variant bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-body-md text-on-surface placeholder:text-outline-variant" id="password" placeholder="Minimal 8 karakter" type="password"/>
-                        <button class="absolute right-md top-1/2 -translate-y-1/2 text-outline hover:text-on-surface focus:outline-none" type="button" onclick="const p = document.getElementById('password'); p.type = p.type === 'password' ? 'text' : 'password';">
-                            <span class="material-symbols-outlined">visibility_off</span>
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">lock</span>
+                        <input type="password" id="password" required placeholder="Min. 8 karakter (huruf & angka)" 
+                            class="w-full pl-10 pr-10 py-3 bg-surface-container-low border border-outline-variant/50 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant/70 text-on-surface"
+                            pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}" title="Minimal 8 karakter, mengandung huruf dan angka">
+                        <button type="button" id="toggle-password" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">visibility</span>
                         </button>
                     </div>
                 </div>
-                <!-- Confirm Password -->
-                <div class="flex flex-col gap-xs">
-                    <label class="font-label-md text-label-md text-on-surface" for="confirmPassword">Konfirmasi Kata Sandi</label>
+                
+                <div>
+                    <label for="confirm-password" class="block text-sm font-semibold text-on-surface mb-1.5">Konfirmasi Kata Sandi</label>
                     <div class="relative">
-                        <span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline">lock_reset</span>
-                        <input required minlength="8" class="w-full pl-[44px] pr-[44px] py-sm rounded-xl border border-outline-variant bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-body-md text-on-surface placeholder:text-outline-variant" id="confirmPassword" placeholder="Ulangi kata sandi Anda" type="password"/>
-                        <button class="absolute right-md top-1/2 -translate-y-1/2 text-outline hover:text-on-surface focus:outline-none" type="button" onclick="const p = document.getElementById('confirmPassword'); p.type = p.type === 'password' ? 'text' : 'password';">
-                            <span class="material-symbols-outlined">visibility_off</span>
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">lock_reset</span>
+                        <input type="password" id="confirm-password" required placeholder="Ulangi kata sandi" 
+                            class="w-full pl-10 pr-10 py-3 bg-surface-container-low border border-outline-variant/50 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant/70 text-on-surface">
+                        <button type="button" id="toggle-confirm-password" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">visibility</span>
                         </button>
                     </div>
+                    <p id="password-error" class="text-error text-xs mt-1 font-medium hidden">Kata sandi tidak cocok</p>
                 </div>
-                <!-- Terms -->
-                <div class="flex items-start gap-sm mt-sm">
-                    <div class="flex items-center h-5">
-                        <input required class="w-4 h-4 rounded-[4px] border-outline-variant text-primary focus:ring-primary bg-surface cursor-pointer mt-0.5" id="terms" type="checkbox"/>
-                    </div>
-                    <label class="font-body-md text-[14px] leading-tight text-on-surface-variant cursor-pointer" for="terms">
-                        Saya setuju dengan <a class="font-label-md text-label-md text-primary hover:underline" href="syarat-dan-ketentuan.html">Syarat &amp; Ketentuan</a> serta <a class="font-label-md text-label-md text-primary hover:underline" href="kebijakan-privasi.html">Kebijakan Privasi</a> yang berlaku.
-                    </label>
-                </div>
-                <button class="w-full mt-sm py-sm px-lg bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-primary/90 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-surface-container-lowest" type="submit">
+
+                <button type="submit" id="btn-register" class="w-full bg-primary text-white font-bold py-3.5 rounded-xl hover:bg-surface-tint hover:shadow-lg hover:-translate-y-0.5 transition-all mt-2 flex items-center justify-center gap-2">
                     Daftar Sekarang
                 </button>
             </form>
-            
-<script type="module" src="js/auth/register-ui.js"></script>
 
-            <div class="flex items-center gap-md py-sm">
-                <div class="h-px bg-outline-variant/50 flex-1"></div>
-                <span class="font-label-sm text-label-sm text-outline tracking-wider">ATAU</span>
-                <div class="h-px bg-outline-variant/50 flex-1"></div>
+            <div class="mt-8 text-center text-sm text-on-surface-variant">
+                Sudah punya akun? <a href="login.html" class="font-bold text-primary hover:underline ml-1">Masuk di sini</a>
             </div>
-            <button id="google-register-btn" class="w-full py-sm px-lg bg-surface-container-lowest border border-outline-variant text-on-surface rounded-full font-label-md text-label-md hover:bg-surface-container-low transition-colors flex items-center justify-center gap-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-outline-variant" type="button">
-                <svg class="w-5 h-5" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path></svg>
-                Daftar dengan Google
-            </button>
-        </div>
-        <div class="text-center mt-sm">
-            <p class="font-body-md text-body-md text-on-surface-variant">
-                Sudah punya akun? <a class="font-label-md text-label-md text-primary hover:text-primary/80 hover:underline transition-colors" href="login.html">Masuk</a>
-            </p>
         </div>
     </div>
-</div>
-</main>
 
-<!-- Footer -->
-<footer class="bg-surface-container-highest border-t border-outline-variant w-full mt-auto">
-  <div class="flex flex-col md:flex-row justify-between items-center px-4 md:px-margin py-lg max-w-[1280px] mx-auto gap-md">
-    <span class="font-title-lg text-title-lg font-black text-primary">ReadBridge</span>
-    <nav class="flex flex-wrap gap-md justify-center">
-      <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="tentang-kami.html">Tentang Kami</a>
-      <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="pusat-bantuan.html">Pusat Bantuan</a>
-      <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="kebijakan-privasi.html">Kebijakan Privasi</a>
-      <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary underline-offset-4" href="syarat-dan-ketentuan.html">Syarat &amp; Ketentuan</a>
-    </nav>
-    <p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 ReadBridge Indonesia. Membangun Generasi Literasi.</p>
-  </div>
-</footer>
-
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const savedName = localStorage.getItem('rb_username');
-    if (savedName) {
-        const els = document.querySelectorAll('span.text-on-surface, p.text-on-surface, h1, h2, h3, h4, h5, h6');
-        for (let i = 0; i < els.length; i++) {
-            if (els[i].textContent.trim() === 'Siswa Indonesia') {
-                els[i].textContent = savedName;
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.Auth && window.Auth.redirectIfLoggedIn) {
+                window.Auth.redirectIfLoggedIn();
             }
-        }
-    }
-});
-</script>
 
-<script id="dynamic-logo-menu">
-document.addEventListener("DOMContentLoaded", function() {
-    // Inject Logo Menu
-    const headerOrNav = document.querySelector('header, nav');
-    if (headerOrNav && !document.getElementById('logo-menu-container')) {
-        const treeWalker = document.createTreeWalker(headerOrNav, NodeFilter.SHOW_TEXT, {
-            acceptNode: function(node) {
-                return node.nodeValue.trim() === 'ReadBridge' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
-            }
-        });
-        const logoTextNode = treeWalker.nextNode();
-        if (logoTextNode) {
-            const logoEl = logoTextNode.parentElement;
+            const form = document.getElementById('register-form');
+            const togglePasswordBtn = document.getElementById('toggle-password');
+            const passwordInput = document.getElementById('password');
             
-            if (logoEl.id === 'logo-btn' || logoEl.querySelector('#logo-btn')) return;
+            const toggleConfirmPasswordBtn = document.getElementById('toggle-confirm-password');
+            const confirmPasswordInput = document.getElementById('confirm-password');
+            const passwordError = document.getElementById('password-error');
 
-            const wrapper = document.createElement('div');
-            wrapper.style.position = 'relative';
-            wrapper.style.display = 'inline-flex';
-            wrapper.style.alignItems = 'center';
-            wrapper.style.cursor = 'pointer';
-            wrapper.id = 'logo-menu-container';
-            
-            logoEl.parentNode.insertBefore(wrapper, logoEl);
-            wrapper.appendChild(logoEl);
-            
-            logoEl.id = 'logo-btn';
-            logoEl.style.display = 'flex';
-            logoEl.style.alignItems = 'center';
-            logoEl.style.gap = '4px';
-            logoEl.innerHTML = 'ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>';
-            
-            const dropdown = document.createElement('div');
-            dropdown.id = 'logo-dropdown';
-            dropdown.className = 'absolute left-0 top-full mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50';
-            
-            const links = [
-                { href: 'index.html', icon: 'home', text: 'Beranda' },
-                { href: 'eksplor.html', icon: 'library_books', text: 'Eksplor Koleksi' },
-                { href: 'sewa.html', icon: 'menu_book', text: 'Perpustakaan & Sewa' },
-                { href: 'marketplace.html', icon: 'storefront', text: 'Marketplace' },
-                { href: 'komunitas.html', icon: 'forum', text: 'Komunitas' },
-                { href: 'tentang-kami.html', icon: 'info', text: 'Tentang Kami' }
-            ];
-            
-            links.forEach(l => {
-                const a = document.createElement('a');
-                a.href = l.href;
-                a.className = 'px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-[14px] text-on-surface flex items-center gap-3 font-medium';
-                a.innerHTML = `<span class="material-symbols-outlined text-[20px] text-on-surface-variant">${l.icon}</span> ${l.text}`;
-                dropdown.appendChild(a);
+            togglePasswordBtn.addEventListener('click', () => {
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+                togglePasswordBtn.innerHTML = `<span class="material-symbols-outlined text-[20px]">${type === 'password' ? 'visibility' : 'visibility_off'}</span>`;
             });
             
-            wrapper.appendChild(dropdown);
-            
-            logoEl.addEventListener('click', (e) => {
+            toggleConfirmPasswordBtn.addEventListener('click', () => {
+                const type = confirmPasswordInput.type === 'password' ? 'text' : 'password';
+                confirmPasswordInput.type = type;
+                toggleConfirmPasswordBtn.innerHTML = `<span class="material-symbols-outlined text-[20px]">${type === 'password' ? 'visibility' : 'visibility_off'}</span>`;
+            });
+
+            form.addEventListener('submit', (e) => {
                 e.preventDefault();
-                e.stopPropagation();
-                dropdown.classList.toggle('hidden');
-                dropdown.classList.toggle('flex');
-            });
-            document.addEventListener('click', (e) => {
-                if (!dropdown.contains(e.target) && !logoEl.contains(e.target)) {
-                    dropdown.classList.add('hidden');
-                    dropdown.classList.remove('flex');
+                
+                const name = document.getElementById('name').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                const btn = document.getElementById('btn-register');
+                
+                if (password !== confirmPassword) {
+                    passwordError.classList.remove('hidden');
+                    confirmPasswordInput.focus();
+                    return;
+                }
+                
+                passwordError.classList.add('hidden');
+
+                if (window.Auth) {
+                    window.Auth.register(name, email, password, btn);
                 }
             });
-        }
-    }
-});
-</script>
-
-    <!-- PWA Service Worker Registration -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('Service Worker terdaftar!', reg.scope))
-            .catch(err => console.log('Service Worker gagal terdaftar', err));
         });
-      }
     </script>
 </body>
-
 </html>

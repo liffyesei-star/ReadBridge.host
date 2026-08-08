@@ -38,43 +38,6 @@ class AuthController {
       return res.status(401).json({ success: false, message: error.message });
     }
   }
-
-  async sync(req, res) {
-    try {
-      if (!req.firebaseUser) {
-        return res.status(401).json({ success: false, message: "Token Firebase tidak valid" });
-      }
-      const result = await authService.syncGoogle(req.firebaseUser);
-      return res.json({ success: true, message: "Sync berhasil", ...result });
-    } catch (error) {
-      console.error("Sync Error:", error.message);
-      return res.status(500).json({ success: false, message: "Gagal sinkronisasi data user: " + error.message });
-    }
-  }
-
-  async forgotPassword(req, res) {
-    try {
-      const { email } = req.body;
-      if (!email) return res.status(400).json({ success: false, message: "Email harus diisi" });
-
-      await authService.forgotPassword(email);
-      return res.json({ success: true, message: "Jika email terdaftar, tautan reset password akan dikirim. Periksa kotak masuk Anda." });
-    } catch (error) {
-      return res.status(500).json({ success: false, message: "Gagal memproses permintaan reset password" });
-    }
-  }
-
-  async resetPassword(req, res) {
-    try {
-      const { token, newPassword } = req.body;
-      if (!token || !newPassword) return res.status(400).json({ success: false, message: "Data tidak lengkap" });
-
-      await authService.resetPassword(token, newPassword);
-      return res.json({ success: true, message: "Kata sandi berhasil diatur ulang. Silakan login." });
-    } catch (error) {
-      return res.status(400).json({ success: false, message: error.message });
-    }
-  }
 }
 
 module.exports = new AuthController();

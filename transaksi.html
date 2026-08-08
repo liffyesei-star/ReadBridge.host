@@ -128,7 +128,7 @@
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#004ac6" />
     <link rel="apple-touch-icon" href="icon-192.png" />
-    <script type="module" src="js/auth/logout.js?v=6"></script>
+    <script src="js/auth.js"></script>
     <script type="module" src="js/ui/header-sync.js?v=6"></script>
     <script src="js/ui/sandbox-warning.js?v=6"></script>
 </head>
@@ -192,7 +192,7 @@
                         <a href="profile.html" class="flex items-center gap-2 px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
                                 <span class="material-symbols-outlined text-[20px]">person</span> Detail Akun
                         </a>
-                        <a href="login.html" class="flex items-center gap-2 px-4 py-3 hover:bg-error/10 transition-colors font-label-md text-label-md text-error border-t border-outline-variant/30 font-bold" onclick="localStorage.removeItem('rb_is_logged_in')">
+                        <a href="login.html" class="flex items-center gap-2 px-4 py-3 hover:bg-error/10 transition-colors font-label-md text-label-md text-error border-t border-outline-variant/30 font-bold" onclick="if(window.Auth){window.Auth.logout(); return false;}">
                             <span class="material-symbols-outlined text-[20px]">logout</span> Log Out
                         </a>
                     </div>
