@@ -18,15 +18,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
-provider.setCustomParameters({
-  prompt: 'select_account'
-});
 
 export async function signInWithGoogle() {
   try {
-    // Pastikan sesi lama dibersihkan agar Firebase tidak salah kirim token akun sebelumnya
-    await auth.signOut();
-    
     const result = await signInWithPopup(auth, provider);
     const token = await result.user.getIdToken();
     return token;
