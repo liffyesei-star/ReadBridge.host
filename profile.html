@@ -1401,16 +1401,36 @@
     document.addEventListener("DOMContentLoaded", function () {
       // ── Dynamic Profile Logic (Read URL Params) ──
       const urlParams = new URLSearchParams(window.location.search);
-      const targetUid = urlParams.get('uid');
-      const targetName = urlParams.get('name');
-      const targetAvatar = urlParams.get('avatar');
+      let targetUid = urlParams.get('uid');
+      let targetName = urlParams.get('name');
+      let targetAvatar = urlParams.get('avatar');
+
+      // Hash fallback just in case some frameworks/routers use hash params
+      if (!targetUid && window.location.hash.includes('uid=')) {
+          try {
+              const hashParams = new URLSearchParams(window.location.hash.substring(window.location.hash.indexOf('?')));
+              targetUid = targetUid || hashParams.get('uid');
+              targetName = targetName || hashParams.get('name');
+              targetAvatar = targetAvatar || hashParams.get('avatar');
+          } catch(e) {}
+      }
 
       let savedName = 'Siswa Indonesia';
       let profileAvatarUrl = 'https://ui-avatars.com/api/?name=Siswa+Indonesia&background=004ac6&color=fff';
       
       window.rb_dynamic_profile_name = null;
 
-      const currentUser = window.Auth ? window.Auth.getUser() : null;
+      let currentUser = window.Auth ? window.Auth.getUser() : null;
+      // Fallback: If rb_user is missing but token exists, decode token
+      if (!currentUser && localStorage.getItem('rb_token')) {
+          try {
+              const tokenStr = localStorage.getItem('rb_token').split('.')[1];
+              if (tokenStr) {
+                  const payload = JSON.parse(atob(tokenStr));
+                  currentUser = payload;
+              }
+          } catch(e) {}
+      }
 
       if (targetUid && targetName) {
           // Viewing someone else's profile
@@ -1425,12 +1445,13 @@
                   window.location.href = `pesan.html?to=${targetUid}&name=${encodeURIComponent(targetName)}`;
               };
           }
-      } else if (currentUser) {
+      } else if (currentUser && (currentUser.nama || currentUser.username)) {
           // Viewing own profile
           savedName = currentUser.nama || currentUser.username || 'Pengguna';
           profileAvatarUrl = currentUser.foto_profil || `https://ui-avatars.com/api/?name=${encodeURIComponent(savedName)}&background=004ac6&color=fff`;
       } else {
-          savedName = localStorage.getItem('rb_username') || 'Siswa Indonesia';
+          // Legacy Fallback
+          savedName = localStorage.getItem('rb_username') || localStorage.getItem('user_name') || 'Siswa Indonesia';
           profileAvatarUrl = localStorage.getItem('rb_profile_pic') || `https://ui-avatars.com/api/?name=${encodeURIComponent(savedName)}&background=004ac6&color=fff`;
       }
       
