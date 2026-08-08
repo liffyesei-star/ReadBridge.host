@@ -48,7 +48,7 @@ class AuthController {
       return res.json({ success: true, message: "Sync berhasil", ...result });
     } catch (error) {
       console.error("Sync Error:", error.message);
-      return res.status(500).json({ success: false, message: "Gagal sinkronisasi data user" });
+      return res.status(500).json({ success: false, message: "Gagal sinkronisasi data user: " + error.message });
     }
   }
 

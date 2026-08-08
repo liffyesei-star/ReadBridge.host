@@ -53,7 +53,7 @@ const verifyFirebaseToken = async (req, res, next) => {
     req.firebaseUser = decoded;
     next();
   } catch (error) {
-    return ApiResponse.unauthorized(res, "Token Firebase tidak valid.");
+    return ApiResponse.unauthorized(res, "Token Firebase tidak valid: " + error.message);
   }
 };
 

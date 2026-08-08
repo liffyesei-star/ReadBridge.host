@@ -57,7 +57,14 @@ export async function syncGoogleToken(firebaseIdToken) {
     method: 'POST',
     headers: { Authorization: `Bearer ${firebaseIdToken}` }
   });
-  if (!res.ok) throw new Error("Sync failed");
+  if (!res.ok) {
+    try {
+      const errData = await res.json();
+      throw new Error(errData.message || "Sync failed");
+    } catch(e) {
+      throw new Error(`Sync failed with status ${res.status}`);
+    }
+  }
   return res.json();
 }
 
