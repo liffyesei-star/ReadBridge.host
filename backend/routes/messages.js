@@ -21,18 +21,8 @@ router.post('/keys', verifyToken, async (req, res) => {
 router.get('/keys/:friendId', verifyToken, async (req, res) => {
     try {
         const friendId = req.params.friendId;
-        
-        // Cek apakah benar-benar teman
-        const [friends] = await db.execute(
-            `SELECT * FROM friends WHERE 
-             ((user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?))
-             AND status = 'accepted'`,
-            [req.user.id, friendId, friendId, req.user.id]
-        );
-
-        if (friends.length === 0) {
-            return res.status(403).json({ success: false, message: 'Bukan teman.' });
-        }
+        // Public key is public, no need to restrict to friends only.
+        // This allows chatting with sellers for transactions even if not friends.
 
         const [users] = await db.execute('SELECT public_key FROM users WHERE id = ?', [friendId]);
         if (users.length === 0 || !users[0].public_key) {
