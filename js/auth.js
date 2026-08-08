@@ -167,7 +167,7 @@ const Auth = {
         throw new Error(data.message || 'Gagal login via Google');
       }
 
-      this.saveSession(data.token, data.user);
+      this.setToken(data.token, data.user);
       return data;
     } catch (error) {
       console.error('API Google Login Error:', error);
