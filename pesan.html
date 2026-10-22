@@ -435,6 +435,20 @@
                 `;
             }
 
+            const initialMessage = urlParams.get('pesan');
+            const bookTitle = urlParams.get('buku');
+            const chatInput = document.getElementById('chat-input-text');
+            if (initialMessage && chatInput) {
+                chatInput.value = decodeURIComponent(initialMessage);
+                setTimeout(() => chatInput.focus(), 300);
+            }
+            if (bookTitle) {
+                const headerDesc = document.querySelector('#chat-active-window p.text-xs');
+                if (headerDesc) {
+                    headerDesc.innerHTML = `<span class="text-primary font-bold">📖 Minat Buku:</span> ${decodeURIComponent(bookTitle)}`;
+                }
+            }
+
             // Close dropdowns on outside click
             document.addEventListener('click', (e) => {
                 const profileMenu = document.getElementById('profile-dropdown');

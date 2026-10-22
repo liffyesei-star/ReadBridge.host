@@ -371,8 +371,7 @@ document.addEventListener("DOMContentLoaded", function () {
     currentActiveTab = selectedTabStr;
 
     // Reset style semua tab
-    [tabBuku, tabBukuDigital, tabTulisan].forEach(tab => {
-      if (!tab) return;
+    [tabBuku, tabBukuDigital, tabTulisan].filter(Boolean).forEach(tab => {
       tab.className = "font-title-lg text-title-lg text-on-surface-variant hover:text-primary transition-colors pb-2 px-2 shrink-0 select-none";
     });
 
@@ -406,11 +405,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (activeElement) {
-      if (selectedTabStr === 'buku-digital') {
-        activeElement.className = "font-title-lg text-title-lg text-primary border-b-2 border-primary pb-2 px-2 shrink-0 flex items-center gap-1 select-none font-bold";
-      } else {
-        activeElement.className = "font-title-lg text-title-lg text-primary border-b-2 border-primary pb-2 px-2 transition-colors shrink-0";
-      }
+      activeElement.className = "font-title-lg text-title-lg text-primary border-b-2 border-primary pb-2 px-2 transition-colors shrink-0 font-bold";
     }
 
     // Ganti Sidebar Filter berdasarkan tab yang aktif
@@ -430,8 +425,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (selectedTabStr === 'buku' && filterBuku) {
       filterBuku.classList.remove('hidden'); filterBuku.classList.add('block');
-    } else if (selectedTabStr === 'buku-digital' && filterEbook) {
-      filterEbook.classList.remove('hidden'); filterEbook.classList.add('block');
     } else if (selectedTabStr === 'tulisan' && filterTulisan) {
       filterTulisan.classList.remove('hidden'); filterTulisan.classList.add('block');
     }
@@ -440,18 +433,11 @@ document.addEventListener("DOMContentLoaded", function () {
     if (searchInput) searchInput.value = "";
 
     // Render ulang data sesuai tab
-    if (selectedTabStr === 'buku-digital') {
-      renderEbooks();
-      updateEbookBannerUI();
-      if (resultMessage) resultMessage.textContent = "Menampilkan E-Book digital eksklusif.";
-    } else {
-      renderData(dataToRender, selectedTabStr);
-    }
+    renderData(dataToRender, selectedTabStr);
   }
 
   // Pasang Event Listener Tab
   if (tabBuku) tabBuku.addEventListener("click", () => switchTab('buku'));
-  if (tabBukuDigital) tabBukuDigital.addEventListener("click", () => switchTab('buku-digital'));
   if (tabTulisan) tabTulisan.addEventListener("click", () => switchTab('tulisan'));
 
 

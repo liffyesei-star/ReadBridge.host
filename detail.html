@@ -239,22 +239,69 @@
         <span class="bg-surface-container text-on-surface-variant font-label-sm text-label-sm px-md py-xs rounded-full border border-surface-variant cursor-pointer hover:bg-surface-container-high hover:text-on-surface transition-colors">Inspiratif</span>
         <span class="bg-surface-container text-on-surface-variant font-label-sm text-label-sm px-md py-xs rounded-full border border-surface-variant cursor-pointer hover:bg-surface-container-high hover:text-on-surface transition-colors">Klasik Indonesia</span>
       </div>
-      <div class="py-md border-y border-outline-variant">
-        <p class="font-label-sm text-label-sm text-on-surface-variant mb-xs">Harga Fisik</p>
-        <p id="detail-price" class="font-headline-lg text-[24px] md:text-headline-lg leading-tight text-primary font-bold">Rp 85.000</p>
+      <!-- Price & Badges -->
+      <div class="py-md border-y border-outline-variant flex flex-col md:flex-row md:items-center justify-between gap-md">
+        <div>
+          <p class="font-label-sm text-label-sm text-on-surface-variant mb-xs">Harga Kesepakatan (Bisa Nego)</p>
+          <p id="detail-price" class="font-headline-lg text-[28px] md:text-headline-lg leading-tight text-primary font-black">Rp 85.000</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <span id="detail-status-badge" class="px-3 py-1 bg-emerald-600/10 text-emerald-700 dark:text-emerald-400 border border-emerald-600/20 font-bold text-xs rounded-full flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span> Tersedia
+          </span>
+          <span id="detail-condition-badge" class="px-3 py-1 bg-surface-container text-on-surface font-semibold text-xs rounded-full border border-outline-variant">
+            Kondisi: Bagus
+          </span>
+          <span id="detail-location-badge" class="px-3 py-1 bg-primary/10 text-primary font-semibold text-xs rounded-full flex items-center gap-1">
+            <span class="material-symbols-outlined text-[15px]">location_on</span> <span id="detail-location-text">Bandung, Jawa Barat</span>
+          </span>
+        </div>
       </div>
-      <div class="flex flex-col sm:flex-row gap-md flex-wrap">
-        <button id="btn-buy" class="bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md px-xl py-md rounded-full transition-colors flex items-center justify-center gap-sm">
-          <span class="material-symbols-outlined">shopping_cart</span> Beli Sekarang
+
+      <!-- Seller Profile Card (FB Marketplace Style) -->
+      <div class="bg-surface-container-low p-md rounded-2xl border border-outline-variant/30 flex flex-col sm:flex-row sm:items-center justify-between gap-md shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold text-lg overflow-hidden shrink-0">
+            <span class="material-symbols-outlined text-[28px]">account_circle</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <h4 id="detail-seller-name" class="font-title-md font-bold text-on-surface">Penjual Komunitas ReadBridge</h4>
+              <span class="material-symbols-outlined text-secondary text-[16px]" title="Terverifikasi">verified</span>
+            </div>
+            <p id="detail-seller-desc" class="text-xs text-on-surface-variant">Penjual Terverifikasi • Respons Cepat • Siap COD di Tempat Umum</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold px-2.5 py-1 bg-surface-container-highest rounded-lg text-on-surface flex items-center gap-1">
+            <span class="material-symbols-outlined text-[15px] text-amber-500 icon-fill">star</span> 4.9 (Seller)
+          </span>
+        </div>
+      </div>
+
+      <!-- C2C Actions: Hubungi Penjual & WhatsApp -->
+      <div class="flex flex-col sm:flex-row gap-3 flex-wrap">
+        <button id="btn-chat-seller" class="bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md px-6 py-3.5 rounded-full transition-all flex items-center justify-center gap-2 font-bold shadow-md transform hover:-translate-y-0.5">
+          <span class="material-symbols-outlined text-[20px]">chat</span> Chat Penjual Sekarang
         </button>
-        <a id="btn-sewa-link" href="perpustakaan.html" class="bg-transparent border border-outline hover:bg-surface-container text-primary font-label-md text-label-md px-xl py-md rounded-full transition-colors flex items-center justify-center gap-sm">
-          <span class="material-symbols-outlined">menu_book</span> <span id="text-sewa-link">Sewa Buku</span>Perpustakaan</a>
-        <button id="btn-save" class="bg-surface-container-lowest border border-outline-variant hover:bg-surface-container text-on-surface font-label-md text-label-md px-xl py-md rounded-full transition-colors flex items-center justify-center gap-sm">
-          <span class="material-symbols-outlined">bookmark_add</span> Simpan
+        <button id="btn-wa-seller" class="bg-emerald-600 hover:bg-emerald-700 text-white font-label-md text-label-md px-6 py-3.5 rounded-full transition-all flex items-center justify-center gap-2 font-bold shadow-md transform hover:-translate-y-0.5">
+          <span class="material-symbols-outlined text-[20px]">send</span> Hubungi via WhatsApp
         </button>
-        <button id="btn-share" class="bg-surface-container-lowest border border-outline-variant hover:bg-surface-container text-on-surface font-label-md text-label-md px-xl py-md rounded-full transition-colors flex items-center justify-center gap-sm">
-          <span class="material-symbols-outlined">share</span> Bagikan
+        <button id="btn-save" class="bg-surface-container-lowest border border-outline-variant hover:bg-surface-container text-on-surface font-label-md text-label-md px-5 py-3 rounded-full transition-colors flex items-center justify-center gap-1.5 font-medium">
+          <span class="material-symbols-outlined text-[18px]">bookmark_add</span> Simpan
         </button>
+        <button id="btn-share" class="bg-surface-container-lowest border border-outline-variant hover:bg-surface-container text-on-surface font-label-md text-label-md px-5 py-3 rounded-full transition-colors flex items-center justify-center gap-1.5 font-medium">
+          <span class="material-symbols-outlined text-[18px]">share</span> Bagikan
+        </button>
+      </div>
+
+      <!-- FB Marketplace Disclaimer Box -->
+      <div class="p-3.5 bg-amber-500/10 border border-amber-500/25 rounded-2xl flex items-start gap-3 text-xs text-on-surface-variant leading-relaxed">
+        <span class="material-symbols-outlined text-amber-600 dark:text-amber-500 text-[22px] shrink-0 mt-0.5">shield</span>
+        <div>
+          <strong class="text-on-surface font-bold block mb-0.5">Perantara Komunitas (C2C) — Tips Aman Bertransaksi:</strong>
+          ReadBridge bertindak murni sebagai etalase perantara listing. Disarankan bertransaksi dengan <strong>ketemu langsung (COD) di tempat umum</strong> atau gunakan jasa ekspedisi terpercaya. Periksa kondisi buku sebelum menyelesaikan pembayaran ke penjual.
+        </div>
       </div>
       <div class="flex flex-col gap-sm mt-md">
         <h3 class="font-title-lg text-title-lg text-on-background">Sinopsis</h3>
@@ -536,23 +583,32 @@
         });
       }
 
-      // Beli / Sewa Sekarang
-      const btnBuy = document.getElementById('btn-buy');
-      const sewaLink = document.getElementById('btn-sewa-link');
-      if (btnBuy) {
-        if (source === 'sewa') {
-          btnBuy.innerHTML = `<span class="material-symbols-outlined">menu_book</span> Sewa Sekarang`;
-          btnBuy.addEventListener('click', () => {
-            window.location.href = `checkout-sewa.html?id=${bookId}&duration=harian`;
-          });
-          if (sewaLink) {
-            sewaLink.innerHTML = `<span class="material-symbols-outlined">arrow_back</span> Kembali ke Sewa`;
-          }
-        } else {
-          btnBuy.addEventListener('click', () => {
-            window.location.href = `checkout.html?id=${bookId}&source=${source || 'marketplace'}${targetBook.isDb ? '&isDb=true' : ''}`;
-          });
-        }
+      // Facebook Marketplace Chat / WhatsApp Action
+      const btnChatSeller = document.getElementById('btn-chat-seller');
+      const btnWaSeller = document.getElementById('btn-wa-seller');
+      
+      const bookTitle = targetBook?.title || 'buku ini';
+      const sellerName = targetBook?.nama_toko || targetBook?.author || 'Penjual';
+      const defaultMsg = encodeURIComponent(`Halo kak ${sellerName}, apakah buku "${bookTitle}" di ReadBridge masih tersedia? Saya berminat.`);
+
+      if (btnChatSeller) {
+        btnChatSeller.addEventListener('click', () => {
+          window.location.href = `pesan.html?pesan=${defaultMsg}&bukuId=${bookId}&buku=${encodeURIComponent(bookTitle)}`;
+        });
+      }
+
+      if (btnWaSeller) {
+        btnWaSeller.addEventListener('click', () => {
+          window.open(`https://wa.me/?text=${defaultMsg}`, '_blank');
+        });
+      }
+
+      // Check if URL has ?action=chat
+      if (urlParams.get('action') === 'chat' && btnChatSeller) {
+        setTimeout(() => {
+          btnChatSeller.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          btnChatSeller.classList.add('ring-4', 'ring-primary/40');
+        }, 500);
       }
 
       // Tulis Review - Toggle Form

@@ -266,37 +266,6 @@
       </div>
 
 
-      <!-- Filter Buku Digital -->
-      <div id="filter-buku-digital" class="filter-section hidden">
-        <div class="mb-lg">
-          <h4 class="font-label-md text-label-md text-on-surface-variant mb-sm">Kategori E-Book</h4>
-          <div class="flex flex-col gap-sm">
-            <label class="flex items-center gap-sm cursor-pointer"><input id="filter-ebook-cat-fiksi" checked class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/><span class="font-body-md text-body-md text-on-surface">Novel & Fiksi</span></label>
-            <label class="flex items-center gap-sm cursor-pointer"><input id="filter-ebook-cat-selfdev" checked class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/><span class="font-body-md text-body-md text-on-surface">Pengembangan Diri</span></label>
-            <label class="flex items-center gap-sm cursor-pointer"><input id="filter-ebook-cat-komik" checked class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/><span class="font-body-md text-body-md text-on-surface">Komik</span></label>
-            <label class="flex items-center gap-sm cursor-pointer"><input id="filter-ebook-cat-sains" checked class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/><span class="font-body-md text-body-md text-on-surface">Sains & Teknologi</span></label>
-            <label class="flex items-center gap-sm cursor-pointer"><input id="filter-ebook-cat-pelajaran" checked class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/><span class="font-body-md text-body-md text-on-surface">Buku Pelajaran</span></label>
-          </div>
-        </div>
-        <div class="mb-lg">
-          <h4 class="font-label-md text-label-md text-on-surface-variant mb-sm">Tipe Akses E-Book</h4>
-          <div class="flex flex-col gap-sm">
-            <label class="flex items-center gap-sm cursor-pointer">
-              <input id="filter-ebook-access-all" checked class="text-primary focus:ring-primary border-outline-variant" name="ebook_access" type="radio" value="all"/>
-              <span class="font-body-md text-body-md text-on-surface">Semua E-Book</span>
-            </label>
-            <label class="flex items-center gap-sm cursor-pointer">
-              <input id="filter-ebook-access-free" class="text-primary focus:ring-primary border-outline-variant" name="ebook_access" type="radio" value="free"/>
-              <span class="font-body-md text-body-md text-on-surface">Akses Gratis (Free)</span>
-            </label>
-            <label class="flex items-center gap-sm cursor-pointer">
-              <input id="filter-ebook-access-premium" class="text-primary focus:ring-primary border-outline-variant" name="ebook_access" type="radio" value="premium"/>
-              <span class="font-body-md text-body-md text-on-surface">Premium Only 👑</span>
-            </label>
-          </div>
-        </div>
-      </div>
-
       <!-- Filter Tulisan -->
       <div id="filter-tulisan" class="filter-section hidden">
         <div class="mb-lg">
@@ -328,7 +297,7 @@
     <div id="hero-search-section" class="bg-surface-container-lowest rounded-xl p-xl flex flex-col items-center justify-center border border-outline-variant/20 shadow-[0_4px_12px_rgba(0,0,0,0.02)] text-center relative overflow-hidden">
       <div class="relative z-10 w-full max-w-2xl">
         <h1 class="font-headline-lg text-[24px] md:text-headline-lg leading-tight text-on-surface mb-sm">Temukan Bacaan dan Tulisan Baru</h1>
-        <p class="font-body-lg text-body-lg text-on-surface-variant mb-lg">Jelajahi buku, buku digital, dan tulisan literasi dari komunitas ReadBridge.</p>
+        <p class="font-body-lg text-body-lg text-on-surface-variant mb-lg">Jelajahi buku dan tulisan literasi dari komunitas ReadBridge.</p>
         <div class="relative w-full shadow-sm rounded-full">
           <span class="material-symbols-outlined absolute left-4 top-4 text-on-surface-variant text-[24px]">search</span>
           <input id="search-input" class="w-full pl-12 pr-32 py-4 bg-surface-container-lowest border-2 border-surface-variant rounded-full text-body-lg focus:outline-none focus:border-primary transition-colors" placeholder="Cari judul, penulis, topik, atau ISBN..." type="text"/>
@@ -339,9 +308,8 @@
 
     <!-- Tabs -->
     <div id="explore-tabs" class="flex border-b border-outline-variant gap-lg overflow-x-auto hide-scrollbar">
-      <button id="tab-buku" class="font-title-lg text-title-lg text-primary border-b-2 border-primary pb-2 px-2 transition-colors shrink-0">Buku</button>
-      <button id="tab-buku-digital" class="font-title-lg text-title-lg text-on-surface-variant hover:text-primary transition-colors pb-2 px-2 shrink-0 select-none">Buku Digital</button>
-      <button id="tab-tulisan" class="font-title-lg text-title-lg text-on-surface-variant hover:text-primary transition-colors pb-2 px-2 shrink-0 select-none">Tulisan</button>
+      <button id="tab-buku" class="font-title-lg text-title-lg text-primary border-b-2 border-primary pb-2 px-2 transition-colors shrink-0 font-bold">Koleksi Buku</button>
+      <button id="tab-tulisan" class="font-title-lg text-title-lg text-on-surface-variant hover:text-primary transition-colors pb-2 px-2 shrink-0 select-none">Tulisan Komunitas</button>
     </div>
 
     <!-- Results -->
@@ -357,61 +325,7 @@
       </div>
     </div>
 
-    <!-- Ebook Section -->
-    <div id="ebook-section" class="hidden flex-col gap-lg animate-fade-in-up">
-      <!-- Premium E-Book Banner -->
-      <div id="ebook-premium-banner" class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 dark:from-slate-950 dark:via-indigo-980 dark:to-slate-950 rounded-2xl p-lg md:p-xl text-white border border-indigo-500/20 shadow-xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
-        <div class="absolute -right-16 -top-16 w-48 h-48 bg-indigo-500/10 rounded-full blur-xl"></div>
-        <div class="absolute -left-16 -bottom-16 w-48 h-48 bg-emerald-500/10 rounded-full blur-xl"></div>
-        <div class="relative z-10 flex flex-col gap-xs max-w-xl">
-          <div class="flex items-center gap-2">
-            <span class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-3 py-1 rounded-full text-xs font-bold tracking-wider inline-flex items-center gap-1 select-none">
-              <span class="material-symbols-outlined text-[14px]">workspace_premium</span> READBRIDGE PREMIUM
-            </span>
-          </div>
-          <h2 id="ebook-banner-title" class="font-headline-lg text-[22px] md:text-headline-lg font-extrabold text-white tracking-tight mt-sm">Unlock Unlimited E-Books with BridgePass 👑</h2>
-          <p id="ebook-banner-desc" class="font-body-md text-[14px] md:text-body-md text-slate-300 leading-relaxed">Nikmati akses membaca sepuasnya untuk ribuan buku digital premium, tulisan komunitas pilihan, perpustakaan sewa, dan hilangkan semua batasan waktu membaca gratis sekarang!</p>
-        </div>
-        <div class="relative z-10 shrink-0 self-stretch md:self-auto flex items-center">
-          <button id="ebook-upgrade-cta-btn" class="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-label-md rounded-full shadow-[0_4px_16px_rgba(245,158,11,0.3)] transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-sm">
-            <span class="material-symbols-outlined font-bold text-[18px]">workspace_premium</span> Upgrade ke Premium
-          </button>
-        </div>
-      </div>
 
-      <!-- Monthly Spotlight Section -->
-      <div id="ebook-monthly-special-section" class="flex flex-col gap-md">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-sm border-b border-outline-variant/30 pb-xs">
-          <div class="flex items-center gap-2 select-none">
-            <span class="material-symbols-outlined text-amber-500 text-[26px]">workspace_premium</span>
-            <h3 class="font-title-lg text-title-lg text-on-surface font-extrabold">E-Book Premium Pilihan Bulan Ini</h3>
-          </div>
-          <div class="flex items-center gap-2 bg-amber-500/10 text-amber-600 dark:text-amber-500 border border-amber-500/20 px-3 py-1.5 rounded-xl font-label-sm text-[12px] font-bold select-none">
-            <span class="material-symbols-outlined text-[16px] animate-pulse-soft">schedule</span>
-            <span>Diperbarui dalam: </span>
-            <span id="monthly-special-timer" class="font-mono tracking-wider font-extrabold text-amber-500">14 Hari 18 Jam 25 Menit 10 Detik</span>
-          </div>
-        </div>
-        <div id="ebook-monthly-grid" class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-          <!-- Monthly specials injected by main.js -->
-        </div>
-      </div>
-
-      <!-- Onboarding Interests Recommendations Section -->
-      <div id="ebook-onboarding-section" class="flex flex-col gap-lg">
-        <!-- Cluster rows injected by main.js -->
-      </div>
-
-      <!-- E-Book Directory Section -->
-      <div id="ebook-directory-section" class="flex flex-col gap-md mt-md">
-        <div class="border-b border-outline-variant/30 pb-xs">
-          <h3 class="font-title-lg text-title-lg text-on-surface font-extrabold">Semua Katalog Buku Digital</h3>
-        </div>
-        <div id="ebook-directory-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter">
-          <!-- Ebooks catalogue injected by main.js -->
-        </div>
-      </div>
-    </div>
 
     <!-- Books Grid -->
     <div id="book-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter">

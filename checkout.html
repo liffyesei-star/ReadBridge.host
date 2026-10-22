@@ -449,20 +449,19 @@
     <script src="main.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // Auth Guard Check: Require login before checkout
-            const token = localStorage.getItem('rb_token');
-            if (!token) {
-                localStorage.setItem('rb_redirect_after_login', window.location.href);
-                alert('Silakan login terlebih dahulu untuk mengakses halaman checkout & transaksi.');
-                window.location.href = 'login.html';
-                return;
-            }
-
-            // URL Params
+            // C2C Direct Intermediary Guard: Redirect to direct chat / detail
             const params = new URLSearchParams(window.location.search);
-            const bookId = parseInt(params.get('id'));
-            const source = params.get('source') || 'main'; // 'main' = buku baru, 'market' = preloved
+            const bookId = params.get('id');
+            const source = params.get('source') || 'main';
             const isDb = params.get('isDb') === 'true';
+
+            alert('ReadBridge kini beralih ke model C2C Marketplace Komunitas tanpa perantara pembayaran langsung. Silakan hubungi penjual langsung via Chat atau WhatsApp.');
+            if (bookId) {
+                window.location.replace(`detail.html?id=${encodeURIComponent(bookId)}&source=${encodeURIComponent(source)}${isDb ? '&isDb=true' : ''}`);
+            } else {
+                window.location.replace('marketplace.html');
+            }
+            return;
 
             const isLocalFrontend = ['localhost', '127.0.0.1'].includes(window.location.hostname);
             const apiBaseUrl = localStorage.getItem('rb_api_base_url') || (isLocalFrontend ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');

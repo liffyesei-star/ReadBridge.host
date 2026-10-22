@@ -23,8 +23,8 @@ const rateLimit = require("express-rate-limit");
 // Import routes
 const authRoutes = require("./routes/auth");
 const bookRoutes = require("./routes/books");
-// Fitur jurnal telah direvoke
-const transactionRoutes = require("./routes/transactions");
+// Fitur transaksi buku dan jurnal telah direvoke — beralih ke model C2C perantara (FB Marketplace)
+// const transactionRoutes = require("./routes/transactions");
 const communityRoutes = require("./routes/community");
 const userRoutes = require("./routes/users");
 const helpdeskRoutes = require("./routes/helpdesk");
@@ -187,7 +187,7 @@ app.use(rateLimit({
 app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
 // app.use("/api/journals", journalRoutes); // Revoked
-app.use("/api/transactions", transactionRoutes);
+// app.use("/api/transactions", transactionRoutes); // Revoked (Beralih ke model C2C Marketplace)
 app.use("/api/community", communityRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/helpdesk", helpdeskRoutes);
@@ -207,7 +207,6 @@ app.get("/", (req, res) => {
     endpoints: {
       auth: "/api/auth",
       books: "/api/books",
-      transactions: "/api/transactions",
       community: "/api/community",
       users: "/api/users",
       helpdesk: "/api/helpdesk",

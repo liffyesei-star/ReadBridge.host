@@ -191,9 +191,29 @@
 
 <!-- Main Content -->
 <main class="flex-grow max-w-[1280px] w-full mx-auto px-4 md:px-margin py-xl flex flex-col gap-lg">
-  <div class="flex items-center gap-md border-b border-outline-variant mb-sm w-full">
-    <button id="tab-beli" class="font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors">Beli Preloved</button>
-    <button id="tab-sewa" class="font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors">Sewa Buku</button>
+  <!-- Facebook Marketplace Style Intermediary Banner -->
+  <div class="bg-gradient-to-r from-primary/10 via-surface-container to-secondary/10 border border-primary/20 rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 rounded-2xl bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-sm">
+        <span class="material-symbols-outlined text-[28px]">storefront</span>
+      </div>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h2 class="font-title-lg text-title-lg font-bold text-on-surface">Marketplace Buku Komunitas</h2>
+          <span class="bg-secondary/15 text-secondary text-[11px] font-bold px-2 py-0.5 rounded-full border border-secondary/20 flex items-center gap-1">
+            <span class="material-symbols-outlined text-[13px]">handshake</span> Perantara Bebas Komisi
+          </span>
+        </div>
+        <p class="font-body-md text-xs md:text-sm text-on-surface-variant mt-1 max-w-2xl leading-relaxed">
+          Temukan buku preloved langsung dari sesama pembaca di kotamu. Hubungi penjual via <strong>Chat ReadBridge</strong> atau <strong>WhatsApp</strong> untuk transaksi COD atau pengiriman langsung tanpa perantara pembayaran platform.
+        </p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 w-full md:w-auto shrink-0">
+      <a id="rb-seller-portal-link" href="buka-toko.html" class="w-full md:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 bg-primary text-on-primary rounded-xl font-label-md text-label-md font-bold hover:bg-primary-container shadow-md transition-all">
+        <span class="material-symbols-outlined text-[20px]">add_box</span> Pasang Iklan Buku
+      </a>
+    </div>
   </div>
 
   <div id="content-beli" class="flex flex-col md:flex-row gap-lg w-full">
@@ -201,10 +221,10 @@
     <aside class="w-full md:w-64 flex-shrink-0">
       <div class="bg-surface-container-lowest rounded-xl p-md border border-surface-container-highest shadow-sm sticky top-24">
         <div class="mb-lg border-b border-outline-variant/20 pb-md flex flex-col gap-xs">
-          <h3 class="font-label-md text-label-md text-on-surface-variant font-bold">Seller Portal</h3>
-          <a id="rb-seller-portal-link" href="buka-toko.html" class="flex items-center justify-center gap-2 w-full py-2.5 bg-primary text-on-primary rounded-xl font-label-md text-label-md hover:bg-primary/95 transition-all shadow-md font-bold">
-            <span class="material-symbols-outlined text-[18px]">add_business</span>
-            Buka Toko
+          <h3 class="font-label-md text-label-md text-on-surface-variant font-bold">Portal Penjual</h3>
+          <a href="dashboard-seller.html" class="flex items-center justify-center gap-2 w-full py-2.5 bg-surface-container text-on-surface hover:bg-surface-container-high rounded-xl font-label-md text-label-md transition-all border border-outline-variant font-bold">
+            <span class="material-symbols-outlined text-[18px]">dashboard</span>
+            Kelola Iklan Saya
           </a>
         </div>
         <h2 class="font-title-lg text-title-lg text-on-surface mb-md font-bold">Filter Pencarian</h2>
@@ -224,12 +244,18 @@
             <button class="condition-filter px-sm py-xs rounded-full border border-outline-variant font-label-sm text-label-sm text-on-surface hover:bg-surface-container-low transition-colors" data-cond="Lecet">Lecet</button>
           </div>
         </div>
-        <div>
-          <h3 class="font-label-md text-label-md text-on-surface-variant mb-sm">Lokasi</h3>
+        <div class="mb-lg">
+          <h3 class="font-label-md text-label-md text-on-surface-variant mb-sm">Lokasi COD / Kota</h3>
           <div class="relative">
             <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline text-sm">location_on</span>
-            <input id="location-input" class="w-full pl-8 pr-sm py-xs rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md outline-none" placeholder="Cari kota..." type="text"/>
+            <input id="location-input" class="w-full pl-8 pr-sm py-xs rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md outline-none" placeholder="Cari kota, misal: Bandung..." type="text"/>
           </div>
+        </div>
+        <div class="p-3 bg-secondary/10 rounded-xl border border-secondary/20 text-xs text-on-surface-variant flex flex-col gap-1.5">
+          <div class="flex items-center gap-1.5 font-bold text-secondary">
+            <span class="material-symbols-outlined text-[18px]">verified_user</span> Transaksi Aman
+          </div>
+          <p class="leading-relaxed">Platform hanya perantara. Utamakan bertemu langsung (COD) di tempat umum atau gunakan kurir terpercaya. Cek kondisi fisik buku sebelum membayar.</p>
         </div>
       </div>
     </aside>
@@ -237,7 +263,7 @@
     <!-- Product Grid -->
     <section class="flex-grow w-full">
       <div class="flex justify-between items-center mb-md">
-        <h1 class="font-headline-lg text-[24px] md:text-headline-lg leading-tight text-on-background">Buku Preloved</h1>
+        <h1 class="font-headline-lg text-[24px] md:text-headline-lg leading-tight text-on-background">Katalog Buku Komunitas</h1>
         <div class="flex items-center gap-sm">
           <span class="font-label-md text-label-md text-on-surface-variant">Urutkan:</span>
           <select id="sort-select" class="rounded-lg border-outline-variant bg-surface-container-lowest font-body-md text-body-md focus:border-primary focus:ring-primary py-xs pl-sm pr-lg outline-none">
@@ -248,29 +274,6 @@
       <div id="marketplace-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter">
         <!-- Rendered by JS -->
       </div>
-    </section>
-  </div>
-
-  <div id="content-sewa" class="flex flex-col gap-lg w-full hidden">
-    <!-- Page Header -->
-    <section class="flex flex-col gap-sm">
-      <h1 class="font-display-lg text-[32px] md:text-display-lg leading-tight text-primary">Sewa Buku</h1>
-      <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
-        Temukan buku bacaan terbaik untuk menemani waktu luangmu. Pilih durasi sewa yang sesuai dengan kebutuhanmu, dari harian hingga bulanan.
-      </p>
-    </section>
-
-    <!-- Filters -->
-    <div class="flex flex-wrap gap-sm mt-sm" id="category-filters">
-      <button class="filter-sewa-btn px-md py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-sm" data-cat="Semua">Semua</button>
-      <button class="filter-sewa-btn px-md py-sm rounded-full bg-surface-container-highest text-on-surface hover:bg-surface-variant font-label-md text-label-md border border-outline-variant transition-colors" data-cat="Fiksi">Fiksi</button>
-      <button class="filter-sewa-btn px-md py-sm rounded-full bg-surface-container-highest text-on-surface hover:bg-surface-variant font-label-md text-label-md border border-outline-variant transition-colors" data-cat="Pengembangan Diri">Pengembangan Diri</button>
-      <button class="filter-sewa-btn px-md py-sm rounded-full bg-surface-container-highest text-on-surface hover:bg-surface-variant font-label-md text-label-md border border-outline-variant transition-colors" data-cat="Sains">Sains</button>
-    </div>
-
-    <!-- Book Grid -->
-    <section id="sewa-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter mt-md">
-      <!-- Rendered by JS -->
     </section>
   </div>
 </main>
@@ -295,10 +298,10 @@
   let selectedConditions = [];
   let selectedSewaCat = 'Semua';
   let apiBooks = [];
-  let apiSewaBooks = [];
+
 
   function formatPrice(p) {
-    return 'Rp ' + p.toLocaleString('id-ID');
+    return 'Rp ' + (p || 0).toLocaleString('id-ID');
   }
 
   async function fetchPrelovedBooks() {
@@ -324,33 +327,6 @@
       }
     } catch (err) {
       console.warn("Failed to fetch preloved books from API:", err);
-    }
-  }
-
-  async function fetchSewaBooks() {
-    try {
-      const isLocalFrontend = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-      const apiBaseUrl = localStorage.getItem('rb_api_base_url') || (isLocalFrontend ? 'http://localhost:5001' : 'https://readbridge-backend-2whx.onrender.com');
-      
-      const response = await fetch(`${apiBaseUrl}/api/books?limit=100`);
-      const data = await response.json();
-      if (data.success && data.data) {
-        const sewaList = data.data.filter(b => b.bisa_sewa === 1 || parseFloat(b.harga_sewa) > 0);
-        apiSewaBooks = sewaList.map(b => ({
-          id: b.id,
-          title: b.judul,
-          author: b.penulis_nama,
-          image: b.cover_url || null,
-          category: b.kategori || 'Fiksi',
-          stock: b.stok || 1,
-          priceHarian: parseFloat(b.harga_sewa) || 2000,
-          priceMingguan: parseFloat(b.harga_sewa) * 5 || 10000,
-          priceBulanan: parseFloat(b.harga_sewa) * 20 || 35000,
-          isDb: true
-        }));
-      }
-    } catch (err) {
-      console.warn("Failed to fetch sewa books from API:", err);
     }
   }
 
@@ -396,25 +372,34 @@
       if (b.condition === 'Lecet') condClass = 'bg-surface-variant text-on-surface';
       
       const detailUrl = b.isDb ? `detail.html?source=marketplace&id=${b.id}&isDb=true` : `detail.html?source=marketplace&id=${b.id}`;
-      const checkoutUrl = b.isDb ? `checkout.html?source=marketplace&id=${b.id}&isDb=true` : `checkout.html?source=market&id=${b.id}`;
+      const chatUrl = b.isDb ? `detail.html?source=marketplace&id=${b.id}&action=chat&isDb=true` : `detail.html?source=marketplace&id=${b.id}&action=chat`;
       
-      return `<article class="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-container overflow-hidden hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-shadow duration-300 flex flex-col h-full animate-fadeIn">
-        <a href="${detailUrl}" class="relative aspect-[3/4] bg-surface-container-low group cursor-pointer block">
+      return `<article class="bg-surface-container-lowest rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-container overflow-hidden hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col h-full animate-fadeIn group">
+        <a href="${detailUrl}" class="relative aspect-[3/4] bg-surface-container-low overflow-hidden cursor-pointer block">
           ${b.image 
             ? `<img alt="Cover ${b.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${b.image}" onerror="this.onerror=null;this.style.display='none';this.parentElement.querySelector('.cover-placeholder').style.display='flex';"/><div class="cover-placeholder w-full h-full absolute inset-0 hidden flex-col items-center justify-center gap-2 bg-gradient-to-br from-surface-container to-surface-container-low text-on-surface-variant"><span class="material-symbols-outlined text-[48px] opacity-40">menu_book</span><span class="text-xs font-medium opacity-50">Tanpa Cover</span></div>`
             : `<div class="w-full h-full flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-surface-container to-surface-container-low text-on-surface-variant"><span class="material-symbols-outlined text-[48px] opacity-40">menu_book</span><span class="text-xs font-medium opacity-50">Tanpa Cover</span></div>`
           }
-          <span class="absolute top-sm right-sm ${condClass} font-label-sm text-label-sm px-2 py-1 rounded-full">${b.condition}</span>
+          <div class="absolute top-2.5 left-2.5 flex items-center gap-1 bg-emerald-600/95 text-white font-label-sm text-[11px] px-2.5 py-0.5 rounded-full shadow-sm font-bold backdrop-blur-sm">
+            <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> Tersedia
+          </div>
+          <span class="absolute top-2.5 right-2.5 ${condClass} font-label-sm text-[11px] px-2.5 py-0.5 rounded-full font-bold shadow-sm backdrop-blur-sm">${b.condition}</span>
         </a>
         <div class="p-md flex flex-col flex-grow">
           <a href="${detailUrl}" class="group"><h3 class="font-title-lg text-title-lg text-on-surface line-clamp-2 mb-xs group-hover:text-primary transition-colors cursor-pointer font-bold">${b.title}</h3></a>
           <p class="font-label-md text-label-md text-on-surface-variant mb-xs">${b.author || 'Penulis'}</p>
-          <p class="font-headline-md text-[20px] md:text-headline-md leading-tight font-bold text-primary mb-sm">${formatPrice(b.price)}</p>
-          <div class="flex items-center gap-xs text-error font-label-sm text-label-sm mb-xs"><span class="material-symbols-outlined text-[16px]">alarm</span><span>Sisa ${b.stock} Buku</span></div>
-          <div class="flex items-center gap-xs text-on-surface-variant mb-md mt-auto"><span class="material-symbols-outlined text-[16px]">location_on</span><span class="font-label-sm text-label-sm">${b.location}</span></div>
-          <div class="flex gap-sm mt-auto">
-            <button onclick="window.location.href='${checkoutUrl}'" class="flex-grow bg-primary text-on-primary font-label-md text-label-md py-sm rounded-full hover:bg-primary-container transition-colors font-bold">Beli</button>
-            <button class="w-10 h-10 flex items-center justify-center border border-outline-variant rounded-full text-primary hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined">chat</span></button>
+          <p class="font-headline-md text-[20px] md:text-headline-md leading-tight font-extrabold text-primary mb-2">${formatPrice(b.price)}</p>
+          <div class="flex items-center gap-1.5 text-on-surface-variant text-xs mb-3 mt-auto">
+            <span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
+            <span class="font-medium">${b.location}</span>
+          </div>
+          <div class="flex gap-2 mt-auto pt-2.5 border-t border-outline-variant/30">
+            <a href="${chatUrl}" class="flex-grow bg-primary text-on-primary font-label-md text-xs py-2 px-3 rounded-xl hover:bg-primary-container transition-all font-bold flex items-center justify-center gap-1.5 shadow-sm text-center">
+              <span class="material-symbols-outlined text-[17px]">chat</span> Chat Penjual
+            </a>
+            <a href="${detailUrl}" class="px-3 py-2 border border-outline-variant rounded-xl text-on-surface hover:bg-surface-container-low transition-colors font-bold text-xs flex items-center justify-center">
+              Detail
+            </a>
           </div>
         </div>
       </article>`;
@@ -425,96 +410,7 @@
     }
   }
 
-  function renderSewa() {
-    const grid = document.getElementById('sewa-grid');
-    if(!grid) return;
-    
-    let filtered = apiSewaBooks.filter(b => selectedSewaCat === 'Semua' || b.category === selectedSewaCat);
-    
-    grid.innerHTML = filtered.map((b, i) => {
-      const isAvailable = b.stock > 0;
-      const statusBadge = isAvailable 
-        ? '<div class="absolute top-sm left-sm px-sm py-xs rounded bg-secondary text-on-secondary font-label-sm text-label-sm shadow-sm">Tersedia</div>'
-        : '<div class="absolute top-sm left-sm px-sm py-xs rounded bg-surface-variant text-on-surface-variant border border-outline-variant font-label-sm text-label-sm shadow-sm">Sedang Dipinjam</div>';
-      const stockBadge = isAvailable 
-        ? `<div class="absolute top-sm right-sm px-sm py-xs rounded bg-surface-container-highest/80 text-on-surface-variant font-label-sm text-label-sm shadow-sm border border-outline-variant">Stok: ${b.stock}</div>`
-        : '<div class="absolute top-sm right-sm px-sm py-xs rounded bg-error-container/80 text-on-error-container font-label-sm text-label-sm shadow-sm border border-outline-variant">Stok: 0</div>';
-      
-      const priceOptions = isAvailable 
-        ? `<div class="mt-auto flex flex-col gap-xs bg-surface-container-low p-sm rounded-lg border border-outline-variant">
-            <div class="flex justify-between items-center">
-              <span class="font-body-md text-body-md text-on-surface">Harga Sewa</span>
-              <span class="font-label-md text-label-md text-primary">Rp ${b.priceHarian.toLocaleString('id-ID')} (IDR) / hari</span>
-            </div>
-          </div>
-          <button onclick="checkoutSewa(${b.id}, ${b.isDb ? 'true' : 'false'})" class="w-full py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container hover:shadow-md transition-all mt-md">Sewa Sekarang</button>`
-        : `<div class="mt-auto flex flex-col gap-xs bg-surface-container p-sm rounded-lg border border-outline-variant opacity-70">
-            <div class="flex justify-between items-center"><span class="font-body-md text-body-md text-outline">Harga Sewa</span><span class="font-label-md text-label-md text-outline">Rp ${b.priceHarian.toLocaleString('id-ID')} (IDR) / hari</span></div>
-          </div>
-          <button class="w-full py-sm rounded-full bg-surface-variant text-on-surface-variant font-label-md text-label-md cursor-not-allowed border border-outline-variant mt-md">Tersedia 12 Okt</button>`;
-      
-      const wrapperClass = isAvailable 
-        ? "bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-container overflow-hidden flex flex-col group hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300 h-full" 
-        : "bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-container overflow-hidden flex flex-col opacity-80 grayscale-[20%] h-full";
-      
-      const detailUrl = b.isDb ? `detail.html?source=sewa&id=${b.id}&isDb=true` : `detail.html?source=sewa&id=${b.id}`;
-
-      return `<article class="${wrapperClass}">
-        <a href="${detailUrl}" class="relative w-full aspect-[3/4] bg-surface-variant overflow-hidden group block cursor-pointer">
-          <img alt="${b.title}" class="w-full h-full object-cover ${isAvailable?'group-hover:scale-105 transition-transform duration-500':''}" src="${b.image}"/>
-          ${statusBadge}
-          ${stockBadge}
-        </a>
-        <div class="p-md flex flex-col flex-grow">
-          <div>
-            <a href="${detailUrl}" class="group"><h3 class="font-title-lg text-title-lg text-on-background line-clamp-2 leading-tight group-hover:text-primary transition-colors cursor-pointer">${b.title}</h3></a>
-            <p class="font-label-md text-label-md text-on-surface-variant mt-xs mb-sm">${b.author || 'Penulis'}</p>
-          </div>
-          ${priceOptions}
-        </div>
-      </article>`;
-    }).join('');
-    
-    if(filtered.length === 0) {
-      grid.innerHTML = '<p class="col-span-full text-center py-xl text-on-surface-variant font-body-lg">Tidak ada buku yang sesuai kategori.</p>';
-    }
-  }
-
-  function checkoutSewa(bookId, isDb = false) {
-    window.location.href = `checkout-sewa.html?id=${bookId}${isDb ? '&isDb=true' : ''}`;
-  }
-
   document.addEventListener('DOMContentLoaded', () => {
-    // Tab Switching Logic
-    const tabBeli = document.getElementById('tab-beli');
-    const tabSewa = document.getElementById('tab-sewa');
-    const contentBeli = document.getElementById('content-beli');
-    const contentSewa = document.getElementById('content-sewa');
-
-    function showBeli() {
-      tabBeli.className = "font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors";
-      tabSewa.className = "font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors";
-      contentBeli.classList.remove('hidden');
-      contentSewa.classList.add('hidden');
-      renderMarketplace();
-    }
-
-    function showSewa() {
-      tabSewa.className = "font-label-md font-bold px-md py-sm border-b-2 border-primary text-primary transition-colors";
-      tabBeli.className = "font-label-md px-md py-sm border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors";
-      contentSewa.classList.remove('hidden');
-      contentBeli.classList.add('hidden');
-      renderSewa();
-    }
-
-    tabBeli.addEventListener('click', showBeli);
-    tabSewa.addEventListener('click', showSewa);
-
-    // Initial check for hash
-    if (window.location.hash === '#sewa') {
-      showSewa();
-    }
-
     // Marketplace Listeners
     document.getElementById('search-input')?.addEventListener('input', renderMarketplace);
     document.getElementById('location-input')?.addEventListener('input', renderMarketplace);
@@ -535,37 +431,10 @@
       });
     });
 
-    // Sewa Listeners
-    document.querySelectorAll('.filter-sewa-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        selectedSewaCat = e.target.dataset.cat;
-        
-        // Update styling
-        document.querySelectorAll('.filter-sewa-btn').forEach(b => {
-          b.className = "filter-sewa-btn px-md py-sm rounded-full bg-surface-container-highest text-on-surface hover:bg-surface-variant font-label-md text-label-md border border-outline-variant transition-colors";
-        });
-        e.target.className = "filter-sewa-btn px-md py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-sm";
-        
-        renderSewa();
-      });
-    });
-    
     fetchPrelovedBooks().then(() => {
-      if (window.location.hash !== '#sewa') {
-        renderMarketplace();
-      }
-    });
-    fetchSewaBooks().then(() => {
-      if (window.location.hash === '#sewa') {
-        renderSewa();
-      }
-    });
-
-    if (window.location.hash === '#sewa') {
-      showSewa();
-    } else {
       renderMarketplace();
-    }
+    });
+    renderMarketplace();
   });
 </script>
 

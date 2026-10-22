@@ -239,7 +239,7 @@
               <span class="font-label-md text-label-md text-primary">Rp ${b.priceHarian.toLocaleString('id-ID')} (IDR) / hari</span>
             </div>
           </div>
-          <button onclick="checkoutSewa(${b.id})" class="w-full py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container hover:shadow-md transition-all mt-md">Sewa Sekarang</button>`
+          <button onclick="checkoutSewa(${b.id})" class="w-full py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container hover:shadow-md transition-all mt-md flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[18px]">chat</span> Hubungi Pemilik</button>`
         : `<div class="mt-auto flex flex-col gap-xs bg-surface-container p-sm rounded-lg border border-outline-variant opacity-70">
             <div class="flex justify-between items-center"><span class="font-body-md text-body-md text-outline">Harga Sewa</span><span class="font-label-md text-label-md text-outline">Rp ${b.priceHarian.toLocaleString('id-ID')} (IDR) / hari</span></div>
           </div>
@@ -289,7 +289,7 @@
   });
 
   function checkoutSewa(bookId) {
-    window.location.href = `checkout-sewa.html?id=${bookId}`;
+    window.location.href = `detail.html?source=sewa&id=${bookId}`;
   }
 </script>
 

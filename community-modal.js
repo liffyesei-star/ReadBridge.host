@@ -2546,18 +2546,11 @@ function renderBookRecommendations() {
               </div>
               
               <div class="flex flex-wrap items-center gap-2">
-                ${rec.digitalReadAvailable ? `
-                  <button onclick="window.readDigitalBookSimulator('${rec.title.replace(/'/g, "\\'")}')" class="px-4 py-2 bg-green-500 text-white rounded-full font-bold font-label-sm text-[12px] hover:bg-green-600 transition-colors shadow-sm flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[16px]">menu_book</span> Baca E-Book
-                  </button>
-                ` : ''}
-                ${rec.rentAvailable ? `
-                  <a href="checkout-sewa.html?title=${encodeURIComponent(rec.title)}&author=${encodeURIComponent(rec.author)}&price=${encodeURIComponent(rec.rentPrice || 'Rp 15.000')}&cover=${encodeURIComponent(rec.cover)}" class="px-4 py-2 bg-primary text-on-primary rounded-full font-bold font-label-sm text-[12px] hover:bg-primary-container transition-colors shadow-sm flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[16px]">bookmark_add</span> Sewa
-                  </a>
-                ` : ''}
-                <a href="checkout.html?title=${encodeURIComponent(rec.title)}&author=${encodeURIComponent(rec.author)}&price=${encodeURIComponent(rec.buyPrice)}&cover=${encodeURIComponent(rec.cover)}" class="px-4 py-2 bg-surface-container border border-outline-variant rounded-full font-bold font-label-sm text-[12px] text-on-surface hover:bg-surface-container-high transition-colors flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px]">shopping_cart</span> Beli (${rec.buyPrice})
+                <a href="marketplace.html?q=${encodeURIComponent(rec.title)}" class="px-4 py-2 bg-primary text-on-primary rounded-full font-bold font-label-sm text-[12px] hover:bg-primary-container transition-colors shadow-sm flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px]">storefront</span> Cari di Marketplace
+                </a>
+                <a href="pesan.html?buku=${encodeURIComponent(rec.title)}&pesan=${encodeURIComponent('Halo, apakah ada yang memiliki atau menjual buku ' + rec.title + '?')}" class="px-4 py-2 bg-surface-container border border-outline-variant rounded-full font-bold font-label-sm text-[12px] text-on-surface hover:bg-surface-container-high transition-colors flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px]">chat</span> Tanya Komunitas
                 </a>
               </div>
             </div>
