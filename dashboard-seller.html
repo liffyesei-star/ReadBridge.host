@@ -171,17 +171,27 @@
                 </div>
                 <div class="flex flex-col">
                     <h1 id="shop-name" class="text-2xl font-bold text-on-surface">Memuat Toko...</h1>
-                    <div class="flex items-center gap-xs mt-1 text-on-surface-variant">
-                        <span class="material-symbols-outlined text-sm">location_on</span>
-                        <span id="shop-location" class="text-xs font-semibold">Memuat lokasi...</span>
+                    <div class="flex flex-wrap items-center gap-2 mt-1 text-on-surface-variant">
+                        <span class="flex items-center gap-xs text-xs font-semibold">
+                            <span class="material-symbols-outlined text-sm text-primary">location_on</span>
+                            <span id="shop-location">Memuat lokasi...</span>
+                        </span>
+                        <span id="shop-wa-badge" class="hidden items-center gap-1 text-xs font-bold text-emerald-600 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                            <span class="material-symbols-outlined text-[14px]">call</span> WA: <span id="shop-wa-text"></span>
+                        </span>
                     </div>
                     <p id="shop-desc" class="text-xs text-on-surface-variant mt-2 max-w-xl">Memuat deskripsi...</p>
                 </div>
             </div>
             
-            <button id="btn-open-modal" class="bg-primary text-on-primary font-bold px-lg py-sm rounded-full hover:bg-primary/95 transition-all shadow-md flex items-center gap-xs relative z-10">
-                <span class="material-symbols-outlined text-[18px]">add_circle</span> Tambah Buku Preloved
-            </button>
+            <div class="flex items-center gap-2 flex-wrap relative z-10">
+                <button id="btn-edit-toko" class="border border-outline-variant bg-surface text-on-surface font-bold px-4 py-2.5 rounded-full hover:bg-surface-container transition-all flex items-center gap-xs text-xs shadow-sm">
+                    <span class="material-symbols-outlined text-[16px] text-emerald-600">settings</span> Pengaturan Toko & WA
+                </button>
+                <button id="btn-open-modal" class="bg-primary text-on-primary font-bold px-5 py-2.5 rounded-full hover:bg-primary/95 transition-all shadow-md flex items-center gap-xs text-xs">
+                    <span class="material-symbols-outlined text-[18px]">add_circle</span> Tambah Buku Preloved
+                </button>
+            </div>
         </section>
 
         <!-- Stats Grid -->
@@ -375,6 +385,17 @@
                 </div>
 
                 <div class="flex flex-col gap-xs">
+                    <label for="book_no_wa" class="text-xs font-bold text-on-surface">Nomor WhatsApp untuk Buku Ini (Opsional)</label>
+                    <div class="relative flex items-center">
+                        <span class="absolute left-3 text-on-surface-variant flex items-center">
+                            <span class="material-symbols-outlined text-[18px] text-emerald-600">call</span>
+                        </span>
+                        <input type="tel" id="book_no_wa" placeholder="Contoh: 081234567890 (Biarkan kosong jika mengikuti nomor toko)" class="w-full p-3 pl-10 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm"/>
+                    </div>
+                    <span class="text-[10px] text-on-surface-variant">Jika diisi, calon pembeli akan langsung diarahkan ke nomor ini di WhatsApp.</span>
+                </div>
+
+                <div class="flex flex-col gap-xs">
                     <label for="deskripsi" class="text-xs font-bold text-on-surface">Catatan / Deskripsi Buku</label>
                     <textarea id="deskripsi" placeholder="Tuliskan ulasan singkat kondisi fisik buku (misal: halaman lengkap, tidak basah)" class="p-3 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm resize-none" rows="3"></textarea>
                 </div>
@@ -387,6 +408,61 @@
                 <button type="submit" id="btn-save" class="w-full py-3 bg-primary text-on-primary rounded-full font-bold hover:bg-primary/95 transition-all shadow-md mt-sm flex items-center justify-center gap-1">
                     <span class="material-symbols-outlined text-[20px]">save</span> Simpan Produk
                 </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Toko & WA Modal -->
+    <div id="edit-toko-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden" aria-modal="true" role="dialog">
+        <div id="edit-toko-backdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div class="relative bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col animate-fadeIn">
+            <div class="bg-primary p-lg text-on-primary flex items-center justify-between">
+                <div class="flex items-center gap-sm">
+                    <span class="material-symbols-outlined text-2xl">storefront</span>
+                    <div>
+                        <h2 class="text-lg font-bold">Pengaturan Toko & WhatsApp</h2>
+                        <p class="text-[11px] opacity-80">Perbarui profil toko dan kontak WhatsApp untuk calon pembeli</p>
+                    </div>
+                </div>
+                <button id="btn-close-edit-toko" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            </div>
+            <form id="edit-toko-form" class="p-lg flex flex-col gap-md max-h-[75vh] overflow-y-auto">
+                <div class="flex flex-col gap-xs">
+                    <label for="edit_nama_toko" class="text-xs font-bold text-on-surface">Nama Toko <span class="text-error">*</span></label>
+                    <input type="text" id="edit_nama_toko" required class="p-3 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm"/>
+                </div>
+                <div class="flex flex-col gap-xs">
+                    <label for="edit_lokasi" class="text-xs font-bold text-on-surface">Lokasi Kota <span class="text-error">*</span></label>
+                    <input type="text" id="edit_lokasi" required class="p-3 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm"/>
+                </div>
+                <div class="flex flex-col gap-xs">
+                    <label for="edit_no_wa" class="text-xs font-bold text-on-surface">Nomor WhatsApp Seller (Opsional)</label>
+                    <div class="relative flex items-center">
+                        <span class="absolute left-3 text-on-surface-variant flex items-center">
+                            <span class="material-symbols-outlined text-[18px] text-emerald-600">call</span>
+                        </span>
+                        <input type="tel" id="edit_no_wa" placeholder="Contoh: 081234567890 atau 6281234567890" class="w-full p-3 pl-10 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm"/>
+                    </div>
+                    <span class="text-[10px] text-on-surface-variant">Jika dicantumkan, pembeli di marketplace dapat langsung chat Anda via WhatsApp. Jika dikosongkan, tombol WhatsApp akan otomatis disembunyikan.</span>
+                </div>
+                <div class="flex flex-col gap-xs">
+                    <label for="edit_deskripsi" class="text-xs font-bold text-on-surface">Deskripsi Toko</label>
+                    <textarea id="edit_deskripsi" rows="3" placeholder="Deskripsi jenis buku yang dijual..." class="p-3 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm resize-none"></textarea>
+                </div>
+                <div class="flex flex-col gap-xs">
+                    <label for="edit_foto_toko" class="text-xs font-bold text-on-surface">URL Logo / Cover Toko</label>
+                    <input type="url" id="edit_foto_toko" placeholder="https://domain.com/logo.png" class="p-3 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm"/>
+                </div>
+                <div id="edit-toko-error" class="text-xs text-error font-semibold hidden flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]">error</span>
+                    <span id="edit-toko-error-msg">Terjadi kesalahan</span>
+                </div>
+                <div class="flex justify-end gap-2 pt-2 border-t border-outline-variant/30">
+                    <button type="button" id="btn-cancel-edit-toko" class="px-5 py-2.5 rounded-full border border-outline-variant text-on-surface-variant font-bold text-xs hover:bg-surface-container transition-colors">Batal</button>
+                    <button type="submit" id="btn-save-edit-toko" class="px-6 py-2.5 rounded-full bg-primary text-on-primary font-bold text-xs hover:bg-primary/95 transition-all shadow-md">Simpan Perubahan</button>
+                </div>
             </form>
         </div>
     </div>
@@ -483,6 +559,17 @@
                     document.getElementById('shop-name').textContent = currentToko.nama_toko;
                     document.getElementById('shop-location').textContent = currentToko.lokasi;
                     document.getElementById('shop-desc').textContent = currentToko.deskripsi || 'Belum ada deskripsi toko.';
+
+                    const waBadge = document.getElementById('shop-wa-badge');
+                    const waText = document.getElementById('shop-wa-text');
+                    if (currentToko.no_wa) {
+                        waText.textContent = currentToko.no_wa;
+                        waBadge.classList.remove('hidden');
+                        waBadge.classList.add('inline-flex');
+                    } else {
+                        waBadge.classList.add('hidden');
+                        waBadge.classList.remove('inline-flex');
+                    }
                     
                     if (currentToko.foto_toko) {
                         const iconWrapper = document.getElementById('shop-icon').parentElement;
@@ -750,6 +837,8 @@
                         finalCoverUrl = uploadData.url; // URL permanen Cloudinary CDN
                     }
 
+                    const book_no_wa = document.getElementById('book_no_wa')?.value.trim() || null;
+
                     btnSave.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> Mendaftarkan Buku...';
                     const response = await fetch(`${apiBaseUrl}/api/books`, {
                         method: 'POST',
@@ -766,6 +855,7 @@
                             harga_beli,
                             stok,
                             kondisi,
+                            no_wa: book_no_wa,
                             tipe_buku: 'preloved',
                             bisa_beli: 1,
                             bisa_sewa: 0,
@@ -789,6 +879,77 @@
                 } finally {
                     btnSave.disabled = false;
                     btnSave.innerHTML = originalBtnText;
+                }
+            });
+
+            // Edit Toko Modal Toggler
+            const editTokoModal = document.getElementById('edit-toko-modal');
+            const btnEditToko = document.getElementById('btn-edit-toko');
+            const btnCloseEditToko = document.getElementById('btn-close-edit-toko');
+            const btnCancelEditToko = document.getElementById('btn-cancel-edit-toko');
+            const editTokoBackdrop = document.getElementById('edit-toko-backdrop');
+            const editTokoForm = document.getElementById('edit-toko-form');
+            const editTokoErr = document.getElementById('edit-toko-error');
+            const editTokoErrMsg = document.getElementById('edit-toko-error-msg');
+
+            function openEditTokoModal() {
+                if (!currentToko) return;
+                document.getElementById('edit_nama_toko').value = currentToko.nama_toko || '';
+                document.getElementById('edit_lokasi').value = currentToko.lokasi || '';
+                document.getElementById('edit_no_wa').value = currentToko.no_wa || '';
+                document.getElementById('edit_deskripsi').value = currentToko.deskripsi || '';
+                document.getElementById('edit_foto_toko').value = currentToko.foto_toko || '';
+                editTokoErr.classList.add('hidden');
+                editTokoModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeEditTokoModal() {
+                editTokoModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+
+            btnEditToko?.addEventListener('click', openEditTokoModal);
+            btnCloseEditToko?.addEventListener('click', closeEditTokoModal);
+            btnCancelEditToko?.addEventListener('click', closeEditTokoModal);
+            editTokoBackdrop?.addEventListener('click', closeEditTokoModal);
+
+            editTokoForm?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                editTokoErr.classList.add('hidden');
+                const btnSaveEdit = document.getElementById('btn-save-edit-toko');
+                const origText = btnSaveEdit.innerHTML;
+                btnSaveEdit.disabled = true;
+                btnSaveEdit.innerHTML = '<span class="material-symbols-outlined animate-spin text-[16px]">progress_activity</span> Menyimpan...';
+
+                try {
+                    const nama_toko = document.getElementById('edit_nama_toko').value.trim();
+                    const lokasi = document.getElementById('edit_lokasi').value.trim();
+                    const no_wa = document.getElementById('edit_no_wa').value.trim() || null;
+                    const deskripsi = document.getElementById('edit_deskripsi').value.trim();
+                    const foto_toko = document.getElementById('edit_foto_toko').value.trim();
+
+                    const response = await fetch(`${apiBaseUrl}/api/toko`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ nama_toko, lokasi, no_wa, deskripsi, foto_toko })
+                    });
+                    const data = await response.json();
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.message || 'Gagal memperbarui toko');
+                    }
+                    alert('Profil toko dan WhatsApp berhasil diperbarui!');
+                    closeEditTokoModal();
+                    loadToko();
+                } catch (err) {
+                    editTokoErrMsg.textContent = err.message;
+                    editTokoErr.classList.remove('hidden');
+                } finally {
+                    btnSaveEdit.disabled = false;
+                    btnSaveEdit.innerHTML = origText;
                 }
             });
 

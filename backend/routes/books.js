@@ -98,8 +98,9 @@ router.get("/", optionalAuth, async (req, res) => {
               b.bisa_beli, b.bisa_sewa, b.bisa_gratis, b.rating, b.total_ulasan,
               b.total_terjual, b.halaman, b.bahasa, b.tahun_terbit, b.tags,
               b.tipe_buku, b.kondisi, b.stok, b.lokasi, b.toko_id,
+              COALESCE(b.no_wa, t.no_wa) AS no_wa,
               k.nama AS kategori, k.slug AS kategori_slug,
-              t.nama_toko
+              t.nama_toko, t.lokasi AS lokasi_toko
        FROM buku b
        LEFT JOIN kategori k ON b.kategori_id = k.id
        LEFT JOIN toko t ON b.toko_id = t.id
@@ -135,7 +136,7 @@ router.get("/", optionalAuth, async (req, res) => {
 router.get("/:id", optionalAuth, async (req, res) => {
   try {
     const [rows] = await db.execute(
-      `SELECT b.*, k.nama AS kategori, k.slug AS kategori_slug, t.nama_toko, t.lokasi AS lokasi_toko, t.foto_toko
+      `SELECT b.*, COALESCE(b.no_wa, t.no_wa) AS no_wa, k.nama AS kategori, k.slug AS kategori_slug, t.nama_toko, t.lokasi AS lokasi_toko, t.foto_toko, t.no_wa AS no_wa_toko
        FROM buku b
        LEFT JOIN kategori k ON b.kategori_id = k.id
        LEFT JOIN toko t ON b.toko_id = t.id
@@ -203,8 +204,9 @@ router.post("/", verifyToken, async (req, res) => {
 
     let toko_id = null;
     let finalLokasi = lokasi || null;
+    let finalNoWa = req.body.no_wa || null;
     if (tipe_buku === "preloved" || tipe_buku === "fisik") {
-      const [toko] = await db.execute("SELECT id, lokasi FROM toko WHERE user_id = ?", [req.user.id]);
+      const [toko] = await db.execute("SELECT id, lokasi, no_wa FROM toko WHERE user_id = ?", [req.user.id]);
       if (!toko.length) {
         return res.status(400).json({ success: false, message: "Anda harus membuat toko terlebih dahulu untuk menjual buku fisik/preloved." });
       }
@@ -212,14 +214,17 @@ router.post("/", verifyToken, async (req, res) => {
       if (!finalLokasi) {
         finalLokasi = toko[0].lokasi;
       }
+      if (!finalNoWa && toko[0].no_wa) {
+        finalNoWa = toko[0].no_wa;
+      }
     }
 
     const [result] = await db.execute(
       `INSERT INTO buku (judul, slug, penulis_id, penulis_nama, kategori_id, deskripsi,
         cover_url, file_url, harga_beli, harga_sewa, bisa_beli, bisa_sewa, bisa_gratis,
         halaman, bahasa, tahun_terbit, isbn, tags,
-        toko_id, tipe_buku, kondisi, stok, lokasi)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        toko_id, tipe_buku, kondisi, stok, lokasi, no_wa)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         judul, slug, req.user.id, penulis_nama, kategori_id || null, deskripsi || null,
         cover_url || null, file_url || null,
@@ -227,7 +232,7 @@ router.post("/", verifyToken, async (req, res) => {
         bisa_beli ?? 1, bisa_sewa ?? 1, bisa_gratis ?? 0,
         halaman || 0, bahasa || "Indonesia", tahun_terbit || null, isbn || null,
         tags ? JSON.stringify(tags) : null,
-        toko_id, tipe_buku || 'digital', kondisi || null, stok || 1, finalLokasi
+        toko_id, tipe_buku || 'preloved', kondisi || null, stok || 1, finalLokasi, finalNoWa
       ]
     );
 
@@ -259,7 +264,7 @@ router.put("/:id", verifyToken, async (req, res) => {
 
     const fields = ["judul", "penulis_nama", "kategori_id", "deskripsi", "cover_url", "file_url",
       "harga_beli", "harga_sewa", "bisa_beli", "bisa_sewa", "bisa_gratis", "halaman", "bahasa", "tahun_terbit", "isbn", "tags",
-      "tipe_buku", "kondisi", "stok", "lokasi"];
+      "tipe_buku", "kondisi", "stok", "lokasi", "no_wa"];
     
     const updates = [];
     const values = [];

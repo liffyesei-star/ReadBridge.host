@@ -322,12 +322,25 @@
           location: b.lokasi || 'Indonesia',
           price: parseFloat(b.harga_beli) || 0,
           date: b.created_at || '2024-05-01',
+          no_wa: b.no_wa || null,
           isDb: true
         }));
       }
     } catch (err) {
       console.warn("Failed to fetch preloved books from API:", err);
     }
+  }
+
+  function formatWhatsAppNumber(phone) {
+    if (!phone) return null;
+    let cleaned = String(phone).replace(/\D/g, '');
+    if (!cleaned) return null;
+    if (cleaned.startsWith('0')) {
+      cleaned = '62' + cleaned.slice(1);
+    } else if (cleaned.startsWith('8')) {
+      cleaned = '62' + cleaned;
+    }
+    return cleaned.length >= 8 ? cleaned : null;
   }
 
   function renderMarketplace() {
@@ -344,6 +357,23 @@
     const hasPriceFilter = priceCheck1 || priceCheck2 || priceCheck3;
     
     const combinedBooks = [...apiBooks];
+
+    if (combinedBooks.length === 0) {
+      grid.innerHTML = `
+        <div class="col-span-full py-16 px-4 flex flex-col items-center justify-center text-center">
+          <div class="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-4 shadow-inner">
+            <span class="material-symbols-outlined text-4xl">storefront</span>
+          </div>
+          <h3 class="text-xl font-bold text-on-surface mb-2">Katalog Buku Komunitas Masih Kosong</h3>
+          <p class="text-on-surface-variant max-w-md text-sm mb-6 leading-relaxed">Semua katalog lama telah dibersihkan. Jadilah yang pertama menjual buku fisik / preloved Anda langsung ke sesama anggota komunitas!</p>
+          <a href="buka-toko.html" class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-on-primary font-bold rounded-full text-sm shadow-md hover:bg-primary-container transition-all">
+            <span class="material-symbols-outlined text-[18px]">add_business</span> Buka Toko & Jual Buku
+          </a>
+        </div>
+      `;
+      return;
+    }
+
     let filtered = combinedBooks.filter(b => {
       if (searchVal && !b.title.toLowerCase().includes(searchVal)) return false;
       if (locVal && !b.location.toLowerCase().includes(locVal)) return false;
@@ -373,6 +403,8 @@
       
       const detailUrl = b.isDb ? `detail.html?source=marketplace&id=${b.id}&isDb=true` : `detail.html?source=marketplace&id=${b.id}`;
       const chatUrl = b.isDb ? `detail.html?source=marketplace&id=${b.id}&action=chat&isDb=true` : `detail.html?source=marketplace&id=${b.id}&action=chat`;
+      const formattedWa = formatWhatsAppNumber(b.no_wa);
+      const waMsg = encodeURIComponent(`Halo, apakah buku "${b.title}" di ReadBridge masih tersedia?`);
       
       return `<article class="bg-surface-container-lowest rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-container overflow-hidden hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col h-full animate-fadeIn group">
         <a href="${detailUrl}" class="relative aspect-[3/4] bg-surface-container-low overflow-hidden cursor-pointer block">
@@ -397,6 +429,11 @@
             <a href="${chatUrl}" class="flex-grow bg-primary text-on-primary font-label-md text-xs py-2 px-3 rounded-xl hover:bg-primary-container transition-all font-bold flex items-center justify-center gap-1.5 shadow-sm text-center">
               <span class="material-symbols-outlined text-[17px]">chat</span> Chat Penjual
             </a>
+            ${formattedWa ? `
+            <a href="https://wa.me/${formattedWa}?text=${waMsg}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white font-label-md text-xs py-2 px-3 rounded-xl transition-all font-bold flex items-center justify-center gap-1 shadow-sm shrink-0" title="Hubungi via WhatsApp">
+              <span class="material-symbols-outlined text-[16px]">send</span> WA
+            </a>
+            ` : ''}
             <a href="${detailUrl}" class="px-3 py-2 border border-outline-variant rounded-xl text-on-surface hover:bg-surface-container-low transition-colors font-bold text-xs flex items-center justify-center">
               Detail
             </a>

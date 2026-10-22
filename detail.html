@@ -469,6 +469,7 @@
             condition: b.kondisi || 'Bagus',
             location: b.lokasi || b.lokasi_toko || 'Indonesia',
             nama_toko: b.nama_toko || null,
+            no_wa: b.no_wa || b.no_wa_toko || null,
             tipe_buku: b.tipe_buku,
             isDb: true
           };
@@ -597,10 +598,36 @@
         });
       }
 
+      // WhatsApp Direct Link Logic
+      const btnWaSeller = document.getElementById('btn-wa-seller');
+      const waNumberRaw = targetBook?.no_wa;
+
+      function formatWhatsAppNumber(phone) {
+        if (!phone) return null;
+        let cleaned = String(phone).replace(/\D/g, ''); // strip non-numeric
+        if (!cleaned) return null;
+        if (cleaned.startsWith('0')) {
+          cleaned = '62' + cleaned.slice(1);
+        } else if (cleaned.startsWith('8')) {
+          cleaned = '62' + cleaned;
+        }
+        return cleaned.length >= 8 ? cleaned : null;
+      }
+
+      const formattedWa = formatWhatsAppNumber(waNumberRaw);
+
       if (btnWaSeller) {
-        btnWaSeller.addEventListener('click', () => {
-          window.open(`https://wa.me/?text=${defaultMsg}`, '_blank');
-        });
+        if (formattedWa) {
+          btnWaSeller.style.display = 'inline-flex';
+          btnWaSeller.classList.remove('hidden');
+          btnWaSeller.addEventListener('click', () => {
+            window.open(`https://wa.me/${formattedWa}?text=${defaultMsg}`, '_blank');
+          });
+        } else {
+          // Jika seller tidak mencantumkan nomor WhatsApp, tombol otomatis disembunyikan
+          btnWaSeller.style.display = 'none';
+          btnWaSeller.classList.add('hidden');
+        }
       }
 
       // Check if URL has ?action=chat
