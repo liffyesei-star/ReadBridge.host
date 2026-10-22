@@ -23,7 +23,7 @@ const rateLimit = require("express-rate-limit");
 // Import routes
 const authRoutes = require("./routes/auth");
 const bookRoutes = require("./routes/books");
-const journalRoutes = require("./routes/journals");
+// Fitur jurnal telah direvoke
 const transactionRoutes = require("./routes/transactions");
 const communityRoutes = require("./routes/community");
 const userRoutes = require("./routes/users");
@@ -186,7 +186,7 @@ app.use(rateLimit({
 // =============================================
 app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
-app.use("/api/journals", journalRoutes);
+// app.use("/api/journals", journalRoutes); // Revoked
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/community", communityRoutes);
 app.use("/api/users", userRoutes);
@@ -207,7 +207,6 @@ app.get("/", (req, res) => {
     endpoints: {
       auth: "/api/auth",
       books: "/api/books",
-      journals: "/api/journals",
       transactions: "/api/transactions",
       community: "/api/community",
       users: "/api/users",
