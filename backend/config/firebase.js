@@ -29,12 +29,12 @@ if (!admin.apps.length) {
           clientX509CertUrl: process.env.FIREBASE_CLIENT_CERT_URL,
         }),
       });
-      console.log("✅ Firebase Admin SDK initialized");
+      console.log(" Firebase Admin SDK initialized");
     } else {
-      console.log("⚠️ Firebase Admin SDK di-skip (kredensial kosong di .env)");
+      console.log(" Firebase Admin SDK di-skip (kredensial kosong di .env)");
     }
   } catch (error) {
-    console.error("⚠️ Firebase Admin SDK gagal diinisialisasi (abaikan jika menggunakan login lokal):", error.message);
+    console.error(" Firebase Admin SDK gagal diinisialisasi (abaikan jika menggunakan login lokal):", error.message);
   }
 }
 

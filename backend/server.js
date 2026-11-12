@@ -200,7 +200,7 @@ app.use("/api/messages", messageRoutes);
 app.get("/", (req, res) => {
   res.json({
     success: true,
-    message: "📚 ReadBridge API berjalan",
+    message: " ReadBridge API berjalan",
     version: "1.0.0",
     timestamp: new Date().toISOString(),
     database: db.isReady() ? "connected" : "connecting",
@@ -222,7 +222,7 @@ app.use("*", (req, res) => {
 
 // Error handler global
 app.use((err, req, res, next) => {
-  console.error("❌ Unhandled error:", err.message);
+  console.error(" Unhandled error:", err.message);
   res.status(err.status || 500).json({
     success: false,
     message: process.env.NODE_ENV === "production" ? "Terjadi kesalahan server" : err.message,
@@ -233,9 +233,9 @@ app.use((err, req, res, next) => {
 // START SERVER
 // =============================================
 server.listen(PORT, () => {
-  console.log(`\n🚀 ReadBridge Backend & Socket.IO berjalan di http://localhost:${PORT}`);
-  console.log(`📦 Environment: ${process.env.NODE_ENV || "development"}`);
-  console.log(`📋 Dokumentasi API: http://localhost:${PORT}/\n`);
+  console.log(`\n ReadBridge Backend & Socket.IO berjalan di http://localhost:${PORT}`);
+  console.log(` Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(` Dokumentasi API: http://localhost:${PORT}/\n`);
 });
 
 module.exports = { app, server };

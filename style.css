@@ -47,8 +47,8 @@
   --color-background:       #F8FAFC;
   --color-on-background:    #0F172A;
   --color-on-surface:       #0F172A;
-  --color-on-surface-variant: #64748B;
-  --color-outline:          #94A3B8;
+  --color-on-surface-variant: #475569;
+  --color-outline:          #64748B;
   --color-outline-variant:  #CBD5E1;
 
   /* Error */
@@ -676,4 +676,18 @@ button {
 .dark #sidebar-tab-detail span,
 .dark .bg-primary-container span {
   color: var(--color-on-primary) !important;
+}
+
+
+/* ============================================================
+   WCAG AA Contrast & Star Icon Remediation
+   ============================================================ */
+html:not(.dark) .text-slate-300,
+html:not(.dark) .text-slate-400,
+html:not(.dark) .text-gray-400 {
+  color: #475569 !important;
+}
+
+.material-symbols-outlined.text-tertiary-container {
+  color: #F59E0B !important;
 }

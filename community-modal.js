@@ -45,7 +45,7 @@ const ALL_CLUBS = {
     iconBg: 'bg-primary-container text-on-primary-container',
     cover: 'fiksi_cover.png',
     avatar: 'fiksi_icon.png',
-    link: 'club-pecinta-fiksi.html',
+    link: 'club.html?id=pecinta-fiksi',
     desc: 'Grup diskusi santai untuk pencinta novel, cerpen, fiksi ilmiah, fantasi, hingga sastra klasik. Tempat terbaik berbagi review buku fiksi.',
     members: '2,810',
     membersCount: 2810
@@ -202,7 +202,7 @@ function getActiveClub() {
   const searchParams = new URLSearchParams(window.location.search);
   const id = searchParams.get('id');
 
-  if (path.includes('club-pecinta-fiksi.html') || id === 'pecinta-fiksi') {
+  if (path.includes('club.html?id=pecinta-fiksi') || id === 'pecinta-fiksi') {
     return ALL_CLUBS['pecinta-fiksi'];
   }
   if (id && ALL_CLUBS[id]) {
@@ -220,32 +220,32 @@ window.activeTrendingTag = 'Semua';
 const TOPIC_DETAILS = {
   '#UTBK2024': {
     title: '#UTBK2024',
-    stats: '5.4k Postingan • Sangat Populer 🔥',
+    stats: '5.4k Postingan • Sangat Populer ',
     desc: 'Topik seputar persiapan ujian masuk perguruan tinggi negeri tahun 2024. Berisi latihan soal, informasi jadwal, tips belajar mandiri, dan sharing seputar jurusan impian.'
   },
   '#UTBK': {
     title: '#UTBK',
-    stats: '4.8k Postingan • Populer 🔥',
+    stats: '4.8k Postingan • Populer ',
     desc: 'Semua hal seputar UTBK SNBT, materi tes potensi kognitif, penalaran matematika, dan literasi bahasa.'
   },
   '#ReviewBuku': {
     title: '#ReviewBuku',
-    stats: '3.2k Postingan • Populer 🔥',
+    stats: '3.2k Postingan • Populer ',
     desc: 'Ulasan jujur, rekomendasi, dan bedah isi buku fiksi maupun non-fiksi oleh anggota komunitas.'
   },
   '#FiksiRemaja': {
     title: '#FiksiRemaja',
-    stats: '1.8k Postingan • Menanjak 📈',
+    stats: '1.8k Postingan • Menanjak ',
     desc: 'Kumpulan diskusi seputar cerita romansa remaja, novel fiksi sekolah, dan persahabatan.'
   },
   '#Fiksi': {
     title: '#Fiksi',
-    stats: '2.5k Postingan • Populer 🔥',
+    stats: '2.5k Postingan • Populer ',
     desc: 'Diskusi novel fantasi, sci-fi, fiksi sejarah, dan karya-karya fiksi imajinatif lainnya.'
   },
   '#Sastra': {
     title: '#Sastra',
-    stats: '1.5k Postingan • Menanjak 📈',
+    stats: '1.5k Postingan • Menanjak ',
     desc: 'Apresiasi puisi, prosa klasik, novel sastra pemenang penghargaan, dan analisis gaya kepenulisan.'
   }
 };
@@ -359,7 +359,7 @@ const defaultPosts = [
     role: 'Master Tutor',
     isCurrentUser: false,
     waktu: '1 jam yang lalu',
-    judul: '🔥 [Eksklusif] Rangkuman Literasi Bahasa Indonesia & Bocoran Soal HOTS SNBT 2024',
+    judul: ' [Eksklusif] Rangkuman Literasi Bahasa Indonesia & Bocoran Soal HOTS SNBT 2024',
     isi: 'Halo para pejuang SNBT 2024! Sebagai tutor literasi kalian di ReadBridge, bapak membagikan rangkuman materi penting serta latihan soal HOTS Literasi Bahasa Indonesia yang sering keluar di tryout maupun UTBK asli. Tetap semangat, masa depan menanti kalian di PTN impian!',
     tags: ['#UTBK', '#LiterasiIndo', '#TryoutSNBT'],
     votes: 4520,
@@ -368,7 +368,7 @@ const defaultPosts = [
     commentsList: [
       { username: '@SiswaIndonesia', text: 'Wah makasih banyak Pak Agus! Rangkumannya lengkap banget, ngebantu buat review cepat sebelum TO besok.', waktu: '30 menit yang lalu' },
       { username: '@Ambiskuh', text: 'Keren pak, latihan soal HOTS-nya ada pembahasannya juga!', waktu: '20 menit yang lalu' },
-      { username: '@CalonMaba', text: 'Terima kasih banyak pak, semoga jadi amal jariyah 🙏', waktu: '10 menit yang lalu' }
+      { username: '@CalonMaba', text: 'Terima kasih banyak pak, semoga jadi amal jariyah ', waktu: '10 menit yang lalu' }
     ]
   }
 ];
@@ -820,7 +820,7 @@ window.sharePost = async function (id) {
     if (navigator.clipboard) {
       await navigator.clipboard.writeText(shareUrl);
     }
-    showToastNotification('🔗 Link diskusi berhasil disalin!', 'link');
+    showToastNotification(' Link diskusi berhasil disalin!', 'link');
     
     if (token) {
       fetch(`${API_BASE}/api/community/diskusi/${id}/share`, {
@@ -931,7 +931,7 @@ window.addComment = async function (id) {
     });
 
     if (res.ok) {
-      showToastNotification('💬 Komentar berhasil ditambahkan!');
+      showToastNotification(' Komentar berhasil ditambahkan!');
     } else {
       showToastNotification('Gagal menambahkan komentar.', 'error');
     }
@@ -980,7 +980,7 @@ window.toggleClubJoin = function (clubId) {
   } else {
     joined.push(clubId);
     localStorage.setItem('rb_joined_clubs', JSON.stringify(joined));
-    showToastNotification(`Selamat! Anda berhasil bergabung dengan klub ${ALL_CLUBS[clubId].name} 🎉`);
+    showToastNotification(`Selamat! Anda berhasil bergabung dengan klub ${ALL_CLUBS[clubId].name} `);
   }
 
   // Refresh all UI elements dynamically
@@ -1924,7 +1924,7 @@ function setupModalLogic() {
       });
 
       if (res.ok) {
-        showToastNotification('✅ Diskusi berhasil diposting!', 'check_circle');
+        showToastNotification(' Diskusi berhasil diposting!', 'check_circle');
         apiPostsFetched = false;
         await renderAllPosts();
 
@@ -2115,7 +2115,7 @@ window.showTrendingTopicDetail = function (tagName) {
 
   const detail = TOPIC_DETAILS[tagName] || {
     title: tagName,
-    stats: 'Baru & Populer 🔥',
+    stats: 'Baru & Populer ',
     desc: `Ruang diskusi komunitas yang berfokus pada topik hangat ${tagName}. Cari tahu apa yang dipikirkan pengguna lain.`
   };
 
@@ -2727,7 +2727,7 @@ window.submitBookRecommendation = function (event) {
   renderBookRecommendations();
 
   // Tampilkan toast keberhasilan
-  showToastNotification('📚 Rekomendasi buku berhasil diterbitkan!', 'menu_book');
+  showToastNotification(' Rekomendasi buku berhasil diterbitkan!', 'menu_book');
 
   // Reset input form
   document.getElementById('rec-input-judul').value = '';
@@ -3011,7 +3011,7 @@ function initBuatClubModal() {
 
   openBtn?.addEventListener('click', () => {
     const token = localStorage.getItem('rb_token');
-    if (!token) { showToast('⚠️ Login terlebih dahulu untuk membuat club.', 'warning'); return; }
+    if (!token) { showToast(' Login terlebih dahulu untuk membuat club.', 'warning'); return; }
     openModal();
   });
   closeBtn?.addEventListener('click', closeModal);
@@ -3094,7 +3094,7 @@ function initBuatClubModal() {
       if (!json.success) throw new Error(json.message);
 
       closeModal();
-      showToast('🎉 Club berhasil dibuat!', 'success');
+      showToast(' Club berhasil dibuat!', 'success');
 
       // Redirect ke halaman club baru
       setTimeout(() => {
@@ -3159,7 +3159,7 @@ function initInviteCodeModal() {
       const json = await res.json();
       if (!json.success) throw new Error(json.message);
       closeInvite();
-      showToast('🎉 Berhasil bergabung ke club!', 'success');
+      showToast(' Berhasil bergabung ke club!', 'success');
       setTimeout(() => window.location.href = `club-detail.html?id=${_pendingInviteClubId}`, 1200);
     } catch (err) {
       errEl.textContent = err.message || 'Kode undangan tidak valid.';
@@ -3338,7 +3338,7 @@ function initJoinByIdModal() {
       document.getElementById('preview-club-icon').src = iconUrl;
       document.getElementById('preview-club-nama').textContent = c.nama;
       document.getElementById('preview-club-kategori').textContent = c.kategori || 'Kategori Umum';
-      document.getElementById('preview-club-members').textContent = `👥 ${c.total_anggota || 0} Anggota`;
+      document.getElementById('preview-club-members').textContent = ` ${c.total_anggota || 0} Anggota`;
       document.getElementById('preview-club-desc').textContent = c.deskripsi || 'Tidak ada deskripsi.';
 
       const badgeEl = document.getElementById('preview-club-privacy-badge');
@@ -3409,7 +3409,7 @@ function initJoinByIdModal() {
       if (!json.success) throw new Error(json.message);
 
       closeModal();
-      showToast(`🎉 ${json.message || 'Berhasil bergabung ke club!'}`, 'success');
+      showToast(` ${json.message || 'Berhasil bergabung ke club!'}`, 'success');
       setTimeout(() => {
         window.location.href = `club-detail.html?id=${json.data.id || _foundClubData.id}`;
       }, 1000);

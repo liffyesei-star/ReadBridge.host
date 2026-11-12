@@ -1,3 +1,9 @@
+const rateLimit = require("express-rate-limit");
+const aiRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { success: false, message: "Terlalu banyak permintaan ke asisten AI. Silakan coba lagi beberapa saat." }
+});
 const express = require("express");
 const router = express.Router();
 

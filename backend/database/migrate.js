@@ -12,7 +12,7 @@ const path = require("path");
 const db = require("../config/db");
 
 const runMigration = async () => {
-  console.log("🚀 Memulai migrasi skema database...");
+  console.log(" Memulai migrasi skema database...");
   try {
     const schemaPath = path.join(__dirname, "schema.sql");
     const schemaSql = fs.readFileSync(schemaPath, "utf8");
@@ -28,7 +28,7 @@ const runMigration = async () => {
       .map(s => s.trim())
       .filter(s => s.length > 0);
 
-    console.log(`📋 Terdeteksi ${statements.length} pernyataan SQL. Menjalankan satu per satu...`);
+    console.log(` Terdeteksi ${statements.length} pernyataan SQL. Menjalankan satu per satu...`);
 
     for (let i = 0; i < statements.length; i++) {
       const stmt = statements[i];
@@ -36,14 +36,14 @@ const runMigration = async () => {
         await db.execute(stmt);
       } catch (err) {
         // Jika tabel sudah ada atau drop gagal, log sebagai warning saja
-        console.warn(`⚠️ Warning pada pernyataan #${i + 1}: ${err.message}`);
+        console.warn(` Warning pada pernyataan #${i + 1}: ${err.message}`);
       }
     }
 
-    console.log("✅ Skema database berhasil dimigrasikan ke cloud Aiven!");
+    console.log(" Skema database berhasil dimigrasikan ke cloud Aiven!");
     process.exit(0);
   } catch (err) {
-    console.error("❌ Migrasi skema gagal:", err.message);
+    console.error(" Migrasi skema gagal:", err.message);
     process.exit(1);
   }
 };

@@ -240,7 +240,7 @@
 </head>
 <body class="text-on-background min-h-screen flex flex-col font-body-md">
 <!-- TopNavBar -->
-<nav class="docked full-width top-0 z-50 bg-surface dark:bg-on-background shadow-sm">
+<nav class="sticky top-0 w-full top-0 z-50 bg-surface dark:bg-on-background shadow-sm">
 <div class="flex justify-between items-center w-full px-4 md:px-margin py-sm max-w-[1280px] mx-auto">
 <div class="flex items-center gap-lg">
 <a class="font-headline-md text-[20px] md:text-headline-md leading-tight font-bold text-primary dark:text-primary-fixed-dim" href="index.html">
@@ -313,7 +313,7 @@
 <div class="absolute top-0 right-0 w-32 h-32 bg-primary-fixed-dim rounded-full blur-3xl opacity-20 -mr-10 -mt-10 pointer-events-none"></div>
 <div class="flex justify-between items-center mb-lg">
 <h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-sm">
-<span class="material-symbols-outlined text-tertiary-container" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+<span class="material-symbols-outlined text-amber-500" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
                                 Top Readers This Week
                             </h2>
 <button class="text-primary font-label-sm text-label-sm hover:underline">Lihat Semua</button>
@@ -322,7 +322,7 @@
 <!-- Rank 1 -->
 <div class="flex items-center justify-between p-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
 <div class="flex items-center gap-md">
-<div class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-tertiary-container font-bold">1</div>
+<div class="w-8 h-8 flex items-center justify-center font-title-lg text-title-lg text-amber-500 font-bold">1</div>
 <img alt="Rank 1 Avatar" class="w-12 h-12 rounded-full border-2 border-tertiary-container object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYSATplkSy0hzVu5GLHcXic-9UEdLZlD-r97dqSDHJLry8Fy_xJsqGoqfybvAE1KqAdWqhrNfMbpeqjRdQgaXtP_25qeVBakpNpLuCpEyd-yD6ZjCm72eFUlypkk-FW2VcuslBvHXGKxFgoxeTr0HINf47TZfw7Zu9FK56xaWDAUCIO5g1v_oyz4-YQLK1_QCczsUNRqY8-o_41OZz9QhPSv05vt6YbhMinHTMVKMKDZy15DKrjHSe7A5dbmEaoZGoqISuD6i4NGQ"/>
 <div>
 <p class="font-label-md text-label-md text-on-surface">Siti Rahma</p>
@@ -439,7 +439,7 @@
 <div class="bg-surface-container-highest dark:bg-inverse-surface rounded-xl p-lg sticky top-[96px]">
 <div class="flex justify-between items-center mb-md">
 <h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-sm">
-<span class="material-symbols-outlined text-tertiary-container">task_alt</span>
+<span class="material-symbols-outlined text-amber-500">task_alt</span>
                                 Daily Quests
                             </h2>
 <span class="bg-primary-container text-on-primary-container font-label-sm text-label-sm px-2 py-1 rounded-full">3 / 4 Done</span>
@@ -515,78 +515,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
-<script id="dynamic-logo-menu">
-document.addEventListener("DOMContentLoaded", function() {
-    // Inject Logo Menu
-    const headerOrNav = document.querySelector('header, nav');
-    if (headerOrNav && !document.getElementById('logo-menu-container')) {
-        const treeWalker = document.createTreeWalker(headerOrNav, NodeFilter.SHOW_TEXT, {
-            acceptNode: function(node) {
-                return node.nodeValue.trim() === 'ReadBridge' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
-            }
-        });
-        const logoTextNode = treeWalker.nextNode();
-        if (logoTextNode) {
-            const logoEl = logoTextNode.parentElement;
-            
-            if (logoEl.id === 'logo-btn' || logoEl.querySelector('#logo-btn')) return;
 
-            const wrapper = document.createElement('div');
-            wrapper.style.position = 'relative';
-            wrapper.style.display = 'inline-flex';
-            wrapper.style.alignItems = 'center';
-            wrapper.style.cursor = 'pointer';
-            wrapper.id = 'logo-menu-container';
-            
-            logoEl.parentNode.insertBefore(wrapper, logoEl);
-            wrapper.appendChild(logoEl);
-            
-            logoEl.id = 'logo-btn';
-            logoEl.style.display = 'flex';
-            logoEl.style.alignItems = 'center';
-            logoEl.style.gap = '4px';
-            logoEl.innerHTML = 'ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>';
-            
-            const dropdown = document.createElement('div');
-            dropdown.id = 'logo-dropdown';
-            dropdown.className = 'absolute left-0 top-full mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50';
-            
-            const links = [
-                { href: 'index.html', icon: 'home', text: 'Beranda' },
-                { href: 'eksplor.html', icon: 'library_books', text: 'Eksplor Koleksi' },
-                { href: 'sewa.html', icon: 'menu_book', text: 'Perpustakaan & Sewa' },
-                { href: 'marketplace.html', icon: 'storefront', text: 'Marketplace' },
-                { href: 'komunitas.html', icon: 'forum', text: 'Komunitas' },
-                { href: 'profile.html#leaderboard', icon: 'emoji_events', text: 'Leaderboard & Quests' },
-                { href: 'tentang-kami.html', icon: 'info', text: 'Tentang Kami' }
-            ];
-            
-            links.forEach(l => {
-                const a = document.createElement('a');
-                a.href = l.href;
-                a.className = 'px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-[14px] text-on-surface flex items-center gap-3 font-medium';
-                a.innerHTML = `<span class="material-symbols-outlined text-[20px] text-on-surface-variant">${l.icon}</span> ${l.text}`;
-                dropdown.appendChild(a);
-            });
-            
-            wrapper.appendChild(dropdown);
-            
-            logoEl.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                dropdown.classList.toggle('hidden');
-                dropdown.classList.toggle('flex');
-            });
-            document.addEventListener('click', (e) => {
-                if (!dropdown.contains(e.target) && !logoEl.contains(e.target)) {
-                    dropdown.classList.add('hidden');
-                    dropdown.classList.remove('flex');
-                }
-            });
-        }
-    }
-});
-</script>
 
 <!-- PWA Service Worker Registration + Auto-Update Banner -->
     <script>
@@ -632,7 +561,7 @@ document.addEventListener("DOMContentLoaded", function() {
           'font-weight:600','animation:slideUp .3s ease','white-space:nowrap'
         ].join(';');
         banner.innerHTML = `
-          <span style="font-size:18px">🚀</span>
+          <span style="font-size:18px"></span>
           <span>Versi terbaru tersedia!</span>
           <button onclick="applyUpdate()" style="background:#3b82f6;color:#fff;border:none;padding:6px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px">Perbarui</button>
           <button onclick="this.parentElement.remove()" style="background:transparent;color:#94a3b8;border:none;cursor:pointer;font-size:18px;line-height:1;padding:0 4px">&times;</button>
@@ -655,6 +584,7 @@ document.addEventListener("DOMContentLoaded", function() {
       _swStyle.textContent = '@keyframes slideUp{from{opacity:0;transform:translate(-50%,20px)}to{opacity:1;transform:translate(-50%,0)}}';
       document.head.appendChild(_swStyle);
     </script>
-  <script src="profile-modal.js"></script>
+  
+  <script type="module" src="js/ui/header-sync.js?v=7"></script>
 </body>
 </html>

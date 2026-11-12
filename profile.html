@@ -344,7 +344,7 @@
 
 <body class="font-body-md text-body-md antialiased min-h-screen flex flex-col">
   <!-- TopNavBar -->
-  <nav class="bg-surface dark:bg-on-background shadow-sm docked full-width top-0 z-50">
+  <nav class="bg-surface dark:bg-on-background shadow-sm sticky top-0 w-full top-0 z-50">
     <div class="flex justify-between items-center w-full px-4 md:px-margin py-sm max-w-[1280px] mx-auto">
       <!-- Brand -->
       <div class="flex items-center gap-sm">
@@ -479,7 +479,7 @@
         </a>
         <a class="flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all"
           href="javascript:void(0)" onclick="window.showLevelModal()">
-          <span class="material-symbols-outlined text-tertiary-container" data-icon="military_tech">military_tech</span>
+          <span class="material-symbols-outlined text-amber-500" data-icon="military_tech">military_tech</span>
           Current Level
         </a>
         <a class="flex items-center gap-md px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high rounded-lg font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all"
@@ -553,7 +553,7 @@
                     <span>Level Explorer</span>
                   </h3>
                   <span id="level-rank-pill" class="text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                    🟢 TINGKAT 1
+                     TINGKAT 1
                   </span>
                 </div>
               </div>
@@ -635,7 +635,7 @@
               <div class="flex items-center gap-2 mb-1">
                 <h3 class="font-title-lg text-lg font-bold text-white">Reading Streak</h3>
                 <span id="streak-tier-badge" class="text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-sm transition-all duration-300 bg-cyan-500/20 text-cyan-400 border border-cyan-500/40">
-                  🔵 Cosmic Blue
+                   Cosmic Blue
                 </span>
               </div>
               <p id="streak-tier-desc" class="font-body-md text-xs text-slate-300">40 Hari Konsisten Membaca!</p>
@@ -671,11 +671,11 @@
             <!-- Tier Filter Tabs -->
             <div class="flex items-center gap-1.5 overflow-x-auto pb-3 mb-md no-scrollbar">
               <button onclick="filterAchievementTier('all')" data-tier="all" class="ach-filter-btn px-3 py-1.5 rounded-full text-xs font-bold bg-primary text-white shadow-sm transition-all shrink-0">Semua (12)</button>
-              <button onclick="filterAchievementTier('special')" data-tier="special" class="ach-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high transition-all shrink-0">⚪ Special</button>
-              <button onclick="filterAchievementTier('rare')" data-tier="rare" class="ach-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high transition-all shrink-0">🔵 Rare</button>
-              <button onclick="filterAchievementTier('epic')" data-tier="epic" class="ach-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high transition-all shrink-0">💜 Epic</button>
-              <button onclick="filterAchievementTier('legendary')" data-tier="legendary" class="ach-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high transition-all shrink-0">🟡 Legendary</button>
-              <button onclick="filterAchievementTier('mythic')" data-tier="mythic" class="ach-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high transition-all shrink-0">🌌 Mythic</button>
+              <button onclick="filterAchievementTier('special')" data-tier="special" class="ach-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high transition-all shrink-0"> Special</button>
+              <button onclick="filterAchievementTier('rare')" data-tier="rare" class="ach-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high transition-all shrink-0"> Rare</button>
+              <button onclick="filterAchievementTier('epic')" data-tier="epic" class="ach-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high transition-all shrink-0"> Epic</button>
+              <button onclick="filterAchievementTier('legendary')" data-tier="legendary" class="ach-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high transition-all shrink-0"> Legendary</button>
+              <button onclick="filterAchievementTier('mythic')" data-tier="mythic" class="ach-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high transition-all shrink-0"> Mythic</button>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-md" id="achievements-grid">
@@ -1243,12 +1243,12 @@
 
     // --- Achievements Database (Categorized by Tier Ranks) ---
     const ACHIEVEMENTS_DATA = [
-      // ⚪ SPECIAL TIER
+      //  SPECIAL TIER
       {
         id: 'early_bird',
         name: 'Penjelajah Pagi',
         tier: 'special',
-        tierName: '⚪ SPECIAL',
+        tierName: ' SPECIAL',
         desc: 'Buka ReadBridge di pagi hari sebelum jam 9 pagi.',
         icon: 'wb_sunny',
         target: 1,
@@ -1260,7 +1260,7 @@
         id: 'community_starter',
         name: 'Suara Komunitas',
         tier: 'special',
-        tierName: '⚪ SPECIAL',
+        tierName: ' SPECIAL',
         desc: 'Tulis atau lontarkan gagasan pertama Anda di komunitas.',
         icon: 'campaign',
         target: 1,
@@ -1269,12 +1269,12 @@
         action: () => { window.closeAchModal(); window.location.href = 'komunitas.html'; }
       },
 
-      // 🔵 RARE TIER
+      //  RARE TIER
       {
         id: 'bookworm',
         name: 'Pustakawan Setia',
         tier: 'rare',
-        tierName: '🔵 RARE',
+        tierName: ' RARE',
         desc: 'Selesaikan transaksi sewa atau beli minimal 3 buku di marketplace.',
         icon: 'menu_book',
         target: 3,
@@ -1286,7 +1286,7 @@
         id: 'active_contributor',
         name: 'Diskusi Aktif',
         tier: 'rare',
-        tierName: '🔵 RARE',
+        tierName: ' RARE',
         desc: 'Tulis minimal 5 diskusi atau komentar bermakna di komunitas.',
         icon: 'forum',
         target: 5,
@@ -1298,7 +1298,7 @@
         id: 'genre_explorer',
         name: 'Eksplorasi Minat',
         tier: 'rare',
-        tierName: '🔵 RARE',
+        tierName: ' RARE',
         desc: 'Simpan preferensi 3 kategori minat membaca di menu Pengaturan.',
         icon: 'explore',
         target: 3,
@@ -1307,12 +1307,12 @@
         action: () => { window.closeAchModal(); window.location.href = 'pengaturan.html'; }
       },
 
-      // 💜 EPIC TIER
+      //  EPIC TIER
       {
         id: 'wealthy_reader',
         name: 'Kolektor Utama',
         tier: 'epic',
-        tierName: '💜 EPIC',
+        tierName: ' EPIC',
         desc: 'Belanja transaksi sewa/beli buku di atas nominal Rp 100.000.',
         icon: 'savings',
         target: 100000,
@@ -1324,7 +1324,7 @@
         id: 'streak_master',
         name: 'Api Ungu Membara',
         tier: 'epic',
-        tierName: '💜 EPIC',
+        tierName: ' EPIC',
         desc: 'Mencapai konsistensi reading streak minimal 15 hari beruntun.',
         icon: 'local_fire_department',
         target: 15,
@@ -1336,7 +1336,7 @@
         id: 'premium_scholar',
         name: 'Anggota Premium',
         tier: 'epic',
-        tierName: '💜 EPIC',
+        tierName: ' EPIC',
         desc: 'Upgrade status keanggotaan Anda ke BridgePass Premium.',
         icon: 'workspace_premium',
         target: 1,
@@ -1345,12 +1345,12 @@
         action: () => { window.closeAchModal(); document.getElementById('open-bridgepass-modal')?.click(); }
       },
 
-      // 🟡 LEGENDARY TIER
+      //  LEGENDARY TIER
       {
         id: 'streak_god',
         name: 'Safir Kosmis 30 Hari',
         tier: 'legendary',
-        tierName: '🟡 LEGENDARY',
+        tierName: ' LEGENDARY',
         desc: 'Pertahankan 30 hari reading streak untuk membakar Api Biru Kosmis.',
         icon: 'bolt',
         target: 30,
@@ -1362,7 +1362,7 @@
         id: 'grand_librarian',
         name: 'Grand Master Literasi',
         tier: 'legendary',
-        tierName: '🟡 LEGENDARY',
+        tierName: ' LEGENDARY',
         desc: 'Miliki koleksi total minimal 10 buku sewa/beli di perpustakaan.',
         icon: 'auto_stories',
         target: 10,
@@ -1371,12 +1371,12 @@
         action: () => { window.closeAchModal(); window.location.href = 'perpustakaan.html'; }
       },
 
-      // 🌌 MYTHIC TIER
+      //  MYTHIC TIER
       {
         id: 'stoic_scholar',
         name: 'Cendekia Cendekiawan',
         tier: 'mythic',
-        tierName: '🌌 MYTHIC',
+        tierName: ' MYTHIC',
         desc: 'Capai Level Scholar 14+ dan kumpulkan minimal 2.000 XP.',
         icon: 'psychology',
         target: 2000,
@@ -1388,7 +1388,7 @@
         id: 'readbridge_titan',
         name: 'Dewa ReadBridge',
         tier: 'mythic',
-        tierName: '🌌 MYTHIC',
+        tierName: ' MYTHIC',
         desc: 'Raih 50 hari Reading Streak dan miliki BridgePass Premium.',
         icon: 'diamond',
         target: 50,
@@ -2033,7 +2033,7 @@
         }
         if (levelRankPill) {
           levelRankPill.className = "inline-block text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/40 whitespace-nowrap";
-          levelRankPill.textContent = "🟡 TINGKAT 4";
+          levelRankPill.textContent = " TINGKAT 4";
         }
         if (roadmapLineFill) roadmapLineFill.style.width = "100%";
       } else if (currentLevelName === 'Thinker') {
@@ -2044,7 +2044,7 @@
         }
         if (levelRankPill) {
           levelRankPill.className = "inline-block text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-purple-500/20 text-purple-400 border border-purple-500/40 whitespace-nowrap";
-          levelRankPill.textContent = "💜 TINGKAT 3";
+          levelRankPill.textContent = " TINGKAT 3";
         }
         if (roadmapLineFill) roadmapLineFill.style.width = "70%";
       } else if (currentLevelName === 'Reader') {
@@ -2055,7 +2055,7 @@
         }
         if (levelRankPill) {
           levelRankPill.className = "inline-block text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 whitespace-nowrap";
-          levelRankPill.textContent = "🔵 TINGKAT 2";
+          levelRankPill.textContent = " TINGKAT 2";
         }
         if (roadmapLineFill) roadmapLineFill.style.width = "40%";
       } else {
@@ -2067,7 +2067,7 @@
         }
         if (levelRankPill) {
           levelRankPill.className = "inline-block text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 whitespace-nowrap";
-          levelRankPill.textContent = "🟢 TINGKAT 1";
+          levelRankPill.textContent = " TINGKAT 1";
         }
         if (roadmapLineFill) roadmapLineFill.style.width = "15%";
       }
@@ -2274,7 +2274,7 @@
 
             <div class="mt-3 pt-2 border-t border-outline-variant/20 flex items-center justify-between">
               <span class="text-[10px] font-bold ${isUnlocked ? 'text-green-500 dark:text-green-400' : 'text-slate-400'}">
-                ${isUnlocked ? '✅ Terbuka' : '🔒 Terkunci'}
+                ${isUnlocked ? ' Terbuka' : ' Terkunci'}
               </span>
               <span class="text-[10px] font-bold text-primary dark:text-cyan-400">
                 ${isUnlocked ? '100%' : Math.min(99, Math.round((ach.current/ach.target)*100)) + '%'}
@@ -2313,32 +2313,32 @@
 
       // Determine Flame Evolution Tier based on streak count
       let tierClass = 'flame-tier-1';
-      let tierName = '🔥 Ember Flame';
+      let tierName = ' Ember Flame';
       let tierBadgeBg = 'bg-orange-500/20 text-orange-400 border border-orange-500/40';
       let glowBg = 'bg-orange-500';
       let descText = 'Awal dari kebiasaan membaca yang hebat!';
 
       if (streakCount >= 50) {
         tierClass = 'flame-tier-5';
-        tierName = '🟢 Godlike Emerald';
+        tierName = ' Godlike Emerald';
         tierBadgeBg = 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-[0_0_12px_rgba(16,185,129,0.4)]';
         glowBg = 'bg-emerald-500';
         descText = 'Tingkat Legendaris Tertinggi! Disiplin membacamu tiada tanding!';
       } else if (streakCount >= 30) {
         tierClass = 'flame-tier-4';
-        tierName = '🔵 Cosmic Sapphire';
+        tierName = ' Cosmic Sapphire';
         tierBadgeBg = 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-[0_0_12px_rgba(6,182,212,0.4)]';
         glowBg = 'bg-cyan-500';
         descText = `${streakCount} Hari Konsisten Membakar Semangat! (Api Biru Plasma)`;
       } else if (streakCount >= 15) {
         tierClass = 'flame-tier-3';
-        tierName = '💜 Mystic Purple';
+        tierName = ' Mystic Purple';
         tierBadgeBg = 'bg-purple-500/20 text-purple-400 border border-purple-500/40 shadow-[0_0_12px_rgba(168,85,247,0.4)]';
         glowBg = 'bg-purple-500';
         descText = 'Api Mistis Ungu! Fokus membaca Anda semakin membara!';
       } else if (streakCount >= 8) {
         tierClass = 'flame-tier-2';
-        tierName = '⚡ Golden Amber';
+        tierName = ' Golden Amber';
         tierBadgeBg = 'bg-amber-500/20 text-amber-400 border border-amber-500/40 shadow-[0_0_12px_rgba(245,158,11,0.4)]';
         glowBg = 'bg-amber-500';
         descText = 'Konsistensi emas minggu ke-2! Kobarkan terus!';
@@ -2389,11 +2389,11 @@
             // Rank Icon / Badge
             let rankBadgeHtml = `<div class="w-8 h-8 rounded-full bg-surface-container font-black text-xs flex items-center justify-center text-on-surface dark:text-white">#${user.rank}</div>`;
             if (user.rank === 1) {
-              rankBadgeHtml = `<div class="w-9 h-9 rounded-full bg-amber-400 text-slate-950 font-black text-sm flex items-center justify-center shadow-md ring-2 ring-amber-300">🥇 1</div>`;
+              rankBadgeHtml = `<div class="w-9 h-9 rounded-full bg-amber-400 text-slate-950 font-black text-sm flex items-center justify-center shadow-md ring-2 ring-amber-300"> 1</div>`;
             } else if (user.rank === 2) {
-              rankBadgeHtml = `<div class="w-9 h-9 rounded-full bg-slate-300 text-slate-900 font-black text-sm flex items-center justify-center shadow-sm">🥈 2</div>`;
+              rankBadgeHtml = `<div class="w-9 h-9 rounded-full bg-slate-300 text-slate-900 font-black text-sm flex items-center justify-center shadow-sm"> 2</div>`;
             } else if (user.rank === 3) {
-              rankBadgeHtml = `<div class="w-9 h-9 rounded-full bg-amber-700 text-amber-100 font-black text-sm flex items-center justify-center shadow-sm">🥉 3</div>`;
+              rankBadgeHtml = `<div class="w-9 h-9 rounded-full bg-amber-700 text-amber-100 font-black text-sm flex items-center justify-center shadow-sm"> 3</div>`;
             }
 
             return `
@@ -2466,7 +2466,7 @@
         container.innerHTML = `
           <div class="flex items-center justify-between p-4 bg-primary/10 border-l-4 border-primary">
             <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-full bg-amber-400 text-slate-950 font-black text-sm flex items-center justify-center shadow-md">🥇 1</div>
+              <div class="w-9 h-9 rounded-full bg-amber-400 text-slate-950 font-black text-sm flex items-center justify-center shadow-md"> 1</div>
               <img src="${currentUserAvatar}" class="w-11 h-11 rounded-full object-cover border border-outline-variant/30">
               <div>
                 <h4 class="font-bold text-xs text-on-surface dark:text-white flex items-center gap-1.5">
@@ -2646,7 +2646,7 @@
       modal.classList.remove('hidden');
       modal.classList.add('flex');
       
-      statusEl.textContent = 'Menghubungkan ke server ReadBridge... 📡';
+      statusEl.textContent = 'Menghubungkan ke server ReadBridge... ';
       progressBar.style.width = '0%';
       timerEl.textContent = '00:00';
       closeBtn.disabled = true;
@@ -2665,18 +2665,18 @@
         timerEl.textContent = `${simMinutes.toString().padStart(2, '0')}:00 / 30:00`;
 
         if (count < 10) {
-          statusEl.textContent = 'Membuka e-book pilihan... 📖';
+          statusEl.textContent = 'Membuka e-book pilihan... ';
         } else if (count < 25) {
-          statusEl.textContent = 'Membaca Bab 1 & menelaah materi... 🧠';
+          statusEl.textContent = 'Membaca Bab 1 & menelaah materi... ';
         } else if (count < 40) {
-          statusEl.textContent = 'Membuat ringkasan dan catatan pinggir... 📝';
+          statusEl.textContent = 'Membuat ringkasan dan catatan pinggir... ';
         } else {
-          statusEl.textContent = 'Hampir selesai membaca... 📚';
+          statusEl.textContent = 'Hampir selesai membaca... ';
         }
 
         if (count >= totalSteps) {
           clearInterval(interval);
-          statusEl.textContent = 'Selesai membaca 30 menit! 🎉';
+          statusEl.textContent = 'Selesai membaca 30 menit! ';
           timerEl.textContent = '30:00 / 30:00';
           closeBtn.disabled = false;
           closeBtn.textContent = 'Klaim +50 XP & Tutup';
@@ -2922,7 +2922,7 @@
       if (bpModalTier) {
         bpModalTier.textContent = isPremium ? 'Member Premium' : 'Member Basic';
         bpModalIcon.style.color = isPremium ? '#004ac6' : '#737686';
-        if (bpToRefBtn) bpToRefBtn.textContent = isPremium ? 'Status: Aktif ✓' : 'Tukar Kode Referral';
+        if (bpToRefBtn) bpToRefBtn.textContent = isPremium ? 'Status: Aktif ' : 'Tukar Kode Referral';
         if (bpToRefBtn) bpToRefBtn.disabled = isPremium;
       }
 
@@ -2973,77 +2973,7 @@
     }
   </script>
 
-  <script id="dynamic-logo-menu">
-    document.addEventListener("DOMContentLoaded", function () {
-      // Inject Logo Menu
-      const headerOrNav = document.querySelector('header, nav');
-      if (headerOrNav && !document.getElementById('logo-menu-container')) {
-        const treeWalker = document.createTreeWalker(headerOrNav, NodeFilter.SHOW_TEXT, {
-          acceptNode: function (node) {
-            return node.nodeValue.trim() === 'ReadBridge' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
-          }
-        });
-        const logoTextNode = treeWalker.nextNode();
-        if (logoTextNode) {
-          const logoEl = logoTextNode.parentElement;
-
-          if (logoEl.id === 'logo-btn' || logoEl.querySelector('#logo-btn')) return;
-
-          const wrapper = document.createElement('div');
-          wrapper.style.position = 'relative';
-          wrapper.style.display = 'inline-flex';
-          wrapper.style.alignItems = 'center';
-          wrapper.style.cursor = 'pointer';
-          wrapper.id = 'logo-menu-container';
-
-          logoEl.parentNode.insertBefore(wrapper, logoEl);
-          wrapper.appendChild(logoEl);
-
-          logoEl.id = 'logo-btn';
-          logoEl.style.display = 'flex';
-          logoEl.style.alignItems = 'center';
-          logoEl.style.gap = '4px';
-          logoEl.innerHTML = 'ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>';
-
-          const dropdown = document.createElement('div');
-          dropdown.id = 'logo-dropdown';
-          dropdown.className = 'absolute left-0 top-full mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50';
-
-          const links = [
-            { href: 'index.html', icon: 'home', text: 'Beranda' },
-            { href: 'eksplor.html', icon: 'library_books', text: 'Eksplor Koleksi' },
-            { href: 'marketplace.html#sewa', icon: 'menu_book', text: 'Perpustakaan & Sewa' },
-            { href: 'marketplace.html', icon: 'storefront', text: 'Marketplace' },
-            { href: 'komunitas.html', icon: 'forum', text: 'Komunitas' },
-            { href: 'tentang-kami.html', icon: 'info', text: 'Tentang Kami' }
-          ];
-
-          links.forEach(l => {
-            const a = document.createElement('a');
-            a.href = l.href;
-            a.className = 'px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-[14px] text-on-surface flex items-center gap-3 font-medium';
-            a.innerHTML = `<span class="material-symbols-outlined text-[20px] text-on-surface-variant">${l.icon}</span> ${l.text}`;
-            dropdown.appendChild(a);
-          });
-
-          wrapper.appendChild(dropdown);
-
-          logoEl.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            dropdown.classList.toggle('hidden');
-            dropdown.classList.toggle('flex');
-          });
-          document.addEventListener('click', (e) => {
-            if (!dropdown.contains(e.target) && !logoEl.contains(e.target)) {
-              dropdown.classList.add('hidden');
-              dropdown.classList.remove('flex');
-            }
-          });
-        }
-      }
-    });
-  </script>
+  
 
 <!-- PWA Service Worker Registration + Auto-Update Banner -->
     <script>
@@ -3089,7 +3019,7 @@
           'font-weight:600','animation:slideUp .3s ease','white-space:nowrap'
         ].join(';');
         banner.innerHTML = `
-          <span style="font-size:18px">🚀</span>
+          <span style="font-size:18px"></span>
           <span>Versi terbaru tersedia!</span>
           <button onclick="applyUpdate()" style="background:#3b82f6;color:#fff;border:none;padding:6px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px">Perbarui</button>
           <button onclick="this.parentElement.remove()" style="background:transparent;color:#94a3b8;border:none;cursor:pointer;font-size:18px;line-height:1;padding:0 4px">&times;</button>
@@ -3441,7 +3371,7 @@
           }, 200);
       });
     </script>
-    <script src="script.js"></script>
+    
 
     <!-- Firebase Social Engine (Legacy Bindings) -->
     <script type="module">

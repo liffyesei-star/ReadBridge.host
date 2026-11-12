@@ -277,7 +277,7 @@
 </head>
 <body class="bg-background text-on-surface font-body-md font-sans min-h-screen flex flex-col">
 <!-- TopNavBar -->
-<header class="bg-surface shadow-sm docked full-width top-0 z-50">
+<header class="bg-surface shadow-sm sticky top-0 w-full top-0 z-50">
 <div class="flex justify-between items-center w-full px-4 md:px-margin py-sm max-w-[1280px] mx-auto">
 <div class="flex items-center gap-lg">
 <a class="font-headline-md text-[20px] md:text-headline-md leading-tight font-bold text-primary" href="index.html">ReadBridge</a>
@@ -704,78 +704,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
-<script id="dynamic-logo-menu">
-document.addEventListener("DOMContentLoaded", function() {
-    // Inject Logo Menu
-    const headerOrNav = document.querySelector('header, nav');
-    if (headerOrNav && !document.getElementById('logo-menu-container')) {
-        const treeWalker = document.createTreeWalker(headerOrNav, NodeFilter.SHOW_TEXT, {
-            acceptNode: function(node) {
-                return node.nodeValue.trim() === 'ReadBridge' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
-            }
-        });
-        const logoTextNode = treeWalker.nextNode();
-        if (logoTextNode) {
-            const logoEl = logoTextNode.parentElement;
-            
-            if (logoEl.id === 'logo-btn' || logoEl.querySelector('#logo-btn')) return;
 
-            const wrapper = document.createElement('div');
-            wrapper.style.position = 'relative';
-            wrapper.style.display = 'inline-flex';
-            wrapper.style.alignItems = 'center';
-            wrapper.style.cursor = 'pointer';
-            wrapper.id = 'logo-menu-container';
-            
-            logoEl.parentNode.insertBefore(wrapper, logoEl);
-            wrapper.appendChild(logoEl);
-            
-            logoEl.id = 'logo-btn';
-            logoEl.style.display = 'flex';
-            logoEl.style.alignItems = 'center';
-            logoEl.style.gap = '4px';
-            logoEl.innerHTML = 'ReadBridge <span class="material-symbols-outlined text-[20px]">expand_more</span>';
-            
-            const dropdown = document.createElement('div');
-            dropdown.id = 'logo-dropdown';
-            dropdown.className = 'absolute left-0 top-full mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden hidden flex-col z-50';
-            
-            const links = [
-                { href: 'index.html', icon: 'home', text: 'Beranda' },
-                { href: 'eksplor.html', icon: 'library_books', text: 'Eksplor Koleksi' },
-                { href: 'sewa.html', icon: 'menu_book', text: 'Perpustakaan & Sewa' },
-                { href: 'marketplace.html', icon: 'storefront', text: 'Marketplace' },
-                { href: 'komunitas.html', icon: 'forum', text: 'Komunitas' },
-                { href: 'profile.html#leaderboard', icon: 'emoji_events', text: 'Leaderboard & Quests' },
-                { href: 'tentang-kami.html', icon: 'info', text: 'Tentang Kami' }
-            ];
-            
-            links.forEach(l => {
-                const a = document.createElement('a');
-                a.href = l.href;
-                a.className = 'px-4 py-3 hover:bg-surface-container-low transition-colors font-label-md text-[14px] text-on-surface flex items-center gap-3 font-medium';
-                a.innerHTML = `<span class="material-symbols-outlined text-[20px] text-on-surface-variant">${l.icon}</span> ${l.text}`;
-                dropdown.appendChild(a);
-            });
-            
-            wrapper.appendChild(dropdown);
-            
-            logoEl.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                dropdown.classList.toggle('hidden');
-                dropdown.classList.toggle('flex');
-            });
-            document.addEventListener('click', (e) => {
-                if (!dropdown.contains(e.target) && !logoEl.contains(e.target)) {
-                    dropdown.classList.add('hidden');
-                    dropdown.classList.remove('flex');
-                }
-            });
-        }
-    }
-});
-</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -1144,7 +1073,7 @@ function initRealMap() {
                 </div>
                 <span style="background: #e0f2fe; color: #0284c7; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 700;">${lib.badge}</span>
                 <h4 style="margin: 6px 0 2px 0; font-weight: 800; font-size: 14px; color: #0b1c30;">${lib.title}</h4>
-                <p style="margin: 0 0 10px 0; font-size: 11px; color: #434655;">📍 ${lib.location}</p>
+                <p style="margin: 0 0 10px 0; font-size: 11px; color: #434655;"> ${lib.location}</p>
                 <div style="display: flex; gap: 6px;">
                     <button onclick="closeMapModal(); openLibraryModal(${lib.id});" style="flex: 1; background: #004ac6; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer;">Detail</button>
                     <a href="https://www.google.com/maps/dir/?api=1&destination=${lib.lat},${lib.lng}" target="_blank" style="background: #eff4ff; color: #004ac6; border: 1px solid #c3c6d7; padding: 6px 10px; border-radius: 8px; font-weight: 700; font-size: 11px; text-decoration: none; display: flex; align-items: center; justify-content: center;">Rute ↗</a>
@@ -1165,7 +1094,7 @@ function getUserGPSLocation() {
     const gpsBtn = document.getElementById('btn-gps-trigger');
 
     if (!navigator.geolocation) {
-        if (statusEl) statusEl.textContent = '❌ Perangkat Anda tidak mendukung fitur GPS Geolocation.';
+        if (statusEl) statusEl.textContent = ' Perangkat Anda tidak mendukung fitur GPS Geolocation.';
         alert('Geolocation tidak didukung oleh browser Anda.');
         return;
     }
@@ -1204,7 +1133,7 @@ function getUserGPSLocation() {
             userMarker = L.marker([userLat, userLng], { icon: userIcon }).addTo(realMap);
             userMarker.bindPopup(`
                 <div style="font-family: sans-serif; text-align: center; padding: 4px;">
-                    <strong style="color: #10b981; font-size: 13px;">📍 Lokasi Anda (GPS Real-Time)</strong>
+                    <strong style="color: #10b981; font-size: 13px;"> Lokasi Anda (GPS Real-Time)</strong>
                     <p style="margin: 4px 0 0 0; font-size: 11px; color: #64748b;">Akurasi ~${Math.round(accuracy)}m</p>
                 </div>
             `).openPopup();
@@ -1235,9 +1164,9 @@ function getUserGPSLocation() {
 
             if (statusEl) {
                 if (nearestLib) {
-                    statusEl.innerHTML = `✅ GPS Berhasil! Lokasi terdekat: <strong>${nearestLib.title}</strong> (${minDistance} KM).`;
+                    statusEl.innerHTML = ` GPS Berhasil! Lokasi terdekat: <strong>${nearestLib.title}</strong> (${minDistance} KM).`;
                 } else {
-                    statusEl.textContent = '✅ GPS Berhasil! Lokasi Anda telah ditandai di peta.';
+                    statusEl.textContent = ' GPS Berhasil! Lokasi Anda telah ditandai di peta.';
                 }
             }
 
@@ -1256,7 +1185,7 @@ function getUserGPSLocation() {
             else if (error.code === error.POSITION_UNAVAILABLE) errText = 'Informasi lokasi GPS tidak tersedia.';
             else if (error.code === error.TIMEOUT) errText = 'Permintaan GPS mengalami timeout.';
 
-            if (statusEl) statusEl.textContent = `⚠️ ${errText}`;
+            if (statusEl) statusEl.textContent = ` ${errText}`;
             alert(errText);
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
@@ -1365,7 +1294,7 @@ document.addEventListener('DOMContentLoaded', renderLibraries);
           'font-weight:600','animation:slideUp .3s ease','white-space:nowrap'
         ].join(';');
         banner.innerHTML = `
-          <span style="font-size:18px">🚀</span>
+          <span style="font-size:18px"></span>
           <span>Versi terbaru tersedia!</span>
           <button onclick="applyUpdate()" style="background:#3b82f6;color:#fff;border:none;padding:6px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px">Perbarui</button>
           <button onclick="this.parentElement.remove()" style="background:transparent;color:#94a3b8;border:none;cursor:pointer;font-size:18px;line-height:1;padding:0 4px">&times;</button>

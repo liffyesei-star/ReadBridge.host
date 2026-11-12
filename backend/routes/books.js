@@ -48,7 +48,7 @@ router.post("/upload", verifyToken, upload.single("file"), (req, res) => {
     res.json({ success: true, fileUrl });
   } catch (error) {
     console.error("Upload error:", error);
-    res.status(500).json({ success: false, message: "Gagal mengunggah file", error: error.message });
+    res.status(500).json({ success: false, message: "Gagal mengunggah file", error: undefined });
   }
 });
 
@@ -125,7 +125,7 @@ router.get("/", optionalAuth, async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Gagal mengambil data buku", error: error.message });
+    res.status(500).json({ success: false, message: "Gagal mengambil data buku", error: undefined });
   }
 });
 
@@ -239,7 +239,7 @@ router.post("/", verifyToken, async (req, res) => {
     res.status(201).json({ success: true, message: "Buku berhasil ditambahkan", data: { id: result.insertId, slug } });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Gagal menambahkan buku", error: error.message });
+    res.status(500).json({ success: false, message: "Gagal menambahkan buku", error: undefined });
   }
 });
 

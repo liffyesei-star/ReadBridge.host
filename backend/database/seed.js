@@ -10,12 +10,12 @@ require("dotenv").config();
 const db = require("../config/db");
 
 const seedData = async () => {
-  console.log("🌱 Mulai seed data...");
+  console.log(" Mulai seed data...");
 
   // Enable foreign key checks bypass for clean reset
   await db.execute("SET FOREIGN_KEY_CHECKS = 0;");
   
-  console.log("🧹 Mengosongkan data lama...");
+  console.log(" Mengosongkan data lama...");
   await db.execute("TRUNCATE TABLE ulasan;");
   await db.execute("TRUNCATE TABLE wishlist;");
   await db.execute("TRUNCATE TABLE diskusi_balasan;");
@@ -27,7 +27,7 @@ const seedData = async () => {
   
   // Re-enable foreign key checks
   await db.execute("SET FOREIGN_KEY_CHECKS = 1;");
-  console.log("✅ Data katalog lama berhasil dikosongkan");
+  console.log(" Data katalog lama berhasil dikosongkan");
 
   // ===================== USER DUMMY (ADMIN) =====================
   // Untuk kreator diskusi
@@ -35,7 +35,7 @@ const seedData = async () => {
     INSERT IGNORE INTO users (id, nama, email, role, bio, poin, level, aktif)
     VALUES (1, 'Admin ReadBridge', 'admin@readbridge.co.id', 'admin', 'Administrator Sistem ReadBridge', 9999, 'Maestro Literasi', 1)
   `);
-  console.log("✅ User admin berhasil di-ensure");
+  console.log(" User admin berhasil di-ensure");
 
   // ===================== BUKU =====================
   const imgBuku = [
@@ -70,7 +70,7 @@ const seedData = async () => {
       [b.id, b.judul, slug, b.penulis, b.kategori, b.harga, hargaSewa, b.rating, b.ulasan, b.cover, JSON.stringify(b.tags)]
     );
   }
-  console.log(`✅ ${buku.length} buku berhasil di-seed`);
+  console.log(` ${buku.length} buku berhasil di-seed`);
 
   // ===================== JURNAL =====================
   const jurnal_data = [
@@ -91,7 +91,7 @@ const seedData = async () => {
       [j.id, j.judul, j.penulis, j.universitas, j.tahun, j.unduhan, j.rating, j.kategori, j.akses, j.ulasan, j.abstrak]
     );
   }
-  console.log(`✅ ${jurnal_data.length} jurnal berhasil di-seed`);
+  console.log(` ${jurnal_data.length} jurnal berhasil di-seed`);
 
   // ===================== EBOOK =====================
   const ebooks = [
@@ -237,7 +237,7 @@ const seedData = async () => {
       [eb.id, eb.title, eb.author, eb.category, eb.rating, eb.reviews, eb.readingTime, eb.isPremium, eb.isMonthlySpecial, eb.coverImage, JSON.stringify(eb.pages)]
     );
   }
-  console.log(`✅ ${ebooks.length} ebooks berhasil di-seed`);
+  console.log(` ${ebooks.length} ebooks berhasil di-seed`);
 
   // ===================== DISKUSI =====================
   const diskusi_data = [
@@ -254,16 +254,16 @@ const seedData = async () => {
       "INSERT INTO diskusi (user_id, judul, konten, total_likes) VALUES (1, ?, ?, ?)",
       [d.judul, d.konten, d.likes]
     ).catch((err) => {
-      console.error(`⚠️ Gagal seed diskusi "${d.judul}":`, err.message);
+      console.error(` Gagal seed diskusi "${d.judul}":`, err.message);
     });
   }
-  console.log(`✅ ${diskusi_data.length} diskusi berhasil di-seed`);
+  console.log(` ${diskusi_data.length} diskusi berhasil di-seed`);
 
-  console.log("\n🎉 Seed selesai! Database ReadBridge siap digunakan.\n");
+  console.log("\n Seed selesai! Database ReadBridge siap digunakan.\n");
   process.exit(0);
 };
 
 seedData().catch(err => {
-  console.error("❌ Seed gagal:", err.message);
+  console.error(" Seed gagal:", err.message);
   process.exit(1);
 });

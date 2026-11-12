@@ -405,7 +405,7 @@
                                 </div>
                                 <div>
                                     <p class="text-xs font-extrabold text-indigo-400 tracking-wider">STATUS BRIDGAPASS KEANGGOTAAN</p>
-                                    <h3 class="font-title-lg text-title-lg font-black flex items-center gap-1 text-slate-100" id="bridgepass-status-text">Premium 👑</h3>
+                                    <h3 class="font-title-lg text-title-lg font-black flex items-center gap-1 text-slate-100" id="bridgepass-status-text">Premium </h3>
                                 </div>
                             </div>
                             <span class="text-[10px] bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 font-extrabold px-3 py-1 rounded-full uppercase" id="bridgepass-badge-label">Aktif</span>
@@ -1025,9 +1025,9 @@ previewBox.style.fontFamily = 'inherit';
 
                 if (result.success) {
                     currentAccountState.hasPassword = true;
-                    successEl.textContent = result.message || '✅ Kata sandi berhasil diperbarui!';
+                    successEl.textContent = result.message || ' Kata sandi berhasil diperbarui!';
                     successEl.classList.remove('hidden');
-                    alertFeedback('✅ Kata sandi berhasil diperbarui!');
+                    alertFeedback(' Kata sandi berhasil diperbarui!');
                     
                     const passBtnText = document.getElementById('text-btn-pass');
                     if (passBtnText) passBtnText.textContent = 'Ubah Kata Sandi';
@@ -1073,7 +1073,7 @@ previewBox.style.fontFamily = 'inherit';
             localStorage.setItem('rb_notif_komunitas', komunitas);
             localStorage.setItem('rb_notif_promo', promo);
 
-            alertFeedback('✅ Preferensi notifikasi berhasil disimpan');
+            alertFeedback(' Preferensi notifikasi berhasil disimpan');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -1216,7 +1216,7 @@ previewBox.style.fontFamily = 'inherit';
             }
             
             const originalText = 'Simpan Perubahan';
-            btn.textContent = 'Berhasil Disimpan ✓';
+            btn.textContent = 'Berhasil Disimpan ';
             btn.className = "px-6 py-3 bg-secondary text-on-secondary rounded-full font-bold shadow-md hover:-translate-y-0.5 transition-all";
             btn.disabled = false;
             
@@ -1238,7 +1238,7 @@ previewBox.style.fontFamily = 'inherit';
             if (premiumActive) {
                 badge.classList.remove('hidden');
                 badge.classList.add('flex');
-                statusText.innerHTML = 'Premium 👑';
+                statusText.innerHTML = 'Premium ';
                 badgeLabel.innerHTML = 'Aktif';
                 badgeLabel.className = "text-[10px] bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-extrabold px-3 py-1 rounded-full uppercase";
                 basicInput.classList.add('hidden');
@@ -1259,7 +1259,7 @@ previewBox.style.fontFamily = 'inherit';
             if (codeInput === 'SMNGTAFN') {
                 localStorage.setItem('rb_bridgepass', 'premium');
                 initBridgePassSettings();
-                alertFeedback('Sukses! BridgePass Premium Anda telah aktif secara universal! 👑');
+                alertFeedback('Sukses! BridgePass Premium Anda telah aktif secara universal! ');
             } else {
                 alertFeedback('Oops! Kode referral tidak valid.');
             }
@@ -1351,7 +1351,7 @@ previewBox.style.fontFamily = 'inherit';
                 }
             }
 
-            btn.textContent = 'Berhasil Disimpan ke DB ✓';
+            btn.textContent = 'Berhasil Disimpan ke DB ';
             btn.className = "px-6 py-3 bg-secondary text-on-secondary rounded-full font-bold shadow-md hover:-translate-y-0.5 transition-all";
             
             setTimeout(() => {
@@ -1408,7 +1408,7 @@ previewBox.style.fontFamily = 'inherit';
             const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
             
             if (isStandalone) {
-                statusText.innerHTML = 'Terpasang (App Mode) 📱';
+                statusText.innerHTML = 'Terpasang (App Mode) ';
                 statusText.className = "font-title-lg text-title-lg font-black text-emerald-500 dark:text-emerald-400";
                 statusIcon.innerHTML = 'phonelink_setup';
                 statusIcon.parentElement.className = "w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0";
@@ -1434,7 +1434,7 @@ previewBox.style.fontFamily = 'inherit';
             
             // Android / Desktop Chrome with Prompt
             if (deferredPrompt) {
-                statusText.innerHTML = 'Siap Dipasang ✨';
+                statusText.innerHTML = 'Siap Dipasang ';
                 statusIcon.innerHTML = 'install_mobile';
                 statusIcon.parentElement.className = "w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0";
                 installBtn.innerHTML = 'Pasang Sekarang';
@@ -1444,7 +1444,7 @@ previewBox.style.fontFamily = 'inherit';
                     deferredPrompt.prompt();
                     deferredPrompt.userChoice.then((choiceResult) => {
                         if (choiceResult.outcome === 'accepted') {
-                            alertFeedback('Terima kasih telah memasang ReadBridge! 🎉');
+                            alertFeedback('Terima kasih telah memasang ReadBridge! ');
                             statusText.innerHTML = 'Memasang...';
                             installBtn.style.display = 'none';
                         }
@@ -1605,6 +1605,6 @@ previewBox.style.fontFamily = 'inherit';
     
     <!-- Script Modals & Main -->
     <script src="profile-card.js"></script>
-    <script src="script.js"></script>
+    
 </body>
 </html>

@@ -1,11 +1,30 @@
 .DS_Store
+.idea/
+.vscode/
 
-# Firebase Service Account Key (RAHASIA - jangan di-commit!)
+# Firebase Service Account Key & Secrets (RAHASIA - jangan di-commit!)
 readbridge-8934c-firebase-adminsdk-fbsvc-*.json
 *firebase-adminsdk*.json
 serviceAccountKey.json
+backend/config/serviceAccountKey.json
 
 # Env files
 .env
-.env.local
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# Dependencies & Build Artifacts
 node_modules/
+backend/node_modules/
+backend/uploads/*
+!backend/uploads/.gitkeep
+readbridge-android/.gradle/
+readbridge-android/build/
+readbridge-android/app/build/
+readbridge-android/local.properties
+_site/
+*.zip
+*.docx

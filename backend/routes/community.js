@@ -215,7 +215,7 @@ router.post("/diskusi", verifyToken, async (req, res) => {
     await addNotification(
       req.user.id,
       'komunitas',
-      'Diskusi Baru Diposting 📝',
+      'Diskusi Baru Diposting ',
       `Diskusi "${judul.trim().slice(0, 50)}" Anda telah berhasil dibuat.`,
       `detail-diskusi.html?id=${id}`
     );
@@ -248,7 +248,7 @@ router.post("/clubs/:id/diskusi", verifyToken, async (req, res) => {
     await addNotification(
       req.user.id,
       'komunitas',
-      'Diskusi Club Berhasil Diposting 📝',
+      'Diskusi Club Berhasil Diposting ',
       `Diskusi "${judul.trim().slice(0, 50)}" telah diposting ke club.`,
       `detail-diskusi.html?id=${id}`
     );
@@ -297,7 +297,7 @@ router.post("/diskusi/:id/balasan", verifyToken, async (req, res) => {
       await addNotification(
         postOwner.user_id,
         'komunitas',
-        'Balasan Baru di Diskusi Anda 💬',
+        'Balasan Baru di Diskusi Anda ',
         `${req.user.nama} membalas diskusi Anda "${postOwner.judul}": "${konten.slice(0, 80)}..."`,
         `detail-diskusi.html?id=${req.params.id}`
       );
@@ -339,7 +339,7 @@ router.post("/diskusi/:id/like", verifyToken, async (req, res) => {
       await addNotification(
         postOwner.user_id,
         'komunitas',
-        'Menyukai Diskusi Anda ❤️',
+        'Menyukai Diskusi Anda ',
         `${req.user.nama} menyukai diskusi Anda "${postOwner.judul}".`,
         `detail-diskusi.html?id=${req.params.id}`
       );
@@ -364,7 +364,7 @@ router.post("/diskusi/:id/share", verifyToken, async (req, res) => {
     await addNotification(
       req.user.id,
       'komunitas',
-      'Membagikan Diskusi 🔗',
+      'Membagikan Diskusi ',
       `Anda berhasil membagikan diskusi "${post ? post.judul : ''}".`,
       `detail-diskusi.html?id=${req.params.id}`
     );

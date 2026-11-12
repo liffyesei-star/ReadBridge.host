@@ -1,59 +1,55 @@
 const jwt = require("jsonwebtoken");
-const ApiResponse = require("../utils/apiResponse");
-const userRepository = require("../repositories/userRepository");
 
-const JWT_SECRET = process.env.JWT_SECRET || 'readbridge_jwt_secret_key_production_2026';
+const JWT_SECRET = process.env.JWT_SECRET || "readbridge_fallback_dev_secret_only_local";
 
-const verifyToken = async (req, res, next) => {
+const verifyToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: "Akses ditolak. Token tidak ditemukan."
+    });
+  }
+
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return ApiResponse.unauthorized(res, "Token autentikasi tidak ditemukan.");
-    }
-
-    const token = authHeader.split("Bearer ")[1];
-
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      const user = await userRepository.findByEmail(decoded.email);
-      if (!user) {
-        return ApiResponse.unauthorized(res, "Akun tidak ditemukan.");
-      }
-      req.user = user;
-      return next();
-    } catch (jwtErr) {
-      return ApiResponse.unauthorized(res, "Token tidak valid atau telah kedaluwarsa.");
-    }
-  } catch (error) {
-    return ApiResponse.unauthorized(res, "Gagal memproses autentikasi.");
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(403).json({
+      success: false,
+      message: "Token tidak valid atau telah kedaluwarsa."
+    });
   }
 };
 
-const optionalAuth = async (req, res, next) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      req.user = null;
-      return next();
-    }
-
-    const token = authHeader.split("Bearer ")[1];
-
+const optionalAuth = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token) {
     try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      req.user = await userRepository.findByEmail(decoded.email);
-      return next();
-    } catch {
+      req.user = jwt.verify(token, JWT_SECRET);
+    } catch (err) {
       req.user = null;
-      return next();
     }
-  } catch {
-    req.user = null;
-    return next();
   }
+  next();
 };
 
-module.exports = {
-  verifyToken,
-  optionalAuth
+const requireAdmin = (req, res, next) => {
+  if (!req.user || req.user.role !== "admin") {
+    return res.status(403).json({
+      success: false,
+      message: "Akses ditolak. Memerlukan hak akses administrator."
+    });
+  }
+  next();
 };
+
+module.exports = verifyToken;
+module.exports.verifyToken = verifyToken;
+module.exports.optionalAuth = optionalAuth;
+module.exports.requireAdmin = requireAdmin;
+module.exports.JWT_SECRET = JWT_SECRET;

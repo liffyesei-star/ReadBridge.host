@@ -43,18 +43,18 @@ let dbReady = false;
 async function testConnection(attempt = 1, maxAttempts = 10) {
   try {
     const conn = await pool.getConnection();
-    console.log("✅ MySQL terhubung ke database:", process.env.DB_NAME || "readbridge_db");
+    console.log(" MySQL terhubung ke database:", process.env.DB_NAME || "readbridge_db");
     conn.release();
     dbReady = true;
   } catch (err) {
-    console.error(`❌ Gagal koneksi MySQL (percobaan ${attempt}/${maxAttempts}):`, err.code || "", err.message);
+    console.error(` Gagal koneksi MySQL (percobaan ${attempt}/${maxAttempts}):`, err.code || "", err.message);
     if (attempt < maxAttempts) {
       const delayMs = Math.min(attempt * 3000, 15000);
       setTimeout(() => testConnection(attempt + 1, maxAttempts), delayMs);
     } else {
-      console.error("⚠️ Server tetap berjalan — API database akan gagal sampai MySQL tersedia.");
+      console.error(" Server tetap berjalan — API database akan gagal sampai MySQL tersedia.");
       if ((process.env.DB_HOST || "").includes("aivencloud.com") && !process.env.DB_SSL_CA) {
-        console.error("💡 Aiven: tambahkan env DB_SSL_CA (CA certificate dari Aiven Console → Connection info).");
+        console.error(" Aiven: tambahkan env DB_SSL_CA (CA certificate dari Aiven Console → Connection info).");
       }
     }
   }

@@ -126,10 +126,10 @@
             <!-- Custom Toggle -->
             <div class="flex p-1 bg-surface-container rounded-xl">
                 <button id="tab-personal" class="flex-1 py-2 text-sm font-bold bg-primary text-white rounded-lg shadow-sm transition-all" onclick="switchChatCategory('personal')">
-                    💬 Biasa
+                     Biasa
                 </button>
                 <button id="tab-transaksi" class="flex-1 py-2 text-sm font-bold text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-all" onclick="switchChatCategory('transaksi')">
-                    🛍️ Transaksi
+                     Transaksi
                 </button>
             </div>
 
@@ -209,7 +209,7 @@
                     <p class="text-[10px] text-on-surface-variant">Rp 120.000 • Order #INV-88219</p>
                 </div>
             </div>
-            <a href="invoice.html" class="text-xs font-bold text-primary hover:underline bg-primary/10 px-3 py-1.5 rounded-full">Cek Pesanan</a>
+            <a href="marketplace.html" class="text-xs font-bold text-primary hover:underline bg-primary/10 px-3 py-1.5 rounded-full">Cek Pesanan</a>
         </div>
 
         <!-- Messages Area -->
@@ -384,7 +384,7 @@
 
 
 
-<script src="profile-modal.js"></script>
+
 
     <!-- UI Bug Fixes & Dynamic Routing Script -->
     <script>
@@ -445,7 +445,7 @@
             if (bookTitle) {
                 const headerDesc = document.querySelector('#chat-active-window p.text-xs');
                 if (headerDesc) {
-                    headerDesc.innerHTML = `<span class="text-primary font-bold">📖 Minat Buku:</span> ${decodeURIComponent(bookTitle)}`;
+                    headerDesc.innerHTML = `<span class="text-primary font-bold"> Minat Buku:</span> ${decodeURIComponent(bookTitle)}`;
                 }
             }
 
@@ -558,7 +558,7 @@
                     renderIncomingBubble(decrypted, formatTime(new Date(data.created_at)));
                 } catch(e) {
                     console.error("Gagal mendekripsi pesan masuk:", e);
-                    renderIncomingBubble("🔒 [Pesan tidak dapat didekripsi]", formatTime(new Date(data.created_at)));
+                    renderIncomingBubble(" [Pesan tidak dapat didekripsi]", formatTime(new Date(data.created_at)));
                 }
             } else {
                 // Simpan pesan masuk ke IndexedDB (Background)
@@ -855,5 +855,6 @@
     });
 </script>
 
+  <script type="module" src="js/ui/header-sync.js?v=7"></script>
 </body>
 </html>

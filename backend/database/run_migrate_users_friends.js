@@ -22,7 +22,7 @@ async function runMigration() {
         console.log("Mengeksekusi SQL...");
         await connection.query(sql);
 
-        console.log("✅ Migrasi berhasil!");
+        console.log(" Migrasi berhasil!");
         
         // Kita juga perlu set username awal (jika ada data lama)
         const [rows] = await connection.query("SELECT id, nama FROM users WHERE username IS NULL");
@@ -54,7 +54,7 @@ async function runMigration() {
 
         await connection.end();
     } catch (error) {
-        console.error("❌ Gagal menjalankan migrasi:", error);
+        console.error(" Gagal menjalankan migrasi:", error);
     }
 }
 

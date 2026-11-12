@@ -1,9 +1,19 @@
 // js/auth.js
 // Mengelola autentikasi pengguna secara lokal menggunakan JWT
 
-const API_URL = (['localhost', '127.0.0.1'].includes(window.location.hostname)) 
-  ? 'http://localhost:5001/api/auth' 
+const API_URL = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+  ? 'http://localhost:5001/api/auth'
   : 'https://readbridge-backend-2whx.onrender.com/api/auth';
+
+function escapeAuthHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (ch) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[ch]));
+}
 
 const Auth = {
   // Setup loading state di tombol
@@ -11,7 +21,7 @@ const Auth = {
     if (!btn) return;
     if (isLoading) {
       btn.dataset.originalText = btn.innerHTML;
-      btn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> ${text}`;
+      btn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> ${escapeAuthHtml(text)}`;
       btn.disabled = true;
       btn.classList.add('opacity-70', 'cursor-not-allowed');
     } else {
@@ -21,16 +31,24 @@ const Auth = {
     }
   },
 
-  // Tampilkan notifikasi toast/alert
+  // Tampilkan notifikasi toast/alert secara aman (anti DOM XSS)
   showMessage: (msg, type = 'error') => {
-    // Kita buat elemen toast sederhana di body
     const toast = document.createElement('div');
-    toast.className = `fixed top-4 right-4 z-[9999] p-4 rounded-lg shadow-lg text-white font-label-md transition-all duration-300 transform translate-y-0 opacity-100 flex items-center gap-2`;
+    toast.className =
+      'fixed top-4 right-4 z-[9999] p-4 rounded-xl shadow-lg text-white font-label-md transition-all duration-300 transform translate-y-0 opacity-100 flex items-center gap-2';
     toast.style.backgroundColor = type === 'error' ? '#BA1A1A' : '#146C2E';
-    toast.innerHTML = `<span class="material-symbols-outlined">${type === 'error' ? 'error' : 'check_circle'}</span> ${msg}`;
-    
+
+    const icon = document.createElement('span');
+    icon.className = 'material-symbols-outlined';
+    icon.textContent = type === 'error' ? 'error' : 'check_circle';
+
+    const textSpan = document.createElement('span');
+    textSpan.textContent = String(msg ?? '');
+
+    toast.appendChild(icon);
+    toast.appendChild(textSpan);
     document.body.appendChild(toast);
-    
+
     setTimeout(() => {
       toast.classList.replace('translate-y-0', '-translate-y-10');
       toast.classList.replace('opacity-100', 'opacity-0');
@@ -77,11 +95,11 @@ const Auth = {
         body: JSON.stringify({ email, password })
       });
       const data = await res.json();
-      
+
       if (res.ok && data.success) {
         Auth.setToken(data.token, data.user);
         Auth.showMessage('Login berhasil!', 'success');
-        setTimeout(() => window.location.href = 'index.html', 1000);
+        setTimeout(() => (window.location.href = 'index.html'), 800);
       } else {
         throw new Error(data.message || 'Login gagal');
       }
@@ -102,11 +120,11 @@ const Auth = {
         body: JSON.stringify({ nama, email, password })
       });
       const data = await res.json();
-      
+
       if (res.ok && data.success) {
         Auth.setToken(data.token, data.user);
         Auth.showMessage('Registrasi berhasil!', 'success');
-        setTimeout(() => window.location.href = 'index.html', 1000);
+        setTimeout(() => (window.location.href = 'index.html'), 800);
       } else {
         throw new Error(data.message || 'Registrasi gagal');
       }
@@ -124,6 +142,7 @@ const Auth = {
     localStorage.removeItem('rb_profile_pic');
     localStorage.removeItem('rb_username');
     localStorage.removeItem('rb_is_logged_in');
+    localStorage.removeItem('rb_has_toko');
     window.location.href = 'login.html';
   },
 
@@ -140,13 +159,13 @@ const Auth = {
       window.location.href = 'index.html';
     }
   },
-  
+
   // Mengupdate UI berdasarkan status login
   updateUI: () => {
     const user = Auth.getUser();
     const loginBtn = document.getElementById('btn-login-nav');
     const profileMenu = document.getElementById('profile-menu-container');
-    
+
     if (user) {
       if (loginBtn) loginBtn.classList.add('hidden');
       if (profileMenu) {
@@ -157,34 +176,40 @@ const Auth = {
 
       const displayName = user.nama || user.username || 'Pengguna';
 
-      // Global text replacement for "Siswa Indonesia" (Decoy data fix)
-      const textEls = document.querySelectorAll('span.text-on-surface, p.text-on-surface, p.truncate, h1, h2, h3, h4, h5, h6, .rb-username-fill');
+      const textEls = document.querySelectorAll(
+        'span.text-on-surface, p.text-on-surface, p.truncate, h1, h2, h3, h4, h5, h6, .rb-username-fill'
+      );
       for (let i = 0; i < textEls.length; i++) {
-          if (textEls[i].textContent.trim() === 'Siswa Indonesia') {
-              textEls[i].textContent = displayName;
-          }
+        if (textEls[i].textContent.trim() === 'Siswa Indonesia') {
+          textEls[i].textContent = displayName;
+        }
       }
 
-      // Sync avatar on nav header (if any element has an avatar class or id)
-      const navAvatars = document.querySelectorAll('#profile-menu-container img, #profile-menu-container-nav img, .nav-user-avatar, #profile-avatar-btn img, #profile-avatar-btn-nav img');
+      const navAvatars = document.querySelectorAll(
+        '#profile-menu-container img, #profile-menu-container-nav img, .nav-user-avatar, #profile-avatar-btn img, #profile-avatar-btn-nav img'
+      );
       if (user.foto_profil) {
-          navAvatars.forEach(img => img.src = user.foto_profil);
+        navAvatars.forEach((img) => {
+          img.src = user.foto_profil;
+        });
       }
 
-      // Sync specific inputs (e.g. for pengaturan.html and checkout.html)
       const inputNama = document.getElementById('input-nama');
       if (inputNama && inputNama.value === 'Siswa Indonesia') inputNama.value = displayName;
       else if (inputNama && !inputNama.value) inputNama.value = displayName;
-      
+
       const inputUsername = document.getElementById('input-username');
-      if (inputUsername && (!inputUsername.value || inputUsername.value === '')) inputUsername.value = user.username || '';
-      
+      if (inputUsername && (!inputUsername.value || inputUsername.value === '')) {
+        inputUsername.value = user.username || '';
+      }
+
       const inputEmail = document.getElementById('input-email-settings');
-      if (inputEmail && (!inputEmail.value || inputEmail.value === 'nama@email.com')) inputEmail.value = user.email || '';
-      
+      if (inputEmail && (!inputEmail.value || inputEmail.value === 'nama@email.com')) {
+        inputEmail.value = user.email || '';
+      }
+
       const avatarPreview = document.getElementById('avatar-preview');
       if (avatarPreview && user.foto_profil) avatarPreview.src = user.foto_profil;
-
     } else {
       if (loginBtn) loginBtn.classList.remove('hidden');
       if (profileMenu) profileMenu.classList.add('hidden');
@@ -199,7 +224,7 @@ const Auth = {
         body: JSON.stringify({ token: firebaseToken })
       });
       const data = await response.json();
-      
+
       if (!response.ok || !data.success) {
         throw new Error(data.message || 'Gagal login via Google');
       }
@@ -215,9 +240,8 @@ const Auth = {
 
 window.Auth = Auth;
 
-// Otomatis update UI saat halaman dimuat
 document.addEventListener('DOMContentLoaded', () => {
-    if (window.Auth && window.Auth.updateUI) {
-        window.Auth.updateUI();
-    }
+  if (window.Auth && window.Auth.updateUI) {
+    window.Auth.updateUI();
+  }
 });

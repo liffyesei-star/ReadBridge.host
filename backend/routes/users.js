@@ -98,7 +98,7 @@ router.put("/profile", verifyToken, async (req, res) => {
       await addNotification(
         req.user.id,
         'sistem',
-        'Nama Tampilan Diperbarui 👤',
+        'Nama Tampilan Diperbarui ',
         `Nama tampilan Anda berhasil diubah menjadi "${nama.trim()}".`,
         'pengaturan.html'
       );
@@ -108,7 +108,7 @@ router.put("/profile", verifyToken, async (req, res) => {
       await addNotification(
         req.user.id,
         'sistem',
-        'Alamat Email Diperbarui ✉️',
+        'Alamat Email Diperbarui ',
         `Email akun ReadBridge Anda berhasil diperbarui menjadi ${email.trim().toLowerCase()}.`,
         'pengaturan.html'
       );
@@ -118,7 +118,7 @@ router.put("/profile", verifyToken, async (req, res) => {
       await addNotification(
         req.user.id,
         'sistem',
-        'Username Diperbarui 👤',
+        'Username Diperbarui ',
         `Username Anda berhasil diubah.`,
         'pengaturan.html'
       );
@@ -201,7 +201,7 @@ router.put("/change-password", verifyToken, async (req, res) => {
     await addNotification(
       req.user.id,
       'sistem',
-      'Kata Sandi Berhasil Diubah 🔒',
+      'Kata Sandi Berhasil Diubah ',
       'Kata sandi akun ReadBridge Anda berhasil diperbarui secara aman.',
       'pengaturan.html'
     );
